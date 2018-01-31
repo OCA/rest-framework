@@ -84,6 +84,10 @@ class HttpRestRequest(HttpRequest):
         super(HttpRestRequest, self).__init__(httprequest)
         if self.httprequest.headers.get('Content-Type') == 'application/json':
             self.params = json.loads(self.httprequest.stream.read())
+        lang = self.httprequest.headers.get('Lang')
+        if lang:
+            self._context = self._context or {}
+            self._context['lang'] = lang
         self.collection_name = collection_name
 
     def _handle_exception(self, exception):
