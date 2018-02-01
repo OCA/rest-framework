@@ -108,9 +108,7 @@ class BaseRestService(Component):
         schema = self._get_schema_for_method(method_name)
         v = Validator(schema, purge_unknown=True)
         if v.validate(params):
-            # TODO we should fix cerberus issue
-            # https://github.com/pyeve/cerberus/issues/325
-            return self._validate_list(schema, v.document)
+            return v.document
         _logger.error("BadRequest %s", v.errors)
         raise UserError(_('Invalid Form'))
 
