@@ -8,7 +8,7 @@ import json
 import logging
 import sys
 import traceback
-from datetime import datetime
+import datetime
 
 from odoo.exceptions import (
     Warning as UserError, MissingError, AccessError, ValidationError)
