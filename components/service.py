@@ -50,7 +50,6 @@ class BaseRestService(Component):
     def _prepare_extra_log(self, func, params, secure_params, res):
         httprequest = request.httprequest
         headers = dict(httprequest.headers)
-        headers.pop('Api-Key')
         return {
             'application': 'Rest Service',
             'invader_url': httprequest.url,
