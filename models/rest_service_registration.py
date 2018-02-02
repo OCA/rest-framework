@@ -12,8 +12,12 @@ This code is inspired by ``odoo.addons.component.builder.ComponentBuilder``
 
 """
 
-from odoo import api, fields, models, _
-from ..core import _rest_services_databases, RestServicesRegistry
+from odoo import api, models
+from ..core import (
+    _rest_services_databases,
+    _rest_controllers_per_module,
+    RestServicesRegistry
+)
 
 
 class RestServiceRegistation(models.AbstractModel):
@@ -24,6 +28,7 @@ class RestServiceRegistation(models.AbstractModel):
     the end of the Odoo's registry loading, using ``_register_hook``. This
     method is called after all modules are loaded, so we are sure that we only
     register REST services installed into the current database.
+
 
     To register a controller providing REST service, you must inherit from
     this current model and implement the method ``_get_registry_items``
@@ -94,7 +99,17 @@ class RestServiceRegistation(models.AbstractModel):
         # we have to to rebuild the registry. We use a new
         # registry so we have an empty cache and we'll add services in it.
         services_registry = self._init_global_registry()
-        services_registry.update(self._get_registry_items())
+        query = (
+            "SELECT name "
+            "FROM ir_module_module "
+            "WHERE state IN %s "
+        )
+        self.env.cr.execute(query, (('installed', 'to upgrade'), ))
+        module_list = [name for (name,) in self.env.cr.fetchall()]
+        for module in module_list:
+            controller_defs = _rest_controllers_per_module.get(module, [])
+            for controller_def in controller_defs:
+                services_registry[controller_def['root_path']] = controller_def
 
     def _init_global_registry(self):
         services_registry = RestServicesRegistry()

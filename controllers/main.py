@@ -3,12 +3,16 @@
 # Sébastien BEAU <sebastien.beau@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import inspect
 import logging
 from contextlib import contextmanager
+from urlparse import urljoin
 
-from odoo.addons.component.core import WorkContext
-from odoo.http import Controller, Response, request
+from odoo.addons.component.core import WorkContext, _get_addon_name
+from odoo.http import Controller, ControllerType, Response, request, route
 from werkzeug.exceptions import BadRequest
+
+from ..core import _rest_controllers_per_module
 
 _logger = logging.getLogger(__name__)
 
@@ -19,7 +23,58 @@ class _PseudoCollection(object):
         self.env = env
 
 
+class RestControllerType(ControllerType):
+
+    # pylint: disable=E0213
+    def __init__(cls, name, bases, attrs):
+        super(RestControllerType, cls).__init__(name, bases, attrs)
+        if "RestController" not in globals() or RestController not in bases:
+            return
+        # register our REST controllers
+        root_path = getattr(cls, '_root_path', None)
+        collection_name = getattr(cls, '_collection_name', None)
+        if root_path and collection_name:
+            if not hasattr(cls, '_module'):
+                cls._module = _get_addon_name(cls.__module__)
+            _rest_controllers_per_module[cls._module].append({
+                'root_path': root_path,
+                'collection_name': collection_name
+            })
+
+
 class RestController(Controller):
+    """Generic REST Controller
+
+    This controller provides generic routes conform to commen REST usages.
+    You must inherit of this controller into your code to register your REST
+    routes. At the same time you must fill 2 required informations:
+
+    _root_path:
+    _collection_name:
+
+    """
+    _root_path = None
+    _collection_name = None
+
+    __metaclass__ = RestControllerType
+
+    def __new__(cls, *args, **kwargs):
+        klass = super(RestController, cls).__new__(cls, *args, **kwargs)
+        if not klass._root_path:
+            return klass
+        # Add the root_path to the route defined on methods
+        for member in inspect.getmembers(klass, predicate=inspect.ismethod):
+            method = member[1]
+            if not hasattr(method, 'original_func') or \
+                    'rest_routes_patched' in method.routing:
+                continue
+            routes = method.routing.get('routes')
+            patched_routes = []
+            for _route in routes:
+                patched_routes.append(urljoin(cls._root_path, _route))
+            method.routing['routes'] = patched_routes
+            method.routing['rest_routes_patched'] = True
+        return klass
 
     def _get_component_context(self):
         """
@@ -75,3 +130,41 @@ class RestController(Controller):
         with self.service_component(service_name) as service:
             res = service.dispatch(method_name, _id, params)
             return self.make_response(res)
+
+
+    @route([
+        '<string:_service_name>',
+        '<string:_service_name>/search',
+        '<string:_service_name>/<int:_id>',
+        '<string:_service_name>/<int:_id>/get'
+    ], methods=['GET'], auth="api_key", csrf=False)
+    def get(self, _service_name, _id=None, **params):
+        method_name = 'get' if _id else 'search'
+        return self._process_method(_service_name, method_name, _id, params)
+
+    @route([
+        '<string:_service_name>',
+        '<string:_service_name>/<string:method_name>',
+        '<string:_service_name>/<int:_id>',
+        '<string:_service_name>/<int:_id>/<string:method_name>'
+    ], methods=['POST'], auth="api_key", csrf=False)
+    def modify(self, _service_name, _id=None, method_name=None, **params):
+        if not method_name:
+            method_name = 'update' if _id else 'create'
+        if method_name == 'get':
+            _logger.error("HTTP POST with method name 'get' is not allowed. "
+                          "(service name: %s)", _service_name)
+            raise BadRequest()
+        return self._process_method(_service_name, method_name, _id, params)
+
+    @route([
+        '<string:_service_name>/<int:_id>',
+    ], methods=['PUT'], auth="api_key", csrf=False)
+    def update(self, _service_name, _id, **params):
+        return self._process_method(_service_name, 'update', _id, params)
+
+    @route([
+        '<string:_service_name>/<int:_id>',
+    ], methods=['DELETE'], auth="api_key", csrf=False)
+    def delete(self, _service_name, _id):
+        return self._process_method(_service_name, 'delete', _id)
