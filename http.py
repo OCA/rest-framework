@@ -124,9 +124,9 @@ def get_request(self, httprequest):
     db = httprequest.session.db
     service_registry = _rest_services_databases.get(db)
     if service_registry:
-        for root_path, collection_name in service_registry.items():
+        for root_path, info in service_registry.items():
             if httprequest.path.startswith(root_path):
-                return HttpRestRequest(httprequest, collection_name)
+                return HttpRestRequest(httprequest, info['collection_name'])
     return ori_get_request(self, httprequest)
 
 
