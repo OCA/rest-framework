@@ -55,6 +55,15 @@ class RestController(Controller):
     """
     _root_path = None
     _collection_name = None
+    # The default authentication to apply to all pre defined routes.
+    _default_auth = 'user'
+    # You can use this parameter to specify a authentication method by HTTP
+    # method ie: {'GET': None, 'POST': 'user'}
+    _auth_by_method = {}
+    # The default The Access-Control-Allow-Origin cors directive value.
+    _cors = None
+    # Whether CSRF protection should be enabled for the route.
+    _csrf = False
 
     __metaclass__ = RestControllerType
 
@@ -68,12 +77,25 @@ class RestController(Controller):
             if not hasattr(method, 'original_func') or \
                     'rest_routes_patched' in method.routing:
                 continue
-            routes = method.routing.get('routes')
+            routing = method.routing
+            routes = routing.get('routes')
             patched_routes = []
             for _route in routes:
                 patched_routes.append(urljoin(cls._root_path, _route))
-            method.routing['routes'] = patched_routes
-            method.routing['rest_routes_patched'] = True
+            routing['routes'] = patched_routes
+            methods = routing['methods']
+            if 'auth' not in routing:
+                auth = cls._default_auth
+                if len(methods) == 1:
+                    method = methods[0]
+                    if method in cls._auth_by_method:
+                        auth = cls._auth_by_method[method]
+                routing['auth'] = auth
+            if 'cors' not in routing:
+                routing['cors'] = cls._cors
+            if 'csrf' not in routing:
+                routing['csrf'] = cls._csrf
+            routing['rest_routes_patched'] = True
         return klass
 
     def _get_component_context(self):
@@ -131,13 +153,12 @@ class RestController(Controller):
             res = service.dispatch(method_name, _id, params)
             return self.make_response(res)
 
-
     @route([
         '<string:_service_name>',
         '<string:_service_name>/search',
         '<string:_service_name>/<int:_id>',
         '<string:_service_name>/<int:_id>/get'
-    ], methods=['GET'], auth="api_key", csrf=False)
+    ], methods=['GET'])
     def get(self, _service_name, _id=None, **params):
         method_name = 'get' if _id else 'search'
         return self._process_method(_service_name, method_name, _id, params)
@@ -147,7 +168,7 @@ class RestController(Controller):
         '<string:_service_name>/<string:method_name>',
         '<string:_service_name>/<int:_id>',
         '<string:_service_name>/<int:_id>/<string:method_name>'
-    ], methods=['POST'], auth="api_key", csrf=False)
+    ], methods=['POST'])
     def modify(self, _service_name, _id=None, method_name=None, **params):
         if not method_name:
             method_name = 'update' if _id else 'create'
@@ -159,12 +180,12 @@ class RestController(Controller):
 
     @route([
         '<string:_service_name>/<int:_id>',
-    ], methods=['PUT'], auth="api_key", csrf=False)
+    ], methods=['PUT'])
     def update(self, _service_name, _id, **params):
         return self._process_method(_service_name, 'update', _id, params)
 
     @route([
         '<string:_service_name>/<int:_id>',
-    ], methods=['DELETE'], auth="api_key", csrf=False)
+    ], methods=['DELETE'])
     def delete(self, _service_name, _id):
         return self._process_method(_service_name, 'delete', _id)

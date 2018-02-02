@@ -4,6 +4,7 @@
 
 import collections
 
+
 class RestServicesDatabases(dict):
     """ Holds a registry of REST services for each database """
 
