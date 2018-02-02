@@ -7,7 +7,7 @@
 
 import logging
 
-from odoo.addons.component.core import Component
+from odoo.addons.component.core import AbstractComponent
 from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools.translate import _
@@ -44,7 +44,7 @@ def skip_secure_params(func):
     func.skip_secure_params = True
 
 
-class BaseRestService(Component):
+class BaseRestService(AbstractComponent):
     _name = 'base.rest.service'
 
     def _prepare_extra_log(self, func, params, secure_params, res):
