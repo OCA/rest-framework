@@ -32,9 +32,6 @@ The business logic of your service must be implemented into a component
 
 
         # The following method are 'public' and can be called from the controller.
-        # All params are untrusted so please check it by using the decorator
-        # secure params and the linked validator !
-
         def get(self, _id, message):
             return {
                 'response': 'Get called with message ' + message}
