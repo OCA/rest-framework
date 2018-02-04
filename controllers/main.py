@@ -113,6 +113,14 @@ class RestController(Controller):
         # By default return result as json
         return request.make_json_response(data)
 
+    @property
+    def collection_name(self):
+        return self._collection_name
+
+    @property
+    def collection(self):
+        return _PseudoCollection(self.collection_name, request.env)
+
     @contextmanager
     def work_on_component(self):
         """
@@ -121,7 +129,7 @@ class RestController(Controller):
         :param service_name:
         :return: an instance of invader.service component
         """
-        collection = _PseudoCollection(request.collection_name, request.env)
+        collection = self.collection
         params = self._get_component_context()
         yield WorkContext(model_name='rest.service.registration',
                           collection=collection, **params)

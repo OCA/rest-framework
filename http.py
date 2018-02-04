@@ -80,7 +80,7 @@ def wrapJsonException(exception):
 class HttpRestRequest(HttpRequest):
     """Http request that always return json, usefull for rest api"""
 
-    def __init__(self, httprequest, collection_name):
+    def __init__(self, httprequest):
         super(HttpRestRequest, self).__init__(httprequest)
         if self.httprequest.headers.get('Content-Type') == 'application/json':
             self.params = json.loads(self.httprequest.stream.read())
@@ -88,7 +88,6 @@ class HttpRestRequest(HttpRequest):
         if lang:
             self._context = self._context or {}
             self._context['lang'] = lang
-        self.collection_name = collection_name
 
     def _handle_exception(self, exception):
         """Called within an except block to allow converting exceptions
@@ -124,9 +123,9 @@ def get_request(self, httprequest):
     db = httprequest.session.db
     service_registry = _rest_services_databases.get(db)
     if service_registry:
-        for root_path, info in service_registry.items():
+        for root_path in service_registry:
             if httprequest.path.startswith(root_path):
-                return HttpRestRequest(httprequest, info['collection_name'])
+                return HttpRestRequest(httprequest)
     return ori_get_request(self, httprequest)
 
 
