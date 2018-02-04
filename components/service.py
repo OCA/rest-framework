@@ -12,6 +12,9 @@ from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.tools.translate import _
 
+from werkzeug.exceptions import NotFound
+
+
 _logger = logging.getLogger(__name__)
 
 
@@ -77,19 +80,6 @@ class BaseRestService(AbstractComponent):
             raise NotImplementedError(validator_method)
         return getattr(self, validator_method)()
 
-    def _validate_list(self, schema, params):
-        for field, vals in schema.items():
-            if vals.get('type') == 'list' and params.get(field):
-                v = Validator(vals['schema'], purge_unknown=True)
-                parsed = []
-                for elem in params[field]:
-                    if not v.validate(elem):
-                        _logger.error("BadRequest %s", v.errors)
-                        raise UserError(_('Invalid Form'))
-                    parsed.append(v.document)
-                params[field] = parsed
-        return params
-
     def _secure_params(self, method, params):
         """
         This internal method is used to validate and sanitize the parameters
@@ -126,8 +116,10 @@ class BaseRestService(AbstractComponent):
         params = params or {}
         func = getattr(self, method_name, None)
         if not func:
-            raise NotImplementedError('Method %s not found in service %s' %
-                                      method_name, self._name)
+            _logger.warning('Method %s not found in service %s' %
+                            method_name, self._name)
+            raise NotFound()
+
         secure_params = self._secure_params(func, params)
         if _id:
             secure_params['_id'] = _id
