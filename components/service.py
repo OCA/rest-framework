@@ -116,7 +116,7 @@ class BaseRestService(AbstractComponent):
         params = params or {}
         func = getattr(self, method_name, None)
         if not func:
-            _logger.warning('Method %s not found in service %s' %
+            _logger.warning('Method %s not found in service %s',
                             method_name, self._name)
             raise NotFound()
 
