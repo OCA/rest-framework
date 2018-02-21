@@ -82,8 +82,8 @@ class HttpRestRequest(HttpRequest):
 
     def __init__(self, httprequest):
         super(HttpRestRequest, self).__init__(httprequest)
-        if self.httprequest.headers.get('Content-Type') == 'application/json':
-            self.params = json.loads(self.httprequest.stream.read())
+        if self.httprequest.mimetype == 'application/json':
+            self.params = json.loads(self.httprequest.data)
         lang = self.httprequest.headers.get('Lang')
         if lang:
             self._context = self._context or {}
