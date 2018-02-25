@@ -11,7 +11,7 @@ Resister available REST service at the build of a registry.
 This code is inspired by ``odoo.addons.component.builder.ComponentBuilder``
 
 """
-
+import odoo
 from odoo import api, models
 from ..core import (
     _rest_services_databases,
@@ -41,17 +41,40 @@ class RestServiceRegistation(models.AbstractModel):
         # we have to to rebuild the registry. We use a new
         # registry so we have an empty cache and we'll add services in it.
         services_registry = self._init_global_registry()
+        self.build_registry(services_registry)
+
+    def build_registry(self, services_registry, states=None,
+                       exclude_addons=None):
+        if not states:
+            states = ('installed', 'to upgrade')
+        # lookup all the installed (or about to be) addons and generate
+        # the graph, so we can load the components following the order
+        # of the addons' dependencies
+        graph = odoo.modules.graph.Graph()
+        graph.add_module(self.env.cr, 'base')
+
         query = (
             "SELECT name "
             "FROM ir_module_module "
             "WHERE state IN %s "
         )
-        self.env.cr.execute(query, (('installed', 'to upgrade'), ))
-        module_list = [name for (name,) in self.env.cr.fetchall()]
-        for module in module_list:
-            controller_defs = _rest_controllers_per_module.get(module, [])
-            for controller_def in controller_defs:
-                services_registry[controller_def['root_path']] = controller_def
+        params = [tuple(states)]
+        if exclude_addons:
+            query += " AND name NOT IN %s "
+            params.append(tuple(exclude_addons))
+        self.env.cr.execute(query, params)
+
+        module_list = [name for (name,) in self.env.cr.fetchall()
+                       if name not in graph]
+        graph.add_modules(self.env.cr, module_list)
+
+        for module in graph:
+            self.load_services(module.name, services_registry)
+
+    def load_services(self, module, services_registry):
+        controller_defs = _rest_controllers_per_module.get(module, [])
+        for controller_def in controller_defs:
+            services_registry[controller_def['root_path']] = controller_def
 
     def _init_global_registry(self):
         services_registry = RestServicesRegistry()

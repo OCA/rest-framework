@@ -11,7 +11,7 @@ import traceback
 import datetime
 
 from odoo.exceptions import (
-    Warning as UserError, MissingError, AccessError, ValidationError)
+    UserError, MissingError, AccessError, AccessDenied, ValidationError)
 from odoo.http import HttpRequest, Root, request
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden, \
     InternalServerError, HTTPException
@@ -93,7 +93,6 @@ class HttpRestRequest(HttpRequest):
         """Called within an except block to allow converting exceptions
            to abitrary responses. Anything returned (except None) will
            be used as response."""
-        _logger.exception('Shopinvader Handle exception %s', exception)
         try:
             return super(HttpRestRequest, self)._handle_exception(exception)
         except (UserError, ValidationError), e:
@@ -101,8 +100,8 @@ class HttpRestRequest(HttpRequest):
                 BadRequest(e.message or e.value or e.name))
         except MissingError, e:
             return wrapJsonException(NotFound(e.value))
-        except AccessError, e:
-            return wrapJsonException(Forbidden(e.value))
+        except (AccessError, AccessDenied), e:
+            return wrapJsonException(Forbidden(e.message))
         except HTTPException, e:
             return wrapJsonException(e)
         except:  # flake8: noqa: E722
