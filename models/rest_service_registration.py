@@ -47,9 +47,10 @@ class RestServiceRegistation(models.AbstractModel):
                        exclude_addons=None):
         if not states:
             states = ('installed', 'to upgrade')
-        # lookup all the installed (or about to be) addons and generate
-        # the graph, so we can load the components following the order
-        # of the addons' dependencies
+        # we load REST, controllers following the order of the 'addons'
+        # dependencies to ensure that controllers defined in a more
+        # specialized addon and overriding more generic one takes precedences
+        # on the generic one into the registry
         graph = odoo.modules.graph.Graph()
         graph.add_module(self.env.cr, 'base')
 
