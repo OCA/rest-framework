@@ -20,5 +20,6 @@
     ],
     'python': [
         'cerberus',
+        'pyquerystring',
     ],
 }

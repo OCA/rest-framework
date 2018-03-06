@@ -9,17 +9,20 @@ import logging
 import sys
 import traceback
 import datetime
-
 from odoo.exceptions import (
     UserError, MissingError, AccessError, AccessDenied, ValidationError)
 from odoo.http import HttpRequest, Root, request
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden, \
     InternalServerError, HTTPException
 from werkzeug.utils import escape
-
 from .core import _rest_services_databases
 
 _logger = logging.getLogger(__name__)
+
+try:
+    import pyquerystring
+except (ImportError, IOError) as err:
+    _logger.debug(err)
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -84,6 +87,10 @@ class HttpRestRequest(HttpRequest):
         super(HttpRestRequest, self).__init__(httprequest)
         if self.httprequest.mimetype == 'application/json':
             self.params = json.loads(self.httprequest.data)
+        else:
+            # We reparse the query_string in order to handle data structure
+            # more information on https://github.com/aventurella/pyquerystring
+            self.params = pyquerystring.parse(self.httprequest.query_string)
         lang = self.httprequest.headers.get('Lang')
         if lang:
             self._context = self._context or {}
