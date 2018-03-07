@@ -18,8 +18,10 @@
     ],
     'demo': [
     ],
-    'python': [
-        'cerberus',
-        'pyquerystring',
-    ],
+    'external_dependencies': {
+        'python': [
+            'cerberus',
+            'pyquerystring',
+        ],
+    },
 }
