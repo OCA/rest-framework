@@ -9,6 +9,7 @@ import logging
 import sys
 import traceback
 import datetime
+from collections import defaultdict
 from odoo.exceptions import (
     UserError, MissingError, AccessError, AccessDenied, ValidationError)
 from odoo.http import HttpRequest, Root, request
@@ -21,6 +22,7 @@ _logger = logging.getLogger(__name__)
 
 try:
     import pyquerystring
+    from accept_language import parse_accept_language
 except (ImportError, IOError) as err:
     _logger.debug(err)
 
@@ -91,10 +93,47 @@ class HttpRestRequest(HttpRequest):
             # We reparse the query_string in order to handle data structure
             # more information on https://github.com/aventurella/pyquerystring
             self.params = pyquerystring.parse(self.httprequest.query_string)
-        lang = self.httprequest.headers.get('Lang')
-        if lang:
-            self._context = self._context or {}
-            self._context['lang'] = lang
+        self._determine_context_lang()
+
+    def _determine_context_lang(self):
+        """
+        In this function, we parse the preferred languages specified into the
+        'Accept-language' http header. The lang into the context is initialized
+        according to the priority of languages into the headers and those
+        available into Odoo.
+        """
+        accepted_langs = self.httprequest.headers.get('Accept-language')
+        if not accepted_langs:
+            return
+        parsed_accepted_langs = parse_accept_language(accepted_langs)
+        installed_locale_langs = set()
+        installed_locale_by_lang = defaultdict(list)
+        for lang_code, name in self.env['res.lang'].get_installed():
+            installed_locale_langs.add(lang_code)
+            installed_locale_by_lang[lang_code.split('_')[0]].append(lang_code)
+
+        # parsed_acccepted_langs is sorted by priority (higher first)
+        for lang in parsed_accepted_langs:
+            # we first check if a locale (en_GB) is available into the list of
+            # available locales into Odoo
+            locale = None
+            if lang.locale in installed_locale_langs:
+                locale = lang.locale
+            # if no locale language is installed, we look for an available
+            # locale for the given language (en). We return the first one
+            # found for this language.
+            else:
+                locales = installed_locale_by_lang.get(lang.language)
+                if locales:
+                    locale = locales[0]
+            if locale:
+                # reset the context to put our new lang.
+                context = dict(self._context)
+                context['lang'] = locale
+                # the setter defiend in odoo.http.WebRequest reset the env
+                # when setting a new context
+                self.context = context
+                break
 
     def _handle_exception(self, exception):
         """Called within an except block to allow converting exceptions
