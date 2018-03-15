@@ -78,7 +78,7 @@ def wrapJsonException(exception):
             'exception_body': exception.get_body(),
             'traceback': ''.join(traceback.format_exception(*sys.exc_info())),
             }
-        _logger.error(message, *args, extra=extra)
+        _logger.exception(message, *args, extra=extra)
     return exception
 
 
