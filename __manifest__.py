@@ -22,6 +22,7 @@
         'python': [
             'cerberus',
             'pyquerystring',
+            'accept_language'
         ],
     },
 }
