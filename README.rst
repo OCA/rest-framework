@@ -74,7 +74,7 @@ controller that inherits from  ``odoo.addons.base_rest.controllers.main.RestCont
     from odoo.addons.base_rest.controllers import main
 
     class MyRestController(main.RestController):
-        _root_path = '/my_sercices_api/'
+        _root_path = '/my_services_api/'
         _collection_name = my_module.services
 
 In your controller, _'root_path' is used to specify the root of the path to
@@ -125,7 +125,7 @@ to access to your services
         return self._process_method(_service_name, 'delete', _id)
 
 
-The HTTP GET 'http://my_odoo/my_sercices_api/ping' will be dispatched to the
+The HTTP GET 'http://my_odoo/my_services_api/ping' will be dispatched to the
 method ``PingService.search``
 
 Bug Tracker
