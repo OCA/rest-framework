@@ -1,5 +1,6 @@
 import collections
 import json
+from werkzeug.exceptions import NotFound
 
 from odoo import http
 
@@ -61,7 +62,10 @@ def get_request(self, httprequest):
     # a RESTRequest; if it doesn't we let the original implementation
     # handle it.
     with http.WebRequest(httprequest) as request:
-        endpoint, _ = request.env['ir.http']._find_handler()
+        try:
+            endpoint, _ = request.env['ir.http']._find_handler()
+        except NotFound:
+            return original_get_request(self, httprequest)
         if endpoint.routing.get('subtype') == 'rest':
             return RESTRequest(httprequest)
     return original_get_request(self, httprequest)
