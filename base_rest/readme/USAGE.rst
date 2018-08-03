@@ -1,16 +1,3 @@
-.. image:: https://img.shields.io/badge/licence-AGPL--3-blue.svg
-   :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   :alt: License: AGPL-3
-
-=========
-Base Rest
-=========
-
-Base addon to implement REST service in an efficient and secured way
-
-Usage
-=====
-
 To add your own REST service you must provides at least 2 classes.
 
 * A Component providing the business logic of your service,
@@ -127,48 +114,3 @@ to access to your services
 
 The HTTP GET 'http://my_odoo/my_services_api/ping' will be dispatched to the
 method ``PingService.search``
-
-Bug Tracker
-===========
-
-Bugs are tracked on `GitHub Issues
-<https://github.com/OCA/{project_repo}/issues>`_. In case of trouble, please
-check there if your issue has already been reported. If you spotted it first,
-help us smash it by providing detailed and welcomed feedback.
-
-Credits
-=======
-
-Images
-------
-
-* Odoo Community Association: `Icon <https://github.com/OCA/maintainer-tools/blob/master/template/module/static/description/icon.svg>`_.
-
-Contributors
-------------
-
-* Laurent Mignon <laurent.mignon@acsone.eu>
-* Sébastien Beau <sebastien.beau@akretion.com>
-
-Funders
--------
-
-The development of this module has been financially supported by:
-
-* Company 1 name
-* Company 2 name
-
-Maintainer
-----------
-
-.. image:: https://odoo-community.org/logo.png
-   :alt: Odoo Community Association
-   :target: https://odoo-community.org
-
-This module is maintained by the OCA.
-
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
-
-To contribute to this module, please visit https://odoo-community.org.

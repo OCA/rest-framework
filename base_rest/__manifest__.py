@@ -5,12 +5,15 @@
 {
     'name': 'Base Rest',
     'summary': """
-        Base addon to implement REST service in an efficient and secured
-        way""",
+        Develop your own high level REST APIs for Odoo thanks to this addon.
+        """,
     'version': '10.0.1.0.0',
+    "development_status": "Beta",
     'license': 'AGPL-3',
-    'author': 'ACSONE SA/NV,Odoo Community Association (OCA)',
-    'website': 'https://acsone.eu/',
+    'author': 'ACSONE SA/NV, '
+              'Odoo Community Association (OCA)',
+    "maintainers": ['lmignon'],
+    "website": "https://github.com/OCA/rest-framework",
     'depends': [
         'component'
     ],
