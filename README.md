@@ -7,7 +7,6 @@
 This repo holds addons developed to ease the development of REST services into Odoo.
 
 [//]: # (addons)
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
 [//]: # (end addons)
 
 ----
