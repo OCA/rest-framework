@@ -1,4 +1,4 @@
-[![Runbot Status](https://runbot.odoo-community.org/runbot/badge/flat/${REPO_ID}/10.0.svg)](https://runbot.odoo-community.org/runbot/repo/github-com-oca-rest-framework-${REPO_ID})
+[![Runbot Status](https://runbot.odoo-community.org/runbot/badge/flat/271/10.0.svg)](https://runbot.odoo-community.org/runbot/repo/github-com-oca-rest-framework-271)
 [![Build Status](https://travis-ci.org/OCA/rest-framework.svg?branch=10.0)](https://travis-ci.org/OCA/rest-framework)
 [![codecov](https://codecov.io/gh/OCA/rest-framework/branch/10.0/graph/badge.svg)](https://codecov.io/gh/OCA/rest-framework)
 
