@@ -22,7 +22,8 @@ class ApiDocsController(Controller):
         return request.make_response(data, headers=headers, cookies=cookies)
 
     @route(['/api-docs',
-            '/api-docs/index.html'], methods=['GET'], type='http', auth="public")
+            '/api-docs/index.html'], methods=['GET'], type='http',
+           auth="public")
     def index(self):
         self._get_api_urls()
         values = {
