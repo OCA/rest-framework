@@ -18,6 +18,8 @@
         'component'
     ],
     'data': [
+        'views/assets_template.xml',
+        'views/openapi_template.xml',
     ],
     'demo': [
     ],
