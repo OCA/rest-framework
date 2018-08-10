@@ -21,7 +21,7 @@ class RegistryMixin(object):
             # ensure that we load only the services of the 'installed'
             # modules, not 'to install', which means we load only the
             # dependencies of the tested addons, not the siblings or
-            # chilren addons
+            # children addons
             service_registration.build_registry(
                 services_registry, states=('installed',))
             # build the services of the current tested addon
