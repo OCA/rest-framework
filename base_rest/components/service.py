@@ -233,6 +233,10 @@ class BaseRestService(AbstractComponent):
             '400': {
                 'description': "One of the given parameter is not valid",
             },
+            '401': {
+                'description': "The user is not authorized. Authentication "
+                               "is required",
+            },
             '404': {
                 'description': "Requested resource not found",
             },
