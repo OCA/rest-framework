@@ -12,7 +12,7 @@ This code is inspired by ``odoo.addons.component.builder.ComponentBuilder``
 
 """
 import odoo
-from odoo import api, models
+from odoo import api, models, http
 from ..core import (
     _rest_services_databases,
     _rest_controllers_per_module,
@@ -42,6 +42,12 @@ class RestServiceRegistation(models.AbstractModel):
         # registry so we have an empty cache and we'll add services in it.
         services_registry = self._init_global_registry()
         self.build_registry(services_registry)
+        # we also have to remove the RestController from the
+        # controller_per_module registry since it's an abstract controller
+        controllers = http.controllers_per_module['base_rest']
+        controllers = [(name, cls) for name, cls in controllers
+                       if 'RestController' not in name]
+        http.controllers_per_module['base_rest'] = controllers
 
     def build_registry(self, services_registry, states=None,
                        exclude_addons=None):
