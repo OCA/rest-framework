@@ -284,21 +284,16 @@ class BaseRestService(AbstractComponent):
             request_schema = self._get_schema_for_method(name)
             json_request_schema = cerberus_to_json(
                 request_schema)
-            try:
-                # try / except to remove. Schema for in/out msg
-                # is becoming mandatory but still WIP
-                json_response_schema = cerberus_to_json(
-                    self._get_schema_output_for_method(name)
-                )
-                responses['200'] = {
-                    'content': {
-                        'application/json': {
-                            'schema': json_response_schema
-                        }
+            json_response_schema = cerberus_to_json(
+                self._get_schema_output_for_method(name)
+            )
+            responses['200'] = {
+                'content': {
+                    'application/json': {
+                        'schema': json_response_schema
                     }
                 }
-            except:
-                pass
+            }
             if name in ('search', 'get'):
                 get = {'get': path_info}
                 # parameter for http GET are url query parameters

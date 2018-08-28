@@ -89,6 +89,7 @@ def _get_field_props(spec):
     else:
         try:
             resp['format'] = json_type[1]
+        # pylint:disable=except-pass
         except IndexError:
             pass
 
