@@ -56,7 +56,7 @@ class RestController(Controller):
     _collection_name = None
     # The default authentication to apply to all pre defined routes.
     _default_auth = 'user'
-    # You can use this parameter to specify a authentication method by HTTP
+    # You can use this parameter to specify an authentication method by HTTP
     # method ie: {'GET': None, 'POST': 'user'}
     _auth_by_method = {}
     # The default The Access-Control-Allow-Origin cors directive value.
