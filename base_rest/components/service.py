@@ -34,8 +34,7 @@ def to_int(val):
         return val
     if val:
         return int(float(val))
-    else:
-        return None
+    return None
 
 
 def to_bool(val):
