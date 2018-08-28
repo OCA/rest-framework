@@ -278,9 +278,8 @@ class BaseRestService(AbstractComponent):
                     "description": "Item id",
                     "required": True,
                     "schema": {
-                        "type": "string",
-                    },
-                    "style": "simple"
+                        "type": "integer",
+                    }
                 })
             request_schema = self._get_schema_for_method(name)
             json_request_schema = cerberus_to_json(
