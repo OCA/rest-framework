@@ -299,33 +299,43 @@ class BaseRestService(AbstractComponent):
                 }
             except:
                 pass
-            if name == 'get':
+            if name in ('search', 'get'):
                 get = {'get': path_info}
-                paths['/{id}'] = get
-                paths['/{id}/get'] = get
-            elif name == 'search':
-                get = {'get': path_info}
+                # parameter for http GET are url query parameters
                 for prop, spec in json_request_schema['properties'].items():
                     params = {
                         'name': prop,
-                        'in': 'path',
+                        'in': 'query',
                         'required': prop in json_request_schema['required'],
                         'allowEmptyValue': spec.get('nullable', False),
-                        'type': spec['type'],
+                        'default': spec.get('default'),
                     }
                     if spec.get('schema'):
                         params['schema'] = spec.get('schema')
                     else:
                         params['schema'] = {'type': spec['type']}
+                    if spec.get('items'):
+                        params['schema']['items'] = spec.get('items')
                     parameters.append(params)
 
-                paths['/'] = get
-                paths['/search'] = get
+                    if spec['type'] == 'array':
+                        # To correctly handle array into the url query string,
+                        # the name must ends with []
+                        params['name'] = params['name'] + '[]'
+
+                if name == 'get':
+                    paths['/{id}'] = get
+                    paths['/{id}/get'] = get
+                if name == 'search':
+                    paths['/'] = get
+                    paths['/search'] = get
             elif name == 'delete':
                 paths['/{id}'] = {'delete': path_info}
                 paths['/{id}/delete'] = {
                     'post': path_info}
             else:
+                # parameter for HTTP Post are given as a json document into the
+                # requestBody
                 path_info['requestBody'] = {
                     'content': {
                         'application/json': {
