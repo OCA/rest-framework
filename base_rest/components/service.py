@@ -63,6 +63,7 @@ def skip_secure_response(func):
 class BaseRestService(AbstractComponent):
     _name = 'base.rest.service'
 
+    _desciption = None  # sdescription included into the openapi doc
     _is_rest_service_component = True  # marker to retrieve REST components
 
     def _prepare_extra_log(self, func, params, secure_params, res):
@@ -206,7 +207,7 @@ class BaseRestService(AbstractComponent):
     def _get_openapi_info(self):
         return {
             'title': "%s REST services" % self._usage,
-            'description': self.__class__.__doc__
+            'description': getattr(self, '_description', '')
         }
 
     def _get_openapi_servers(self):
