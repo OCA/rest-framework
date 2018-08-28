@@ -31,7 +31,7 @@ class ApiDocsController(Controller):
         }
         return request.render("base_rest.openapi", values)
 
-    @route('/api-docs/<string:collection>/<string:service_name>.json',
+    @route('/api-docs/<path:collection>/<string:service_name>.json',
            auth="public")
     def api(self, collection, service_name):
         with self.service_component(collection, service_name) as service:
@@ -47,7 +47,7 @@ class ApiDocsController(Controller):
             request.env.cr.dbname, {})
         api_urls = []
         for rest_root_path, spec in services_registry.items():
-            collection_path = rest_root_path.replace('/', '')
+            collection_path = rest_root_path[1:-1]  # remove '/'
             collection_name = spec['collection_name']
             for service in self._get_service_in_collection(collection_name):
                 api_urls.append({

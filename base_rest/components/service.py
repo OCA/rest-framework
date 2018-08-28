@@ -217,7 +217,7 @@ class BaseRestService(AbstractComponent):
         collection_path = ''
         for path, spec in services_registry.items():
             if spec['collection_name'] == self._collection:
-                collection_path = path.replace('/', '')
+                collection_path = path[1:-1]  # remove '/'
                 break
         return [{'url': "%s/%s/%s" % (
             env['ir.config_parameter'].get_param('web.base.url'),
