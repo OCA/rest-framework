@@ -30,6 +30,8 @@ def to_int(val):
     # The javascript VM ducktape only use float and so pass float
     # to the api, the werkzeug request interpret params as unicode
     # so we have to convert params from string to float to int
+    if isinstance(val, (int, long)):
+        return val
     if val:
         return int(float(val))
     else:
