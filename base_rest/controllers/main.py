@@ -127,7 +127,7 @@ class RestController(Controller):
         Return the component that implements the methods of the requested
         service.
         :param service_name:
-        :return: an instance of invader.service component
+        :return: an instance of base.rest.service component
         """
         collection = self.collection
         params = self._get_component_context()
@@ -140,7 +140,7 @@ class RestController(Controller):
         Return the component that implements the methods of the requested
         service.
         :param service_name:
-        :return: an instance of invader.service component
+        :return: an instance of base.rest.service component
         """
         with self.work_on_component() as work:
             service = work.component(usage=service_name)
@@ -148,7 +148,7 @@ class RestController(Controller):
 
     def _validate_method_name(self, method_name):
         if method_name.startswith('_'):
-            _logger.error("Invader service called with an unallowed method "
+            _logger.error("REST API called with an unallowed method "
                           "name: %s.\n Method can't start with '_'",
                           method_name)
             raise BadRequest()
