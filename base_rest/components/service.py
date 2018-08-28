@@ -55,8 +55,8 @@ class BaseRestService(AbstractComponent):
         headers = dict(httprequest.headers)
         return {
             'application': 'Rest Service',
-            'invader_url': httprequest.url,
-            'invader_method': httprequest.method,
+            'request_url': httprequest.url,
+            'request_method': httprequest.method,
             'params': params,
             'headers': headers,
             'secure_params': secure_params,
@@ -71,7 +71,7 @@ class BaseRestService(AbstractComponent):
             httprequest = request.httprequest
             extra = self._prepare_extra_log(func, params, secure_params, res)
             args = [httprequest.url, httprequest.method]
-            message = 'Invader call url %s method %s'
+            message = 'REST call url %s method %s'
             _logger.debug(message, *args, extra=extra)
 
     def _get_schema_for_method(self, method_name):
