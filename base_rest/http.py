@@ -29,7 +29,7 @@ except (ImportError, IOError) as err:
 
 class JSONEncoder(json.JSONEncoder):
 
-    def default(self, obj):  # pylint: disable=E0202
+    def default(self, obj):  # pylint: disable=E0202,arguments-differ
         if isinstance(obj, datetime.datetime):
             return obj.isoformat()
         elif isinstance(obj, datetime.date):
