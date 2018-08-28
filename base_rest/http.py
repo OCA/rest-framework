@@ -12,9 +12,9 @@ import datetime
 from collections import defaultdict
 from odoo.exceptions import (
     UserError, MissingError, AccessError, AccessDenied, ValidationError)
-from odoo.http import HttpRequest, Root, request
+from odoo.http import HttpRequest, Root, request, SessionExpiredException
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden, \
-    InternalServerError, HTTPException
+    InternalServerError, HTTPException, Unauthorized
 from werkzeug.utils import escape
 from .core import _rest_services_databases
 
@@ -139,6 +139,10 @@ class HttpRestRequest(HttpRequest):
         """Called within an except block to allow converting exceptions
            to abitrary responses. Anything returned (except None) will
            be used as response."""
+        if isinstance(exception, SessionExpiredException):
+            # we don't want to return the login form as plain html page
+            # we want to raise a proper exception
+            return wrapJsonException(Unauthorized(exception.message))
         try:
             return super(HttpRestRequest, self)._handle_exception(exception)
         except (UserError, ValidationError), e:
