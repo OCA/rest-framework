@@ -10,7 +10,7 @@ import logging
 from collections import OrderedDict
 
 from odoo.addons.component.core import AbstractComponent
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
 from odoo.tools.translate import _
 from werkzeug.exceptions import NotFound
@@ -89,23 +89,19 @@ class BaseRestService(AbstractComponent):
             message = 'REST call url %s method %s'
             _logger.debug(message, *args, extra=extra)
 
-    def _get_validator_method(self, method_name):
+    def _get_input_schema(self, method_name):
         validator_method = '_validator_%s' % method_name
-        return getattr(self, validator_method, None)
-
-    def _get_schema_for_method(self, method_name):
-        validator_method = self._get_validator_method(method_name)
-        if not validator_method:
-            raise NotImplementedError(validator_method)
-        return validator_method()
-
-    def _get_schema_output_for_method(self, method_name):
-        validator_method = '_validator_return_%s' % method_name
         if not hasattr(self, validator_method):
-            raise NotImplementedError(validator_method)
+            return None
         return getattr(self, validator_method)()
 
-    def _secure_params(self, method, params):
+    def _get_output_schema(self, method_name):
+        validator_method = '_validator_return_%s' % method_name
+        if not hasattr(self, validator_method):
+            return None
+        return getattr(self, validator_method)()
+
+    def _secure_input(self, method, params):
         """
         This internal method is used to validate and sanitize the parameters
         expected by the given method.  These parameters are validated and
@@ -120,14 +116,19 @@ class BaseRestService(AbstractComponent):
         method_name = method.__name__
         if hasattr(method, 'skip_secure_params'):
             return params
-        schema = self._get_schema_for_method(method_name)
+        schema = self._get_input_schema(method_name)
+        if schema is None:
+            raise ValidationError(
+                _("No input schema defined for method %s in service %s") %
+                (method_name, self._name)
+            )
         v = Validator(schema, purge_unknown=True)
         if v.validate(params):
             return v.document
         _logger.error("BadRequest %s", v.errors)
         raise UserError(_('Invalid Form'))
 
-    def _secure_response(self, method, response):
+    def _secure_output(self, method, response):
         """
         Internal method used to validate the output of the given method.
         This response is validated according to a schema defined for the
@@ -143,26 +144,24 @@ class BaseRestService(AbstractComponent):
             method_name = method.__name__
         if hasattr(method, 'skip_secure_response'):
             return response
-        schema = self._get_schema_output_for_method(method_name)
+        schema = self._get_output_schema(method_name)
+        if not schema:
+            _logger.warning(
+                "DEPRECATED: You must define an output schema for method %s "
+                "in service %s" % (method_name, self._name))
+            return response
         v = Validator(schema, purge_unknown=True)
         if v.validate(response):
             return v.document
         _logger.error("Invalid response %s", v.errors)
         raise UserError(_('Invalid Response'))
 
-    def secure_response(self, method, response):
-        """
-        Check the response for the given method
-        :param method: str
-        :param response: dict
-        :return: dict
-        """
-        return self._secure_response(method, response)
-
     def dispatch(self, method_name, _id=None, params=None):
         """
-        This method dispatch the call to expected method name. Before the call
-        the parameters are secured by a call to `secure_params`.
+        This method dispatch the call to expected public method name.
+        Before the call the parameters are secured by a call to
+        `secure_input` and the result is also secured by a call to
+        `_secure_output`
         :param method_name:
         :param _id:
         :param params: A dictionary with the parameters of the method. Once
@@ -171,18 +170,18 @@ class BaseRestService(AbstractComponent):
         :return:
         """
         params = params or {}
-        func = getattr(self, method_name, None)
-        if not func:
-            _logger.warning('Method %s not found in service %s',
-                            method_name, self._name)
+        if not self._is_public_api_method(method_name):
+            _logger.warning(
+                'Method %s is not a public method of service %s',
+                method_name, self._name)
             raise NotFound()
-
-        secure_params = self._secure_params(func, params)
+        func = getattr(self, method_name, None)
+        secure_params = self._secure_input(func, params)
         if _id:
             secure_params['_id'] = _id
         res = func(**secure_params)
         self._log_call(func, params, secure_params, res)
-        return res
+        return self._secure_output(func, res)
 
     def _validator_delete(self):
         """
@@ -245,18 +244,30 @@ class BaseRestService(AbstractComponent):
             }
         }
 
+    def _is_public_api_method(self, method_name):
+        """
+        Return True if the method is into the public API
+        :param method_name:
+        :return:
+        """
+        if method_name.startswith('_'):
+            return False
+        if not hasattr(self, method_name):
+            return False
+        if hasattr(BaseRestService, method_name):
+            # exclude methods from base class
+            return False
+        return True
+
     def _get_openapi_paths(self):
         paths = OrderedDict()
         public_methods = {}
         for name, data in inspect.getmembers(self, inspect.ismethod):
-            if name.startswith('_'):
+            if not self._is_public_api_method(name):
                 continue
             public_methods[name] = data
 
         for name, method in public_methods.items():
-            if not self._get_validator_method(name):
-                # we only keep methods with validators
-                continue
             id_in_path_required = False
             arg_spec = inspect.getargspec(method)
             if '_id' in arg_spec.args:
@@ -280,27 +291,37 @@ class BaseRestService(AbstractComponent):
                         "type": "integer",
                     }
                 })
-            request_schema = self._get_schema_for_method(name)
-            json_request_schema = cerberus_to_json(
-                request_schema)
-            json_response_schema = cerberus_to_json(
-                self._get_schema_output_for_method(name)
-            )
-            responses['200'] = {
-                'content': {
-                    'application/json': {
-                        'schema': json_response_schema
+            input_schema = self._get_input_schema(name)
+            output_schema = self._get_output_schema(name)
+            json_input_schema = cerberus_to_json(
+                input_schema)
+
+            if not output_schema:
+                # for backward compatiibility output schema is not required
+                # DEPRECATED
+                responses['200'] = {
+                    'description': "Unknown response type"
+                }
+            else:
+                json_output_schema = cerberus_to_json(
+                    output_schema
+                )
+                responses['200'] = {
+                    'content': {
+                        'application/json': {
+                            'schema': json_output_schema
+                        }
                     }
                 }
-            }
+
             if name in ('search', 'get'):
                 get = {'get': path_info}
                 # parameter for http GET are url query parameters
-                for prop, spec in json_request_schema['properties'].items():
+                for prop, spec in json_input_schema['properties'].items():
                     params = {
                         'name': prop,
                         'in': 'query',
-                        'required': prop in json_request_schema['required'],
+                        'required': prop in json_input_schema['required'],
                         'allowEmptyValue': spec.get('nullable', False),
                         'default': spec.get('default'),
                     }
@@ -333,7 +354,7 @@ class BaseRestService(AbstractComponent):
                 path_info['requestBody'] = {
                     'content': {
                         'application/json': {
-                            'schema': json_request_schema
+                            'schema': json_input_schema
                         }
                     }
                 }
