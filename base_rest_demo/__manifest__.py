@@ -21,4 +21,9 @@
     ],
     'demo': [
     ],
+    'external_dependencies': {
+        'python': [
+            'jsondiff'
+        ],
+    },
 }

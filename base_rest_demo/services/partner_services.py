@@ -55,6 +55,20 @@ If you are not authenticated go to <a href='/web/login'>Login</a>
         partner.write(self._prepare_params(params))
         return self._to_json(partner)
 
+    def archive(self, _id, **params):
+        """
+        Archive the given partner. This method is an empty method, IOW it
+        don't update the partner. This method is part of the demo data to
+        illustrate that historically it's not mandatory to defined a schema
+        describing the content of the response returned by a method.
+        This kind of definition is DEPRECATED and will no more supported in
+        the future.
+        :param _id:
+        :param params:
+        :return:
+        """
+        return {'response': 'Method archive called with id %s' % _id}
+
     # The following method are 'private' and should be never never NEVER call
     # from the controller.
 
@@ -153,6 +167,9 @@ If you are not authenticated go to <a href='/web/login'>Login</a>
 
     def _validator_return_update(self):
         return self._validator_return_get()
+
+    def _validator_archive(self):
+        return {}
 
     def _to_json(self, partner):
         res = {
