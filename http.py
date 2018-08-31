@@ -62,6 +62,8 @@ def get_request(self, httprequest):
     # a RESTRequest; if it doesn't we let the original implementation
     # handle it.
     with http.WebRequest(httprequest) as request:
+        if not request.db:
+            return original_get_request(self, httprequest)
         try:
             endpoint, _ = request.env['ir.http']._find_handler()
         except NotFound:
