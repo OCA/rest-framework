@@ -148,7 +148,7 @@ class BaseRestService(AbstractComponent):
         if not schema:
             _logger.warning(
                 "DEPRECATED: You must define an output schema for method %s "
-                "in service %s" % (method_name, self._name))
+                "in service %s", method_name, self._name)
             return response
         v = Validator(schema, purge_unknown=True)
         if v.validate(response):
@@ -209,7 +209,6 @@ class BaseRestService(AbstractComponent):
         }
 
     def _get_openapi_servers(self):
-        env = request.env
         services_registry = _rest_services_databases.get(
             self.env.cr.dbname, {})
         collection_path = ''
@@ -218,7 +217,7 @@ class BaseRestService(AbstractComponent):
                 collection_path = path[1:-1]  # remove '/'
                 break
         return [{'url': "%s/%s/%s" % (
-            env['ir.config_parameter'].get_param('web.base.url'),
+            self.env['ir.config_parameter'].get_param('web.base.url'),
             collection_path,
             self._usage,
         )}]
