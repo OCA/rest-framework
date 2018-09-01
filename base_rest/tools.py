@@ -19,6 +19,9 @@ def cerberus_to_json(schema):
         properties[field] = props
         if spec.get('required'):
             required.append(field)
+    # sort required to get the same order on each run and easy comparison into
+    # the tests
+    required.sort()
     return result
 
 
