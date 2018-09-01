@@ -216,7 +216,7 @@ class BaseRestService(AbstractComponent):
                 collection_path = path[1:-1]  # remove '/'
                 break
         return [{'url': "%s/%s/%s" % (
-            self.env['ir.config_parameter'].get_param('web.base.url'),
+            self.env['ir.config_parameter'].sudo().get_param('web.base.url'),
             collection_path,
             self._usage,
         )}]
