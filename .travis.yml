@@ -3,7 +3,7 @@ sudo: false
 cache: pip
 
 python:
-  - "2.7.13"
+  - "3.6"
 
 addons:
   # By default postgresql-9.1 is installed but there is issue related:
@@ -16,7 +16,7 @@ addons:
 
 env:
   global:
-  - VERSION="10.0" TESTS="0" LINT_CHECK="0" MAKEPOT="0"
+  - VERSION="11.0" TESTS="0" LINT_CHECK="0" MAKEPOT="0"
 
   matrix:
   - LINT_CHECK="1"
