@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 ACSONE SA/NV
 # Copyright 2017 Akretion (http://www.akretion.com).
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
@@ -145,14 +144,14 @@ class HttpRestRequest(HttpRequest):
             return wrapJsonException(Unauthorized(exception.message))
         try:
             return super(HttpRestRequest, self)._handle_exception(exception)
-        except (UserError, ValidationError), e:
+        except (UserError, ValidationError) as e:
             return wrapJsonException(
                 BadRequest(e.message or e.value or e.name))
-        except MissingError, e:
+        except MissingError as e:
             return wrapJsonException(NotFound(e.value))
-        except (AccessError, AccessDenied), e:
+        except (AccessError, AccessDenied) as e:
             return wrapJsonException(Forbidden(e.message))
-        except HTTPException, e:
+        except HTTPException as e:
             return wrapJsonException(e)
         except:  # flake8: noqa: E722
             return wrapJsonException(InternalServerError())

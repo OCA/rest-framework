@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 ACSONE SA/NV
 # Copyright 2017 Akretion (http://www.akretion.com).
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
@@ -30,7 +29,7 @@ def to_int(val):
     # The javascript VM ducktape only use float and so pass float
     # to the api, the werkzeug request interpret params as unicode
     # so we have to convert params from string to float to int
-    if isinstance(val, (int, long)):
+    if isinstance(val, int):
         return val
     if val:
         return int(float(val))
@@ -212,7 +211,7 @@ class BaseRestService(AbstractComponent):
         services_registry = _rest_services_databases.get(
             self.env.cr.dbname, {})
         collection_path = ''
-        for path, spec in services_registry.items():
+        for path, spec in list(services_registry.items()):
             if spec['collection_name'] == self._collection:
                 collection_path = path[1:-1]  # remove '/'
                 break
@@ -266,7 +265,7 @@ class BaseRestService(AbstractComponent):
                 continue
             public_methods[name] = data
 
-        for name, method in public_methods.items():
+        for name, method in list(public_methods.items()):
             id_in_path_required = False
             arg_spec = inspect.getargspec(method)
             if '_id' in arg_spec.args:
@@ -316,7 +315,8 @@ class BaseRestService(AbstractComponent):
             if name in ('search', 'get'):
                 get = {'get': path_info}
                 # parameter for http GET are url query parameters
-                for prop, spec in json_input_schema['properties'].items():
+                for prop, spec in list(
+                        json_input_schema['properties'].items()):
                     params = {
                         'name': prop,
                         'in': 'query',
