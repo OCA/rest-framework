@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # Copyright 2018 ACSONE SA/NV
-# Copyright 2017 Akretion (http://www.akretion.com).
-# @author Sébastien BEAU <sebastien.beau@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 
@@ -338,13 +336,13 @@ class BaseRestService(AbstractComponent):
                         params['name'] = params['name'] + '[]'
 
                 if name == 'get':
-                    paths['/{id}'] = get
+                    paths.setdefault('/{id}', {}).update(get)
                     paths['/{id}/get'] = get
                 if name == 'search':
                     paths['/'] = get
                     paths['/search'] = get
             elif name == 'delete':
-                paths['/{id}'] = {'delete': path_info}
+                paths.setdefault('/{id}', {}).update({'delete': path_info})
                 paths['/{id}/delete'] = {
                     'post': path_info}
             else:
@@ -361,4 +359,6 @@ class BaseRestService(AbstractComponent):
                 if id_in_path_required:
                     path = '/{id}/' + name
                 paths[path] = {'post': path_info}
+                if name == 'update':
+                    paths.setdefault('/{id}', {}).update({'put': path_info})
         return paths
