@@ -103,7 +103,7 @@ class RestControllerType(ControllerType):
         if not klass._root_path:
             return
         # Add the root_path to the routes defined into the controller
-        for member in inspect.getmembers(klass, predicate=inspect.ismethod):
+        for member in inspect.getmembers(klass, predicate=inspect.isfunction):
             method = member[1]
             if not hasattr(method, 'original_func') or \
                     'rest_routes_patched' in method.routing:
