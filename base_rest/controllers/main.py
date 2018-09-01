@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import inspect
 import logging
 from contextlib import contextmanager
-from urlparse import urljoin
+from urllib.parse import urljoin
 
 from odoo.addons.component.core import WorkContext, _get_addon_name
 from odoo.http import Controller, ControllerType, Response, request, route
@@ -138,7 +137,7 @@ class RestControllerType(ControllerType):
         return klass
 
 
-class RestController(Controller):
+class RestController(Controller, metaclass=RestControllerType):
     """Generic REST Controller
 
     This controller provides generic routes conform to commen REST usages.
@@ -160,8 +159,6 @@ class RestController(Controller):
     _cors = None
     # Whether CSRF protection should be enabled for the route.
     _csrf = False
-
-    __metaclass__ = RestControllerType
 
     def _get_component_context(self):
         """

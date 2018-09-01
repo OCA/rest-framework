@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
@@ -14,7 +13,7 @@ def cerberus_to_json(schema):
     result['type'] = 'object'
     result['required'] = required
     result['properties'] = properties
-    for field, spec in schema.items():
+    for field, spec in list(schema.items()):
         props = _get_field_props(spec)
         properties[field] = props
         if spec.get('required'):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
@@ -46,7 +45,7 @@ class ApiDocsController(Controller):
         services_registry = _rest_services_databases.get(
             request.env.cr.dbname, {})
         api_urls = []
-        for rest_root_path, spec in services_registry.items():
+        for rest_root_path, spec in list(services_registry.items()):
             collection_path = rest_root_path[1:-1]  # remove '/'
             collection_name = spec['collection_name']
             for service in self._get_service_in_collection(collection_name):
@@ -55,7 +54,7 @@ class ApiDocsController(Controller):
                     'url': '/api-docs/%s/%s.json' % (
                         collection_path, service._usage)
                 })
-        api_urls = sorted(api_urls, lambda a, b: cmp(a['name'], b['name']))
+        api_urls = sorted(api_urls, key=lambda k: k['name'])
         return api_urls
 
     def _filter_service_components(self, components):
