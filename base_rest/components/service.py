@@ -361,4 +361,6 @@ class BaseRestService(AbstractComponent):
                 paths[path] = {'post': path_info}
                 if name == 'update':
                     paths.setdefault('/{id}', {}).update({'put': path_info})
+            # sort paramters to ease comparison into unittests
+            parameters.sort(key=lambda a: a['name'])
         return paths
