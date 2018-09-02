@@ -370,16 +370,13 @@
         }, 
         "parameters": [
           {
-            "name": "params[]", 
+            "name": "limit", 
             "allowEmptyValue": false, 
-            "default": null, 
+            "default": 50, 
             "required": false, 
             "in": "query", 
             "schema": {
-              "items": {
-                "type": "string"
-              }, 
-              "type": "array"
+              "type": "integer"
             }
           }, 
           {
@@ -393,13 +390,13 @@
             }
           }, 
           {
-            "name": "limit", 
+            "name": "param_required", 
             "allowEmptyValue": false, 
-            "default": 50, 
-            "required": false, 
+            "default": null, 
+            "required": true, 
             "in": "query", 
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           }, 
           {
@@ -413,13 +410,16 @@
             }
           }, 
           {
-            "name": "param_required", 
+            "name": "params[]", 
             "allowEmptyValue": false, 
             "default": null, 
-            "required": true, 
+            "required": false, 
             "in": "query", 
             "schema": {
-              "type": "string"
+              "items": {
+                "type": "string"
+              }, 
+              "type": "array"
             }
           }
         ], 
@@ -459,16 +459,13 @@
         }, 
         "parameters": [
           {
-            "name": "params[]", 
+            "name": "limit", 
             "allowEmptyValue": false, 
-            "default": null, 
+            "default": 50, 
             "required": false, 
             "in": "query", 
             "schema": {
-              "items": {
-                "type": "string"
-              }, 
-              "type": "array"
+              "type": "integer"
             }
           }, 
           {
@@ -482,13 +479,13 @@
             }
           }, 
           {
-            "name": "limit", 
+            "name": "param_required", 
             "allowEmptyValue": false, 
-            "default": 50, 
-            "required": false, 
+            "default": null, 
+            "required": true, 
             "in": "query", 
             "schema": {
-              "type": "integer"
+              "type": "string"
             }
           }, 
           {
@@ -502,13 +499,16 @@
             }
           }, 
           {
-            "name": "param_required", 
+            "name": "params[]", 
             "allowEmptyValue": false, 
             "default": null, 
-            "required": true, 
+            "required": false, 
             "in": "query", 
             "schema": {
-              "type": "string"
+              "items": {
+                "type": "string"
+              }, 
+              "type": "array"
             }
           }
         ], 
