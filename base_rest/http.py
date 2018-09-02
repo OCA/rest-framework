@@ -91,7 +91,8 @@ class HttpRestRequest(HttpRequest):
         else:
             # We reparse the query_string in order to handle data structure
             # more information on https://github.com/aventurella/pyquerystring
-            self.params = pyquerystring.parse(self.httprequest.query_string)
+            self.params = pyquerystring.parse(
+                self.httprequest.query_string.decode('utf-8'))
         self._determine_context_lang()
 
     def _determine_context_lang(self):
