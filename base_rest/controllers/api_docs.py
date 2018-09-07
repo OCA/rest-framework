@@ -24,10 +24,13 @@ class ApiDocsController(Controller):
     @route(['/api-docs',
             '/api-docs/index.html'], methods=['GET'], type='http',
            auth="public")
-    def index(self):
+    def index(self, **params):
         self._get_api_urls()
+        primary_name = params.get('urls.primaryName')
         values = {
-            'api_urls': self._get_api_urls()
+
+            'api_urls': self._get_api_urls(),
+            'primary_name': primary_name
         }
         return request.render("base_rest.openapi", values)
 
