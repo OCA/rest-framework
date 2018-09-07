@@ -48,7 +48,16 @@ window.onload = function() {
             SwaggerUIBundle.plugins.DownloadUrl
         ],
         layout: "StandaloneLayout",
-        'urls.primaryName': '<t t-esc="primary_name"/>'
+        'urls.primaryName': '<t t-esc="primary_name"/>',
+        operationsSorter: (a, b) => {
+            var methodsOrder = ["get", "post", "put", "delete", "patch", "options", "trace"];
+            var result = methodsOrder.indexOf( a.get("method") ) - methodsOrder.indexOf( b.get("method") );
+            if (result === 0) {
+                result = a.get("path").localeCompare(b.get("path"));
+            }
+            return result;
+        },
+        tagsSorter: 'alpha'
     });
     window.ui = ui;
 }
