@@ -19,6 +19,7 @@
     'data': [
         'views/assets_template.xml',
         'views/openapi_template.xml',
+        'views/base_rest_view.xml',
     ],
     'demo': [
     ],
