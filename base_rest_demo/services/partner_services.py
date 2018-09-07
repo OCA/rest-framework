@@ -84,9 +84,6 @@ If you are not authenticated go to <a href='/web/login'>Login</a>
         return params
 
     # Validator
-    def _validator_get(self):
-        return {}
-
     def _validator_return_get(self):
         res = self._validator_create()
         res.update({

@@ -188,6 +188,13 @@ class BaseRestService(AbstractComponent):
         """
         return {}
 
+    def _validator_get(self):
+        """
+        Default validator for get method.
+        By default get should not be called with parameters.
+        """
+        return {}
+
     def to_openapi(self):
         """
         Return the description of this REST service as an OpenAPI json document
