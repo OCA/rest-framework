@@ -149,7 +149,7 @@ class BaseRestService(AbstractComponent):
         v = Validator(schema, purge_unknown=True)
         if v.validate(response):
             return v.document
-        raise UserError(_('Invalid Response %s') % v.errors)
+        raise SystemError(_('Invalid Response %s') % v.errors)
 
     def dispatch(self, method_name, _id=None, params=None):
         """
