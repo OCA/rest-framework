@@ -50,11 +50,13 @@ def wrapJsonException(exception):
         res = {
             'code': exception.code,
             'name': escape(exception.name),
-            'description': exception.get_description(environ)
             }
-        if config.get('base_rest_dev_mode'):
+        if config.get_misc('base_rest', 'dev_mode'):
             # return exception info only if base_rest is in dev_mode
-            res['traceback'] = exception.traceback
+            res.update({
+                'traceback': exception.traceback,
+                'description': exception.get_description(environ)
+            })
         return JSONEncoder().encode(res)
 
     def get_headers(environ=None):
@@ -83,7 +85,6 @@ def wrapJsonException(exception):
             'headers': headers,
             'status': exception.code,
             'exception_body': exception.get_body(),
-            'traceback': exception.traceback,
             }
         _logger.exception(message, *args, extra=extra)
     return exception

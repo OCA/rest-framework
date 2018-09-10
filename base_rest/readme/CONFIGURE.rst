@@ -9,9 +9,15 @@ necessary to have access to the log of the server. It is not always possible
 to provide this kind of access. That's why you can configure the server to run
 these services in development mode.
 
-To run the REST API in development mode you must add the option
-'**base_rest_dev_mode=1**' in the server config file.
+To run the REST API in development mode you must add a new section
+'**[base_rest]**' with the option '**dev_mode=True**' in the server config
+file.
+
+::
+
+    [base_rest]
+    dev_mode=True
 
 When the REST API runs in development mode, the original description and a
-stack trace is returned in case of error. **Be careful to don't use this mode
+stack trace is returned in case of error. **Be careful to not use this mode
 in production**.
