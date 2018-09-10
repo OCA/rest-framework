@@ -123,8 +123,7 @@ class BaseRestService(AbstractComponent):
         v = Validator(schema, purge_unknown=True)
         if v.validate(params):
             return v.document
-        _logger.error("BadRequest %s", v.errors)
-        raise UserError(_('Invalid Form'))
+        raise UserError(_('BadRequest %s') % v.errors)
 
     def _secure_output(self, method, response):
         """
@@ -151,8 +150,7 @@ class BaseRestService(AbstractComponent):
         v = Validator(schema, purge_unknown=True)
         if v.validate(response):
             return v.document
-        _logger.error("Invalid response %s", v.errors)
-        raise UserError(_('Invalid Response'))
+        raise UserError(_('Invalid Response %s') % v.errors)
 
     def dispatch(self, method_name, _id=None, params=None):
         """
