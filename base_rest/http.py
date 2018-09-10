@@ -44,11 +44,18 @@ def wrapJsonException(exception):
     get_original_headers = exception.get_headers
 
     def get_body(environ=None):
-        return JSONEncoder().encode({
+        res = {
             'code': exception.code,
             'name': escape(exception.name),
             'description': exception.get_description(environ)
+            }
+        if _logger.isEnabledFor(logging.DEBUG):
+            # return exception info only in case of DEBUG
+            res.update({
+                'traceback': ''.join(
+                    traceback.format_exception(*sys.exc_info())),
             })
+        return JSONEncoder().encode(res)
 
     def get_headers(environ=None):
         """Get a list of headers."""
