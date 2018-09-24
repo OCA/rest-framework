@@ -37,7 +37,7 @@ class JSONEncoder(json.JSONEncoder):
         return super(JSONEncoder, self).default(obj)
 
 
-def wrapJsonException(exception):
+def wrapJsonException(exception, include_description=False):
     """Wrapper method that modify the exception in order
     to render it like a json"""
 
@@ -50,12 +50,15 @@ def wrapJsonException(exception):
             'code': exception.code,
             'name': escape(exception.name),
             }
+        description = exception.get_description(environ)
         if config.get_misc('base_rest', 'dev_mode'):
             # return exception info only if base_rest is in dev_mode
             res.update({
                 'traceback': exception.traceback,
-                'description': exception.get_description(environ)
+                'description': description
             })
+        elif include_description:
+            res['description'] = description
         return JSONEncoder().encode(res)
 
     def get_headers(environ=None):
@@ -155,8 +158,10 @@ class HttpRestRequest(HttpRequest):
             return super(HttpRestRequest, self)._handle_exception(exception)
         except (UserError, ValidationError) as e:
             return wrapJsonException(
-                BadRequest(e.message or e.value or e.name))
-        except MissingError as e:
+                BadRequest(e.message or e.value or e.name),
+                include_description=True
+            )
+        except MissingError, e:
             return wrapJsonException(NotFound(e.value))
         except (AccessError, AccessDenied) as e:
             return wrapJsonException(Forbidden(e.message))
