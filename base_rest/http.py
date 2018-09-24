@@ -12,6 +12,7 @@ from collections import defaultdict
 from odoo.exceptions import (
     UserError, MissingError, AccessError, AccessDenied, ValidationError)
 from odoo.http import HttpRequest, Root, request, SessionExpiredException
+from odoo.tools.config import config
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden, \
     InternalServerError, HTTPException, Unauthorized
 from werkzeug.utils import escape
@@ -36,24 +37,28 @@ class JSONEncoder(json.JSONEncoder):
         return super(JSONEncoder, self).default(obj)
 
 
-def wrapJsonException(exception):
+def wrapJsonException(exception, include_description=False):
     """Wrapper method that modify the exception in order
     to render it like a json"""
 
     get_original_headers = exception.get_headers
+    exception.traceback = ''.join(
+        traceback.format_exception(*sys.exc_info()))
 
     def get_body(environ=None):
         res = {
             'code': exception.code,
             'name': escape(exception.name),
-            'description': exception.get_description(environ)
             }
-        if _logger.isEnabledFor(logging.DEBUG):
-            # return exception info only in case of DEBUG
+        description = exception.get_description(environ)
+        if config.get_misc('base_rest', 'dev_mode'):
+            # return exception info only if base_rest is in dev_mode
             res.update({
-                'traceback': ''.join(
-                    traceback.format_exception(*sys.exc_info())),
+                'traceback': exception.traceback,
+                'description': description
             })
+        elif include_description:
+            res['description'] = description
         return JSONEncoder().encode(res)
 
     def get_headers(environ=None):
@@ -82,7 +87,6 @@ def wrapJsonException(exception):
             'headers': headers,
             'status': exception.code,
             'exception_body': exception.get_body(),
-            'traceback': ''.join(traceback.format_exception(*sys.exc_info())),
             }
         _logger.exception(message, *args, extra=extra)
     return exception
@@ -154,15 +158,17 @@ class HttpRestRequest(HttpRequest):
             return super(HttpRestRequest, self)._handle_exception(exception)
         except (UserError, ValidationError) as e:
             return wrapJsonException(
-                BadRequest(e.message or e.value or e.name))
+                BadRequest(e.message or e.value or e.name),
+                include_description=True
+            )
         except MissingError as e:
             return wrapJsonException(NotFound(e.value))
         except (AccessError, AccessDenied) as e:
             return wrapJsonException(Forbidden(e.message))
         except HTTPException as e:
             return wrapJsonException(e)
-        except:  # flake8: noqa: E722
-            return wrapJsonException(InternalServerError())
+        except Exception as e:  # flake8: noqa: E722
+            return wrapJsonException(InternalServerError(e))
 
     def make_json_response(self, data, headers=None, cookies=None):
         data = JSONEncoder().encode(data)
