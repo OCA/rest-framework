@@ -25,7 +25,7 @@ class TestOpenAPI(CommonCase):
         self.assertFalse(
             jsondiff.diff(openapi_def, canonical_def))
 
-    def test_ping_apu(self):
+    def test_ping_api(self):
         ping_service = self.public_services_env.component(
             usage="ping"
         )
