@@ -12,6 +12,7 @@ from collections import defaultdict
 from odoo.exceptions import (
     UserError, MissingError, AccessError, AccessDenied, ValidationError)
 from odoo.http import HttpRequest, Root, request, SessionExpiredException
+from odoo.tools import ustr
 from odoo.tools.config import config
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden, \
     InternalServerError, HTTPException, Unauthorized
@@ -153,18 +154,18 @@ class HttpRestRequest(HttpRequest):
         if isinstance(exception, SessionExpiredException):
             # we don't want to return the login form as plain html page
             # we want to raise a proper exception
-            return wrapJsonException(Unauthorized(exception.message))
+            return wrapJsonException(Unauthorized(ustr(exception)))
         try:
             return super(HttpRestRequest, self)._handle_exception(exception)
         except (UserError, ValidationError) as e:
             return wrapJsonException(
-                BadRequest(e.message or e.value or e.name),
+                BadRequest(e.name),
                 include_description=True
             )
-        except MissingError, e:
-            return wrapJsonException(NotFound(e.value))
+        except MissingError as e:
+            return wrapJsonException(NotFound(ustr(e)))
         except (AccessError, AccessDenied) as e:
-            return wrapJsonException(Forbidden(e.message))
+            return wrapJsonException(Forbidden(ustr(e)))
         except HTTPException as e:
             return wrapJsonException(e)
         except Exception as e:  # flake8: noqa: E722
