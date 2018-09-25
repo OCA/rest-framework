@@ -45,6 +45,7 @@ def skip_secure_params(func):
     :return:
     """
     func.skip_secure_params = True
+    return func
 
 
 def skip_secure_response(func):
@@ -54,6 +55,7 @@ def skip_secure_response(func):
     :return:
     """
     func.skip_secure_response = True
+    return func
 
 
 class BaseRestService(AbstractComponent):
