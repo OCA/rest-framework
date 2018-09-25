@@ -34,3 +34,12 @@ class TestOpenAPI(CommonCase):
         self._fix_server_url(canonical_def)
         self.assertFalse(
             jsondiff.diff(openapi_def, canonical_def))
+
+    def test_partner_image_api(self):
+        partner_service = self.private_services_env.component(
+            usage="partner_image")
+        openapi_def = partner_service.to_openapi()
+        canonical_def = get_canonical_json("partner_image_api.json")
+        self._fix_server_url(canonical_def)
+        self.assertFalse(
+            jsondiff.diff(openapi_def, canonical_def))

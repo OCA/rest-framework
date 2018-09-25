@@ -78,6 +78,9 @@ def _get_field_props(spec):
     if 'nullable' in spec:
         resp['nullable'] = spec['nullable']
 
+    if 'allowed' in spec:
+        resp['enum'] = spec['allowed']
+
     json_type = type_map.get(_type, (_type,))
 
     resp['type'] = json_type[0]

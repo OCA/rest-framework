@@ -335,6 +335,9 @@ class BaseRestService(AbstractComponent):
                         params['schema'] = {'type': spec['type']}
                     if spec.get('items'):
                         params['schema']['items'] = spec.get('items')
+                    if 'enum' in spec:
+                        params['schema']['enum'] = spec['enum']
+
                     parameters.append(params)
 
                     if spec['type'] == 'array':
