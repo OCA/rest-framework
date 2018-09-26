@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0", 
   "info": {
-    "description": "\nPing Services\nAccess to the ping services is allowed to everyone\n    ", 
+    "description": "\nPing Services\nAccess to the ping services is allowed to everyone\n",
     "title": "ping REST services"
   }, 
   "servers": [
@@ -57,7 +57,7 @@
           }
         }, 
         "parameters": [], 
-        "summary": "\n        Create method description ...\n        "
+        "summary": "\nCreate method description ...\n"
       }
     }, 
     "/{id}": {
@@ -117,7 +117,7 @@
             "in": "path"
           }
         ], 
-        "summary": "\n        Update method description ...\n        "
+        "summary": "\nUpdate method description ...\n"
       }, 
       "delete": {
         "responses": {
@@ -160,7 +160,7 @@
             "in": "path"
           }
         ], 
-        "summary": "\n        Delete method description ...\n        "
+        "summary": "\nDelete method description ...\n"
       }, 
       "get": {
         "responses": {
@@ -216,7 +216,7 @@
             }
           }
         ], 
-        "summary": "This methos is used to get the information of the object specified\n        by Id.\n        "
+        "summary": "\nThis method is used to get the information of the object specified\nby Id.\n"
       }
     }, 
     "/{id}/get": {
@@ -274,7 +274,7 @@
             }
           }
         ], 
-        "summary": "This methos is used to get the information of the object specified\n        by Id.\n        "
+        "summary": "\nThis method is used to get the information of the object specified\nby Id.\n"
       }
     }, 
     "/{id}/update": {
@@ -334,7 +334,7 @@
             "in": "path"
           }
         ], 
-        "summary": "\n        Update method description ...\n        "
+        "summary": "\nUpdate method description ...\n"
       }
     }, 
     "/": {
@@ -423,7 +423,7 @@
             }
           }
         ], 
-        "summary": "\n        A search method to illustrate how you can define a complex request.\n        In the case of the methods 'get' and 'search' the parameters are\n        passed to the server as the query part of the service URL.\n        "
+        "summary": "\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n"
       }
     }, 
     "/search": {
@@ -512,7 +512,7 @@
             }
           }
         ], 
-        "summary": "\n        A search method to illustrate how you can define a complex request.\n        In the case of the methods 'get' and 'search' the parameters are\n        passed to the server as the query part of the service URL.\n        "
+        "summary": "\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n"
       }
     }, 
     "/{id}/delete": {
@@ -557,7 +557,7 @@
             "in": "path"
           }
         ], 
-        "summary": "\n        Delete method description ...\n        "
+        "summary": "\nDelete method description ...\n"
       }
     }
   }
