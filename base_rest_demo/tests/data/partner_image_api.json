@@ -3,7 +3,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "\nPartner Image Services\n\nService used to retrieve the partner's image\nAccess to the partner image service is only allowed to authenticated users.\nIf you are not authenticated go to <a href='/web/login'>Login<\/a>\n    ",
+    "description": "\nPartner Image Services\n\nService used to retrieve the partner's image\nAccess to the partner image service is only allowed to authenticated\nusers.\nIf you are not authenticated go to <a href='/web/login'>Login<\/a>\n",
     "title": "partner_image REST services"
   },
   "servers": [
@@ -57,7 +57,7 @@
             }
           }
         ],
-        "summary": "\n        Get partner's image\n        "
+        "summary": "\nGet partner's image\n"
       }
     },
     "/{id}/get": {
@@ -105,7 +105,7 @@
             }
           }
         ],
-        "summary": "\n        Get partner's image\n        "
+        "summary": "\nGet partner's image\n"
       }
     }
   }

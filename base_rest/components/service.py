@@ -5,6 +5,7 @@
 
 import inspect
 import logging
+import textwrap
 from collections import OrderedDict
 
 from odoo.addons.component.core import AbstractComponent
@@ -210,7 +211,7 @@ class BaseRestService(AbstractComponent):
     def _get_openapi_info(self):
         return {
             'title': "%s REST services" % self._usage,
-            'description': getattr(self, '_description', '')
+            'description': textwrap.dedent(getattr(self, '_description', ''))
         }
 
     def _get_openapi_servers(self):
@@ -281,7 +282,7 @@ class BaseRestService(AbstractComponent):
             parameters = self._get_openapi_default_parameters()
             responses = self._get_openapi_default_responses().copy()
             path_info = {
-                'summary': method.__doc__,
+                'summary': textwrap.dedent(method.__doc__),
                 'parameters': parameters,
                 'responses': responses,
             }

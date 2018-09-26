@@ -17,10 +17,9 @@ class ExceptionService(Component):
     _usage = 'exception'
     _collection = 'base.rest.demo.public.services'
     _description = """
-Exception Services
+        Exception Services
 
-Services to test hiw exception are handled by base_erst
-
+        Services to test hiw exception are handled by base_erst
     """
 
     def user_error(self):

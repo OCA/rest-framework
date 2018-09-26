@@ -12,13 +12,14 @@ class PingService(Component):
     _usage = 'ping'
     _collection = 'base.rest.demo.public.services'
     _description = """
-Ping Services
-Access to the ping services is allowed to everyone
+        Ping Services
+        Access to the ping services is allowed to everyone
     """
 
     # The following method are 'public' and can be called from the controller.
     def get(self, _id, message):
-        """This methos is used to get the information of the object specified
+        """
+        This method is used to get the information of the object specified
         by Id.
         """
         return {

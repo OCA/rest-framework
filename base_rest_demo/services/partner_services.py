@@ -12,9 +12,9 @@ class PartnerService(Component):
     _usage = 'partner'
     _collection = 'base.rest.demo.private.services'
     _description = """
-Partner Services
-Access to the partner services is only allowed to authenticated users.
-If you are not authenticated go to <a href='/web/login'>Login</a>
+        Partner Services
+        Access to the partner services is only allowed to authenticated users.
+        If you are not authenticated go to <a href='/web/login'>Login</a>
     """
 
     def get(self, _id):

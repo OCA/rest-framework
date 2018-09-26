@@ -16,11 +16,12 @@ class PartnerImageService(Component):
     _usage = 'partner_image'
     _collection = 'base.rest.demo.private.services'
     _description = """
-Partner Image Services
+        Partner Image Services
 
-Service used to retrieve the partner's image
-Access to the partner image service is only allowed to authenticated users.
-If you are not authenticated go to <a href='/web/login'>Login</a>
+        Service used to retrieve the partner's image
+        Access to the partner image service is only allowed to authenticated
+        users.
+        If you are not authenticated go to <a href='/web/login'>Login</a>
     """
 
     @skip_secure_response
