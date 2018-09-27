@@ -1,8 +1,12 @@
 import collections
+import logging
 import json
-from werkzeug.exceptions import NotFound
+import werkzeug.exceptions
 
 from odoo import http
+
+
+_logger = logging.getLogger(__name__)
 
 
 class RESTRequest(http.WebRequest):
@@ -19,10 +23,19 @@ class RESTRequest(http.WebRequest):
 
     def __init__(self, *args):
         super(RESTRequest, self).__init__(*args)
+        self.body = None
+        raw_body = (
+            self.httprequest.stream.read()
+            if self.httprequest.method in ('POST', 'PUT')
+            else None)
+        if raw_body:
+            try:
+                self.body = json.loads(raw_body)
+            except ValueError:
+                msg = 'Invalid JSON data: %r' % (raw_body,)
+                _logger.error('%s: %s', self.httprequest.path, msg)
+                raise werkzeug.exceptions.BadRequest(msg)
         params = collections.OrderedDict(self.httprequest.args)
-        params.update(self.httprequest.form)
-        params.update(self.httprequest.files)
-        params.pop('session_id', None)
         self.params = params
 
     def json_response(self, status=200, data=None):
