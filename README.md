@@ -1,6 +1,6 @@
-[![Runbot Status](https://runbot.odoo-community.org/runbot/badge/flat/271/11.0.svg)](https://runbot.odoo-community.org/runbot/repo/github-com-oca-rest-framework-271)
-[![Build Status](https://travis-ci.org/OCA/rest-framework.svg?branch=11.0)](https://travis-ci.org/OCA/rest-framework)
-[![codecov](https://codecov.io/gh/OCA/rest-framework/branch/11.0/graph/badge.svg)](https://codecov.io/gh/OCA/rest-framework)
+[![Runbot Status](https://runbot.odoo-community.org/runbot/badge/flat/271/12.0.svg)](https://runbot.odoo-community.org/runbot/repo/github-com-oca-rest-framework-271)
+[![Build Status](https://travis-ci.org/OCA/rest-framework.svg?branch=12.0)](https://travis-ci.org/OCA/rest-framework)
+[![codecov](https://codecov.io/gh/OCA/rest-framework/branch/12.0/graph/badge.svg)](https://codecov.io/gh/OCA/rest-framework)
 
 # REST Framework
 
