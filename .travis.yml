@@ -3,7 +3,7 @@ sudo: false
 cache: pip
 
 python:
-  - "3.6"
+  - "3.5"
 
 addons:
   # By default postgresql-9.1 is installed but there is issue related:
