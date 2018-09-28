@@ -30,7 +30,7 @@ class TestException(HttpCase, RegistryMixin):
         response = self.url_open('%s/user_error' % self.url, "{}")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.headers['content-type'], 'application/json')
-        body = json.loads(response.content)
+        body = json.loads(response.content.decode('utf-8'))
         self.assertDictEqual(
             body,
             {"code": 400,
@@ -43,7 +43,7 @@ class TestException(HttpCase, RegistryMixin):
         response = self.url_open('%s/validation_error' % self.url, "{}")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.headers['content-type'], 'application/json')
-        body = json.loads(response.content)
+        body = json.loads(response.content.decode('utf-8'))
         self.assertDictEqual(
             body,
             {"code": 400,
@@ -56,7 +56,7 @@ class TestException(HttpCase, RegistryMixin):
         response = self.url_open('%s/session_expired' % self.url, "{}")
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.headers['content-type'], 'application/json')
-        body = json.loads(response.content)
+        body = json.loads(response.content.decode('utf-8'))
         self.assertDictEqual(
             body,
             {"code": 401,
@@ -68,7 +68,7 @@ class TestException(HttpCase, RegistryMixin):
         response = self.url_open('%s/missing_error' % self.url, "{}")
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.headers['content-type'], 'application/json')
-        body = json.loads(response.content)
+        body = json.loads(response.content.decode('utf-8'))
         self.assertDictEqual(
             body,
             {"code": 404,
@@ -80,7 +80,7 @@ class TestException(HttpCase, RegistryMixin):
         response = self.url_open('%s/access_error' % self.url, "{}")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.headers['content-type'], 'application/json')
-        body = json.loads(response.content)
+        body = json.loads(response.content.decode('utf-8'))
         self.assertDictEqual(
             body,
             {"code": 403,
@@ -92,7 +92,7 @@ class TestException(HttpCase, RegistryMixin):
         response = self.url_open('%s/access_denied' % self.url, "{}")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.headers['content-type'], 'application/json')
-        body = json.loads(response.content)
+        body = json.loads(response.content.decode('utf-8'))
         self.assertDictEqual(
             body,
             {"code": 403,
@@ -112,7 +112,7 @@ class TestException(HttpCase, RegistryMixin):
         response = self.url_open('%s/bare_exception' % self.url, "{}")
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.headers['content-type'], 'application/json')
-        body = json.loads(response.content)
+        body = json.loads(response.content.decode('utf-8'))
         self.assertDictEqual(
             body,
             {"code": 500,
