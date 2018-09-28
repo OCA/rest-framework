@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 ACSONE SA/NV
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <template id="openapi" name="OpenAPI">
+        <t t-call="web.layout">
+            <t t-set="head">
+                <meta name="generator" content="Odoo OpenAPI"/>
+                <meta name="description" content="Odoo OpenAPI UI"/>
+
+                <script type="text/javascript">
+                    odoo.session_info = {
+                    is_superuser:<t t-esc="json.dumps(request.env.user._is_superuser())"/>,
+                    is_frontend: true,
+                    };
+                </script>
+
+                <t t-call-assets="web.assets_common" t-js="false"/>
+                <t t-call-assets="web.assets_frontend" t-js="false"/>
+                <t t-call-assets="base_rest.assets_swagger" t-js="false"/>
+                <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet"/>
+                <link rel="icon" type="image/png" href="/base_rest/static/lib/swagger-ui-3.17.0/favicon-32x32.png" sizes="32x32"/>
+                <link rel="icon" type="image/png" href="/base_rest/static/lib/swagger-ui-3.17.0/favicon-16x16.png" sizes="16x16"/>
+
+                <t t-call-assets="web.assets_common" t-css="false"/>
+                <t t-call-assets="web.assets_frontend" t-css="false"/>
+                <t t-call-assets="base_rest.assets_swagger" t-css="false"/>
+            </t>
+            <t t-set="head" t-value="head"/>
+        </t>
+
+        <body>
+            <div id="swagger-ui"></div>
+
+            <script>
+                 odoo.define('base_rest.swagger', function (require) {
+                        var SwaggerUi = require('base_rest.swagger_ui');
+                        var swagger_ui = new SwaggerUi(<t t-esc="api_urls"/>, '<t t-esc="primary_name"/>');
+                        $(function() {
+                            swagger_ui.start('#swagger-ui');
+                        });
+                        return swagger_ui;
+                    });
+            </script>
+        </body>
+    </template>
+</odoo>
