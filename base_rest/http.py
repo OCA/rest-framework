@@ -99,7 +99,8 @@ class HttpRestRequest(HttpRequest):
     def __init__(self, httprequest):
         super(HttpRestRequest, self).__init__(httprequest)
         if self.httprequest.mimetype == 'application/json':
-            self.params = json.loads(self.httprequest.data)
+            data = self.httprequest.get_data().decode(self.httprequest.charset)
+            self.params = json.loads(data)
         else:
             # We reparse the query_string in order to handle data structure
             # more information on https://github.com/aventurella/pyquerystring
