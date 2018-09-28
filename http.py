@@ -79,7 +79,7 @@ def get_request(self, httprequest):
             return original_get_request(self, httprequest)
         try:
             endpoint, _ = request.env['ir.http']._find_handler()
-        except NotFound:
+        except werkzeug.exceptions.NotFound:
             return original_get_request(self, httprequest)
         if endpoint.routing.get('subtype') == 'rest':
             return RESTRequest(httprequest)
