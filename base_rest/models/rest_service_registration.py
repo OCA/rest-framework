@@ -6,7 +6,7 @@
 REST Service Registy Builder
 ============================
 
-Resister available REST service at the build of a registry.
+Register available REST services at the build of a registry.
 
 This code is inspired by ``odoo.addons.component.builder.ComponentBuilder``
 
