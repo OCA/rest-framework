@@ -4,6 +4,7 @@ import json
 import werkzeug.exceptions
 
 from odoo import http
+from odoo.exceptions import ValidationError, MissingError
 
 
 _logger = logging.getLogger(__name__)
@@ -49,6 +50,48 @@ class RESTRequest(http.WebRequest):
         return http.Response(body, status=status, headers=headers,
                              content_type=content_type)
 
+    def success(self, data=None, http_code=200):
+        return self.json_response(
+            http_code, {'status': 'success', 'data': data})
+
+    def fail(self, error_data, http_code=400):
+        return self.json_response(
+            http_code, {
+                'status': 'fail',
+                'data': error_data,
+            }
+        )
+
+    def error(self, exception, http_code=500):
+        return self.json_response(
+            http_code, {
+                'status': 'error',
+                'message': '{}: {}'.format(
+                    exception.__class__.__name__, exception)
+            }
+        )
+
+    def _handle_exception(self, exception):
+        import pdb
+        pdb.set_trace()
+        print exception
+        try:
+            super(RESTRequest, self)._handle_exception(exception)
+        except Exception:
+            if isinstance(exception, ValidationError):
+                return self.fail({
+                    'code': 'validation-error',
+                    'reason': 'Invalid parameter value',
+                    'message': exception.name,
+                })
+            if isinstance(exception, MissingError):
+                return self.fail({
+                    'reason': 'Missing Record',
+                    'code': 'no-such-record',
+                    'message': exception.name
+                }, 404)
+            return self.error(exception)
+
     def dispatch(self):
         r = self._call_function(**self.params)
         # For convenience, we handle by default
@@ -58,13 +101,13 @@ class RESTRequest(http.WebRequest):
             return r
         # if a tuple, assume it's (status_code, json_data)
         if type(r) == tuple:
-            return self.json_response(status=r[0], data=r[1])
+            return self.success(data=r[1], http_code=r[0])
         # if just an integer, assume it's the status code
         if type(r) == int:
-            return self.json_response(status=r)
+            return self.success(http_code=r)
         # In any other case (mainly dict and list), assume it's the json
         # data and return it with status 200
-        return self.json_response(data=r)
+        return self.success(data=r)
 
 original_get_request = http.Root.get_request
 
