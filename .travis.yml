@@ -6,6 +6,7 @@ python:
   - "3.6"
 
 addons:
+  postgresql: "9.6"
   # By default postgresql-9.1 is installed but there is issue related:
   #  https://github.com/OCA/maintainer-quality-tools/issues/432#issuecomment-281580935
   # Better use higher PostgreSQL version
