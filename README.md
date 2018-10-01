@@ -7,6 +7,14 @@
 This repo holds addons developed to ease the development of REST services into Odoo.
 
 [//]: # (addons)
+
+Available addons
+----------------
+addon | version | summary
+--- | --- | ---
+[base_rest](base_rest/) | 10.0.1.0.0 | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest_demo](base_rest_demo/) | 10.0.1.0.0 | Demo addon for Base REST
+
 [//]: # (end addons)
 
 ----
