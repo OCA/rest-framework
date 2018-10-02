@@ -13,7 +13,7 @@ To run the REST API in development mode you must add a new section
 '**[base_rest]**' with the option '**dev_mode=True**' in the server config
 file.
 
-::
+.. code-block:: cfg
 
     [base_rest]
     dev_mode=True
