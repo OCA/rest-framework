@@ -409,9 +409,9 @@ these services in development mode.</p>
 <p>To run the REST API in development mode you must add a new section
 ‘<strong>[base_rest]</strong>’ with the option ‘<strong>dev_mode=True</strong>’ in the server config
 file.</p>
-<pre class="literal-block">
-[base_rest]
-dev_mode=True
+<pre class="code cfg literal-block">
+<span class="k">[base_rest]</span>
+<span class="na">dev_mode</span><span class="o">=</span><span class="s">True</span>
 </pre>
 <p>When the REST API runs in development mode, the original description and a
 stack trace is returned in case of error. <strong>Be careful to not use this mode
@@ -427,103 +427,103 @@ in production</strong>.</p>
 <p>The business logic of your service must be implemented into a component
 (<tt class="docutils literal">odoo.addons.component.core.Component</tt>) that inherit from
 ‘base.rest.service’</p>
-<pre class="literal-block">
-from odoo.addons.component.core import Component
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">odoo.addons.component.core</span> <span class="kn">import</span> <span class="n">Component</span>
 
 
-class PingService(Component):
-    _inherit = 'base.rest.service'
-    _name = 'ping.service'
-    _usage = 'ping'
-    _collection = 'my_module.services'
+<span class="k">class</span> <span class="nc">PingService</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s1">'base.rest.service'</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">'ping.service'</span>
+    <span class="n">_usage</span> <span class="o">=</span> <span class="s1">'ping'</span>
+    <span class="n">_collection</span> <span class="o">=</span> <span class="s1">'my_module.services'</span>
 
 
-    # The following method are 'public' and can be called from the controller.
-    def get(self, _id, message):
-        return {
-            'response': 'Get called with message ' + message}
+    <span class="c1"># The following method are 'public' and can be called from the controller.</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">'response'</span><span class="p">:</span> <span class="s1">'Get called with message '</span> <span class="o">+</span> <span class="n">message</span><span class="p">}</span>
 
-    def search(self, message):
-        return {
-            'response': 'Search called search with message ' + message}
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">'response'</span><span class="p">:</span> <span class="s1">'Search called search with message '</span> <span class="o">+</span> <span class="n">message</span><span class="p">}</span>
 
-    def update(self, _id, message):
-        return {'response': 'PUT called with message ' + message}
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'response'</span><span class="p">:</span> <span class="s1">'PUT called with message '</span> <span class="o">+</span> <span class="n">message</span><span class="p">}</span>
 
-    # pylint:disable=method-required-super
-    def create(self, **params):
-        return {'response': 'POST called with message ' + params['message']}
+    <span class="c1"># pylint:disable=method-required-super</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'response'</span><span class="p">:</span> <span class="s1">'POST called with message '</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">'message'</span><span class="p">]}</span>
 
-    def delete(self, _id):
-        return {'response': 'DELETE called with id %s ' % _id}
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'response'</span><span class="p">:</span> <span class="s1">'DELETE called with id </span><span class="si">%s</span><span class="s1"> '</span> <span class="o">%</span> <span class="n">_id</span><span class="p">}</span>
 
-    # Validator
-    def _validator_search(self):
-        return {'message': {'type': 'string'}}
+    <span class="c1"># Validator</span>
+    <span class="k">def</span> <span class="nf">_validator_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'message'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">}}</span>
 
-    # Validator
-    def _validator_get(self):
-        # no parameters by default
-        return {}
+    <span class="c1"># Validator</span>
+    <span class="k">def</span> <span class="nf">_validator_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># no parameters by default</span>
+        <span class="k">return</span> <span class="p">{}</span>
 
-    def _validator_update(self):
-        return {'message': {'type': 'string'}}
+    <span class="k">def</span> <span class="nf">_validator_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'message'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">}}</span>
 
-    def _validator_create(self):
-        return {'message': {'type': 'string'}}
+    <span class="k">def</span> <span class="nf">_validator_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'message'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">}}</span>
 </pre>
 <p>Once your have implemented your services (ping, …), you must tell to Odoo
 how to access to these services. This process is done by implementing a
 controller that inherits from  <tt class="docutils literal">odoo.addons.base_rest.controllers.main.RestController</tt></p>
-<pre class="literal-block">
-from odoo.addons.base_rest.controllers import main
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">odoo.addons.base_rest.controllers</span> <span class="kn">import</span> <span class="n">main</span>
 
-class MyRestController(main.RestController):
-    _root_path = '/my_services_api/'
-    _collection_name = my_module.services
+<span class="k">class</span> <span class="nc">MyRestController</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="n">RestController</span><span class="p">):</span>
+    <span class="n">_root_path</span> <span class="o">=</span> <span class="s1">'/my_services_api/'</span>
+    <span class="n">_collection_name</span> <span class="o">=</span> <span class="n">my_module</span><span class="o">.</span><span class="n">services</span>
 </pre>
 <p>In your controller, _’root_path’ is used to specify the root of the path to
 access to your services and ‘_collection_name’ is the name of the collection
 providing the business logic for the requested service/</p>
 <p>By inheriting from <tt class="docutils literal">RestController</tt> the following routes will be registered
 to access to your services</p>
-<pre class="literal-block">
-&#64;route([
-    ROOT_PATH + '&lt;string:_service_name&gt;',
-    ROOT_PATH + '&lt;string:_service_name&gt;/search',
-    ROOT_PATH + '&lt;string:_service_name&gt;/&lt;int:_id&gt;',
-    ROOT_PATH + '&lt;string:_service_name&gt;/&lt;int:_id&gt;/get'
-], methods=['GET'], auth=&quot;user&quot;, csrf=False)
-def get(self, _service_name, _id=None, **params):
-    method_name = 'get' if _id else 'search'
-    return self._process_method(_service_name, method_name, _id, params)
+<pre class="code python literal-block">
+<span class="nd">&#64;route</span><span class="p">([</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/search'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;/get'</span>
+<span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'GET'</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">method_name</span> <span class="o">=</span> <span class="s1">'get'</span> <span class="k">if</span> <span class="n">_id</span> <span class="k">else</span> <span class="s1">'search'</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
-&#64;route([
-    ROOT_PATH + '&lt;string:_service_name&gt;',
-    ROOT_PATH + '&lt;string:_service_name&gt;/&lt;string:method_name&gt;',
-    ROOT_PATH + '&lt;string:_service_name&gt;/&lt;int:_id&gt;',
-    ROOT_PATH + '&lt;string:_service_name&gt;/&lt;int:_id&gt;/&lt;string:method_name&gt;'
-], methods=['POST'], auth=&quot;user&quot;, csrf=False)
-def modify(self, _service_name, _id=None, method_name=None, **params):
-    if not method_name:
-        method_name = 'update' if _id else 'create'
-    if method_name == 'get':
-        _logger.error(&quot;HTTP POST with method name 'get' is not allowed. &quot;
-                      &quot;(service name: %s)&quot;, _service_name)
-        raise BadRequest()
-    return self._process_method(_service_name, method_name, _id, params)
+<span class="nd">&#64;route</span><span class="p">([</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;string:method_name&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;/&lt;string:method_name&gt;'</span>
+<span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'POST'</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">modify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">method_name</span><span class="p">:</span>
+        <span class="n">method_name</span> <span class="o">=</span> <span class="s1">'update'</span> <span class="k">if</span> <span class="n">_id</span> <span class="k">else</span> <span class="s1">'create'</span>
+    <span class="k">if</span> <span class="n">method_name</span> <span class="o">==</span> <span class="s1">'get'</span><span class="p">:</span>
+        <span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;HTTP POST with method name 'get' is not allowed. &quot;</span>
+                      <span class="s2">&quot;(service name: </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">BadRequest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
-&#64;route([
-    ROOT_PATH + '&lt;string:_service_name&gt;/&lt;int:_id&gt;',
-], methods=['PUT'], auth=&quot;user&quot;, csrf=False)
-def update(self, _service_name, _id, **params):
-    return self._process_method(_service_name, 'update', _id, params)
+<span class="nd">&#64;route</span><span class="p">([</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;'</span><span class="p">,</span>
+<span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'PUT'</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="s1">'update'</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
-&#64;route([
-    ROOT_PATH + '&lt;string:_service_name&gt;/&lt;int:_id&gt;',
-], methods=['DELETE'], auth=&quot;user&quot;, csrf=False)
-def delete(self, _service_name, _id):
-    return self._process_method(_service_name, 'delete', _id)
+<span class="nd">&#64;route</span><span class="p">([</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;'</span><span class="p">,</span>
+<span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'DELETE'</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="s1">'delete'</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
 </pre>
 <p>The HTTP GET ‘<a class="reference external" href="http://my_odoo/my_services_api/ping">http://my_odoo/my_services_api/ping</a>’ will be dispatched to the
 method <tt class="docutils literal">PingService.search</tt></p>

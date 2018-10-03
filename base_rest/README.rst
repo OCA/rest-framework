@@ -59,7 +59,7 @@ To run the REST API in development mode you must add a new section
 '**[base_rest]**' with the option '**dev_mode=True**' in the server config
 file.
 
-::
+.. code-block:: cfg
 
     [base_rest]
     dev_mode=True
@@ -79,7 +79,8 @@ To add your own REST service you must provides at least 2 classes.
 The business logic of your service must be implemented into a component
 (``odoo.addons.component.core.Component``) that inherit from
 'base.rest.service'
-::
+
+.. code-block:: python
 
     from odoo.addons.component.core import Component
 
@@ -129,7 +130,7 @@ Once your have implemented your services (ping, ...), you must tell to Odoo
 how to access to these services. This process is done by implementing a
 controller that inherits from  ``odoo.addons.base_rest.controllers.main.RestController``
 
-::
+.. code-block:: python
 
     from odoo.addons.base_rest.controllers import main
 
@@ -145,7 +146,7 @@ providing the business logic for the requested service/
 By inheriting from ``RestController`` the following routes will be registered
 to access to your services
 
-::
+.. code-block:: python
 
     @route([
         ROOT_PATH + '<string:_service_name>',
