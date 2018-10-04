@@ -20,7 +20,7 @@ addon | version | summary
 ----
 
 Here are the
-[Odoo Experience 2018 presentation](https://docs.google.com/presentation/d/e/2PACX-1vStBIMdVI8JeUL7Ac8GlplPlbLnE3ybcrrhzqxVhjFQa-wzU2BSvBUxqAq9vl9CLxqFYctmk7_ysUDZ/pub?start=true&loop=true&delayms=3000)
+[Odoo Experience 2018 slides](https://docs.google.com/presentation/d/e/2PACX-1vStBIMdVI8JeUL7Ac8GlplPlbLnE3ybcrrhzqxVhjFQa-wzU2BSvBUxqAq9vl9CLxqFYctmk7_ysUDZ/pub?start=true&loop=true&delayms=3000)
 
 OCA, or the [Odoo Community Association](http://odoo-community.org/), is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
