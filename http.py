@@ -72,9 +72,6 @@ class RESTRequest(http.WebRequest):
         )
 
     def _handle_exception(self, exception):
-        import pdb
-        pdb.set_trace()
-        print exception
         try:
             super(RESTRequest, self)._handle_exception(exception)
         except Exception:
