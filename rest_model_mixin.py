@@ -6,14 +6,14 @@ class RESTModelMixin(models.AbstractModel):
         'char', 'text', 'integer', 'float', 'date', 'datetime', 'boolean']
     _name = 'rest.model'
 
-    _rest_fields_name_map = {}
+    _rest_fields_map = {}
 
     def __init__(self, cr, pool):
-        self.build_inverse_fields_name_map()
+        self.build_inverse_fields_map()
 
-    def build_inverse_fields_name_map(self):
-        self.__class__._rest_inverse_fields_name_map = {
-            jf: of for of, jf in self._rest_fields_name_map.items()
+    def build_inverse_fields_map(self):
+        self.__class__._rest_inverse_fields_map = {
+            jf: of for of, jf in self._rest_fields_map.items()
         }
 
     def serialize_field(self, field_name):
@@ -29,16 +29,16 @@ class RESTModelMixin(models.AbstractModel):
             return self[field_name].ids
 
     def to_json_field_name(self, field_name):
-        return self._rest_fields_name_map.get(field_name, field_name)
+        return self._rest_fields_map.get(field_name, field_name)
 
     def to_odoo_field_name(self, json_field_name):
-        return self._rest_inverse_fields_name_map.get(
+        return self._rest_inverse_fields_map.get(
             json_field_name, json_field_name)
 
     def to_json(self):
         return {
             self.to_json_field_name(f): self.serialize_field(f)
-            for f in self._rest_fields_name_map
+            for f in self._rest_fields_map
         }
 
     def from_json(self, data):
