@@ -3,7 +3,8 @@ from odoo import models
 
 class RESTModelMixin(models.AbstractModel):
     BASE_FIELD_TYPES = [
-        'char', 'text', 'integer', 'float', 'date', 'datetime', 'boolean']
+        'char', 'text', 'integer', 'float', 'date', 'datetime', 'boolean',
+        'selection']
     _name = 'rest.mixin'
 
     _rest_fields_map = {}
