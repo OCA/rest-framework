@@ -8,9 +8,22 @@ class RESTModelMixin(models.AbstractModel):
     _name = 'rest.mixin'
 
     _rest_fields_map = {}
+    _rest_inverse_fields_map = {}
 
-    def __init__(self, cr, pool):
+    def _setup_complete(self):
+        res = super(RESTModelMixin, self)._setup_complete()
+        cls = type(self)
+        if not cls._rest_fields_map:
+            self.build_default_rest_fields_map()
         self.build_inverse_fields_map()
+        return res
+
+    def build_default_rest_fields_map(self):
+        cls = type(self)
+        cls._rest_fields_map = {
+            'id': 'id',
+            'name': self._rec_name,
+        }
 
     def build_inverse_fields_map(self):
         self.__class__._rest_inverse_fields_map = {
