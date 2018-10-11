@@ -24,8 +24,10 @@ class RESTRequest(http.WebRequest):
     """
     _request_type = "http"
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         super(RESTRequest, self).__init__(*args)
+        self.force_multi = kwargs.get('force_multi', False)
+        self.force_single = kwargs.get('force_single', False)
         self.body = None
         raw_body = (
             self.httprequest.stream.read()
@@ -106,8 +108,13 @@ class RESTRequest(http.WebRequest):
             return self.success(http_code=r)
         # if a rest.mixin instance, return json serialization
         if isinstance(r, RESTModelMixin):
-            return self.success(
-                data=r.to_json_multi() if len(r) > 1 else r.to_json())
+            if self.force_multi:
+                data = r.to_json_multi()
+            elif self.force_single:
+                data = r.to_json()
+            else:
+                data = r.to_json_multi() if len(r) > 1 else r.to_json()
+            return self.success(data=data)
         # In any other case (mainly dict and list), assume it's the json
         # data and return it with status 200
         return self.success(data=r)
@@ -128,7 +135,10 @@ def get_request(self, httprequest):
         except werkzeug.exceptions.NotFound:
             return original_get_request(self, httprequest)
         if endpoint.routing.get('subtype') == 'rest':
-            return RESTRequest(httprequest)
+            return RESTRequest(
+                httprequest,
+                force_multi=endpoint.routing.get('force_multi', False),
+                force_single=endpoint.routing.get('force_single', False))
     return original_get_request(self, httprequest)
 
 def patch():
