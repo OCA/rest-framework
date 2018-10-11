@@ -49,6 +49,9 @@ class RESTModelMixin(models.AbstractModel):
         return self._rest_inverse_fields_map.get(
             json_field_name, json_field_name)
 
+    def to_json_multi(self):
+        return [r.to_json() for r in self]
+
     def to_json(self):
         return {
             self.to_json_field_name(f): self.serialize_field(f)

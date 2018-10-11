@@ -6,6 +6,8 @@ import werkzeug.exceptions
 from odoo import http
 from odoo.exceptions import ValidationError, MissingError
 
+from .rest_model_mixin import RESTModelMixin
+
 
 _logger = logging.getLogger(__name__)
 
@@ -102,6 +104,10 @@ class RESTRequest(http.WebRequest):
         # if just an integer, assume it's the status code
         if type(r) == int:
             return self.success(http_code=r)
+        # if a rest.mixin instance, return json serialization
+        if isinstance(r, RESTModelMixin):
+            return self.success(
+                data=r.to_json_multi() if len(r) > 1 else r.to_json())
         # In any other case (mainly dict and list), assume it's the json
         # data and return it with status 200
         return self.success(data=r)
