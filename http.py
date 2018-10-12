@@ -13,16 +13,8 @@ _logger = logging.getLogger(__name__)
 
 
 class RESTRequest(http.WebRequest):
-    """ Handler for the ``rest`` request type.
-    The handler method's result can be:
-    * a falsy value, in which case the HTTP response will be an
-      `HTTP 204`_ (No Content)
-    * a werkzeug Response object, which is returned as-is
-    * a ``str`` or ``unicode``, will be wrapped in a Response object and
-      interpreted as HTML
-    .. _HTTP 204: http://tools.ietf.org/html/rfc7231#section-6.3.5
-    """
-    _request_type = "http"
+    """Handler for the ``rest`` request type."""
+    _request_type = "rest"
 
     def __init__(self, *args, **kwargs):
         super(RESTRequest, self).__init__(*args)
@@ -134,7 +126,7 @@ def get_request(self, httprequest):
             endpoint, _ = request.env['ir.http']._find_handler()
         except werkzeug.exceptions.NotFound:
             return original_get_request(self, httprequest)
-        if endpoint.routing.get('subtype') == 'rest':
+        if endpoint.routing.get('type') == 'rest':
             return RESTRequest(
                 httprequest,
                 force_multi=endpoint.routing.get('force_multi', False),

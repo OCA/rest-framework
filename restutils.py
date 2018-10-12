@@ -1,37 +1,43 @@
+import functools
 import logging
 
 from odoo import http
 
-API_PREFIX = '/api/v1'
+
+API_PREFIX = '/rest'
 _logger = logging.getLogger(__name__)
 
 
-def restroute(endpoint, force_multi=False, force_single=False, **kwargs):
-    """
-    Utility decorator for REST endpoints.
+def prepend_route_prefix(route):
+    return '{}{}'.format(API_PREFIX, route)
 
-    This decorator calls the standard http.route decorator with some
-    params already defined:
 
-    * subtype='rest'
-    * auth='public'
-    * Prepend API_PREFIX to the endpoint path
-    """
-    if force_multi and force_single:
+def restroute(route=None, **kw):
+    routing = kw.copy()
+    routing['type'] = 'rest'
+
+    if routing.get('force_multi') and routing.get('force_single'):
         _logger.error(
             'Route %s defined with both force_single and force_multi',
-            endpoint)
-    return http.route(
-        '{}{}'.format(API_PREFIX, endpoint),
-        subtype='rest',
-        auth='public',
-        force_multi=force_multi,
-        force_single=force_single,
-        **kwargs
-    )
+            route)
+    def decorator(f):
+        routing['routes'] = [
+            prepend_route_prefix(r)
+            for r in (route if isinstance(route, list) else [route])]
+        print routing['routes']
+        @functools.wraps(f)
+        def response_wrap(*args, **kw):
+            response = f(*args, **kw)
+            return response
+        response_wrap.routing = routing
+        response_wrap.original_func = f
+        return response_wrap
+    return decorator
+
 
 def restroutemulti(endpoint, **kwargs):
     return restroute(endpoint, force_multi=True, **kwargs)
+
 
 def restroutesingle(endpoint, **kwargs):
     return restroute(endpoint, force_single=True, **kwargs)
