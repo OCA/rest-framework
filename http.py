@@ -12,6 +12,7 @@ from .rest_model_mixin import RESTModelMixin
 
 _logger = logging.getLogger(__name__)
 API_PREFIX = '/rest'
+USE_JSEND = True
 
 
 def prepend_route_prefix(route):
@@ -21,7 +22,8 @@ def prepend_route_prefix(route):
 def restroute(route=None, **kw):
     routing = kw.copy()
     routing['type'] = 'rest'
-
+    if not 'jsend' in routing:
+        routing['jsend'] = USE_JSEND
     if routing.get('force_multi') and routing.get('force_single'):
         _logger.error(
             'Route %s defined with both force_single and force_multi',
@@ -55,6 +57,7 @@ class RESTRequest(http.WebRequest):
 
     def __init__(self, *args, **kwargs):
         super(RESTRequest, self).__init__(*args)
+        self.use_jsend = kwargs.get('jsend', True)
         self.force_multi = kwargs.get('force_multi', False)
         self.force_single = kwargs.get('force_single', False)
         self.body = None
@@ -84,25 +87,29 @@ class RESTRequest(http.WebRequest):
                              content_type=content_type)
 
     def success(self, data=None, http_code=200):
-        return self.json_response(
-            http_code, {'status': 'success', 'data': data})
+        if self.use_jsend:
+            return_data = {'status': 'success', 'data': data}
+        else:
+            return_data = data
+        return self.json_response(http_code, return_data)
 
     def fail(self, error_data, http_code=400):
-        return self.json_response(
-            http_code, {
-                'status': 'fail',
-                'data': error_data,
-            }
-        )
+        if self.use_jsend:
+            return_data = {'status': 'fail', 'data': error_data}
+        else:
+            return_data = error_data
+        return self.json_response(http_code, return_data)
 
     def error(self, exception, http_code=500):
-        return self.json_response(
-            http_code, {
+        if self.use_jsend:
+            return_data = {
                 'status': 'error',
                 'message': '{}: {}'.format(
                     exception.__class__.__name__, exception)
             }
-        )
+        else:
+            return_data = str(exception)
+        return self.json_response(http_code, return_data)
 
     def _handle_exception(self, exception):
         try:
@@ -166,6 +173,7 @@ def get_request(self, httprequest):
         if endpoint.routing.get('type') == 'rest':
             return RESTRequest(
                 httprequest,
+                jsend=endpoint.routing.get('jsend', True),
                 force_multi=endpoint.routing.get('force_multi', False),
                 force_single=endpoint.routing.get('force_single', False))
     return original_get_request(self, httprequest)
