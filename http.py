@@ -32,7 +32,6 @@ def restroute(route=None, **kw):
         routing['routes'] = [
             prepend_route_prefix(r)
             for r in (route if isinstance(route, list) else [route])]
-        print routing['routes']
         @functools.wraps(f)
         def response_wrap(*args, **kw):
             response = f(*args, **kw)
