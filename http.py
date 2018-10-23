@@ -8,22 +8,21 @@ from odoo import http
 from odoo.exceptions import ValidationError, MissingError
 
 from .rest_model_mixin import RESTModelMixin
+from . import settings
 
 
 _logger = logging.getLogger(__name__)
-API_PREFIX = '/rest'
-USE_JSEND = True
 
 
 def prepend_route_prefix(route):
-    return '{}{}'.format(API_PREFIX, route)
+    return '{}{}'.format(settings.API_PREFIX, route)
 
 
 def restroute(route=None, **kw):
     routing = kw.copy()
     routing['type'] = 'rest'
     if not 'jsend' in routing:
-        routing['jsend'] = USE_JSEND
+        routing['jsend'] = settings.USE_JSEND
     if routing.get('force_multi') and routing.get('force_single'):
         _logger.error(
             'Route %s defined with both force_single and force_multi',

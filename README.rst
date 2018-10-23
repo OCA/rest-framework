@@ -51,6 +51,13 @@ The dict returned by ``search_read`` has been automatically converted to its
 JSON representation, and the JSON response data has been automatically wrapped
 in a response object according to the `jsend specification`_
 
+You can optionally disable the jsend response format by setting
+``USE_JSEND = False``::
+
+    from odoo.addons.base_request_rest import settings
+    settings.USE_JSEND = False
+
+
 .. _jsend specification: https://labs.omniti.com/labs/jsend
 
 Automatic return value conversion
@@ -124,8 +131,8 @@ setting the related variable before importing your controllers; for
 example write the following in your module's main __init__.py::
 
 
-    from odoo.addons.base_request_rest import http
-    http.API_PREFIX = '/api/v1'
+    from odoo.addons.base_request_rest import settings
+    settings.API_PREFIX = '/api/v1'
 
 
 Credits
