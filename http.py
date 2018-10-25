@@ -106,7 +106,8 @@ class RESTRequest(http.WebRequest):
                     exception.__class__.__name__, exception)
             }
         else:
-            return_data = str(exception)
+            raise exception
+        return_data = str(exception)
         return self.json_response(http_code, return_data)
 
     def _handle_exception(self, exception):

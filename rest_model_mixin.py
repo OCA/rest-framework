@@ -56,8 +56,13 @@ class RESTModelMixin(models.AbstractModel):
         return self._rest_fields_map.get(field_name, field_name)
 
     def to_odoo_field_name(self, json_field_name):
-        return self._rest_inverse_fields_map.get(
+        odoo_field_name = self._rest_inverse_fields_map.get(
             json_field_name, json_field_name)
+        if odoo_field_name.endswith('.id'):
+            return odoo_field_name[:-3]
+        elif odoo_field_name.endswith('.ids'):
+            return odoo_field_name[:-4]
+        return odoo_field_name
 
     def to_json_multi(self):
         return [r.to_json() for r in self]
