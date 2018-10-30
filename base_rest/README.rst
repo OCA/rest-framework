@@ -189,6 +189,33 @@ to access to your services
 The HTTP GET 'http://my_odoo/my_services_api/ping' will be dispatched to the
 method ``PingService.search``
 
+Authentication
+~~~~~~~~~~~~~~
+
+The authentication to use services must be specified into the controller by the
+key ``_default_auth``. Then you can use any authentication mechanism supported
+by Odoo. In particular, if you want to authenticate as a user, you can
+initialise an HTTP session by calling the login method via JSON-RPC:
+
+.. code-block:: python
+
+    import requests
+
+    # create a session
+    sess = requests.session()
+
+    # login into Odoo
+    data = {"jsonrpc": "2.0",
+            "method": "call",
+            "params": {"db":"<your_db_name>",
+                       "login":"<username>",
+                       "password":"<password>"}}
+    sess.post('http://<your_url>:<port>/web/session/authenticate', json=data)
+
+    # use this session to call your services
+    res = sess.get('http://<your_url>:<port>/rest_api/private/something/get')
+
+
 Known issues / Roadmap
 ======================
 
