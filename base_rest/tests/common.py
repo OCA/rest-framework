@@ -38,7 +38,7 @@ class BaseRestCase(SavepointComponentCase, RegistryMixin):
 
     def setUp(self, *args, **kwargs):
         super(BaseRestCase, self).setUp(*args, **kwargs)
-        self.registry.enter_test_mode()
+        self.registry.enter_test_mode(self.env.cr)
         self.base_url = self.env['ir.config_parameter']\
             .get_param('web.base.url')
 
