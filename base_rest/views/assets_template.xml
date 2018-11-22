@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 ACSONE SA/NV
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <template id="base_rest.assets_swagger" name="Swagger UI Assets">
+        <link rel="stylesheet" type="text/css" href="/base_rest/static/lib/swagger-ui-3.17.0/swagger-ui.css"/>
+        <link rel="stylesheet" type="text/scss" href="/base_rest/static/src/scss/base_rest.scss"/>
+        <script type="text/javascript" src="/base_rest/static/lib/swagger-ui-3.17.0/swagger-ui-bundle.js"></script>
+        <script type="text/javascript" src="/base_rest/static/lib/swagger-ui-3.17.0/swagger-ui-standalone-preset.js"></script>
+        <script type="text/javascript" src="/base_rest/static/src/js/swagger_ui.js"></script>
+    </template>
+</odoo>

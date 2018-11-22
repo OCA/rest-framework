@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.14: http://docutils.sourceforge.net/" />
+<title>Base Rest</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 7952 2016-07-26 18:15:59Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: grey; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="base-rest">
+<h1 class="title">Base Rest</h1>
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! This file is generated by oca-gen-addon-readme !!
+!! changes will be overwritten.                   !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<p><a class="reference external" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external" href="https://github.com/OCA/rest-framework/tree/11.0/base_rest"><img alt="OCA/rest-framework" src="https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github" /></a> <a class="reference external" href="https://translation.odoo-community.org/projects/rest-framework-11-0/rest-framework-11-0-base_rest"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external" href="https://runbot.odoo-community.org/runbot/271/11.0"><img alt="Try me on Runbot" src="https://img.shields.io/badge/runbot-Try%20me-875A7B.png" /></a></p>
+<p>This addon provides the basis to develop high level REST APIs for Odoo.</p>
+<p>As Odoo becomes one of the central pieces of enterprise IT systems, it often
+becomes necessary to set up specialized service interfaces, so existing
+systems can interact with Odoo.</p>
+<p>While the XML-RPC interface of Odoo comes handy in such situations, it
+requires a deep understanding of Odoo’s internal data model. When used
+extensively, it creates a strong coupling between Odoo internals and client
+systems, therefore increasing maintenance costs.</p>
+<p><strong>Table of contents</strong></p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#configuration" id="id2">Configuration</a></li>
+<li><a class="reference internal" href="#usage" id="id3">Usage</a></li>
+<li><a class="reference internal" href="#known-issues-roadmap" id="id4">Known issues / Roadmap</a></li>
+<li><a class="reference internal" href="#changelog" id="id5">Changelog</a><ul>
+<li><a class="reference internal" href="#id1" id="id6">10.0.1.0.0</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bug-tracker" id="id7">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="id8">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="id9">Authors</a></li>
+<li><a class="reference internal" href="#contributors" id="id10">Contributors</a></li>
+<li><a class="reference internal" href="#maintainers" id="id11">Maintainers</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="configuration">
+<h1><a class="toc-backref" href="#id2">Configuration</a></h1>
+<p>If an error occurs when calling a method of a service (ie missing parameter,
+..) the system returns only a general description of the problem without
+details. This is done on purpose to ensure maximum opacity on implementation
+details and therefore lower security issue.</p>
+<p>This restriction can be problematic when the services are accessed by an
+external system in development. To know the details of an error it is indeed
+necessary to have access to the log of the server. It is not always possible
+to provide this kind of access. That’s why you can configure the server to run
+these services in development mode.</p>
+<p>To run the REST API in development mode you must add a new section
+‘<strong>[base_rest]</strong>’ with the option ‘<strong>dev_mode=True</strong>’ in the server config
+file.</p>
+<pre class="code cfg literal-block">
+<span class="k">[base_rest]</span>
+<span class="na">dev_mode</span><span class="o">=</span><span class="s">True</span>
+</pre>
+<p>When the REST API runs in development mode, the original description and a
+stack trace is returned in case of error. <strong>Be careful to not use this mode
+in production</strong>.</p>
+</div>
+<div class="section" id="usage">
+<h1><a class="toc-backref" href="#id3">Usage</a></h1>
+<p>To add your own REST service you must provides at least 2 classes.</p>
+<ul class="simple">
+<li>A Component providing the business logic of your service,</li>
+<li>A Controller to register your service.</li>
+</ul>
+<p>The business logic of your service must be implemented into a component
+(<tt class="docutils literal">odoo.addons.component.core.Component</tt>) that inherit from
+‘base.rest.service’</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">odoo.addons.component.core</span> <span class="kn">import</span> <span class="n">Component</span>
+
+
+<span class="k">class</span> <span class="nc">PingService</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s1">'base.rest.service'</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">'ping.service'</span>
+    <span class="n">_usage</span> <span class="o">=</span> <span class="s1">'ping'</span>
+    <span class="n">_collection</span> <span class="o">=</span> <span class="s1">'my_module.services'</span>
+
+
+    <span class="c1"># The following method are 'public' and can be called from the controller.</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">'response'</span><span class="p">:</span> <span class="s1">'Get called with message '</span> <span class="o">+</span> <span class="n">message</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">'response'</span><span class="p">:</span> <span class="s1">'Search called search with message '</span> <span class="o">+</span> <span class="n">message</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'response'</span><span class="p">:</span> <span class="s1">'PUT called with message '</span> <span class="o">+</span> <span class="n">message</span><span class="p">}</span>
+
+    <span class="c1"># pylint:disable=method-required-super</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'response'</span><span class="p">:</span> <span class="s1">'POST called with message '</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">'message'</span><span class="p">]}</span>
+
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'response'</span><span class="p">:</span> <span class="s1">'DELETE called with id </span><span class="si">%s</span><span class="s1"> '</span> <span class="o">%</span> <span class="n">_id</span><span class="p">}</span>
+
+    <span class="c1"># Validator</span>
+    <span class="k">def</span> <span class="nf">_validator_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'message'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">}}</span>
+
+    <span class="c1"># Validator</span>
+    <span class="k">def</span> <span class="nf">_validator_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># no parameters by default</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_validator_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'message'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">}}</span>
+
+    <span class="k">def</span> <span class="nf">_validator_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'message'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">}}</span>
+</pre>
+<p>Once your have implemented your services (ping, …), you must tell to Odoo
+how to access to these services. This process is done by implementing a
+controller that inherits from  <tt class="docutils literal">odoo.addons.base_rest.controllers.main.RestController</tt></p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">odoo.addons.base_rest.controllers</span> <span class="kn">import</span> <span class="n">main</span>
+
+<span class="k">class</span> <span class="nc">MyRestController</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="n">RestController</span><span class="p">):</span>
+    <span class="n">_root_path</span> <span class="o">=</span> <span class="s1">'/my_services_api/'</span>
+    <span class="n">_collection_name</span> <span class="o">=</span> <span class="n">my_module</span><span class="o">.</span><span class="n">services</span>
+</pre>
+<p>In your controller, _’root_path’ is used to specify the root of the path to
+access to your services and ‘_collection_name’ is the name of the collection
+providing the business logic for the requested service/</p>
+<p>By inheriting from <tt class="docutils literal">RestController</tt> the following routes will be registered
+to access to your services</p>
+<pre class="code python literal-block">
+<span class="nd">&#64;route</span><span class="p">([</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/search'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;/get'</span>
+<span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'GET'</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">method_name</span> <span class="o">=</span> <span class="s1">'get'</span> <span class="k">if</span> <span class="n">_id</span> <span class="k">else</span> <span class="s1">'search'</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+<span class="nd">&#64;route</span><span class="p">([</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;string:method_name&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;'</span><span class="p">,</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;/&lt;string:method_name&gt;'</span>
+<span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'POST'</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">modify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">method_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">method_name</span><span class="p">:</span>
+        <span class="n">method_name</span> <span class="o">=</span> <span class="s1">'update'</span> <span class="k">if</span> <span class="n">_id</span> <span class="k">else</span> <span class="s1">'create'</span>
+    <span class="k">if</span> <span class="n">method_name</span> <span class="o">==</span> <span class="s1">'get'</span><span class="p">:</span>
+        <span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;HTTP POST with method name 'get' is not allowed. &quot;</span>
+                      <span class="s2">&quot;(service name: </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">BadRequest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+<span class="nd">&#64;route</span><span class="p">([</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;'</span><span class="p">,</span>
+<span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'PUT'</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="s1">'update'</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+<span class="nd">&#64;route</span><span class="p">([</span>
+    <span class="n">ROOT_PATH</span> <span class="o">+</span> <span class="s1">'&lt;string:_service_name&gt;/&lt;int:_id&gt;'</span><span class="p">,</span>
+<span class="p">],</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'DELETE'</span><span class="p">],</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="s1">'delete'</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
+</pre>
+<p>The HTTP GET ‘<a class="reference external" href="http://my_odoo/my_services_api/ping">http://my_odoo/my_services_api/ping</a>’ will be dispatched to the
+method <tt class="docutils literal">PingService.search</tt></p>
+</div>
+<div class="section" id="known-issues-roadmap">
+<h1><a class="toc-backref" href="#id4">Known issues / Roadmap</a></h1>
+<p>The <a class="reference external" href="https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement+label%3Abase_rest">roadmap</a>
+and <a class="reference external" href="https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Abug+label%3Abase_rest">known issues</a> can
+be found on GitHub.</p>
+</div>
+<div class="section" id="changelog">
+<h1><a class="toc-backref" href="#id5">Changelog</a></h1>
+<div class="section" id="id1">
+<h2><a class="toc-backref" href="#id6">10.0.1.0.0</a></h2>
+<p>First official version. The addon has been incubated into the
+<a class="reference external" href="https://github.com/akretion/odoo-shopinvader">Shopinvader repository</a> from
+Akretion. For more information you need to look at the git log.</p>
+</div>
+</div>
+<div class="section" id="bug-tracker">
+<h1><a class="toc-backref" href="#id7">Bug Tracker</a></h1>
+<p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/rest-framework/issues">GitHub Issues</a>.
+In case of trouble, please check there if your issue has already been reported.
+If you spotted it first, help us smashing it by providing a detailed and welcomed
+<a class="reference external" href="https://github.com/OCA/rest-framework/issues/new?body=module:%20base_rest%0Aversion:%2011.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<p>Do not contact contributors directly about support or help with technical issues.</p>
+</div>
+<div class="section" id="credits">
+<h1><a class="toc-backref" href="#id8">Credits</a></h1>
+<div class="section" id="authors">
+<h2><a class="toc-backref" href="#id9">Authors</a></h2>
+<ul class="simple">
+<li>ACSONE SA/NV</li>
+</ul>
+</div>
+<div class="section" id="contributors">
+<h2><a class="toc-backref" href="#id10">Contributors</a></h2>
+<ul class="simple">
+<li>Laurent Mignon &lt;<a class="reference external" href="mailto:laurent.mignon&#64;acsone.eu">laurent.mignon&#64;acsone.eu</a>&gt;</li>
+<li>Sébastien Beau &lt;<a class="reference external" href="mailto:sebastien.beau&#64;akretion.com">sebastien.beau&#64;akretion.com</a>&gt;</li>
+</ul>
+</div>
+<div class="section" id="maintainers">
+<h2><a class="toc-backref" href="#id11">Maintainers</a></h2>
+<p>This module is maintained by the OCA.</p>
+<a class="reference external image-reference" href="https://odoo-community.org"><img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" /></a>
+<p>OCA, or the Odoo Community Association, is a nonprofit organization whose
+mission is to support the collaborative development of Odoo features and
+promote its widespread use.</p>
+<p>Current <a class="reference external" href="https://odoo-community.org/page/maintainer-role">maintainer</a>:</p>
+<p><a class="reference external" href="https://github.com/lmignon"><img alt="lmignon" src="https://github.com/lmignon.png?size=40px" /></a></p>
+<p>This module is part of the <a class="reference external" href="https://github.com/OCA/rest-framework/tree/11.0/base_rest">OCA/rest-framework</a> project on GitHub.</p>
+<p>You are welcome to contribute. To learn how please visit <a class="reference external" href="https://odoo-community.org/page/Contribute">https://odoo-community.org/page/Contribute</a>.</p>
+</div>
+</div>
+</div>
+</body>
+</html>
