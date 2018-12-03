@@ -30,6 +30,7 @@ class TestController(HttpCase):
         data = {"query": query}
         r = self.url_open("/graphql/demo?" + url_encode(data))
         self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.headers["Content-Type"], "application/json")
         self._check_all_partners(r.json()["data"]["allPartners"])
 
     def test_get_with_variables(self):
@@ -45,6 +46,7 @@ class TestController(HttpCase):
         data = {"query": query, "variables": json.dumps(variables)}
         r = self.url_open("/graphql/demo?" + url_encode(data))
         self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.headers["Content-Type"], "application/json")
         self._check_all_partners(
             r.json()["data"]["allPartners"], companies_only=True
         )
@@ -55,6 +57,7 @@ class TestController(HttpCase):
         data = {"query": query}
         r = self.url_open("/graphql/demo", data=data)
         self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.headers["Content-Type"], "application/json")
         self._check_all_partners(r.json()["data"]["allPartners"])
 
     def test_post_form_with_variables(self):
@@ -93,7 +96,7 @@ class TestController(HttpCase):
             r.json()["data"]["allPartners"], companies_only=True
         )
 
-    def test_post_mutation(self):
+    def test_post_form_mutation(self):
         self.authenticate("admin", "admin")
         query = """
             mutation {
@@ -107,6 +110,7 @@ class TestController(HttpCase):
         data = {"query": query}
         r = self.url_open("/graphql/demo", data=data)
         self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.headers["Content-Type"], "application/json")
         self.assertEqual(
             "Le Héro, Toto", r.json()["data"]["createPartner"]["name"]
         )
@@ -128,3 +132,5 @@ class TestController(HttpCase):
         data = {"query": query}
         r = self.url_open("/graphql/demo?" + url_encode(data))
         self.assertEqual(r.status_code, 405)
+        self.assertEqual(r.headers["Content-Type"], "application/json")
+        self.assertIn(
