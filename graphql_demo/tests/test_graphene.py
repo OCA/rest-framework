@@ -1,6 +1,8 @@
 # Copyright 2018 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
+import logging
+
 from graphene.test import Client
 from odoo.tests import TransactionCase
 
@@ -12,6 +14,10 @@ class TestGraphene(TransactionCase):
     def setUpClass(cls):
         super(TestGraphene, cls).setUpClass()
         cls.client = Client(schema)
+        # disable logging for the graphql executor because we are testing
+        # errors and OCA's test runner considers the two errors being logged
+        # as fatal
+        logging.getLogger("graphql.execution").setLevel(logging.CRITICAL)
 
     def execute(self, query):
         res = self.client.execute(query, context={"env": self.env})
