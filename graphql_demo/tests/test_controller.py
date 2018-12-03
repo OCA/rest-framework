@@ -5,9 +5,15 @@ import json
 from werkzeug.urls import url_encode
 
 from odoo.tests import HttpCase
+from odoo.tests.common import HOST, PORT
 
 
 class TestController(HttpCase):
+    def url_open_json(self, url, json):
+        return self.opener.post(
+            "http://%s:%s%s" % (HOST, PORT, url), json=json
+        )
+
     def _check_all_partners(self, all_partners, companies_only=False):
         domain = []
         if companies_only:
@@ -64,6 +70,25 @@ class TestController(HttpCase):
         data = {"query": query, "variables": json.dumps(variables)}
         r = self.url_open("/graphql/demo", data=data)
         self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.headers["Content-Type"], "application/json")
+        self._check_all_partners(
+            r.json()["data"]["allPartners"], companies_only=True
+        )
+
+    def test_post_json_with_variables(self):
+        self.authenticate("admin", "admin")
+        query = """
+            query myQuery($companiesOnly: Boolean) {
+                allPartners(companiesOnly: $companiesOnly) {
+                    name
+                }
+            }
+        """
+        variables = {"companiesOnly": True}
+        data = {"query": query, "variables": variables}
+        r = self.url_open_json("/graphql/demo", data)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.headers["Content-Type"], "application/json")
         self._check_all_partners(
             r.json()["data"]["allPartners"], companies_only=True
         )
