@@ -12,4 +12,6 @@
     "depends": ["base"],
     "data": ["views/graphiql.xml"],
     "external_dependencies": {"python": ["graphene", "graphql_server"]},
+    "development_status": "Beta",
+    "maintainers": ["sbidoul"],
 }
