@@ -7,6 +7,8 @@
 
 import graphene
 
+from odoo import _
+from odoo.exceptions import UserError
 from odoo.addons.graphql_base import OdooObjectType
 
 
@@ -47,6 +49,8 @@ class Query(graphene.ObjectType):
         word=graphene.String(required=True),
     )
 
+    error_example = graphene.String()
+
     def resolve_all_partners(root, info, companies_only=False):
         domain = []
         if companies_only:
@@ -55,6 +59,9 @@ class Query(graphene.ObjectType):
 
     def resolve_reverse(root, info, word):
         return word[::-1]
+
+    def resolve_error_example(root, info):
+        raise UserError(_("UserError example"))
 
 
 class CreatePartner(graphene.Mutation):

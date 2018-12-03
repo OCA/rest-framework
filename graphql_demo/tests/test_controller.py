@@ -81,7 +81,7 @@ class TestController(HttpCase):
         """
         data = {"query": query}
         r = self.url_open("/graphql/demo", data=data)
-        assert r.status_code == 200
+        self.assertEqual(r.status_code, 200)
         self.assertEqual(
             "Le Héro, Toto", r.json()["data"]["createPartner"]["name"]
         )
@@ -102,4 +102,4 @@ class TestController(HttpCase):
         """
         data = {"query": query}
         r = self.url_open("/graphql/demo?" + url_encode(data))
-        assert r.status_code == 500
+        self.assertEqual(r.status_code, 405)
