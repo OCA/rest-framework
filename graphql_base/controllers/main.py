@@ -10,6 +10,7 @@ from graphql_server import (
     json_encode,
     load_json_body,
     run_http_query,
+    HttpQueryError,
 )
 
 from odoo import http
@@ -47,31 +48,40 @@ class GraphQLControllerMixin(object):
             return http.request.params
         return {}
 
-    def _process_request(self, schema, data, catch):
-        request = http.request.httprequest
-        execution_results, all_params = run_http_query(
-            schema,
-            request.method.lower(),
-            data,
-            query_data=request.args,
-            batch_enabled=False,
-            catch=catch,
-            context={"env": http.request.env},
-        )
-        result, status_code = encode_execution_results(
-            execution_results,
-            is_batch=isinstance(data, list),
-            format_error=default_format_error,
-            encode=partial(json_encode, pretty=False),
-        )
-        # TODO what to do with status_code?
-        return http.request.make_response(
-            result, headers={"Content-Type": "application/json"}
-        )
+    def _process_request(self, schema, data):
+        try:
+            request = http.request.httprequest
+            execution_results, all_params = run_http_query(
+                schema,
+                request.method.lower(),
+                data,
+                query_data=request.args,
+                batch_enabled=False,
+                catch=False,
+                context={"env": http.request.env},
+            )
+            result, status_code = encode_execution_results(
+                execution_results,
+                is_batch=isinstance(data, list),
+                format_error=default_format_error,
+                encode=partial(json_encode, pretty=False),
+            )
+            headers = dict()
+            headers["Content-Type"] = "application/json"
+            response = http.request.make_response(result, headers=headers)
+            response.status_code = status_code
+            return response
+        except HttpQueryError as e:
+            result = json_encode({"errors": [default_format_error(e)]})
+            headers = dict(e.headers)
+            headers["Content-Type"] = "application/json"
+            response = http.request.make_response(result, headers=headers)
+            response.status_code = e.status_code
+            return response
 
     def _handle_graphql_request(self, schema):
         data = self._parse_body()
-        return self._process_request(schema, data, catch=False)
+        return self._process_request(schema, data)
 
     def _handle_graphiql_request(self, schema):
         req = http.request.httprequest
@@ -81,4 +91,4 @@ class GraphQLControllerMixin(object):
         # (https://graphql.org/learn/serving-over-http/), but we use
         # this only for our GraphiQL UI, and it works with Odoo's way
         # of passing the csrf token
-        return self._process_request(schema, http.request.params, catch=True)
+        return self._process_request(schema, http.request.params)
