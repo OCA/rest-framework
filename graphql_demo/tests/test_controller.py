@@ -134,3 +134,6 @@ class TestController(HttpCase):
         self.assertEqual(r.status_code, 405)
         self.assertEqual(r.headers["Content-Type"], "application/json")
         self.assertIn(
+            "Can only perform a mutation operation from a POST request.",
+            r.json()["errors"][0]["message"],
+        )
