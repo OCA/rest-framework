@@ -44,3 +44,7 @@ class TestGraphene(TransactionCase):
             )["allPartners"]
         )
         self.assertEqual(actual_names, expected_names)
+
+    def test_error(self):
+        r = self.client.execute("{errorExample}", context={"env": self.env})
+        self.assertIn("UserError example", r["errors"][0]["message"])
