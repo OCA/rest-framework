@@ -27,11 +27,11 @@ class Partner(OdooObjectType):
     is_company = graphene.Boolean(required=True)
     contacts = graphene.List(graphene.NonNull(lambda: Partner), required=True)
 
-    def resolve_country(self, info):
-        return self.country_id or None
+    def resolve_country(root, info):
+        return root.country_id or None
 
-    def resolve_contacts(self, info):
-        return self.child_ids
+    def resolve_contacts(root, info):
+        return root.child_ids
 
 
 class Query(graphene.ObjectType):
@@ -47,14 +47,33 @@ class Query(graphene.ObjectType):
         word=graphene.String(required=True),
     )
 
-    def resolve_all_partners(self, info, companies_only=False):
+    def resolve_all_partners(root, info, companies_only=False):
         domain = []
         if companies_only:
             domain.append(("is_company", "=", True))
         return info.context["env"]["res.partner"].search(domain)
 
-    def resolve_reverse(self, info, word):
+    def resolve_reverse(root, info, word):
         return word[::-1]
 
 
-schema = graphene.Schema(query=Query)
+class CreatePartner(graphene.Mutation):
+    class Arguments:
+        name = graphene.String(required=True)
+        email = graphene.String(required=True)
+        is_company = graphene.Boolean()
+
+    Output = Partner
+
+    def mutate(self, info, name, email, is_company=False):
+        env = info.context["env"]
+        return env["res.partner"].create(
+            {"name": name, "email": email, "is_company": is_company}
+        )
+
+
+class Mutation(graphene.ObjectType):
+    create_partner = CreatePartner.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
