@@ -6,17 +6,17 @@ from odoo.addons.graphql_base import GraphQLControllerMixin
 
 from ..schema import schema
 
-GRAPHIQL_PATH = "/graphiql/demo"
-GRAPHQL_PATH = "/graphql/demo"
-
-GraphQLControllerMixin.patch_for_json("^" + GRAPHQL_PATH + "/?$")
-
 
 class GraphQLController(http.Controller, GraphQLControllerMixin):
-    @http.route(GRAPHIQL_PATH, auth="user")
+    @http.route("/graphiql/demo", auth="user")
     def graphiql(self, **kwargs):
         return self._handle_graphiql_request(schema)
 
-    @http.route(GRAPHQL_PATH, auth="api_key", csrf=False)
+    # optional, needed to accept application/json GraphQL requests
+    # if only accepting GET/POST requests, this is not necessary
+    # see also
+    GraphQLControllerMixin.patch_for_json("^/graphql/demo/?$")
+
+    @http.route("/graphql/demo", auth="user", csrf=False)
     def graphql(self, **kwargs):
         return self._handle_graphql_request(schema)
