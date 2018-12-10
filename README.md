@@ -12,7 +12,7 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[base_rest](base_rest/) | 12.0.1.0.0 | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest](base_rest/) | 12.0.1.0.1 | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_demo](base_rest_demo/) | 12.0.1.0.0 | Demo addon for Base REST
 
 [//]: # (end addons)
