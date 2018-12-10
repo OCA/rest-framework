@@ -282,7 +282,7 @@ class BaseRestService(AbstractComponent):
             parameters = self._get_openapi_default_parameters()
             responses = self._get_openapi_default_responses().copy()
             path_info = {
-                'summary': textwrap.dedent(method.__doc__),
+                'summary': textwrap.dedent(method.__doc__ or ''),
                 'parameters': parameters,
                 'responses': responses,
             }
