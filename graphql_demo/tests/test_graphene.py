@@ -22,10 +22,10 @@ class TestGraphene(TransactionCase):
     def execute(self, query):
         res = self.client.execute(query, context={"env": self.env})
         if not res:
-            raise RuntimeError("GarphQL query returned no data")
-        if res.get("error"):
+            raise RuntimeError("GraphQL query returned no data")
+        if res.get("errors"):
             raise RuntimeError(
-                "GraphQL query returned error: %s", repr(res["error"])
+                "GraphQL query returned error: %s" % (repr(res["errors"]),)
             )
         return res.get("data")
 
