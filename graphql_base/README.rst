@@ -25,10 +25,10 @@ Graphql Base
 
 |badge1| |badge2| |badge3| |badge4| |badge5| 
 
-This modules enables the creation of `GraphQL <https://graphql.org/>`_ endpoints.
+This modules enables the creation of `GraphQL <https://graphql.org/>`__ endpoints.
 In itself, it does nothing and must be used by a developer to
 create the GraphQL schema and resolvers using
-`graphene <https://graphene-python.org/>`_,
+`graphene <https://graphene-python.org/>`__,
 and expose them through a controller.
 An example is available in the ``graphql_demo`` module.
 
@@ -55,7 +55,7 @@ what is exposed and needs to be tested when upgrading Odoo.
 To start working with this module, we recommend the following approach:
 
 - Learn `GraphQL basics <https://graphql.org/learn/>`_
-- Learn `graphene <https://graphene-python.org/>`_, the python library
+- Learn `graphene <https://graphene-python.org/>`__, the python library
   used to create GraphQL schemas and resolvers.
 - Examine the ``graphql_demo`` module in this repo, copy it,
   adapt the controller to suit your needs (routes, authentication methods).
