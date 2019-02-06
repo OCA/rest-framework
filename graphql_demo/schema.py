@@ -41,6 +41,8 @@ class Query(graphene.ObjectType):
         graphene.NonNull(Partner),
         required=True,
         companies_only=graphene.Boolean(),
+        limit=graphene.Int(),
+        offset=graphene.Int(),
     )
 
     reverse = graphene.String(
@@ -51,11 +53,15 @@ class Query(graphene.ObjectType):
 
     error_example = graphene.String()
 
-    def resolve_all_partners(root, info, companies_only=False):
+    def resolve_all_partners(
+        root, info, companies_only=False, limit=None, offset=None
+    ):
         domain = []
         if companies_only:
             domain.append(("is_company", "=", True))
-        return info.context["env"]["res.partner"].search(domain)
+        return info.context["env"]["res.partner"].search(
+            domain, limit=limit, offset=offset
+        )
 
     def resolve_reverse(root, info, word):
         return word[::-1]
