@@ -75,14 +75,20 @@ class CreatePartner(graphene.Mutation):
         name = graphene.String(required=True)
         email = graphene.String(required=True)
         is_company = graphene.Boolean()
+        raise_after_create = graphene.Boolean()
 
     Output = Partner
 
-    def mutate(self, info, name, email, is_company=False):
+    def mutate(
+        self, info, name, email, is_company=False, raise_after_create=False
+    ):
         env = info.context["env"]
-        return env["res.partner"].create(
+        partner = env["res.partner"].create(
             {"name": name, "email": email, "is_company": is_company}
         )
+        if raise_after_create:
+            raise UserError("as requested")
+        return partner
 
 
 class Mutation(graphene.ObjectType):
