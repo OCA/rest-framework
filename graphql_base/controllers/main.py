@@ -70,6 +70,10 @@ class GraphQLControllerMixin(object):
             headers["Content-Type"] = "application/json"
             response = http.request.make_response(result, headers=headers)
             response.status_code = status_code
+            if any(er.errors for er in execution_results):
+                env = http.request.env
+                env.cr.rollback()
+                env.clear()
             return response
         except HttpQueryError as e:
             result = json_encode({"errors": [default_format_error(e)]})
@@ -77,6 +81,9 @@ class GraphQLControllerMixin(object):
             headers["Content-Type"] = "application/json"
             response = http.request.make_response(result, headers=headers)
             response.status_code = e.status_code
+            env = http.request.env
+            env.cr.rollback()
+            env.clear()
             return response
 
     def _handle_graphql_request(self, schema):
