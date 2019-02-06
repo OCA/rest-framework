@@ -6,6 +6,7 @@ from werkzeug.urls import url_encode
 
 from odoo.tests import HttpCase
 from odoo.tests.common import HOST, PORT
+from odoo.tools import mute_logger
 
 
 class TestController(HttpCase):
@@ -114,6 +115,14 @@ class TestController(HttpCase):
         self.assertEqual(
             "Le Héro, Toto", r.json()["data"]["createPartner"]["name"]
         )
+        self.assertEqual(
+            len(
+                self.env["res.partner"].search(
+                    [("email", "=", "toto@example.com")]
+                )
+            ),
+            1,
+        )
 
     def test_get_mutation_not_allowed(self):
         """
@@ -136,4 +145,33 @@ class TestController(HttpCase):
         self.assertIn(
             "Can only perform a mutation operation from a POST request.",
             r.json()["errors"][0]["message"],
+        )
+
+    @mute_logger("graphql.execution.executor", "graphql.execution.utils")
+    def test_post_form_mutation_rollback(self):
+        self.authenticate("admin", "admin")
+        query = """
+            mutation {
+                createPartner(
+                    name: "Le Héro, Toto",
+                    email: "toto@example.com",
+                    raiseAfterCreate: true
+                ) {
+                    name
+                }
+            }
+        """
+        data = {"query": query}
+        r = self.url_open("/graphql/demo", data=data)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.headers["Content-Type"], "application/json")
+        self.assertIn("as requested", r.json()["errors"][0]["message"])
+        # a rollback must have occured
+        self.assertEqual(
+            len(
+                self.env["res.partner"].search(
+                    [("email", "=", "toto@example.com")]
+                )
+            ),
+            0,
         )
