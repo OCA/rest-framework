@@ -54,3 +54,19 @@ class TestGraphene(TransactionCase):
     def test_error(self):
         r = self.client.execute("{errorExample}", context={"env": self.env})
         self.assertIn("UserError example", r["errors"][0]["message"])
+
+    def test_mutation(self):
+        mutation = """\
+            mutation{
+                createPartner(
+                    name: "toto",
+                    email: "toto@acsone.eu",
+                ) {
+                    name
+                }
+            }
+        """
+        self.client.execute(mutation, context={"env": self.env})
+        self.assertEqual(
+            len(self.env["res.partner"].search([("name", "=", "toto")])), 1
+        )
