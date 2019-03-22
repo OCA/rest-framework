@@ -12,8 +12,8 @@ what is exposed and needs to be tested when upgrading Odoo.
 
 To start working with this module, we recommend the following approach:
 
-- Learn `GraphQL basics <https://graphql.org/learn/>`_
-- Learn `graphene <https://graphene-python.org/>`_, the python library
+- Learn `GraphQL basics <https://graphql.org/learn/>`__
+- Learn `graphene <https://graphene-python.org/>`__, the python library
   used to create GraphQL schemas and resolvers.
 - Examine the ``graphql_demo`` module in this repo, copy it,
   adapt the controller to suit your needs (routes, authentication methods).

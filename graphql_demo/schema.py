@@ -41,6 +41,8 @@ class Query(graphene.ObjectType):
         graphene.NonNull(Partner),
         required=True,
         companies_only=graphene.Boolean(),
+        limit=graphene.Int(),
+        offset=graphene.Int(),
     )
 
     reverse = graphene.String(
@@ -51,11 +53,15 @@ class Query(graphene.ObjectType):
 
     error_example = graphene.String()
 
-    def resolve_all_partners(root, info, companies_only=False):
+    def resolve_all_partners(
+        root, info, companies_only=False, limit=None, offset=None
+    ):
         domain = []
         if companies_only:
             domain.append(("is_company", "=", True))
-        return info.context["env"]["res.partner"].search(domain)
+        return info.context["env"]["res.partner"].search(
+            domain, limit=limit, offset=offset
+        )
 
     def resolve_reverse(root, info, word):
         return word[::-1]
@@ -69,18 +75,26 @@ class CreatePartner(graphene.Mutation):
         name = graphene.String(required=True)
         email = graphene.String(required=True)
         is_company = graphene.Boolean()
+        raise_after_create = graphene.Boolean()
 
     Output = Partner
 
-    def mutate(self, info, name, email, is_company=False):
+    def mutate(
+        self, info, name, email, is_company=False, raise_after_create=False
+    ):
         env = info.context["env"]
-        return env["res.partner"].create(
+        partner = env["res.partner"].create(
             {"name": name, "email": email, "is_company": is_company}
         )
+        if raise_after_create:
+            raise UserError("as requested")
+        return partner
 
 
 class Mutation(graphene.ObjectType):
-    create_partner = CreatePartner.Field()
+    create_partner = CreatePartner.Field(
+        description="Documentation of CreatePartner"
+    )
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
