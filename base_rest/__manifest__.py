@@ -1,14 +1,14 @@
 # Copyright 2018 ACSONE SA/NV
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 {
     'name': 'Base Rest',
     'summary': """
         Develop your own high level REST APIs for Odoo thanks to this addon.
         """,
-    'version': '12.0.1.0.1',
+    'version': '12.0.2.0.0',
     "development_status": "Beta",
-    'license': 'AGPL-3',
+    'license': 'LGPL-3',
     'author': 'ACSONE SA/NV, '
               'Odoo Community Association (OCA)',
     "maintainers": ['lmignon'],

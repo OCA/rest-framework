@@ -10,9 +10,9 @@ Base Rest Demo
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
-    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
-    :alt: License: AGPL-3
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
+    :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
+    :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
     :target: https://github.com/OCA/rest-framework/tree/12.0/base_rest_demo
     :alt: OCA/rest-framework
@@ -47,6 +47,19 @@ Known issues / Roadmap
 The `roadmap <https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement>`_
 and `known issues <https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Abug>`_ can
 be found on GitHub.
+
+Changelog
+=========
+
+12.0.2.0.0
+~~~~~~~~~~
+
+* Licence changed from AGPL-3 to LGPL-3
+
+12.0.1.0.0
+~~~~~~~~~~
+
+First official version.
 
 Bug Tracker
 ===========
