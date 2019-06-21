@@ -297,6 +297,12 @@ class BaseRestService(AbstractComponent):
                     }
                 })
             input_schema = self._get_input_schema(name)
+            # If we don't have an input schema (None), we have to considerate
+            # the function as private.
+            # Useful in case of inheritance of Components with
+            # functions without leading "_".
+            if not isinstance(input_schema, dict):
+                continue
             output_schema = self._get_output_schema(name)
             json_input_schema = cerberus_to_json(
                 input_schema)
