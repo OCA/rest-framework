@@ -1,3 +1,10 @@
+10.0.2.0.1
+~~~~~~~~~~
+
+* _validator_...() methods can now return a cerberus ``Validator`` object
+  instead of a schema dictionnary, for additional flexibility (e.g. allowing
+  validator options such as ``allow_unknown``).
+
 10.0.2.0.0
 ~~~~~~~~~~
 
