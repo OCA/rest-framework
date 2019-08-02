@@ -90,17 +90,31 @@ class BaseRestService(AbstractComponent):
             message = 'REST call url %s method %s'
             _logger.debug(message, *args, extra=extra)
 
-    def _get_input_schema(self, method_name):
-        validator_method = '_validator_%s' % method_name
+    def _get_validator(self, validator_method):
         if not hasattr(self, validator_method):
             return None
-        return getattr(self, validator_method)()
+        v = getattr(self, validator_method)()
+        if isinstance(v, dict):
+            return Validator(v, purge_unknown=True)
+        return v
+
+    def _get_input_validator(self, method_name):
+        return self._get_validator('_validator_%s' % method_name)
+
+    def _get_output_validator(self, method_name):
+        return self._get_validator('_validator_return_%s' % method_name)
+
+    def _get_input_schema(self, method_name):
+        validator = self._get_input_validator(method_name)
+        if not validator:
+            return None
+        return validator.schema
 
     def _get_output_schema(self, method_name):
-        validator_method = '_validator_return_%s' % method_name
-        if not hasattr(self, validator_method):
+        validator = self._get_output_validator(method_name)
+        if not validator:
             return None
-        return getattr(self, validator_method)()
+        return validator.schema
 
     def _secure_input(self, method, params):
         """
@@ -117,13 +131,12 @@ class BaseRestService(AbstractComponent):
         method_name = method.__name__
         if hasattr(method, 'skip_secure_params'):
             return params
-        schema = self._get_input_schema(method_name)
-        if schema is None:
+        v = self._get_input_validator(method_name)
+        if v is None:
             raise ValidationError(
                 _("No input schema defined for method %s in service %s") %
                 (method_name, self._name)
             )
-        v = Validator(schema, purge_unknown=True)
         if v.validate(params):
             return v.document
         raise UserError(_('BadRequest %s') % v.errors)
@@ -144,13 +157,12 @@ class BaseRestService(AbstractComponent):
             method_name = method.__name__
         if hasattr(method, 'skip_secure_response'):
             return response
-        schema = self._get_output_schema(method_name)
-        if not schema:
+        v = self._get_output_validator(method_name)
+        if not v:
             _logger.warning(
                 "DEPRECATED: You must define an output schema for method %s "
                 "in service %s", method_name, self._name)
             return response
-        v = Validator(schema, purge_unknown=True)
         if v.validate(response):
             return v.document
         raise SystemError(_('Invalid Response %s') % v.errors)
@@ -302,7 +314,7 @@ class BaseRestService(AbstractComponent):
                 input_schema)
 
             if not output_schema:
-                # for backward compatiibility output schema is not required
+                # for backward compatibility output schema is not required
                 # DEPRECATED
                 responses['200'] = {
                     'description': "Unknown response type"
