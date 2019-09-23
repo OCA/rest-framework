@@ -20,7 +20,13 @@
     ],
     "demo": [],
     "external_dependencies": {
-        "python": ["cerberus", "pyquerystring", "parse-accept-language"]
+        "python": [
+            "cerberus",
+            "pyquerystring",
+            "accept_language",
+            "apispec",
+            "marshmallow",
+        ]
     },
     "installable": True,
 }
