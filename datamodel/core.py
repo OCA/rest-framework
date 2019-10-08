@@ -188,22 +188,19 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
     #: Name or list of names of the datamodel(s) to inherit from
     _inherit = None
 
-    def __init__(self, *args, **kwargs):
-        super(Datamodel, self).__init__(*args, **kwargs)
-        self.__schema__.context["_registry"] = self.registry
-
     @property
     def registry(self):
         """ Current datamodels registry"""
         return self._registry
 
     @classmethod
-    def load(cls, data, context=None, many=None, partial=None):
-        ctx = (context or {}).copy()
-        ctx["_registry"] = cls._registry
-        return super(Datamodel, cls).load(
-            data=data, context=ctx, many=many, partial=partial
-        )
+    def get_schema(cls, **kwargs):
+        """
+        Get a marshmallow schema instance
+        :param kwargs:
+        :return:
+        """
+        return cls.__get_schema_class__(**kwargs)
 
     @classmethod
     def _build_datamodel(cls, registry):
