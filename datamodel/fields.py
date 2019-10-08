@@ -30,9 +30,7 @@ class NestedModel(Nested):
     @property
     def schema(self):
         if not self.nested:
-            self.nested = self.context["_registry"][
-                self.datamodel_name
-            ].__schema_class__()
+            self.nested = self.parent._registry[self.datamodel_name].__schema_class__()
         return super(NestedModel, self).schema
 
     def _deserialize(self, value, attr, data, **kwargs):
