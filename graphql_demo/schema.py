@@ -9,6 +9,7 @@ import graphene
 
 from odoo import _
 from odoo.exceptions import UserError
+
 from odoo.addons.graphql_base import OdooObjectType
 
 
@@ -53,9 +54,7 @@ class Query(graphene.ObjectType):
 
     error_example = graphene.String()
 
-    def resolve_all_partners(
-        root, info, companies_only=False, limit=None, offset=None
-    ):
+    def resolve_all_partners(root, info, companies_only=False, limit=None, offset=None):
         domain = []
         if companies_only:
             domain.append(("is_company", "=", True))
@@ -79,9 +78,7 @@ class CreatePartner(graphene.Mutation):
 
     Output = Partner
 
-    def mutate(
-        self, info, name, email, is_company=False, raise_after_create=False
-    ):
+    def mutate(self, info, name, email, is_company=False, raise_after_create=False):
         env = info.context["env"]
         partner = env["res.partner"].create(
             {"name": name, "email": email, "is_company": is_company}
@@ -92,9 +89,7 @@ class CreatePartner(graphene.Mutation):
 
 
 class Mutation(graphene.ObjectType):
-    create_partner = CreatePartner.Field(
-        description="Documentation of CreatePartner"
-    )
+    create_partner = CreatePartner.Field(description="Documentation of CreatePartner")
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
