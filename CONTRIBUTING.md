@@ -5,4 +5,3 @@ Please follow the official guide from the [OCA Guidelines page](https://github.c
 ## Project Specific Guidelines
 
 This project does not have specific coding guidelines.
-
