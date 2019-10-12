@@ -30,9 +30,11 @@ class Partner(OdooObjectType):
     is_company = graphene.Boolean(required=True)
     contacts = graphene.List(graphene.NonNull(lambda: Partner), required=True)
 
+    @staticmethod
     def resolve_country(root, info):
         return root.country_id or None
 
+    @staticmethod
     def resolve_contacts(root, info):
         return root.child_ids
 
@@ -54,6 +56,7 @@ class Query(graphene.ObjectType):
 
     error_example = graphene.String()
 
+    @staticmethod
     def resolve_all_partners(root, info, companies_only=False, limit=None, offset=None):
         domain = []
         if companies_only:
@@ -62,9 +65,11 @@ class Query(graphene.ObjectType):
             domain, limit=limit, offset=offset
         )
 
+    @staticmethod
     def resolve_reverse(root, info, word):
         return word[::-1]
 
+    @staticmethod
     def resolve_error_example(root, info):
         raise UserError(_("UserError example"))
 
@@ -84,7 +89,7 @@ class CreatePartner(graphene.Mutation):
             {"name": name, "email": email, "is_company": is_company}
         )
         if raise_after_create:
-            raise UserError("as requested")
+            raise UserError(_("as requested"))
         return partner
 
 
