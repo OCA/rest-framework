@@ -22,4 +22,5 @@
     "external_dependencies": {
         "python": ["cerberus", "pyquerystring", "accept_language"]
     },
+    "installable": False,
 }
