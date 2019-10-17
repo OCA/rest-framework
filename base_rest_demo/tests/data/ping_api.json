@@ -1,14 +1,14 @@
 {
-  "openapi": "3.0.0", 
+  "openapi": "3.0.0",
   "info": {
     "description": "\nPing Services\nAccess to the ping services is allowed to everyone\n",
     "title": "ping REST services"
-  }, 
+  },
   "servers": [
     {
       "url": "http://localhost:8069/base_rest_demo_api/public/ping"
     }
-  ], 
+  ],
   "paths": {
     "/create": {
       "post": {
@@ -16,8 +16,8 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object", 
-                "required": [], 
+                "type": "object",
+                "required": [],
                 "properties": {
                   "message": {
                     "type": "string"
@@ -26,14 +26,14 @@
               }
             }
           }
-        }, 
+        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "response": {
                       "type": "string"
@@ -42,32 +42,32 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
-        "parameters": [], 
+        },
+        "parameters": [],
         "summary": "\nCreate method description ...\n"
       }
-    }, 
+    },
     "/{id}": {
       "put": {
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "object", 
-                "required": [], 
+                "type": "object",
+                "required": [],
                 "properties": {
                   "message": {
                     "type": "string"
@@ -76,14 +76,14 @@
               }
             }
           }
-        }, 
+        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "response": {
                       "type": "string"
@@ -92,41 +92,41 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
+        },
         "parameters": [
           {
             "schema": {
               "type": "integer"
-            }, 
-            "description": "Item id", 
-            "required": true, 
-            "name": "id", 
+            },
+            "description": "Item id",
+            "required": true,
+            "name": "id",
             "in": "path"
           }
-        ], 
+        ],
         "summary": "\nUpdate method description ...\n"
-      }, 
+      },
       "delete": {
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "response": {
                       "type": "string"
@@ -135,45 +135,45 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
+        },
         "parameters": [
           {
             "schema": {
               "type": "integer"
-            }, 
-            "description": "Item id", 
-            "required": true, 
-            "name": "id", 
+            },
+            "description": "Item id",
+            "required": true,
+            "name": "id",
             "in": "path"
           }
-        ], 
+        ],
         "summary": "\nDelete method description ...\n"
-      }, 
+      },
       "get": {
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "message": {
                       "type": "string"
-                    }, 
+                    },
                     "id": {
                       "type": "integer"
                     }
@@ -181,44 +181,44 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
+        },
         "parameters": [
           {
             "schema": {
               "type": "integer"
-            }, 
-            "description": "Item id", 
-            "required": true, 
-            "name": "id", 
+            },
+            "description": "Item id",
+            "required": true,
+            "name": "id",
             "in": "path"
-          }, 
+          },
           {
-            "name": "message", 
-            "allowEmptyValue": false, 
-            "default": null, 
-            "required": false, 
-            "in": "query", 
+            "name": "message",
+            "allowEmptyValue": false,
+            "default": null,
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "string"
             }
           }
-        ], 
+        ],
         "summary": "\nThis method is used to get the information of the object specified\nby Id.\n"
       }
-    }, 
+    },
     "/{id}/get": {
       "get": {
         "responses": {
@@ -226,12 +226,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "message": {
                       "type": "string"
-                    }, 
+                    },
                     "id": {
                       "type": "integer"
                     }
@@ -239,52 +239,52 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
+        },
         "parameters": [
           {
             "schema": {
               "type": "integer"
-            }, 
-            "description": "Item id", 
-            "required": true, 
-            "name": "id", 
+            },
+            "description": "Item id",
+            "required": true,
+            "name": "id",
             "in": "path"
-          }, 
+          },
           {
-            "name": "message", 
-            "allowEmptyValue": false, 
-            "default": null, 
-            "required": false, 
-            "in": "query", 
+            "name": "message",
+            "allowEmptyValue": false,
+            "default": null,
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "string"
             }
           }
-        ], 
+        ],
         "summary": "\nThis method is used to get the information of the object specified\nby Id.\n"
       }
-    }, 
+    },
     "/{id}/update": {
       "post": {
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "object", 
-                "required": [], 
+                "type": "object",
+                "required": [],
                 "properties": {
                   "message": {
                     "type": "string"
@@ -293,14 +293,14 @@
               }
             }
           }
-        }, 
+        },
         "responses": {
           "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "response": {
                       "type": "string"
@@ -309,34 +309,34 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
+        },
         "parameters": [
           {
             "schema": {
               "type": "integer"
-            }, 
-            "description": "Item id", 
-            "required": true, 
-            "name": "id", 
+            },
+            "description": "Item id",
+            "required": true,
+            "name": "id",
             "in": "path"
           }
-        ], 
+        ],
         "summary": "\nUpdate method description ...\n"
       }
-    }, 
+    },
     "/": {
       "get": {
         "responses": {
@@ -344,8 +344,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "response": {
                       "type": "string"
@@ -354,78 +354,78 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
+        },
         "parameters": [
           {
-            "name": "limit", 
-            "allowEmptyValue": false, 
-            "default": 50, 
-            "required": false, 
-            "in": "query", 
+            "name": "limit",
+            "allowEmptyValue": false,
+            "default": 50,
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "integer"
             }
-          }, 
+          },
           {
-            "name": "offset", 
-            "allowEmptyValue": false, 
-            "default": 0, 
-            "required": false, 
-            "in": "query", 
+            "name": "offset",
+            "allowEmptyValue": false,
+            "default": 0,
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "integer"
             }
-          }, 
+          },
           {
-            "name": "param_required", 
-            "allowEmptyValue": false, 
-            "default": null, 
-            "required": true, 
-            "in": "query", 
+            "name": "param_required",
+            "allowEmptyValue": false,
+            "default": null,
+            "required": true,
+            "in": "query",
             "schema": {
               "type": "string"
             }
-          }, 
+          },
           {
-            "name": "param_string", 
-            "allowEmptyValue": false, 
-            "default": null, 
-            "required": false, 
-            "in": "query", 
+            "name": "param_string",
+            "allowEmptyValue": false,
+            "default": null,
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "string"
             }
-          }, 
+          },
           {
-            "name": "params[]", 
-            "allowEmptyValue": false, 
-            "default": null, 
-            "required": false, 
-            "in": "query", 
+            "name": "params[]",
+            "allowEmptyValue": false,
+            "default": null,
+            "required": false,
+            "in": "query",
             "schema": {
               "items": {
                 "type": "string"
-              }, 
+              },
               "type": "array"
             }
           }
-        ], 
+        ],
         "summary": "\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n"
       }
-    }, 
+    },
     "/search": {
       "get": {
         "responses": {
@@ -433,8 +433,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "response": {
                       "type": "string"
@@ -443,78 +443,78 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
+        },
         "parameters": [
           {
-            "name": "limit", 
-            "allowEmptyValue": false, 
-            "default": 50, 
-            "required": false, 
-            "in": "query", 
+            "name": "limit",
+            "allowEmptyValue": false,
+            "default": 50,
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "integer"
             }
-          }, 
+          },
           {
-            "name": "offset", 
-            "allowEmptyValue": false, 
-            "default": 0, 
-            "required": false, 
-            "in": "query", 
+            "name": "offset",
+            "allowEmptyValue": false,
+            "default": 0,
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "integer"
             }
-          }, 
+          },
           {
-            "name": "param_required", 
-            "allowEmptyValue": false, 
-            "default": null, 
-            "required": true, 
-            "in": "query", 
+            "name": "param_required",
+            "allowEmptyValue": false,
+            "default": null,
+            "required": true,
+            "in": "query",
             "schema": {
               "type": "string"
             }
-          }, 
+          },
           {
-            "name": "param_string", 
-            "allowEmptyValue": false, 
-            "default": null, 
-            "required": false, 
-            "in": "query", 
+            "name": "param_string",
+            "allowEmptyValue": false,
+            "default": null,
+            "required": false,
+            "in": "query",
             "schema": {
               "type": "string"
             }
-          }, 
+          },
           {
-            "name": "params[]", 
-            "allowEmptyValue": false, 
-            "default": null, 
-            "required": false, 
-            "in": "query", 
+            "name": "params[]",
+            "allowEmptyValue": false,
+            "default": null,
+            "required": false,
+            "in": "query",
             "schema": {
               "items": {
                 "type": "string"
-              }, 
+              },
               "type": "array"
             }
           }
-        ], 
+        ],
         "summary": "\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n"
       }
-    }, 
+    },
     "/{id}/delete": {
       "post": {
         "responses": {
@@ -522,8 +522,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object", 
-                  "required": [], 
+                  "type": "object",
+                  "required": [],
                   "properties": {
                     "response": {
                       "type": "string"
@@ -532,31 +532,31 @@
                 }
               }
             }
-          }, 
+          },
           "404": {
             "description": "Requested resource not found"
-          }, 
+          },
           "403": {
             "description": "You don't have the permission to access the requested resource."
-          }, 
+          },
           "401": {
             "description": "The user is not authorized. Authentication is required"
-          }, 
+          },
           "400": {
             "description": "One of the given parameter is not valid"
           }
-        }, 
+        },
         "parameters": [
           {
             "schema": {
               "type": "integer"
-            }, 
-            "description": "Item id", 
-            "required": true, 
-            "name": "id", 
+            },
+            "description": "Item id",
+            "required": true,
+            "name": "id",
             "in": "path"
           }
-        ], 
+        ],
         "summary": "\nDelete method description ...\n"
       }
     }

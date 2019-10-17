@@ -4,37 +4,35 @@
 import json
 from contextlib import contextmanager
 
-from odoo.addons.component.core import WorkContext
 from odoo.http import Controller, request, route
 
-from .main import _PseudoCollection
+from odoo.addons.component.core import WorkContext
+
 from ..core import _rest_services_databases
+from .main import _PseudoCollection
 
 
 class ApiDocsController(Controller):
-
     def make_json_response(self, data, headers=None, cookies=None):
         data = json.dumps(data)
         if headers is None:
             headers = {}
-        headers['Content-Type'] = 'application/json'
+        headers["Content-Type"] = "application/json"
         return request.make_response(data, headers=headers, cookies=cookies)
 
-    @route(['/api-docs',
-            '/api-docs/index.html'], methods=['GET'], type='http',
-           auth="public")
+    @route(
+        ["/api-docs", "/api-docs/index.html"],
+        methods=["GET"],
+        type="http",
+        auth="public",
+    )
     def index(self, **params):
         self._get_api_urls()
-        primary_name = params.get('urls.primaryName')
-        values = {
-
-            'api_urls': self._get_api_urls(),
-            'primary_name': primary_name
-        }
+        primary_name = params.get("urls.primaryName")
+        values = {"api_urls": self._get_api_urls(), "primary_name": primary_name}
         return request.render("base_rest.openapi", values)
 
-    @route('/api-docs/<path:collection>/<string:service_name>.json',
-           auth="public")
+    @route("/api-docs/<path:collection>/<string:service_name>.json", auth="public")
     def api(self, collection, service_name):
         with self.service_component(collection, service_name) as service:
             return self.make_json_response(service.to_openapi())
@@ -45,25 +43,26 @@ class ApiDocsController(Controller):
         for the current database to built the list of available REST API
         :return:
         """
-        services_registry = _rest_services_databases.get(
-            request.env.cr.dbname, {})
+        services_registry = _rest_services_databases.get(request.env.cr.dbname, {})
         api_urls = []
         for rest_root_path, spec in list(services_registry.items()):
             collection_path = rest_root_path[1:-1]  # remove '/'
-            collection_name = spec['collection_name']
+            collection_name = spec["collection_name"]
             for service in self._get_service_in_collection(collection_name):
-                api_urls.append({
-                    'name': "%s: %s" % (collection_path, service._usage),
-                    'url': '/api-docs/%s/%s.json' % (
-                        collection_path, service._usage)
-                })
-        api_urls = sorted(api_urls, key=lambda k: k['name'])
+                api_urls.append(
+                    {
+                        "name": "{}: {}".format(collection_path, service._usage),
+                        "url": "/api-docs/%s/%s.json"
+                        % (collection_path, service._usage),
+                    }
+                )
+        api_urls = sorted(api_urls, key=lambda k: k["name"])
         return api_urls
 
     def _filter_service_components(self, components):
         r = []
         for c in components:
-            if hasattr(c, '_is_rest_service_component') and c._usage:
+            if hasattr(c, "_is_rest_service_component") and c._usage:
                 r.append(c)
         return r
 
@@ -97,10 +96,8 @@ class ApiDocsController(Controller):
         """
 
         collection = _PseudoCollection(collection_name, request.env)
-        yield WorkContext(model_name='rest.service.registration',
-                          collection=collection)
+        yield WorkContext(model_name="rest.service.registration", collection=collection)
 
     def _get_collection_name(self, name):
-        services_registry = _rest_services_databases.get(
-            request.env.cr.dbname, {})
-        return services_registry['/' + name + '/']['collection_name']
+        services_registry = _rest_services_databases.get(request.env.cr.dbname, {})
+        return services_registry["/" + name + "/"]["collection_name"]

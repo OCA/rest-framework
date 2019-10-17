@@ -4,17 +4,23 @@
 from werkzeug.exceptions import MethodNotAllowed
 
 from odoo import _
-from odoo.addons.component.core import Component
 from odoo.exceptions import (
-    UserError, MissingError, AccessError, AccessDenied, ValidationError)
+    AccessDenied,
+    AccessError,
+    MissingError,
+    UserError,
+    ValidationError,
+)
 from odoo.http import SessionExpiredException
+
+from odoo.addons.component.core import Component
 
 
 class ExceptionService(Component):
-    _inherit = 'base.rest.service'
-    _name = 'exception.service'
-    _usage = 'exception'
-    _collection = 'base.rest.demo.public.services'
+    _inherit = "base.rest.service"
+    _name = "exception.service"
+    _usage = "exception"
+    _collection = "base.rest.demo.public.services"
     _description = """
         Exception Services
 
@@ -82,7 +88,7 @@ class ExceptionService(Component):
         Should be translated into InternalServerError without description into
         the json body
         """
-        raise IOError('My IO error')
+        raise IOError("My IO error")
 
     # Validator
     def _validator_user_error(self):

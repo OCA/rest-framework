@@ -26,4 +26,3 @@ Here are the [Odoo Experience 2018 presentation](https://www.youtube.com/watch?v
 OCA, or the [Odoo Community Association](http://odoo-community.org/), is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
-

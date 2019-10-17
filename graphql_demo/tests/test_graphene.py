@@ -4,6 +4,7 @@
 import logging
 
 from graphene.test import Client
+
 from odoo.tests import TransactionCase
 
 from ..schema import schema
@@ -25,30 +26,27 @@ class TestGraphene(TransactionCase):
             raise RuntimeError("GraphQL query returned no data")
         if res.get("errors"):
             raise RuntimeError(
-                "GraphQL query returned error: %s" % (repr(res["errors"]),)
+                "GraphQL query returned error: {}".format(repr(res["errors"]))
             )
         return res.get("data")
 
     def test_query_all_partners(self):
         expected_names = set(self.env["res.partner"].search([]).mapped("name"))
-        actual_names = set(
-            r["name"]
-            for r in self.execute(" {allPartners{ name } }")["allPartners"]
-        )
+        actual_names = {
+            r["name"] for r in self.execute(" {allPartners{ name } }")["allPartners"]
+        }
         self.assertEqual(actual_names, expected_names)
 
     def test_query_all_partners_companies_only(self):
         expected_names = set(
-            self.env["res.partner"]
-            .search([("is_company", "=", True)])
-            .mapped("name")
+            self.env["res.partner"].search([("is_company", "=", True)]).mapped("name")
         )
-        actual_names = set(
+        actual_names = {
             r["name"]
-            for r in self.execute(
-                " {allPartners(companiesOnly: true){ name } }"
-            )["allPartners"]
-        )
+            for r in self.execute(" {allPartners(companiesOnly: true){ name } }")[
+                "allPartners"
+            ]
+        }
         self.assertEqual(actual_names, expected_names)
 
     def test_error(self):

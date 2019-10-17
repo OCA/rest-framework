@@ -11,11 +11,12 @@ This code is inspired by ``odoo.addons.component.builder.ComponentBuilder``
 
 """
 import odoo
-from odoo import api, models, http
+from odoo import api, http, models
+
 from ..core import (
-    _rest_services_databases,
+    RestServicesRegistry,
     _rest_controllers_per_module,
-    RestServicesRegistry
+    _rest_services_databases,
 )
 
 
@@ -30,8 +31,8 @@ class RestServiceRegistation(models.AbstractModel):
 
     """
 
-    _name = 'rest.service.registration'
-    _description = 'REST Services Registration Model'
+    _name = "rest.service.registration"
+    _description = "REST Services Registration Model"
 
     @api.model_cr
     def _register_hook(self):
@@ -43,35 +44,30 @@ class RestServiceRegistation(models.AbstractModel):
         self.build_registry(services_registry)
         # we also have to remove the RestController from the
         # controller_per_module registry since it's an abstract controller
-        controllers = http.controllers_per_module['base_rest']
-        controllers = [(name, cls) for name, cls in controllers
-                       if 'RestController' not in name]
-        http.controllers_per_module['base_rest'] = controllers
+        controllers = http.controllers_per_module["base_rest"]
+        controllers = [
+            (name, cls) for name, cls in controllers if "RestController" not in name
+        ]
+        http.controllers_per_module["base_rest"] = controllers
 
-    def build_registry(self, services_registry, states=None,
-                       exclude_addons=None):
+    def build_registry(self, services_registry, states=None, exclude_addons=None):
         if not states:
-            states = ('installed', 'to upgrade')
+            states = ("installed", "to upgrade")
         # we load REST, controllers following the order of the 'addons'
         # dependencies to ensure that controllers defined in a more
         # specialized addon and overriding more generic one takes precedences
         # on the generic one into the registry
         graph = odoo.modules.graph.Graph()
-        graph.add_module(self.env.cr, 'base')
+        graph.add_module(self.env.cr, "base")
 
-        query = (
-            "SELECT name "
-            "FROM ir_module_module "
-            "WHERE state IN %s "
-        )
+        query = "SELECT name " "FROM ir_module_module " "WHERE state IN %s "
         params = [tuple(states)]
         if exclude_addons:
             query += " AND name NOT IN %s "
             params.append(tuple(exclude_addons))
         self.env.cr.execute(query, params)
 
-        module_list = [name for (name,) in self.env.cr.fetchall()
-                       if name not in graph]
+        module_list = [name for (name,) in self.env.cr.fetchall() if name not in graph]
         graph.add_modules(self.env.cr, module_list)
 
         for module in graph:
@@ -80,7 +76,7 @@ class RestServiceRegistation(models.AbstractModel):
     def load_services(self, module, services_registry):
         controller_defs = _rest_controllers_per_module.get(module, [])
         for controller_def in controller_defs:
-            services_registry[controller_def['root_path']] = controller_def
+            services_registry[controller_def["root_path"]] = controller_def
 
     def _init_global_registry(self):
         services_registry = RestServicesRegistry()
