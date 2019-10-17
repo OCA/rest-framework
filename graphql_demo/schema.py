@@ -9,6 +9,7 @@ import graphene
 
 from odoo import _
 from odoo.exceptions import UserError
+
 from odoo.addons.graphql_base import OdooObjectType
 
 
@@ -29,9 +30,11 @@ class Partner(OdooObjectType):
     is_company = graphene.Boolean(required=True)
     contacts = graphene.List(graphene.NonNull(lambda: Partner), required=True)
 
+    @staticmethod
     def resolve_country(root, info):
         return root.country_id or None
 
+    @staticmethod
     def resolve_contacts(root, info):
         return root.child_ids
 
@@ -53,9 +56,8 @@ class Query(graphene.ObjectType):
 
     error_example = graphene.String()
 
-    def resolve_all_partners(
-        root, info, companies_only=False, limit=None, offset=None
-    ):
+    @staticmethod
+    def resolve_all_partners(root, info, companies_only=False, limit=None, offset=None):
         domain = []
         if companies_only:
             domain.append(("is_company", "=", True))
@@ -63,9 +65,11 @@ class Query(graphene.ObjectType):
             domain, limit=limit, offset=offset
         )
 
+    @staticmethod
     def resolve_reverse(root, info, word):
         return word[::-1]
 
+    @staticmethod
     def resolve_error_example(root, info):
         raise UserError(_("UserError example"))
 
@@ -79,22 +83,19 @@ class CreatePartner(graphene.Mutation):
 
     Output = Partner
 
-    def mutate(
-        self, info, name, email, is_company=False, raise_after_create=False
-    ):
+    @staticmethod
+    def mutate(self, info, name, email, is_company=False, raise_after_create=False):
         env = info.context["env"]
         partner = env["res.partner"].create(
             {"name": name, "email": email, "is_company": is_company}
         )
         if raise_after_create:
-            raise UserError("as requested")
+            raise UserError(_("as requested"))
         return partner
 
 
 class Mutation(graphene.ObjectType):
-    create_partner = CreatePartner.Field(
-        description="Documentation of CreatePartner"
-    )
+    create_partner = CreatePartner.Field(description="Documentation of CreatePartner")
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

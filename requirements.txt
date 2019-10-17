@@ -2,8 +2,5 @@ cerberus
 pyquerystring
 parse-accept-language
 jsondiff
-<<<<<<< HEAD
 graphene
 graphql-server-core
-=======
->>>>>>> e8248af... black, pre-commit
