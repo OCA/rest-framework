@@ -8,7 +8,7 @@ manifest_required_authors=Odoo Community Association (OCA)
 manifest_required_keys=license
 manifest_deprecated_keys=description,active
 license_allowed=AGPL-3,GPL-2,GPL-2 or any later version,GPL-3,GPL-3 or any later version,LGPL-3
-valid_odoo_versions=13.0
+valid_odoo_versions=10.0
 
 [MESSAGES CONTROL]
 disable=all
@@ -74,12 +74,10 @@ enable=anomalous-backslash-in-string,
     invalid-commit,
     missing-newline-extrafiles,
     missing-readme,
-    no-utf8-coding-comment,
     odoo-addons-relative-import,
     old-api7-method-defined,
     redefined-builtin,
     too-complex,
-    unnecessary-utf8-coding-comment
 
 [REPORTS]
 msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}

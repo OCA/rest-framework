@@ -6,6 +6,7 @@ repos:
   rev: 19.3b0
   hooks:
   - id: black
+    args: [--target-version=py27]
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.3.0
   hooks:
@@ -25,8 +26,6 @@ repos:
     args: ["--extend-ignore=F401"]  # ignore unused imports in __init__.py
     files: /__init__\.py$
     additional_dependencies: ["flake8-bugbear==19.8.0"]
-  - id: fix-encoding-pragma
-    args: ["--remove"]
   - id: check-case-conflict
   - id: check-docstring-first
   - id: check-executables-have-shebangs

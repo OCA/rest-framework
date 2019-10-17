@@ -4,19 +4,33 @@
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
+import datetime
 import json
 import logging
 import sys
 import traceback
-import datetime
 from collections import defaultdict
-from odoo.exceptions import (
-    UserError, MissingError, AccessError, AccessDenied, ValidationError)
-from odoo.http import HttpRequest, Root, request, SessionExpiredException
-from odoo.tools.config import config
-from werkzeug.exceptions import BadRequest, NotFound, Forbidden, \
-    InternalServerError, HTTPException, Unauthorized
+
+from werkzeug.exceptions import (
+    BadRequest,
+    Forbidden,
+    HTTPException,
+    InternalServerError,
+    NotFound,
+    Unauthorized,
+)
 from werkzeug.utils import escape
+
+from odoo.exceptions import (
+    AccessDenied,
+    AccessError,
+    MissingError,
+    UserError,
+    ValidationError,
+)
+from odoo.http import HttpRequest, Root, SessionExpiredException, request
+from odoo.tools.config import config
+
 from .core import _rest_services_databases
 
 _logger = logging.getLogger(__name__)
@@ -29,7 +43,6 @@ except (ImportError, IOError) as err:
 
 
 class JSONEncoder(json.JSONEncoder):
-
     def default(self, obj):  # pylint: disable=E0202,arguments-differ
         if isinstance(obj, datetime.datetime):
             return obj.isoformat()
@@ -43,30 +56,23 @@ def wrapJsonException(exception, include_description=False):
     to render it like a json"""
 
     get_original_headers = exception.get_headers
-    exception.traceback = ''.join(
-        traceback.format_exception(*sys.exc_info()))
+    exception.traceback = "".join(traceback.format_exception(*sys.exc_info()))
 
     def get_body(environ=None):
-        res = {
-            'code': exception.code,
-            'name': escape(exception.name),
-            }
+        res = {"code": exception.code, "name": escape(exception.name)}
         description = exception.get_description(environ)
-        if config.get_misc('base_rest', 'dev_mode'):
+        if config.get_misc("base_rest", "dev_mode"):
             # return exception info only if base_rest is in dev_mode
-            res.update({
-                'traceback': exception.traceback,
-                'description': description
-            })
+            res.update({"traceback": exception.traceback, "description": description})
         elif include_description:
-            res['description'] = description
+            res["description"] = description
         return JSONEncoder().encode(res)
 
     def get_headers(environ=None):
         """Get a list of headers."""
-        _headers = [('Content-Type', 'application/json')]
+        _headers = [("Content-Type", "application/json")]
         for key, value in get_original_headers(environ=environ):
-            if key != 'Content-Type':
+            if key != "Content-Type":
                 _headers.append(key, value)
         return _headers
 
@@ -75,20 +81,21 @@ def wrapJsonException(exception, include_description=False):
     if request:
         httprequest = request.httprequest
         headers = dict(httprequest.headers)
-        headers.pop('Api-Key', None)
+        headers.pop("Api-Key", None)
         message = (
-            'RESTFULL call to url %s with method %s and params %s '
-            'raise the following error %s')
+            "RESTFULL call to url %s with method %s and params %s "
+            "raise the following error %s"
+        )
         args = (httprequest.url, httprequest.method, request.params, exception)
         extra = {
-            'application': 'REST Services',
-            'url': httprequest.url,
-            'method': httprequest.method,
-            'params': request.params,
-            'headers': headers,
-            'status': exception.code,
-            'exception_body': exception.get_body(),
-            }
+            "application": "REST Services",
+            "url": httprequest.url,
+            "method": httprequest.method,
+            "params": request.params,
+            "headers": headers,
+            "status": exception.code,
+            "exception_body": exception.get_body(),
+        }
         _logger.exception(message, *args, extra=extra)
     return exception
 
@@ -98,7 +105,7 @@ class HttpRestRequest(HttpRequest):
 
     def __init__(self, httprequest):
         super(HttpRestRequest, self).__init__(httprequest)
-        if self.httprequest.mimetype == 'application/json':
+        if self.httprequest.mimetype == "application/json":
             data = self.httprequest.get_data().decode(self.httprequest.charset)
             self.params = json.loads(data)
         else:
@@ -114,15 +121,15 @@ class HttpRestRequest(HttpRequest):
         according to the priority of languages into the headers and those
         available into Odoo.
         """
-        accepted_langs = self.httprequest.headers.get('Accept-language')
+        accepted_langs = self.httprequest.headers.get("Accept-language")
         if not accepted_langs:
             return
         parsed_accepted_langs = parse_accept_language(accepted_langs)
         installed_locale_langs = set()
         installed_locale_by_lang = defaultdict(list)
-        for lang_code, name in self.env['res.lang'].get_installed():
+        for lang_code, _name in self.env["res.lang"].get_installed():
             installed_locale_langs.add(lang_code)
-            installed_locale_by_lang[lang_code.split('_')[0]].append(lang_code)
+            installed_locale_by_lang[lang_code.split("_")[0]].append(lang_code)
 
         # parsed_acccepted_langs is sorted by priority (higher first)
         for lang in parsed_accepted_langs:
@@ -141,7 +148,7 @@ class HttpRestRequest(HttpRequest):
             if locale:
                 # reset the context to put our new lang.
                 context = dict(self._context)
-                context['lang'] = locale
+                context["lang"] = locale
                 # the setter defiend in odoo.http.WebRequest reset the env
                 # when setting a new context
                 self.context = context
@@ -157,16 +164,16 @@ class HttpRestRequest(HttpRequest):
             return wrapJsonException(Unauthorized(exception.message))
         try:
             return super(HttpRestRequest, self)._handle_exception(exception)
-        except (UserError, ValidationError), e:
+        except (UserError, ValidationError) as e:
             return wrapJsonException(
-                BadRequest(e.message or e.value or e.name),
-                include_description=True
+                BadRequest(e.message or e.value or e.name),  # noqa: B306
+                include_description=True,
             )
-        except MissingError, e:
+        except MissingError as e:
             return wrapJsonException(NotFound(e.value))
-        except (AccessError, AccessDenied), e:
-            return wrapJsonException(Forbidden(e.message))
-        except HTTPException, e:
+        except (AccessError, AccessDenied) as e:
+            return wrapJsonException(Forbidden(e.message))  # noqa: B306
+        except HTTPException as e:
             return wrapJsonException(e)
         except Exception as e:  # flake8: noqa: E722
             return wrapJsonException(InternalServerError(e))
@@ -175,7 +182,7 @@ class HttpRestRequest(HttpRequest):
         data = JSONEncoder().encode(data)
         if headers is None:
             headers = {}
-        headers['Content-Type'] = 'application/json'
+        headers["Content-Type"] = "application/json"
         return self.make_response(data, headers=headers, cookies=cookies)
 
 
