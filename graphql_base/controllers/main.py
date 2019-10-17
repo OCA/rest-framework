@@ -5,12 +5,12 @@ import re
 from functools import partial
 
 from graphql_server import (
+    HttpQueryError,
     default_format_error,
     encode_execution_results,
     json_encode,
     load_json_body,
     run_http_query,
-    HttpQueryError,
 )
 
 from odoo import http
