@@ -120,7 +120,19 @@ Authentication
 ~~~~~~~~~~~~~~
 
 The authentication to use services must be specified into the controller by the
-key ``_default_auth``. Then you can use any authentication mechanism supported
+key ``_default_auth``. 
+
+
+.. code-block:: python
+
+    from odoo.addons.base_rest.controllers import main
+
+    class MyRestController(main.RestController):
+        _root_path = '/rest_api/'
+        _collection_name = my_module.services
+        _default_auth  = 'user'
+
+Then you can use any authentication mechanism supported
 by Odoo. In particular, if you want to authenticate as a user, you can
 initialise an HTTP session by calling the login method via JSON-RPC:
 
