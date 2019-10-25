@@ -11,7 +11,7 @@ This code is inspired by ``odoo.addons.component.builder.ComponentBuilder``
 
 """
 import odoo
-from odoo import api, http, models
+from odoo import http, models
 
 from ..core import (
     RestServicesRegistry,
@@ -34,7 +34,6 @@ class RestServiceRegistation(models.AbstractModel):
     _name = "rest.service.registration"
     _description = "REST Services Registration Model"
 
-    @api.model_cr
     def _register_hook(self):
         # This method is called by Odoo when the registry is built,
         # so in case the registry is rebuilt (cache invalidation, ...),

@@ -35,7 +35,7 @@ class PartnerImageService(Component):
         elif size == "medium":
             field = "image_medium"
         status, headers, content = self.env["ir.http"].binary_content(
-            model="res.partner", id=_id, field=field, env=self.env
+            model="res.partner", id=_id, field=field
         )
         if not content:
             raise MissingError(_("No image found for partner %s") % _id)
