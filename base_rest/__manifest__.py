@@ -6,7 +6,7 @@
     "summary": """
         Develop your own high level REST APIs for Odoo thanks to this addon.
         """,
-    "version": "12.0.2.0.1",
+    "version": "13.0.2.0.1",
     "development_status": "Beta",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
@@ -20,7 +20,7 @@
     ],
     "demo": [],
     "external_dependencies": {
-        "python": ["cerberus", "pyquerystring", "accept_language"]
+        "python": ["cerberus", "pyquerystring", "parse-accept-language"]
     },
-    "installable": False,
+    "installable": True,
 }
