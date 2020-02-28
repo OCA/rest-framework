@@ -12,8 +12,8 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[base_rest](base_rest/) | 11.0.1.0.0 | Develop your own high level REST APIs for Odoo thanks to this addon.
-[base_rest_demo](base_rest_demo/) | 11.0.1.0.0 | Demo addon for Base REST
+[base_rest](base_rest/) | 11.0.2.0.1 | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest_demo](base_rest_demo/) | 11.0.2.0.0 | Demo addon for Base REST
 
 [//]: # (end addons)
 
@@ -24,4 +24,3 @@ Here are the [Odoo Experience 2018 presentation](https://www.youtube.com/watch?v
 OCA, or the [Odoo Community Association](http://odoo-community.org/), is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
-

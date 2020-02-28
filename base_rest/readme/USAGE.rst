@@ -153,4 +153,3 @@ initialise an HTTP session by calling the login method via JSON-RPC:
 
     # use this session to call your services
     res = sess.get('http://<your_url>:<port>/rest_api/private/something/get')
-
