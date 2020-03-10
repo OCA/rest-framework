@@ -10,7 +10,7 @@ import graphene
 from odoo import _
 from odoo.exceptions import UserError
 
-from odoo.addons.graphql_base import OdooObjectType
+from odoo.addons.graphql_base import alias, OdooObjectType
 
 
 class Country(OdooObjectType):
@@ -30,13 +30,8 @@ class Partner(OdooObjectType):
     is_company = graphene.Boolean(required=True)
     contacts = graphene.List(graphene.NonNull(lambda: Partner), required=True)
 
-    @staticmethod
-    def resolve_country(root, info):
-        return root.country_id or None
-
-    @staticmethod
-    def resolve_contacts(root, info):
-        return root.child_ids
+    resolve_country = alias("country_id")
+    resolve_contacts = alias("child_ids")
 
 
 class Query(graphene.ObjectType):

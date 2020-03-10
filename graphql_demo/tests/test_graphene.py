@@ -49,6 +49,36 @@ class TestGraphene(TransactionCase):
         }
         self.assertEqual(actual_names, expected_names)
 
+    def test_query_relations(self):
+        expected = [
+            {
+                "name": partner.name,
+                "country": (
+                    {"name": partner.country_id.name}
+                    if partner.country_id
+                    else None
+                ),
+                "contacts": [
+                    {"name": contact.name} for contact in partner.child_ids
+                ],
+            }
+            for partner in self.env["res.partner"].search([])
+        ]
+        actual = self.execute(
+            """
+            {
+              allPartners {
+                name
+                country {name}
+                contacts {name}
+              }
+            }
+            """
+        )["allPartners"]
+        expected.sort(key=repr)
+        actual.sort(key=repr)
+        self.assertEqual(actual, expected)
+
     def test_error(self):
         r = self.client.execute("{errorExample}", context={"env": self.env})
         self.assertIn("UserError example", r["errors"][0]["message"])

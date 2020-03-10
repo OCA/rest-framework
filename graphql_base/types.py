@@ -3,7 +3,7 @@
 
 import graphene
 
-from odoo import fields
+from odoo import fields, models
 
 
 def odoo_attr_resolver(attname, default_value, root, info, **args):
@@ -16,6 +16,8 @@ def odoo_attr_resolver(attname, default_value, root, info, **args):
 
     It converts datetimes to the user timezone.
 
+    It converts a lack of a record to None, if a single record is expected.
+
     It also raises an error if the attribute is not present, ignoring
     any default value, so as to return if the schema declares a field
     that is not present in the underlying Odoo model.
@@ -27,6 +29,12 @@ def odoo_attr_resolver(attname, default_value, root, info, **args):
             return None
     elif isinstance(field, fields.Datetime):
         return fields.Datetime.context_timestamp(root, value)
+    elif (
+        not isinstance(field, fields._RelationalMulti)
+        and isinstance(value, models.BaseModel)
+        and not value
+    ):
+        return None
     return value
 
 
@@ -41,3 +49,34 @@ class OdooObjectType(graphene.ObjectType):
         return super(OdooObjectType, cls).__init_subclass_with_meta__(
             default_resolver=default_resolver, **options
         )
+
+
+def alias(target_name):
+    """Return a valid resolver that aliases to another attribute name.
+
+    This lets you work around unsuitable Odoo field names without
+    boilerplate and without manually replicating what the default
+    resolver does.
+
+    Instead of::
+
+        @staticmethod
+        def resolve_child(root, info):
+            return root.child_id or None
+
+    Write::
+
+        resolve_child = alias("child_id")
+    """
+
+    @classmethod
+    def resolve_field(cls, root, info):
+        resolver = (
+            cls._meta.default_resolver
+            or graphene.types.resolver.get_default_resolver()
+        )
+        field = cls._meta.fields.get(info.field_name, None)
+        default_value = getattr(field, "default_value", None)
+        return resolver(target_name, default_value, root, info)
+
+    return resolve_field
