@@ -93,6 +93,7 @@ class BaseRestService(AbstractComponent):
 
     def _get_validator(self, validator_method):
         if not hasattr(self, validator_method):
+            _logger.error("Missing validator %s", validator_method)
             return None
         v = getattr(self, validator_method)()
         if isinstance(v, dict):
