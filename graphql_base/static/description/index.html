@@ -440,7 +440,7 @@ endpoints.</p>
 <span class="k">class</span> <span class="nc">GraphQLController</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">Controller</span><span class="p">,</span> <span class="n">GraphQLControllerMixin</span><span class="p">):</span>
 
     <span class="c1"># The GraphiQL route, providing an IDE for developers</span>
-    <span class="nd">&#64;http.route</span><span class="p">(</span><span class="s2">&quot;/graphiql/demo&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">)</span>
+    <span class="nd">&#64;http</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/graphiql/demo&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">graphiql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_graphiql_request</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
@@ -453,7 +453,7 @@ endpoints.</p>
     <span class="c1"># The graphql route, for applications.</span>
     <span class="c1"># Note csrf=False: you may want to apply extra security</span>
     <span class="c1"># (such as origin restrictions) to this route.</span>
-    <span class="nd">&#64;http.route</span><span class="p">(</span><span class="s2">&quot;/graphql/demo&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="nd">&#64;http</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/graphql/demo&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="n">csrf</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">graphql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_graphql_request</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 </pre>
