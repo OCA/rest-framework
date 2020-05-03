@@ -5,5 +5,4 @@ jsondiff
 graphene
 graphql-server-core
 marshmallow
-#marshmallow-objects>=1.0.21
--e git+https://github.com/lmignon/marshmallow-objects.git@fix-load-nested-many#egg=marshmallow-objects
+marshmallow-objects>=2.0.0
