@@ -10,7 +10,12 @@ import odoo
 from odoo import api
 from odoo.tests import common
 
-from ..core import DatamodelRegistry, MetaDatamodel, _get_addon_name
+from ..core import (
+    DatamodelRegistry,
+    MetaDatamodel,
+    _datamodel_databases,
+    _get_addon_name,
+)
 
 
 @contextmanager
@@ -129,19 +134,6 @@ class DatamodelRegistryCase(
     Note: for the lookups of the datamodels, the default datamodel
     registry is a global registry for the database. Here, you will
     need to explicitly pass ``self.datamodel_registry`` in the
-    :class:`~odoo.addons.datamodel.core.WorkContext`::
-
-        work = WorkContext(model_name='res.users',
-                           collection='my.collection',
-                           datamodels_registry=self.datamodel_registry)
-
-    Or::
-
-        collection_record = self.env['my.collection'].browse(1)
-        with collection_record.work_on(
-                'res.partner',
-                datamodels_registry=self.datamodel_registry) as work:
-
     """
 
     def setUp(self):
@@ -163,12 +155,23 @@ class DatamodelRegistryCase(
         # simulate the --test-enable behavior by excluding the current addon
         # which is in 'to install' / 'to upgrade' with --test-enable).
         current_addon = _get_addon_name(self.__module__)
-        with new_rollbacked_env() as env:
-            env["datamodel.builder"].build_registry(
-                self.datamodel_registry,
-                states=("installed",),
-                exclude_addons=[current_addon],
-            )
+
+        registry = odoo.registry(common.get_db_name())
+        uid = odoo.SUPERUSER_ID
+        cr = registry.cursor()
+        env = api.Environment(cr, uid, {})
+        env["datamodel.builder"].build_registry(
+            self.datamodel_registry,
+            states=("installed",),
+            exclude_addons=[current_addon],
+        )
+        self.env = env
+        _datamodel_databases[self.env.cr.dbname] = self.datamodel_registry
+
+        @self.addCleanup
+        def _close_and_roolback():
+            cr.rollback()  # we shouldn't have to commit anything
+            cr.close()
 
         # Fake that we are ready to work with the registry
         # normally, it is set to True and the end of the build

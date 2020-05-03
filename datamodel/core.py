@@ -2,6 +2,7 @@
 # Copyright 2019 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import functools
 import logging
 from collections import OrderedDict, defaultdict
 
@@ -92,7 +93,7 @@ _datamodel_databases = DatamodelDatabases()
 
 @marshmallow.post_load
 def __make_object__(self, data, **kwargs):
-    datamodel = self._registry[self._datamodel_name]
+    datamodel = self._env.datamodels[self._datamodel_name]
     return datamodel(__post_load__=True, __schema__=self, **data)
 
 
@@ -180,7 +181,7 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
     """
 
     _register = False
-    _registry = None  # DatamodelResgistry initialized by the metaclass
+    _env = None  # Odoo Environment
 
     # used for inheritance
     _name = None  #: Name of the datamodel
@@ -188,10 +189,14 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
     #: Name or list of names of the datamodel(s) to inherit from
     _inherit = None
 
+    def __init__(self, context=None, partial=None, env=None, **kwargs):
+        self._env = env
+        super().__init__(context=context, partial=partial, **kwargs)
+
     @property
-    def registry(self):
+    def env(self):
         """ Current datamodels registry"""
-        return self._registry
+        return self._env
 
     @classmethod
     def get_schema(cls, **kwargs):
@@ -361,7 +366,36 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 
 @property
 def datamodels(self):
-    return _datamodel_databases.get(self.cr.dbname)
+    class DataModelFactory(object):
+        """Factory for datamodels
+
+        This factory ensures the propagation of the environment to the
+        instanciated datamodels and related schema.
+        """
+
+        __slots__ = ("env", "registry")
+
+        def __init__(self, env, registry):
+            self.env = env
+            self.registry = registry
+
+        def __getitem__(self, key):
+            model = self.registry[key]
+            model.__init__ = functools.partialmethod(model.__init__, env=self.env)
+
+            @classmethod
+            def __get_schema_class__(cls, **kwargs):
+                cls = cls.__schema_class__(**kwargs)
+                cls._env = self.env
+                return cls
+
+            model.__get_schema_class__ = __get_schema_class__
+            return model
+
+    if not hasattr(self, "_datamodels_factory"):
+        factory = DataModelFactory(self, _datamodel_databases.get(self.cr.dbname))
+        self._datamodels_factory = factory
+    return self._datamodels_factory
 
 
 Environment.datamodels = datamodels
