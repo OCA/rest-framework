@@ -6,7 +6,7 @@ import mock
 from marshmallow_objects.models import Model as MarshmallowModel
 
 from .. import fields
-from ..core import Datamodel, _datamodel_databases
+from ..core import Datamodel
 from .common import DatamodelRegistryCase, TransactionDatamodelCase
 
 
@@ -85,8 +85,8 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         Datamodel2._build_datamodel(self.datamodel_registry)
         Datamodel3._build_datamodel(self.datamodel_registry)
         self.assertEqual(
-            (Datamodel3, Datamodel2, Datamodel1, self.datamodel_registry["base"]),
-            self.datamodel_registry["datamodel1"].__bases__,
+            (Datamodel3, Datamodel2, Datamodel1, self.env.datamodels["base"]),
+            self.env.datamodels["datamodel1"].__bases__,
         )
 
     def test_prototype_inherit_bases(self):
@@ -116,33 +116,33 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         Datamodel3._build_datamodel(self.datamodel_registry)
         Datamodel4._build_datamodel(self.datamodel_registry)
         self.assertEqual(
-            (Datamodel1, self.datamodel_registry["base"]),
-            self.datamodel_registry["datamodel1"].__bases__,
+            (Datamodel1, self.env.datamodels["base"]),
+            self.env.datamodels["datamodel1"].__bases__,
         )
         self.assertEqual(
             (
                 Datamodel2,
-                self.datamodel_registry["datamodel1"],
-                self.datamodel_registry["base"],
+                self.env.datamodels["datamodel1"],
+                self.env.datamodels["base"],
             ),
-            self.datamodel_registry["datamodel2"].__bases__,
+            self.env.datamodels["datamodel2"].__bases__,
         )
         self.assertEqual(
             (
                 Datamodel3,
-                self.datamodel_registry["datamodel1"],
-                self.datamodel_registry["base"],
+                self.env.datamodels["datamodel1"],
+                self.env.datamodels["base"],
             ),
-            self.datamodel_registry["datamodel3"].__bases__,
+            self.env.datamodels["datamodel3"].__bases__,
         )
         self.assertEqual(
             (
                 Datamodel4,
-                self.datamodel_registry["datamodel2"],
-                self.datamodel_registry["datamodel3"],
-                self.datamodel_registry["base"],
+                self.env.datamodels["datamodel2"],
+                self.env.datamodels["datamodel3"],
+                self.env.datamodels["base"],
             ),
-            self.datamodel_registry["datamodel4"].__bases__,
+            self.env.datamodels["datamodel4"].__bases__,
         )
 
     def test_final_class_schema(self):
@@ -172,10 +172,10 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         Datamodel3._build_datamodel(self.datamodel_registry)
         Datamodel4._build_datamodel(self.datamodel_registry)
 
-        Datamodel1 = self.datamodel_registry["datamodel1"]
-        Datamodel2 = self.datamodel_registry["datamodel2"]
-        Datamodel3 = self.datamodel_registry["datamodel3"]
-        Datamodel4 = self.datamodel_registry["datamodel4"]
+        Datamodel1 = self.env.datamodels["datamodel1"]
+        Datamodel2 = self.env.datamodels["datamodel2"]
+        Datamodel3 = self.env.datamodels["datamodel3"]
+        Datamodel4 = self.env.datamodels["datamodel4"]
 
         self.assertEqual(Datamodel1().dump(), {"field_int": 1})
         self.assertDictEqual(
@@ -201,7 +201,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
 
         Datamodel1._build_datamodel(self.datamodel_registry)
         # we inspect that our custom build has been executed
-        self.assertTrue(self.datamodel_registry["datamodel1"]._build_done)
+        self.assertTrue(self.env.datamodels["datamodel1"]._build_done)
 
     def test_inherit_attrs(self):
         """ Check attributes inheritance of Datamodels with _inherit """
@@ -228,8 +228,8 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         # we initialize the datamodels, normally we should pass
         # an instance of WorkContext, but we don't need a real one
         # for this test
-        datamodel1 = self.datamodel_registry["datamodel1"](mock.Mock())
-        datamodel2 = self.datamodel_registry["datamodel2"](mock.Mock())
+        datamodel1 = self.env.datamodels["datamodel1"](mock.Mock())
+        datamodel2 = self.env.datamodels["datamodel2"](mock.Mock())
         self.assertEqual("ping", datamodel1.msg)
         self.assertEqual("pong", datamodel2.msg)
         self.assertEqual("foo", datamodel1.say())
@@ -296,10 +296,10 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             (
                 Datamodel2bis,
                 Datamodel2,
-                self.datamodel_registry["datamodel1"],
-                self.datamodel_registry["base"],
+                self.env.datamodels["datamodel1"],
+                self.env.datamodels["base"],
             ),
-            self.datamodel_registry["datamodel2"].__bases__,
+            self.env.datamodels["datamodel2"].__bases__,
         )
 
     def test_add_inheritance_final_schema(self):
@@ -323,7 +323,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         Datamodel2._build_datamodel(self.datamodel_registry)
         Datamodel2bis._build_datamodel(self.datamodel_registry)
 
-        Datamodel2 = self.datamodel_registry["datamodel2"]
+        Datamodel2 = self.env.datamodels["datamodel2"]
         self.assertDictEqual(
             Datamodel2().dump(),
             {"field_str1": "str1", "field_str2": "str2", "field_str3": "str3"},
@@ -344,8 +344,8 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         Parent._build_datamodel(self.datamodel_registry)
         Child._build_datamodel(self.datamodel_registry)
 
-        Parent = self.datamodel_registry["parent"]
-        Child = self.datamodel_registry["child"]
+        Parent = self.env.datamodels["parent"]
+        Child = self.env.datamodels["child"]
 
         instance = Parent(name="Parent", child=Child(field_str="My other string"))
         res = instance.dump()
@@ -364,7 +364,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             idx = fields.Integer()
 
         Item._build_datamodel(self.datamodel_registry)
-        Item = self.datamodel_registry["item"]
+        Item = self.env.datamodels["item"]
 
         items = Item.load([{"idx": 1}, {"idx": 2}], many=True)
         self.assertTrue(len(items), 2)
@@ -384,8 +384,8 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         Parent._build_datamodel(self.datamodel_registry)
         Item._build_datamodel(self.datamodel_registry)
 
-        Parent = self.datamodel_registry["parent"]
-        Item = self.datamodel_registry["item"]
+        Parent = self.env.datamodels["parent"]
+        Item = self.env.datamodels["item"]
 
         instance = Parent.load({"items": [{"idx": 1}, {"idx": 2}]})
         res = instance.dump()
@@ -397,11 +397,35 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         res = new_instance.dump()
         self.assertEqual(res, {"items": [{"idx": 1}, {"idx": 2}, {"idx": 3}]})
 
+    def test_env(self):
+        """
+        Tests that the current env is always available on datamodel instances
+        and schema
+        """
+
+        class Parent(Datamodel):
+            _name = "parent"
+            items = fields.NestedModel("item", many=True)
+
+        class Item(Datamodel):
+            _name = "item"
+            idx = fields.Integer()
+
+        Parent._build_datamodel(self.datamodel_registry)
+        Item._build_datamodel(self.datamodel_registry)
+        Parent = self.env.datamodels["parent"]
+        p = Parent()
+        self.assertEqual(p.env, self.env)
+        schema = Parent.get_schema()
+        self.assertEqual(schema._env, self.env)
+        instance = Parent.load({"items": [{"idx": 1}, {"idx": 2}]})
+        self.assertEqual(instance.items[0].env, self.env)
+        schema = instance.items[0].get_schema()
+        self.assertEqual(schema._env, self.env)
+
 
 class TestRegistryAccess(TransactionDatamodelCase):
     def test_registry_access(self):
         """Check the access to the registry directly on tnv"""
-        registry = self.env.datamodels
-        self.assertEqual(registry, _datamodel_databases[self.env.cr.dbname])
         base = self.env.datamodels["base"]
         self.assertIsInstance(base(), MarshmallowModel)
