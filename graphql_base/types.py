@@ -72,8 +72,7 @@ def alias(target_name):
     @classmethod
     def resolve_field(cls, root, info):
         resolver = (
-            cls._meta.default_resolver
-            or graphene.types.resolver.get_default_resolver()
+            cls._meta.default_resolver or graphene.types.resolver.get_default_resolver()
         )
         field = cls._meta.fields.get(info.field_name, None)
         default_value = getattr(field, "default_value", None)

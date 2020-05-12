@@ -10,7 +10,7 @@ import graphene
 from odoo import _
 from odoo.exceptions import UserError
 
-from odoo.addons.graphql_base import alias, OdooObjectType
+from odoo.addons.graphql_base import OdooObjectType, alias
 
 
 class Country(OdooObjectType):

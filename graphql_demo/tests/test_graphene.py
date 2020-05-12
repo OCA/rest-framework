@@ -54,13 +54,9 @@ class TestGraphene(TransactionCase):
             {
                 "name": partner.name,
                 "country": (
-                    {"name": partner.country_id.name}
-                    if partner.country_id
-                    else None
+                    {"name": partner.country_id.name} if partner.country_id else None
                 ),
-                "contacts": [
-                    {"name": contact.name} for contact in partner.child_ids
-                ],
+                "contacts": [{"name": contact.name} for contact in partner.child_ids],
             }
             for partner in self.env["res.partner"].search([])
         ]
