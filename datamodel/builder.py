@@ -10,7 +10,7 @@ Datamodels Builder
 Build the datamodels at the build of a registry.
 
 """
-from odoo import api, models, modules
+from odoo import models, modules
 
 from .core import DEFAULT_CACHE_SIZE, DatamodelRegistry, _datamodel_databases
 
@@ -40,7 +40,6 @@ class DatamodelBuilder(models.AbstractModel):
 
     _datamodels_registry_cache_size = DEFAULT_CACHE_SIZE
 
-    @api.model_cr
     def _register_hook(self):
         # This method is called by Odoo when the registry is built,
         # so in case the registry is rebuilt (cache invalidation, ...),
