@@ -96,7 +96,14 @@ class RestServiceRegistation(models.AbstractModel):
         work = WorkContext(
             model_name="rest.service.registration", collection=collection
         )
-        return work.many_components()
+        component_classes = work._lookup_components(usage=None, model_name=None)
+        # removes component without collection how are not a rest service
+        component_classes = [
+            c
+            for c in component_classes
+            if c._collection and issubclass(c, BaseRestService)
+        ]
+        return [comp(work) for comp in component_classes]
 
     def build_registry(self, services_registry, states=None, exclude_addons=None):
         if not states:
