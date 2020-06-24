@@ -12,7 +12,7 @@
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
     "website": "https://github.com/OCA/rest-framework",
-    "depends": ["component"],
+    "depends": ["component", "datamodel"],
     "data": [
         "views/assets_template.xml",
         "views/openapi_template.xml",
