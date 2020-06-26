@@ -95,10 +95,10 @@ class RestMethodParam(object):
         """
         pass
 
-    def to_openepi_query_paramters(self, service):
+    def to_openapi_query_parameters(self, service):
         return {}
 
-    def to_openai_requestbody(self, service):
+    def to_openapi_requestbody(self, service):
         return {}
 
     def to_openapi_response(self, service):
@@ -129,7 +129,7 @@ class CerberusValidator(RestMethodParam):
             return validator.document
         raise SystemError(_("Invalid Response %s") % validator.errors)
 
-    def to_openepi_query_paramters(self, service):
+    def to_openapi_query_parameters(self, service):
         json_schema = self.to_json_schema(service)
         parameters = []
         for prop, spec in list(json_schema["properties"].items()):
@@ -158,7 +158,7 @@ class CerberusValidator(RestMethodParam):
 
         return parameters
 
-    def to_openai_requestbody(self, service):
+    def to_openapi_requestbody(self, service):
         return {
             "content": {"application/json": {"schema": self.to_json_schema(service)}}
         }
@@ -179,7 +179,7 @@ class CerberusValidator(RestMethodParam):
             return schema
         if isinstance(schema, dict):
             return Validator(schema, purge_unknown=True)
-        raise Exception(_("Unable to get cerberus schema from %s") % self._shema)
+        raise Exception(_("Unable to get cerberus schema from %s") % self._schema)
 
     def to_json_schema(self, service):
         schema = self.get_cerberus_validator(service).schema
@@ -211,15 +211,15 @@ class Datamodel(RestMethodParam):
             raise SystemError(_("Invalid Response %s") % errors)
         return json
 
-    def to_openepi_query_paramters(self, service):
+    def to_openapi_query_parameters(self, service):
         converter = self._get_converter()
-        schema = self._get_chema(service)
+        schema = self._get_schema(service)
         return converter.schema2parameters(schema, default_in="query")
 
     # TODO, we should probably get the spec as parameters. That should
     # allows to add the definition of a schema only once into the specs
     # and use a reference to the schema into the parameters
-    def to_openai_requestbody(self, service):
+    def to_openapi_requestbody(self, service):
         return {
             "content": {"application/json": {"schema": self.to_json_schema(service)}}
         }
@@ -235,10 +235,10 @@ class Datamodel(RestMethodParam):
 
     def to_json_schema(self, service):
         converter = self._get_converter()
-        schema = self._get_chema(service)
+        schema = self._get_schema(service)
         return converter.resolve_nested_schema(schema)
 
-    def _get_chema(self, service):
+    def _get_schema(self, service):
         return service.env.datamodels[self._name].get_schema(many=self._is_list)
 
     def _get_converter(self):
