@@ -110,7 +110,12 @@ class HttpRestRequest(HttpRequest):
         super(HttpRestRequest, self).__init__(httprequest)
         if self.httprequest.mimetype == "application/json":
             data = self.httprequest.get_data().decode(self.httprequest.charset)
-            self.params = json.loads(data)
+            try:
+                self.params = json.loads(data)
+            except ValueError as e:
+                msg = "Invalid JSON data: %s" % str(e)
+                _logger.info("%s: %s", self.httprequest.path, msg)
+                raise BadRequest(msg)
         else:
             # We reparse the query_string in order to handle data structure
             # more information on https://github.com/aventurella/pyquerystring
