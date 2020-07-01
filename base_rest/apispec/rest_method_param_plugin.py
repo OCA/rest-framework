@@ -40,14 +40,14 @@ class RestMethodParamPlugin(BasePlugin):
                 if method == "get":
                     # get quey params from RequestMethodParam object
                     parameters.extend(
-                        input_param.to_openepi_query_paramters(self._service)
+                        input_param.to_openapi_query_parameters(self._service)
                     )
                     # sort paramters to ease comparison into unittests
                 else:
                     # get requestBody from RequestMethodParam object
                     request_body = params.get("requestBody", {})
                     request_body.update(
-                        input_param.to_openai_requestbody(self._service)
+                        input_param.to_openapi_requestbody(self._service)
                     )
                     params["requestBody"] = request_body
                 parameters.sort(key=lambda a: a["name"])
