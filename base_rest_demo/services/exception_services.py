@@ -1,7 +1,7 @@
 # Copyright 2018 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-from werkzeug.exceptions import MethodNotAllowed
+from werkzeug import exceptions
 
 from odoo import _
 from odoo.exceptions import (
@@ -80,7 +80,7 @@ class ExceptionService(Component):
         Simulate an werkzeug.exceptions.MethodNotAllowed
         This exception is not by the framework
         """
-        raise MethodNotAllowed(description="Method not allowed message")
+        raise exceptions.MethodNotAllowed(description="Method not allowed message")
 
     def bare_exception(self):
         """
