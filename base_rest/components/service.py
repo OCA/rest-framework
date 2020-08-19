@@ -290,6 +290,9 @@ class BaseRestService(AbstractComponent):
                 continue
             public_methods[name] = data
 
+        default_parameters = self._get_openapi_default_parameters()
+        default_responses = self._get_openapi_default_responses()
+
         for name, method in list(public_methods.items()):
             id_in_path_required = False
             arg_spec = inspect.getargspec(method)
@@ -297,8 +300,8 @@ class BaseRestService(AbstractComponent):
                 id_in_path_required = True
             if "_id" in (arg_spec.keywords or {}):
                 id_in_path_required = True
-            parameters = self._get_openapi_default_parameters()
-            responses = self._get_openapi_default_responses().copy()
+            parameters = default_parameters.copy()
+            responses = default_responses.copy()
             path_info = {
                 "summary": textwrap.dedent(method.__doc__ or ""),
                 "parameters": parameters,
