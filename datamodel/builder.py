@@ -20,7 +20,7 @@ class DatamodelBuilder(models.AbstractModel):
 
     And register them in a global registry.
 
-    Every time an Odoo registry is built, the know datamodels are cleared and
+    Every time an Odoo registry is built, the known datamodels are cleared and
     rebuilt as well.  The Datamodel classes are built using the same mechanism
     than Odoo's Models: a final class is created, taking every Datamodels with
     a ``_name`` and applying Datamodels with an ``_inherits`` upon them.
