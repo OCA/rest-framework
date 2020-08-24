@@ -121,7 +121,7 @@ class MetaDatamodel(ModelMeta):
         # This should never be an issue when running the app normally, as the
         # Python tests should never be executed. But this is an issue when a
         # test creates a test datamodel for the purpose of the test, then a
-        # second tests uses the "load_datamodels" to load all the addons of the
+        # second test uses the "load_datamodels" to load all the addons of the
         # module: it will load the datamodel of the previous test.
         if "tests" in self.__module__.split("."):
             return
