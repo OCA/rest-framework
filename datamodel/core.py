@@ -87,7 +87,7 @@ class DatamodelRegistry(object):
 
 
 # We will store a DatamodelRegistry per database here,
-# it will be cleared and updated when the odoo's registry is rebuilt
+# it will be cleared and updated when odoo's registry is rebuilt
 _datamodel_databases = DatamodelDatabases()
 
 
