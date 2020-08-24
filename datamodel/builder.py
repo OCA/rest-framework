@@ -29,7 +29,7 @@ class DatamodelBuilder(models.AbstractModel):
 
     This class is an Odoo model, allowing us to hook the build of the
     datamodels at the end of the loading of Odoo's registry, using
-    ``_register_hook``. This method is called after all modules are loaded, so
+    ``_register_hook``. This method is called after all modules have been loaded, so
     we are sure that we have all the datamodels Classes and in the correct
     order.
 
