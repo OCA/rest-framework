@@ -172,13 +172,19 @@ class HttpRestRequest(HttpRequest):
         try:
             return super(HttpRestRequest, self)._handle_exception(exception)
         except (UserError, ValidationError) as e:
-            return wrapJsonException(BadRequest(e.name), include_description=True)
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(
+                BadRequest(e.name), include_description=True, extra_info=extra_info
+            )
         except MissingError as e:
-            return wrapJsonException(NotFound(ustr(e)))
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(NotFound(ustr(e)), extra_info=extra_info)
         except (AccessError, AccessDenied) as e:
-            return wrapJsonException(Forbidden(ustr(e)))
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(Forbidden(ustr(e)), extra_info=extra_info)
         except HTTPException as e:
-            return wrapJsonException(e)
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(e, extra_info=extra_info)
         except Exception as e:  # flake8: noqa: E722
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(InternalServerError(e), extra_info=extra_info)
