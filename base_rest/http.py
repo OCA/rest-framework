@@ -20,6 +20,7 @@ from werkzeug.exceptions import (
 )
 from werkzeug.utils import escape
 
+import odoo
 from odoo.exceptions import (
     AccessDenied,
     AccessError,
@@ -196,11 +197,17 @@ ori_get_request = Root.get_request
 
 def get_request(self, httprequest):
     db = httprequest.session.db
-    service_registry = _rest_services_databases.get(db)
-    if service_registry:
-        for root_path in service_registry:
-            if httprequest.path.startswith(root_path):
-                return HttpRestRequest(httprequest)
+    if db:
+        # on the very first request processed by a worker,
+        # registry is not loaded yet
+        # so we enforce its loading here to make sure that
+        # _rest_services_databases is not empty
+        odoo.registry(db)
+        service_registry = _rest_services_databases.get(db)
+        if service_registry:
+            for root_path in service_registry:
+                if httprequest.path.startswith(root_path):
+                    return HttpRestRequest(httprequest)
     return ori_get_request(self, httprequest)
 
 
