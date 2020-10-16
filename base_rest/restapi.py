@@ -214,7 +214,7 @@ class Datamodel(RestMethodParam):
     def to_openapi_query_parameters(self, service):
         converter = self._get_converter()
         schema = self._get_schema(service)
-        return converter.schema2parameters(schema, default_in="query")
+        return converter.schema2parameters(schema, location="query")
 
     # TODO, we should probably get the spec as parameters. That should
     # allows to add the definition of a schema only once into the specs
