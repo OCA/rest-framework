@@ -55,9 +55,13 @@ class JSONEncoder(json.JSONEncoder):
         return super(JSONEncoder, self).default(obj)
 
 
-def wrapJsonException(exception, include_description=False):
-    """Wrapper method that modify the exception in order
-    to render it like a json"""
+def wrapJsonException(exception, include_description=False, extra_info=None):
+    """Wrap exceptions to be rendered as JSON.
+
+    :param exception: an instance of an exception
+    :param include_description: include full description in payload
+    :param extra_info: dict to provide extra keys to include in payload
+    """
 
     get_original_headers = exception.get_headers
     exception.traceback = "".join(traceback.format_exception(*sys.exc_info()))
@@ -70,6 +74,7 @@ def wrapJsonException(exception, include_description=False):
             res.update({"traceback": exception.traceback, "description": description})
         elif include_description:
             res["description"] = description
+        res.update(extra_info or {})
         return JSONEncoder().encode(res)
 
     def get_headers(environ=None):
@@ -176,15 +181,22 @@ class HttpRestRequest(HttpRequest):
         try:
             return super(HttpRestRequest, self)._handle_exception(exception)
         except (UserError, ValidationError) as e:
-            return wrapJsonException(BadRequest(e.name), include_description=True)
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(
+                BadRequest(e.name), include_description=True, extra_info=extra_info
+            )
         except MissingError as e:
-            return wrapJsonException(NotFound(ustr(e)))
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(NotFound(ustr(e)), extra_info=extra_info)
         except (AccessError, AccessDenied) as e:
-            return wrapJsonException(Forbidden(ustr(e)))
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(Forbidden(ustr(e)), extra_info=extra_info)
         except HTTPException as e:
-            return wrapJsonException(e)
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(e, extra_info=extra_info)
         except Exception as e:  # flake8: noqa: E722
-            return wrapJsonException(InternalServerError(e))
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(InternalServerError(e), extra_info=extra_info)
 
     def make_json_response(self, data, headers=None, cookies=None):
         data = JSONEncoder().encode(data)

@@ -12,7 +12,7 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[base_rest](base_rest/) | 13.0.2.0.2 | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest](base_rest/) | 13.0.2.1.2 | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_demo](base_rest_demo/) | 13.0.2.0.1 | Demo addon for Base REST
 [graphql_base](graphql_base/) | 13.0.1.0.0 | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 13.0.1.0.0 | GraphQL Demo
