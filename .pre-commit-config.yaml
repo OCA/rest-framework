@@ -1,6 +1,7 @@
 exclude: "^setup/|/static/lib/|/static/src/lib/"
 default_language_version:
   python: python3
+  node: "14.13.0"
 repos:
 - repo: https://github.com/psf/black
   rev: 19.3b0
