@@ -27,11 +27,12 @@
                   }
                }
             },
+             "summary":"\nArchive the given partner. This method is an empty method, IOW it\ndon't update the partner. This method is part of the demo data to\nillustrate that historically it's not mandatory to defined a schema\ndescribing the content of the response returned by a method.\nThis kind of definition is DEPRECATED and will no more supported in\nthe future.\n:param _id:\n:param params:\n:return:\n",
             "parameters":[
 
             ]
+
          },
-         "description":"\nArchive the given partner. This method is an empty method, IOW it\ndon't update the partner. This method is part of the demo data to\nillustrate that historically it's not mandatory to defined a schema\ndescribing the content of the response returned by a method.\nThis kind of definition is DEPRECATED and will no more supported in\nthe future.\n:param _id:\n:param params:\n:return:\n",
          "parameters":[
             {
                "in":"path",
@@ -116,6 +117,7 @@
                   }
                }
             },
+            "summary":"\nCreate a new partner\n",
             "parameters":[
 
             ],
@@ -207,14 +209,14 @@
                   }
                }
             }
-         },
-         "description":"\nCreate a new partner\n"
+         }
       },
       "/{id}/get":{
          "get":{
             "parameters":[
 
             ],
+            "summary":"\nGet partner's informations\n",
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -304,7 +306,6 @@
                }
             }
          },
-         "description":"\nGet partner's informations\n",
          "parameters":[
             {
                "in":"path",
@@ -319,6 +320,7 @@
       },
       "/{id}":{
          "get":{
+            "summary": "\nGet partner's informations\n",
             "parameters":[
 
             ],
@@ -411,7 +413,6 @@
                }
             }
          },
-         "description":"\nUpdate partner informations\n",
          "parameters":[
             {
                "in":"path",
@@ -491,6 +492,7 @@
                   }
                }
             },
+            "summary":"\nUpdate partner informations\n",
             "parameters":[
 
             ],
@@ -586,6 +588,7 @@
       },
       "/search":{
          "get":{
+            "summary":"\nSearh partner by name\n",
             "parameters":[
                {
                   "name":"name",
@@ -701,8 +704,7 @@
                   }
                }
             }
-         },
-         "description":"\nSearh partner by name\n"
+         }
       },
       "/":{
          "get":{
@@ -718,6 +720,7 @@
                   }
                }
             ],
+            "summary":"\nSearh partner by name\n",
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -821,8 +824,7 @@
                   }
                }
             }
-         },
-         "description":"\nSearh partner by name\n"
+         }
       },
       "/{id}/update":{
          "post":{
@@ -896,6 +898,7 @@
             "parameters":[
 
             ],
+            "summary":"\nUpdate partner informations\n",
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -985,7 +988,6 @@
                }
             }
          },
-         "description":"\nUpdate partner informations\n",
          "parameters":[
             {
                "in":"path",
