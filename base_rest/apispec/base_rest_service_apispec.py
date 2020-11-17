@@ -61,8 +61,7 @@ class BaseRestServiceAPISpec(APISpec):
             for path in paths:
                 self.path(
                     path,
-                    description=description,
-                    operations={method.lower(): {}},
+                    operations={method.lower(): {"summary": description}},
                     routing=routing,
                 )
 
