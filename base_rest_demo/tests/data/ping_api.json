@@ -12,6 +12,7 @@
    "paths":{
       "/create":{
          "post":{
+            "summary":"\nCreate method description ...\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -63,8 +64,7 @@
                   }
                }
             }
-         },
-         "description":"\nCreate method description ...\n"
+         }
       },
       "/{id}/delete":{
          "post":{
@@ -83,6 +83,7 @@
                   }
                }
             },
+            "summary":"\nDelete method description ...\n",
             "parameters":[
 
             ],
@@ -118,7 +119,6 @@
                }
             }
          },
-         "description":"\nDelete method description ...\n",
          "parameters":[
             {
                "in":"path",
@@ -148,6 +148,7 @@
                   }
                }
             },
+            "summary":"\nDelete method description ...\n",
             "parameters":[
 
             ],
@@ -183,7 +184,6 @@
                }
             }
          },
-         "description":"\nUpdate method description ...\n",
          "parameters":[
             {
                "in":"path",
@@ -196,6 +196,7 @@
             }
          ],
          "get":{
+            "summary":"\nThis method is used to get the information of the object specified\nby Id.\n",
             "parameters":[
                {
                   "name":"message",
@@ -244,6 +245,7 @@
             }
          },
          "put":{
+            "summary":"\nUpdate method description ...\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -299,6 +301,7 @@
       },
       "/{id}/get":{
          "get":{
+            "summary":"\nThis method is used to get the information of the object specified\nby Id.\n",
             "parameters":[
                {
                   "name":"message",
@@ -346,7 +349,6 @@
                }
             }
          },
-         "description":"\nThis method is used to get the information of the object specified\nby Id.\n",
          "parameters":[
             {
                "in":"path",
@@ -361,6 +363,7 @@
       },
       "/search":{
          "get":{
+            "summary":"\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n",
             "parameters":[
                {
                   "name":"limit",
@@ -447,11 +450,11 @@
                   }
                }
             }
-         },
-         "description":"\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n"
+         }
       },
       "/":{
          "get":{
+            "summary":"\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n",
             "parameters":[
                {
                   "name":"limit",
@@ -538,11 +541,11 @@
                   }
                }
             }
-         },
-         "description":"\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n"
+         }
       },
       "/{id}/update":{
          "post":{
+            "summary":"\nUpdate method description ...\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -595,7 +598,6 @@
                }
             }
          },
-         "description":"\nUpdate method description ...\n",
          "parameters":[
             {
                "in":"path",

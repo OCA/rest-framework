@@ -28,9 +28,9 @@
                      ]
                   }
                }
-            ]
+            ],
+            "summary":"\nGet partner's image\n"
          },
-         "description":"\nGet partner's image\n",
          "parameters":[
             {
                "in":"path",
@@ -45,6 +45,7 @@
       },
       "/{id}":{
          "get":{
+            "summary":"\nGet partner's image\n",
             "parameters":[
                {
                   "name":"size",
@@ -63,7 +64,6 @@
                }
             ]
          },
-         "description":"\nGet partner's image\n",
          "parameters":[
             {
                "in":"path",

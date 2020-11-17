@@ -168,11 +168,8 @@ class CerberusValidator(RestMethodParam):
         return {"200": {"content": {"application/json": {"schema": json_schema}}}}
 
     def get_cerberus_validator(self, service):
-        schema = None
-        if isinstance(self._schema, dict):
-            # schema is a cerberus schema
-            schema = self._schema
-        elif isinstance(self._schema, str):
+        schema = self._schema
+        if isinstance(self._schema, str):
             # schema is a method name to call on service to get the schema or
             schema = getattr(service, self._schema)()
         if isinstance(schema, Validator):
