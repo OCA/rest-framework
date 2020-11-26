@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
     Copyright 2018 ACSONE SA/NV
     License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
@@ -28,13 +28,20 @@
                 If you do not want to rely on a CDN, you can host these files locally or
                 include them directly in your favored resource bunder.
                 -->
-                <link href="//cdn.jsdelivr.net/npm/graphiql@0.12.0/graphiql.css" rel="stylesheet"/>
-                <script src="//cdn.jsdelivr.net/npm/whatwg-fetch@2.0.3/fetch.min.js"></script>
-                <script src="//cdn.jsdelivr.net/npm/react@16.2.0/umd/react.production.min.js"></script>
-                <script src="//cdn.jsdelivr.net/npm/react-dom@16.2.0/umd/react-dom.production.min.js"></script>
-                <script src="//cdn.jsdelivr.net/npm/graphiql@0.12.0/graphiql.min.js"></script>
+                <link
+                    href="//cdn.jsdelivr.net/npm/graphiql@0.12.0/graphiql.css"
+                    rel="stylesheet"
+                />
+                <script src="//cdn.jsdelivr.net/npm/whatwg-fetch@2.0.3/fetch.min.js" />
+                <script
+                    src="//cdn.jsdelivr.net/npm/react@16.2.0/umd/react.production.min.js"
+                />
+                <script
+                    src="//cdn.jsdelivr.net/npm/react-dom@16.2.0/umd/react-dom.production.min.js"
+                />
+                <script src="//cdn.jsdelivr.net/npm/graphiql@0.12.0/graphiql.min.js" />
             </t>
-            <t t-set="head" t-value="head"/>
+            <t t-set="head" t-value="head" />
         </t>
         <body>
             <div id="graphiql">Loading...</div>

@@ -11,7 +11,7 @@ from .common import DatamodelRegistryCase, TransactionDatamodelCase
 
 
 class TestBuildDatamodel(DatamodelRegistryCase):
-    """ Test build of datamodels
+    """Test build of datamodels
 
     All the tests in this suite are based on the same principle with
     variations:
@@ -26,7 +26,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
     """
 
     def test_type(self):
-        """ Ensure that a datamodels are instances of
+        """Ensure that a datamodels are instances of
         marshomallow_objects.Model"""
 
         class Datamodel1(Datamodel):
@@ -303,7 +303,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         )
 
     def test_add_inheritance_final_schema(self):
-        """ Ensure that the Marshmallow schema is updated if we add a
+        """Ensure that the Marshmallow schema is updated if we add a
         new inheritance"""
 
         class Datamodel1(Datamodel):

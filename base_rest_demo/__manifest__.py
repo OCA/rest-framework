@@ -10,7 +10,7 @@
     "license": "LGPL-3",
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
-    "website": "https://acsone.eu/",
+    "website": "https://github.com/OCA/rest-framework",
     "depends": ["base_rest", "component"],
     "data": [],
     "demo": [],

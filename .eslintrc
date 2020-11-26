@@ -52,9 +52,12 @@
     "no-fallthrough": "warn",
     "no-floating-decimal": "warn",
     "no-func-assign": "warn",
-    "no-implicit-coercion": ["warn", {
-      "allow": ["~"]
-    }],
+    "no-implicit-coercion": [
+      "warn",
+      {
+        "allow": ["~"]
+      }
+    ],
     "no-implicit-globals": "warn",
     "no-implied-eval": "warn",
     "no-inline-comments": "warn",
@@ -151,20 +154,24 @@
     "brace-style": "warn",
     "callback-return": "warn",
     "camelcase": "off",
-    "capitalized-comments": ["warn", "always", {
-      "ignoreConsecutiveComments": true,
-      "ignoreInlineComments": true
-    }],
-    "comma-dangle": ["warn", "always-multiline"],
-    "comma-spacing": ["warn", {
-      "before": false,
-      "after": true
-    }],
-    "comma-style": "warn",
-    "complexity": [
+    "capitalized-comments": [
       "warn",
-      15
+      "always",
+      {
+        "ignoreConsecutiveComments": true,
+        "ignoreInlineComments": true
+      }
     ],
+    "comma-dangle": ["warn", "always-multiline"],
+    "comma-spacing": [
+      "warn",
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "comma-style": "warn",
+    "complexity": ["warn", 15],
     "computed-property-spacing": "off",
     "consistent-return": "off",
     "consistent-this": "off",
@@ -189,17 +196,17 @@
     "jsx-quotes": "warn",
     "key-spacing": "off",
     "keyword-spacing": "warn",
-    "linebreak-style": [
-      "warn",
-      "unix"
-    ],
+    "linebreak-style": ["warn", "unix"],
     "lines-around-comment": "warn",
     "max-depth": "warn",
-    "max-len": ["warn", {
-      "code": 88,
-      "ignorePattern": "odoo\\.define\\(",
-      "tabWidth": 4
-    }],
+    "max-len": [
+      "warn",
+      {
+        "code": 88,
+        "ignorePattern": "odoo\\.define\\(",
+        "tabWidth": 4
+      }
+    ],
     "max-lines": "off",
     "max-nested-callbacks": "warn",
     "max-params": "off",
@@ -211,11 +218,14 @@
     "newline-after-var": "off",
     "newline-before-return": "off",
     "newline-per-chained-call": "off",
-    "object-curly-newline": ["warn", { "consistent": true }],
+    "object-curly-newline": ["warn", {"consistent": true}],
     "object-curly-spacing": ["warn", "never"],
-    "object-property-newline": ["warn", {
-      "allowAllPropertiesOnSameLine": true
-    }],
+    "object-property-newline": [
+      "warn",
+      {
+        "allowAllPropertiesOnSameLine": true
+      }
+    ],
     "object-shorthand": "off",
     "one-var": "off",
     "one-var-declaration-per-line": "off",
@@ -233,10 +243,7 @@
     "radix": "warn",
     "require-yield": "warn",
     "rest-spread-spacing": "off",
-    "semi": [
-      "warn",
-      "always"
-    ],
+    "semi": ["warn", "always"],
     "semi-spacing": "warn",
     "sort-imports": "warn",
     "sort-vars": "off",
@@ -250,34 +257,37 @@
     "template-curly-spacing": "off",
     "unicode-bom": "warn",
     "use-isnan": "warn",
-    "valid-jsdoc": ["warn", {
-      "prefer": {
-        "arg": "param",
-        "argument": "param",
-        "augments": "extends",
-        "constructor": "class",
-        "exception": "throws",
-        "func": "function",
-        "method": "function",
-        "prop": "property",
-        "return": "returns",
-        "virtual": "abstract",
-        "yield": "yields"
-      },
-      "preferType": {
-        "array": "Array",
-        "bool": "Boolean",
-        "boolean": "Boolean",
-        "number": "Number",
-        "object": "Object",
-        "str": "String",
-        "string": "String"
-      },
-      "requireParamDescription": false,
-      "requireReturn": false,
-      "requireReturnDescription": false,
-      "requireReturnType": false
-    }],
+    "valid-jsdoc": [
+      "warn",
+      {
+        "prefer": {
+          "arg": "param",
+          "argument": "param",
+          "augments": "extends",
+          "constructor": "class",
+          "exception": "throws",
+          "func": "function",
+          "method": "function",
+          "prop": "property",
+          "return": "returns",
+          "virtual": "abstract",
+          "yield": "yields"
+        },
+        "preferType": {
+          "array": "Array",
+          "bool": "Boolean",
+          "boolean": "Boolean",
+          "number": "Number",
+          "object": "Object",
+          "str": "String",
+          "string": "String"
+        },
+        "requireParamDescription": false,
+        "requireReturn": false,
+        "requireReturnDescription": false,
+        "requireReturnType": false
+      }
+    ],
     "valid-typeof": "warn",
     "vars-on-top": "off",
     "wrap-iife": "warn",
@@ -286,6 +296,6 @@
     "yoda": "warn"
   },
   "parserOptions": {
-      "ecmaVersion": 2017
+    "ecmaVersion": 2017
   }
 }

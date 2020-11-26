@@ -18,29 +18,29 @@ def method(
     routes, input_param=None, output_param=None, auth=None, cors=None, csrf=False
 ):
     """Decorator marking the decorated method as being a handler for
-    REST requests. The method must be part of a component inhering from
-  ``base.rest.service``.
+      REST requests. The method must be part of a component inhering from
+    ``base.rest.service``.
 
-    :param routes: list of tuple (path, http method). path is a string or
-                  array.
-                  Each tuple determines which http requests and http method
-                  will match the decorated method. The path part can be a
-                  single string or an array of strings. See werkzeug's routing
-                  documentation for the format of path expression (
-                  http://werkzeug.pocoo.org/docs/routing/ ).
-    :param: input_param: An instance of an object that implemented
-                  ``RestMethodParam``. When processing a request, the http
-                  handler first call the from_request method and then call the
-                  decorated method with the result of this call.
-    :param: output_param: An instance of an object that implemented
-                  ``RestMethodParam``. When processing the result of the
-                  call to the decorated method, the http handler first call
-                  the `to_response` method with this result and then return
-                  the result of this call.
-    :param auth: The type of authentication method, can on of the following:
-    :param cors: The Access-Control-Allow-Origin cors directive value.
-    :param bool csrf: Whether CSRF protection should be enabled for the route.
-                      Defaults to ``False``
+      :param routes: list of tuple (path, http method). path is a string or
+                    array.
+                    Each tuple determines which http requests and http method
+                    will match the decorated method. The path part can be a
+                    single string or an array of strings. See werkzeug's routing
+                    documentation for the format of path expression (
+                    http://werkzeug.pocoo.org/docs/routing/ ).
+      :param: input_param: An instance of an object that implemented
+                    ``RestMethodParam``. When processing a request, the http
+                    handler first call the from_request method and then call the
+                    decorated method with the result of this call.
+      :param: output_param: An instance of an object that implemented
+                    ``RestMethodParam``. When processing the result of the
+                    call to the decorated method, the http handler first call
+                    the `to_response` method with this result and then return
+                    the result of this call.
+      :param auth: The type of authentication method, can on of the following:
+      :param cors: The Access-Control-Allow-Origin cors directive value.
+      :param bool csrf: Whether CSRF protection should be enabled for the route.
+                        Defaults to ``False``
 
     """
 
@@ -82,7 +82,6 @@ class RestMethodParam(object):
         :param request: `HttpRequest.params`
         :return: Value into the format expected by the method
         """
-        pass
 
     def to_response(self, service, result):
         """
@@ -93,7 +92,6 @@ class RestMethodParam(object):
         :param obj:
         :return: http.Response or JSON dict
         """
-        pass
 
     def to_openapi_query_parameters(self, service):
         return {}

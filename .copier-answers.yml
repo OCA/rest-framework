@@ -6,8 +6,9 @@ generate_requirements_txt: true
 include_wkhtmltopdf: false
 odoo_version: 14.0
 rebel_module_groups: []
-repo_description: This repo holds addons developed to ease the development of REST
-  and GraphQL services into Odoo.
+repo_description:
+  This repo holds addons developed to ease the development of REST and GraphQL services
+  into Odoo.
 repo_name: REST Framework
 repo_slug: rest-framework
 travis_apt_packages: []

@@ -46,7 +46,7 @@ class DatamodelDatabases(dict):
 
 
 class DatamodelRegistry(object):
-    """ Store all the datamodel and allow to retrieve them by name
+    """Store all the datamodel and allow to retrieve them by name
 
     The key is the ``_name`` of the datamodels.
 
@@ -98,7 +98,7 @@ def __make_object__(self, data, **kwargs):
 
 
 class MetaDatamodel(ModelMeta):
-    """ Metaclass for Datamodel
+    """Metaclass for Datamodel
 
     Every new :class:`Datamodel` will be added to ``_modules_datamodels``,
     that will be used by the datamodel builder.
@@ -133,7 +133,7 @@ class MetaDatamodel(ModelMeta):
 
 
 class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
-    """ Main Datamodel Model
+    """Main Datamodel Model
 
     All datamodels have a Python inheritance either on
     :class:`Datamodel`.
@@ -209,7 +209,7 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 
     @classmethod
     def _build_datamodel(cls, registry):
-        """ Instantiate a given Datamodel in the datamodels registry.
+        """Instantiate a given Datamodel in the datamodels registry.
 
         This method is called at the end of the Odoo's registry build.  The
         caller is :meth:`datamodel.builder.DatamodelBuilder.load_datamodels`.
@@ -350,7 +350,7 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 
     @classmethod
     def _complete_datamodel_build(cls):
-        """ Complete build of the new datamodel class
+        """Complete build of the new datamodel class
 
         After the datamodel has been built from its bases, this method is
         called, and can be used to customize the class before it can be used.
@@ -358,7 +358,6 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
         Nothing is done in the base Datamodel, but a Datamodel can inherit
         the method to add its own behavior.
         """
-        pass
 
 
 # makes the datamodels registry available on env

@@ -172,8 +172,8 @@ class HttpRestRequest(HttpRequest):
 
     def _handle_exception(self, exception):
         """Called within an except block to allow converting exceptions
-           to abitrary responses. Anything returned (except None) will
-           be used as response."""
+        to abitrary responses. Anything returned (except None) will
+        be used as response."""
         if isinstance(exception, SessionExpiredException):
             # we don't want to return the login form as plain html page
             # we want to raise a proper exception
