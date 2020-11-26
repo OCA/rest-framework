@@ -16,5 +16,5 @@
     "data": [],
     "demo": [],
     "external_dependencies": {"python": ["marshmallow", "marshmallow_objects"]},
-    "installable": False,
+    "installable": True,
 }

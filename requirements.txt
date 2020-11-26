@@ -1,9 +1,6 @@
 # generated from manifests external_dependencies
 apispec>=4.0.0
 cerberus
-graphene
-graphene<3
-graphql-server-core
 jsondiff
 marshmallow
 marshmallow-objects>=2.0.0

@@ -28,5 +28,5 @@
             "marshmallow",
         ]
     },
-    "installable": False,
+    "installable": True,
 }

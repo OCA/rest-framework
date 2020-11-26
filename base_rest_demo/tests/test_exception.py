@@ -2,15 +2,14 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 import json
 
-import odoo.tests.common
 import odoo.tools
 from odoo.tests import HttpCase
+from odoo.tests.common import tagged
 
 from odoo.addons.base_rest.tests.common import RegistryMixin
 
 
-@odoo.tests.common.at_install(False)
-@odoo.tests.common.post_install(True)
+@tagged("-at_install", "post_install")
 class TestException(HttpCase, RegistryMixin):
     @classmethod
     def setUpClass(cls):
