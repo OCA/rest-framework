@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo.addons.component.core import AbstractComponent
 from odoo.addons.base_rest import restapi
+from odoo.http import request
 
 
 class BaseAuthenticable(AbstractComponent):
@@ -22,12 +23,11 @@ class BaseAuthenticable(AbstractComponent):
     @restapi.method(
         [(["/sign_in"], "POST")],
         input_param=restapi.Datamodel("authenticable.signin.input"),
-        output_param=restapi.Datamodel("authenticable.signin.output"),
         auth="public",
     )
     def sign_in(self, params):
         directory = self._get_directory()
-        partner_auth = self.env["partner.auth"].sign_in(
+        partner_auth = self.env["partner.auth"].sudo().sign_in(
             directory, params.login, params.password)
         if partner_auth:
             return self._successfull_sign_in(partner_auth)
@@ -38,10 +38,11 @@ class BaseAuthenticable(AbstractComponent):
         raise AccessError("Invalid Login or Password")
 
     def _successfull_sign_in(self, partner_auth):
-        """Each specific implementation should return the right think here
-            like a session or a token"""
-        # TODO define what we should return
-        return NotImplementedError
+        data = self._prepare_sign_in_data(partner_auth)
+        return request.make_json_response(data)
+
+    def _prepare_sign_in_data(self, partner_auth):
+        return {"login": partner_auth.login}
 
     def _sign_out(self, backend, authenticable):
         return backend.sign_out(authenticable)
