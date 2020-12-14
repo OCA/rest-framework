@@ -10,6 +10,9 @@
     "author": "Akretion,Odoo Community Association (OCA)",
     "website": "https://www.akretion.com",
     "depends": ["component", "base_rest"],
-    "data": [],
+    "data": [
+        "security/res_group.xml",
+        "security/ir.model.access.csv",
+        ],
     "demo": [],
 }

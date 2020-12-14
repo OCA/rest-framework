@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_directory_auth,directory_auth_manager,model_directory_auth,base.group_system,1,1,1,1
+access_partner_auth,partner_auth_manager,model_partner_auth,group_partner_auth_manager,1,1,1,1
