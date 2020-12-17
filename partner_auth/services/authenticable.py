@@ -44,8 +44,15 @@ class BaseAuthenticable(AbstractComponent):
     def _prepare_sign_in_data(self, partner_auth):
         return {"login": partner_auth.login}
 
-    def _sign_out(self, backend, authenticable):
-        return backend.sign_out(authenticable)
+    def _sign_out(self):
+        return request.make_json_response({})
+
+    @restapi.method(
+        [(["/sign_out"], "POST")],
+        auth="public",
+    )
+    def sign_out(self):
+        return self._sign_out()
 
     def _change_password(self, payload, backend, authenticable):
         return backend.change_password(payload, authenticable)
