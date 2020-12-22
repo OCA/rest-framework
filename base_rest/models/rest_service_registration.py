@@ -266,9 +266,17 @@ class RestApiServiceControllerGenerator(object):
         :return: A new controller child of base_controller defining the routes
         required to serve the method of the services.
         """
-        return type(self._new_cls_name, (self._base_controller,), self._get_methods())
+        return type(
+            self._new_cls_name, (self._base_controller,), self._generate_methods()
+        )
 
-    def _get_methods(self):
+    def _generate_methods(self):
+        """Generate controller's methods and associated routes
+
+        This method inspect the service definition and generate the appropriate
+        methods and routing rules for all the methods decorated with @restappi.method
+        :return: A dictionary of method name : method
+        """
         methods = {}
         _globals = {}
         root_path = self._base_controller._root_path
