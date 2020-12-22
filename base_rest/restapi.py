@@ -15,7 +15,7 @@ def method(
     routes, input_param=None, output_param=None, auth=None, cors=None, csrf=False
 ):
     """Decorator marking the decorated method as being a handler for
-    REST requests. The method must be part of a component inhering from
+    REST requests. The method must be part of a component inheriting from
   ``base.rest.service``.
 
     :param routes: list of tuple (path, http method). path is a string or
@@ -34,7 +34,7 @@ def method(
                   call to the decorated method, the http handler first call
                   the `to_response` method with this result and then return
                   the result of this call.
-    :param auth: The type of authentication method, can on of the following:
+    :param auth: The type of authentication method
     :param cors: The Access-Control-Allow-Origin cors directive value.
     :param bool csrf: Whether CSRF protection should be enabled for the route.
                       Defaults to ``False``
