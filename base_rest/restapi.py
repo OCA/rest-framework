@@ -109,7 +109,9 @@ class CerberusValidator(RestMethodParam):
         :param schema: can be dict as cerberus schema, an instance of
                        cerberus.Validator or a sting with the method name to
                        call on the service to get the schema or the validator
-        :param is_list:
+        :param is_list: Not implemented. Should be set to True if params is a
+                        collection so that the object will be de/serialized
+                        from/to a list
         """
         self._schema = schema
         self._is_list = is_list

@@ -13,6 +13,12 @@ from odoo.addons.base_rest import restapi
 
 class Datamodel(restapi.RestMethodParam):
     def __init__(self, name, is_list=False):
+        """
+
+        :param name: The datamdel name
+        :param is_list: Should be set to True if params is a collection so that
+                        the object will be de/serialized from/to a list
+        """
         self._name = name
         self._is_list = is_list
 
