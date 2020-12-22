@@ -12,7 +12,7 @@
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
     "website": "https://github.com/OCA/rest-framework",
-    "depends": ["component", "datamodel"],
+    "depends": ["component"],
     "data": [
         "views/assets_template.xml",
         "views/openapi_template.xml",
@@ -20,12 +20,6 @@
     ],
     "demo": [],
     "external_dependencies": {
-        "python": [
-            "cerberus",
-            "pyquerystring",
-            "accept_language",
-            "apispec",
-            "marshmallow",
-        ]
+        "python": ["cerberus", "pyquerystring", "accept_language", "apispec"]
     },
 }

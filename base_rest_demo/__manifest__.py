@@ -11,7 +11,7 @@
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
     "website": "https://acsone.eu/",
-    "depends": ["base_rest", "component"],
+    "depends": ["base_rest", "base_rest_datamodel", "component"],
     "data": [],
     "demo": [],
     "external_dependencies": {"python": ["jsondiff"]},
