@@ -142,7 +142,7 @@ class RestServiceRegistation(models.AbstractModel):
 
 
 class RestApiMethodTransformer(object):
-    """ Helper class to generate and apply the missing retsapi.method decorator
+    """ Helper class to generate and apply the missing restapi.method decorator
     to service's methods defined without decorator.
 
     Before 10/12.0.3.0.0 methods exposed by a service was based on implicit
