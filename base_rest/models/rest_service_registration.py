@@ -77,8 +77,10 @@ class RestServiceRegistation(models.AbstractModel):
 
         # generate an addon name used to register our new controller for
         # the current database
-        addon_name = "{}_{}".format(
-            self.env.cr.dbname, service._usage.replace(".", "_")
+        addon_name = "{}_{}_{}".format(
+            self.env.cr.dbname,
+            service._collection.replace(".", "_"),
+            service._usage.replace(".", "_"),
         )
         # put our new controller into the new addon module
         ctrl_cls.__module__ = "odoo.addons.{}".format(addon_name)
