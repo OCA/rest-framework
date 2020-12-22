@@ -146,7 +146,7 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
         ::
 
             from marshmallow import fields
-            from odoo.addons.datamode.core import Datamodel
+            from odoo.addons.datamodel.core import Datamodel
 
             class MyDatamodel(Datamodel):
                 _name = 'my.datamodel'
