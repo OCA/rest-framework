@@ -364,34 +364,35 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 # makes the datamodels registry available on env
 
 
+class DataModelFactory(object):
+    """Factory for datamodels
+
+    This factory ensures the propagation of the environment to the
+    instanciated datamodels and related schema.
+    """
+
+    __slots__ = ("env", "registry")
+
+    def __init__(self, env, registry):
+        self.env = env
+        self.registry = registry
+
+    def __getitem__(self, key):
+        model = self.registry[key]
+        model.__init__ = functools.partialmethod(model.__init__, env=self.env)
+
+        @classmethod
+        def __get_schema_class__(cls, **kwargs):
+            cls = cls.__schema_class__(**kwargs)
+            cls._env = self.env
+            return cls
+
+        model.__get_schema_class__ = __get_schema_class__
+        return model
+
+
 @property
 def datamodels(self):
-    class DataModelFactory(object):
-        """Factory for datamodels
-
-        This factory ensures the propagation of the environment to the
-        instanciated datamodels and related schema.
-        """
-
-        __slots__ = ("env", "registry")
-
-        def __init__(self, env, registry):
-            self.env = env
-            self.registry = registry
-
-        def __getitem__(self, key):
-            model = self.registry[key]
-            model.__init__ = functools.partialmethod(model.__init__, env=self.env)
-
-            @classmethod
-            def __get_schema_class__(cls, **kwargs):
-                cls = cls.__schema_class__(**kwargs)
-                cls._env = self.env
-                return cls
-
-            model.__get_schema_class__ = __get_schema_class__
-            return model
-
     if not hasattr(self, "_datamodels_factory"):
         factory = DataModelFactory(self, _datamodel_databases.get(self.cr.dbname))
         self._datamodels_factory = factory
