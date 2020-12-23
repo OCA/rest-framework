@@ -41,14 +41,15 @@ class BaseRestServiceAPISpec(APISpec):
         collection_path = ""
         for path, spec in list(services_registry.items()):
             if spec["collection_name"] == self._service._collection:
-                collection_path = path[1:-1]  # remove '/'
+                collection_path = path
                 break
+        base_url = env["ir.config_parameter"].sudo().get_param("web.base.url")
         return [
             {
                 "url": "%s/%s/%s"
                 % (
-                    env["ir.config_parameter"].sudo().get_param("web.base.url"),
-                    collection_path,
+                    base_url.strip("/"),
+                    collection_path.strip("/"),
                     self._service._usage,
                 )
             }

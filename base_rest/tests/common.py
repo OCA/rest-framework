@@ -5,9 +5,14 @@
 import copy
 
 from odoo import http
-from odoo.tests.common import get_db_name
+from odoo.tests.common import TransactionCase, get_db_name
 
-from odoo.addons.component.core import _component_databases, _get_addon_name
+from odoo.addons.base_rest.controllers.main import _PseudoCollection
+from odoo.addons.component.core import (
+    WorkContext,
+    _component_databases,
+    _get_addon_name,
+)
 from odoo.addons.component.tests.common import (
     ComponentRegistryCase,
     SavepointComponentCase,
@@ -15,7 +20,8 @@ from odoo.addons.component.tests.common import (
 )
 
 from ..components.service import BaseRestService
-from ..core import RestServicesRegistry
+from ..controllers.main import RestController
+from ..core import RestServicesRegistry, _rest_services_databases
 from ..tools import _inspect_methods
 
 
@@ -45,15 +51,21 @@ class RegistryMixin(object):
 class RestServiceRegistryCase(ComponentRegistryCase):
     def setUp(self):
         super().setUp()
+
         self._service_registry = RestServicesRegistry()
         # take a copy of registered controllers
         controllers = http.controllers_per_module
         http.controllers_per_module = controllers
 
         self._controllers_per_module = copy.deepcopy(http.controllers_per_module)
+        db_name = get_db_name()
 
         # makes the test component registry available for the db name
-        _component_databases[get_db_name()] = self.comp_registry
+        _component_databases[db_name] = self.comp_registry
+
+        # makes the test service registry available for the db name
+        self._original_services_registry = _rest_services_databases.get(db_name, {})
+        _rest_services_databases[db_name] = self._service_registry
 
         # build the services and controller of every installed addons
         # but the current addon (when running with pytest/nosetest, we
@@ -74,7 +86,19 @@ class RestServiceRegistryCase(ComponentRegistryCase):
         @self.addCleanup
         def reset_env():
             http.controllers_per_module = self._controllers_per_module
-            _component_databases[get_db_name()] = self._original_components
+            _component_databases[db_name] = self._original_components
+            _rest_services_databases[db_name] = self._original_services_registry
+
+        # Define a base test controller here to avoid to have this controller
+        # registered outside tests
+        self._collection_name = "base.rest.test"
+
+        class BaseTestController(RestController):
+            _root_path = "/test_controller/"
+            _collection_name = self._collection_name
+            _default_auth = "public"
+
+        self._BaseTestController = BaseTestController
 
     def _build_services(self, *classes):
         self._build_components(*classes)
@@ -101,6 +125,26 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             if hasattr(method, "routing"):
                 methods[name] = method
         return methods
+
+
+class TransactionRestServiceRegistryCase(TransactionCase, RestServiceRegistryCase):
+    # pylint: disable=W8106
+    def setUp(self):
+        TransactionCase.setUp(self)
+        RestServiceRegistryCase.setUp(self)
+
+    def teardown(self):
+        TransactionCase.tearDown(self)
+        RestServiceRegistryCase.tearDown(self)
+
+    def _get_service_component(self, usage):
+        collection = _PseudoCollection(self._collection_name, self.env)
+        work = WorkContext(
+            model_name="rest.service.registration",
+            collection=collection,
+            components_registry=self.comp_registry,
+        )
+        return work.component(usage=usage)
 
 
 class BaseRestCase(SavepointComponentCase, RegistryMixin):
