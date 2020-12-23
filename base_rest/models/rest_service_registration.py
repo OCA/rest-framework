@@ -27,6 +27,7 @@ from ..core import (
     _rest_controllers_per_module,
     _rest_services_databases,
 )
+from ..tools import _inspect_methods
 
 
 class RestServiceRegistation(models.AbstractModel):
@@ -215,18 +216,29 @@ class RestApiMethodTransformer(object):
                 path = "/<int:id>"
             paths.append(path)
             return [(paths, "GET")]
-        routes = [(path, "POST")]
-        if method_name == "delete":
+        elif method_name == "delete":
             routes = [(path, "POST")]
             path = "/"
             if id_in_path_required:
                 path = "/<int:id>"
             routes.append((path, "DELETE"))
         elif method_name == "update":
+            paths = [path]
             path = "/"
             if id_in_path_required:
                 path = "/<int:id>"
-            routes.append((path, "PUT"))
+            paths.append(path)
+            routes = [(paths, "POST"), (path, "PUT")]
+        elif method_name == "create":
+            paths = [path]
+            path = "/"
+            if id_in_path_required:
+                path = "/<int:id>"
+            paths.append(path)
+            routes = [(paths, "POST")]
+        else:
+            routes = [(path, "POST")]
+
         return routes
 
     def _method_to_input_param(self, method):
@@ -316,24 +328,6 @@ class RestApiServiceControllerGenerator(object):
                 )(method_exec)
                 methods[method_name] = method_exec
         return methods
-
-
-def _inspect_methods(cls):
-    """Return all methods of a given class as (name, value) pairs sorted by
-    name.
-    inspect.getmembers was initially used. Unfortunately, instance's properties
-    was accessed into the loop and could raise some exception since we are
-    into the startup process and all the resources are not yet initialized.
-    """
-    results = []
-    for attribute in inspect.classify_class_attrs(cls):
-        if attribute.kind != "method":
-            continue
-        name = attribute.name
-        method = getattr(cls, name)
-        results.append((name, method))
-    results.sort(key=lambda pair: pair[0])
-    return results
 
 
 METHOD_TMPL = """
