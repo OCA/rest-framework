@@ -1,6 +1,7 @@
 # Copyright 2018 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 from odoo.addons.base_rest import restapi
+from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import Component
 
 
@@ -16,7 +17,7 @@ class PartnerNewApiService(Component):
 
     @restapi.method(
         [(["/<int:id>/get", "/<int:id>"], "GET")],
-        output_param=restapi.Datamodel("partner.info"),
+        output_param=Datamodel("partner.info"),
         auth="public",
     )
     def get(self, _id):
@@ -44,8 +45,8 @@ class PartnerNewApiService(Component):
 
     @restapi.method(
         [(["/", "/search"], "GET")],
-        input_param=restapi.Datamodel("partner.search.param"),
-        output_param=restapi.Datamodel("partner.short.info", is_list=True),
+        input_param=Datamodel("partner.search.param"),
+        output_param=Datamodel("partner.short.info", is_list=True),
         auth="public",
     )
     def search(self, partner_search_param):

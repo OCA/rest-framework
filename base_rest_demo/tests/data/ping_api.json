@@ -66,8 +66,154 @@
             }
          }
       },
+      "/":{
+         "post":{
+            "summary":"\nCreate method description ...\n",
+            "requestBody":{
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "type":"object",
+                        "required":[
+
+                        ],
+                        "properties":{
+                           "message":{
+                              "type":"string"
+                           }
+                        }
+                     }
+                  }
+               }
+            },
+            "parameters":[
+
+            ],
+            "responses":{
+               "400":{
+                  "description":"One of the given parameter is not valid"
+               },
+               "401":{
+                  "description":"The user is not authorized. Authentication is required"
+               },
+               "404":{
+                  "description":"Requested resource not found"
+               },
+               "403":{
+                  "description":"You don't have the permission to access the requested resource."
+               },
+               "200":{
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "required":[
+
+                           ],
+                           "properties":{
+                              "response":{
+                                 "type":"string"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         },
+         "get":{
+            "summary":"\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n",
+            "parameters":[
+               {
+                  "name":"limit",
+                  "in":"query",
+                  "required":false,
+                  "allowEmptyValue":false,
+                  "default":50,
+                  "schema":{
+                     "type":"integer"
+                  }
+               },
+               {
+                  "name":"offset",
+                  "in":"query",
+                  "required":false,
+                  "allowEmptyValue":false,
+                  "default":0,
+                  "schema":{
+                     "type":"integer"
+                  }
+               },
+               {
+                  "name":"param_required",
+                  "in":"query",
+                  "required":true,
+                  "allowEmptyValue":false,
+                  "default":null,
+                  "schema":{
+                     "type":"string"
+                  }
+               },
+               {
+                  "name":"param_string",
+                  "in":"query",
+                  "required":false,
+                  "allowEmptyValue":false,
+                  "default":null,
+                  "schema":{
+                     "type":"string"
+                  }
+               },
+               {
+                  "name":"params[]",
+                  "in":"query",
+                  "required":false,
+                  "allowEmptyValue":false,
+                  "default":null,
+                  "schema":{
+                     "type":"array",
+                     "items":{
+                        "type":"string"
+                     }
+                  }
+               }
+            ],
+            "responses":{
+               "400":{
+                  "description":"One of the given parameter is not valid"
+               },
+               "401":{
+                  "description":"The user is not authorized. Authentication is required"
+               },
+               "404":{
+                  "description":"Requested resource not found"
+               },
+               "403":{
+                  "description":"You don't have the permission to access the requested resource."
+               },
+               "200":{
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "required":[
+
+                           ],
+                           "properties":{
+                              "response":{
+                                 "type":"string"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
       "/{id}/delete":{
          "post":{
+            "summary":"\nDelete method description ...\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -83,7 +229,6 @@
                   }
                }
             },
-            "summary":"\nDelete method description ...\n",
             "parameters":[
 
             ],
@@ -133,6 +278,7 @@
       },
       "/{id}":{
          "delete":{
+            "summary":"\nDelete method description ...\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -148,7 +294,6 @@
                   }
                }
             },
-            "summary":"\nDelete method description ...\n",
             "parameters":[
 
             ],
@@ -236,6 +381,60 @@
                               },
                               "id":{
                                  "type":"integer"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         },
+         "post":{
+            "summary":"\nUpdate method description ...\n",
+            "requestBody":{
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "type":"object",
+                        "required":[
+
+                        ],
+                        "properties":{
+                           "message":{
+                              "type":"string"
+                           }
+                        }
+                     }
+                  }
+               }
+            },
+            "parameters":[
+
+            ],
+            "responses":{
+               "400":{
+                  "description":"One of the given parameter is not valid"
+               },
+               "401":{
+                  "description":"The user is not authorized. Authentication is required"
+               },
+               "404":{
+                  "description":"Requested resource not found"
+               },
+               "403":{
+                  "description":"You don't have the permission to access the requested resource."
+               },
+               "200":{
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "required":[
+
+                           ],
+                           "properties":{
+                              "response":{
+                                 "type":"string"
                               }
                            }
                         }
@@ -362,97 +561,6 @@
          ]
       },
       "/search":{
-         "get":{
-            "summary":"\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n",
-            "parameters":[
-               {
-                  "name":"limit",
-                  "in":"query",
-                  "required":false,
-                  "allowEmptyValue":false,
-                  "default":50,
-                  "schema":{
-                     "type":"integer"
-                  }
-               },
-               {
-                  "name":"offset",
-                  "in":"query",
-                  "required":false,
-                  "allowEmptyValue":false,
-                  "default":0,
-                  "schema":{
-                     "type":"integer"
-                  }
-               },
-               {
-                  "name":"param_required",
-                  "in":"query",
-                  "required":true,
-                  "allowEmptyValue":false,
-                  "default":null,
-                  "schema":{
-                     "type":"string"
-                  }
-               },
-               {
-                  "name":"param_string",
-                  "in":"query",
-                  "required":false,
-                  "allowEmptyValue":false,
-                  "default":null,
-                  "schema":{
-                     "type":"string"
-                  }
-               },
-               {
-                  "name":"params[]",
-                  "in":"query",
-                  "required":false,
-                  "allowEmptyValue":false,
-                  "default":null,
-                  "schema":{
-                     "type":"array",
-                     "items":{
-                        "type":"string"
-                     }
-                  }
-               }
-            ],
-            "responses":{
-               "400":{
-                  "description":"One of the given parameter is not valid"
-               },
-               "401":{
-                  "description":"The user is not authorized. Authentication is required"
-               },
-               "404":{
-                  "description":"Requested resource not found"
-               },
-               "403":{
-                  "description":"You don't have the permission to access the requested resource."
-               },
-               "200":{
-                  "content":{
-                     "application/json":{
-                        "schema":{
-                           "type":"object",
-                           "required":[
-
-                           ],
-                           "properties":{
-                              "response":{
-                                 "type":"string"
-                              }
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      },
-      "/":{
          "get":{
             "summary":"\nA search method to illustrate how you can define a complex request.\nIn the case of the methods 'get' and 'search' the parameters are\npassed to the server as the query part of the service URL.\n",
             "parameters":[

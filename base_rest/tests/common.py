@@ -2,11 +2,21 @@
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-from odoo.addons.component.core import _get_addon_name
+import copy
+
+from odoo import http
+from odoo.tests.common import get_db_name
+
+from odoo.addons.component.core import _component_databases, _get_addon_name
 from odoo.addons.component.tests.common import (
+    ComponentRegistryCase,
     SavepointComponentCase,
     new_rollbacked_env,
 )
+
+from ..components.service import BaseRestService
+from ..core import RestServicesRegistry
+from ..tools import _inspect_methods
 
 
 class RegistryMixin(object):
@@ -30,6 +40,67 @@ class RegistryMixin(object):
             env["rest.service.registration"]._build_controllers_routes(
                 services_registry
             )
+
+
+class RestServiceRegistryCase(ComponentRegistryCase):
+    def setUp(self):
+        super().setUp()
+        self._service_registry = RestServicesRegistry()
+        # take a copy of registered controllers
+        controllers = http.controllers_per_module
+        http.controllers_per_module = controllers
+
+        self._controllers_per_module = copy.deepcopy(http.controllers_per_module)
+
+        # makes the test component registry available for the db name
+        _component_databases[get_db_name()] = self.comp_registry
+
+        # build the services and controller of every installed addons
+        # but the current addon (when running with pytest/nosetest, we
+        # simulate the --test-enable behavior by excluding the current addon
+        # which is in 'to install' / 'to upgrade' with --test-enable).
+        current_addon = _get_addon_name(self.__module__)
+        with new_rollbacked_env() as env:
+            RestServiceRegistration = env["rest.service.registration"]
+            RestServiceRegistration.build_registry(
+                self._service_registry,
+                states=("installed",),
+                exclude_addons=[current_addon],
+            )
+            RestServiceRegistration._build_controllers_routes(self._service_registry)
+        # register our base component
+        self._build_components(BaseRestService)
+
+        @self.addCleanup
+        def reset_env():
+            http.controllers_per_module = self._controllers_per_module
+            _component_databases[get_db_name()] = self._original_components
+
+    def _build_services(self, *classes):
+        self._build_components(*classes)
+        with new_rollbacked_env() as env:
+            RestServiceRegistration = env["rest.service.registration"]
+            current_addon = _get_addon_name(self.__module__)
+            RestServiceRegistration.load_services(current_addon, self._service_registry)
+            RestServiceRegistration._build_controllers_routes(self._service_registry)
+
+    def _get_controller_for(self, service):
+        addon_name = "{}_{}_{}".format(
+            get_db_name(),
+            service._collection.replace(".", "_"),
+            service._usage.replace(".", "_"),
+        )
+        controllers = http.controllers_per_module.get(addon_name, [])
+        if not controllers:
+            return
+        return controllers[0][1]
+
+    def _get_controller_route_methods(self, controller):
+        methods = {}
+        for name, method in _inspect_methods(controller):
+            if hasattr(method, "routing"):
+                methods[name] = method
+        return methods
 
 
 class BaseRestCase(SavepointComponentCase, RegistryMixin):

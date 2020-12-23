@@ -12,6 +12,7 @@
    "paths":{
       "/{id}/archive":{
          "post":{
+            "summary":"\nArchive the given partner. This method is an empty method, IOW it\ndon't update the partner. This method is part of the demo data to\nillustrate that historically it's not mandatory to defined a schema\ndescribing the content of the response returned by a method.\nThis kind of definition is DEPRECATED and will no more supported in\nthe future.\n:param _id:\n:param params:\n:return:\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -27,11 +28,9 @@
                   }
                }
             },
-             "summary":"\nArchive the given partner. This method is an empty method, IOW it\ndon't update the partner. This method is part of the demo data to\nillustrate that historically it's not mandatory to defined a schema\ndescribing the content of the response returned by a method.\nThis kind of definition is DEPRECATED and will no more supported in\nthe future.\n:param _id:\n:param params:\n:return:\n",
             "parameters":[
 
             ]
-
          },
          "parameters":[
             {
@@ -47,6 +46,7 @@
       },
       "/create":{
          "post":{
+            "summary":"\nCreate a new partner\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -117,7 +117,6 @@
                   }
                }
             },
-            "summary":"\nCreate a new partner\n",
             "parameters":[
 
             ],
@@ -211,12 +210,296 @@
             }
          }
       },
-      "/{id}/get":{
-         "get":{
+      "/":{
+         "post":{
+            "summary":"\nCreate a new partner\n",
+            "requestBody":{
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "type":"object",
+                        "required":[
+                           "city",
+                           "name",
+                           "street",
+                           "zip"
+                        ],
+                        "properties":{
+                           "name":{
+                              "type":"string"
+                           },
+                           "street":{
+                              "type":"string"
+                           },
+                           "street2":{
+                              "nullable":true,
+                              "type":"string"
+                           },
+                           "zip":{
+                              "type":"string"
+                           },
+                           "city":{
+                              "type":"string"
+                           },
+                           "phone":{
+                              "nullable":true,
+                              "type":"string"
+                           },
+                           "state":{
+                              "type":"object",
+                              "required":[
+
+                              ],
+                              "properties":{
+                                 "id":{
+                                    "nullable":true,
+                                    "type":"integer"
+                                 },
+                                 "name":{
+                                    "type":"string"
+                                 }
+                              }
+                           },
+                           "country":{
+                              "type":"object",
+                              "required":[
+                                 "id"
+                              ],
+                              "properties":{
+                                 "id":{
+                                    "nullable":false,
+                                    "type":"integer"
+                                 },
+                                 "name":{
+                                    "type":"string"
+                                 }
+                              }
+                           },
+                           "is_company":{
+                              "type":"boolean"
+                           }
+                        }
+                     }
+                  }
+               }
+            },
             "parameters":[
 
             ],
+            "responses":{
+               "400":{
+                  "description":"One of the given parameter is not valid"
+               },
+               "401":{
+                  "description":"The user is not authorized. Authentication is required"
+               },
+               "404":{
+                  "description":"Requested resource not found"
+               },
+               "403":{
+                  "description":"You don't have the permission to access the requested resource."
+               },
+               "200":{
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "required":[
+                              "city",
+                              "id",
+                              "name",
+                              "street",
+                              "zip"
+                           ],
+                           "properties":{
+                              "name":{
+                                 "type":"string"
+                              },
+                              "street":{
+                                 "type":"string"
+                              },
+                              "street2":{
+                                 "nullable":true,
+                                 "type":"string"
+                              },
+                              "zip":{
+                                 "type":"string"
+                              },
+                              "city":{
+                                 "type":"string"
+                              },
+                              "phone":{
+                                 "nullable":true,
+                                 "type":"string"
+                              },
+                              "state":{
+                                 "type":"object",
+                                 "required":[
+
+                                 ],
+                                 "properties":{
+                                    "id":{
+                                       "nullable":true,
+                                       "type":"integer"
+                                    },
+                                    "name":{
+                                       "type":"string"
+                                    }
+                                 }
+                              },
+                              "country":{
+                                 "type":"object",
+                                 "required":[
+                                    "id"
+                                 ],
+                                 "properties":{
+                                    "id":{
+                                       "nullable":false,
+                                       "type":"integer"
+                                    },
+                                    "name":{
+                                       "type":"string"
+                                    }
+                                 }
+                              },
+                              "is_company":{
+                                 "type":"boolean"
+                              },
+                              "id":{
+                                 "type":"integer"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         },
+         "get":{
+            "summary":"\nSearh partner by name\n",
+            "parameters":[
+               {
+                  "name":"name",
+                  "in":"query",
+                  "required":true,
+                  "allowEmptyValue":false,
+                  "default":null,
+                  "schema":{
+                     "type":"string"
+                  }
+               }
+            ],
+            "responses":{
+               "400":{
+                  "description":"One of the given parameter is not valid"
+               },
+               "401":{
+                  "description":"The user is not authorized. Authentication is required"
+               },
+               "404":{
+                  "description":"Requested resource not found"
+               },
+               "403":{
+                  "description":"You don't have the permission to access the requested resource."
+               },
+               "200":{
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "required":[
+                              "count",
+                              "rows"
+                           ],
+                           "properties":{
+                              "count":{
+                                 "type":"integer"
+                              },
+                              "rows":{
+                                 "type":"array",
+                                 "items":{
+                                    "type":"object",
+                                    "required":[
+                                       "city",
+                                       "id",
+                                       "name",
+                                       "street",
+                                       "zip"
+                                    ],
+                                    "properties":{
+                                       "name":{
+                                          "type":"string"
+                                       },
+                                       "street":{
+                                          "type":"string"
+                                       },
+                                       "street2":{
+                                          "nullable":true,
+                                          "type":"string"
+                                       },
+                                       "zip":{
+                                          "type":"string"
+                                       },
+                                       "city":{
+                                          "type":"string"
+                                       },
+                                       "phone":{
+                                          "nullable":true,
+                                          "type":"string"
+                                       },
+                                       "state":{
+                                          "type":"object",
+                                          "required":[
+
+                                          ],
+                                          "properties":{
+                                             "id":{
+                                                "nullable":true,
+                                                "type":"integer"
+                                             },
+                                             "name":{
+                                                "type":"string"
+                                             }
+                                          }
+                                       },
+                                       "country":{
+                                          "type":"object",
+                                          "required":[
+                                             "id"
+                                          ],
+                                          "properties":{
+                                             "id":{
+                                                "nullable":false,
+                                                "type":"integer"
+                                             },
+                                             "name":{
+                                                "type":"string"
+                                             }
+                                          }
+                                       },
+                                       "is_company":{
+                                          "type":"boolean"
+                                       },
+                                       "id":{
+                                          "type":"integer"
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/{id}/get":{
+         "get":{
             "summary":"\nGet partner's informations\n",
+            "parameters":[
+
+            ],
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -320,7 +603,7 @@
       },
       "/{id}":{
          "get":{
-            "summary": "\nGet partner's informations\n",
+            "summary":"\nGet partner's informations\n",
             "parameters":[
 
             ],
@@ -424,7 +707,8 @@
                }
             }
          ],
-         "put":{
+         "post":{
+            "summary":"\nUpdate partner informations\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -492,7 +776,167 @@
                   }
                }
             },
+            "parameters":[
+
+            ],
+            "responses":{
+               "400":{
+                  "description":"One of the given parameter is not valid"
+               },
+               "401":{
+                  "description":"The user is not authorized. Authentication is required"
+               },
+               "404":{
+                  "description":"Requested resource not found"
+               },
+               "403":{
+                  "description":"You don't have the permission to access the requested resource."
+               },
+               "200":{
+                  "content":{
+                     "application/json":{
+                        "schema":{
+                           "type":"object",
+                           "required":[
+                              "city",
+                              "id",
+                              "name",
+                              "street",
+                              "zip"
+                           ],
+                           "properties":{
+                              "name":{
+                                 "type":"string"
+                              },
+                              "street":{
+                                 "type":"string"
+                              },
+                              "street2":{
+                                 "nullable":true,
+                                 "type":"string"
+                              },
+                              "zip":{
+                                 "type":"string"
+                              },
+                              "city":{
+                                 "type":"string"
+                              },
+                              "phone":{
+                                 "nullable":true,
+                                 "type":"string"
+                              },
+                              "state":{
+                                 "type":"object",
+                                 "required":[
+
+                                 ],
+                                 "properties":{
+                                    "id":{
+                                       "nullable":true,
+                                       "type":"integer"
+                                    },
+                                    "name":{
+                                       "type":"string"
+                                    }
+                                 }
+                              },
+                              "country":{
+                                 "type":"object",
+                                 "required":[
+                                    "id"
+                                 ],
+                                 "properties":{
+                                    "id":{
+                                       "nullable":false,
+                                       "type":"integer"
+                                    },
+                                    "name":{
+                                       "type":"string"
+                                    }
+                                 }
+                              },
+                              "is_company":{
+                                 "type":"boolean"
+                              },
+                              "id":{
+                                 "type":"integer"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         },
+         "put":{
             "summary":"\nUpdate partner informations\n",
+            "requestBody":{
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "type":"object",
+                        "required":[
+
+                        ],
+                        "properties":{
+                           "name":{
+                              "type":"string"
+                           },
+                           "street":{
+                              "type":"string"
+                           },
+                           "street2":{
+                              "nullable":true,
+                              "type":"string"
+                           },
+                           "zip":{
+                              "type":"string"
+                           },
+                           "city":{
+                              "type":"string"
+                           },
+                           "phone":{
+                              "nullable":true,
+                              "type":"string"
+                           },
+                           "state":{
+                              "type":"object",
+                              "required":[
+
+                              ],
+                              "properties":{
+                                 "id":{
+                                    "nullable":true,
+                                    "type":"integer"
+                                 },
+                                 "name":{
+                                    "type":"string"
+                                 }
+                              }
+                           },
+                           "country":{
+                              "type":"object",
+                              "required":[
+                                 "id"
+                              ],
+                              "properties":{
+                                 "id":{
+                                    "nullable":false,
+                                    "type":"integer"
+                                 },
+                                 "name":{
+                                    "type":"string"
+                                 }
+                              }
+                           },
+                           "is_company":{
+                              "type":"boolean"
+                           }
+                        }
+                     }
+                  }
+               }
+            },
             "parameters":[
 
             ],
@@ -706,128 +1150,9 @@
             }
          }
       },
-      "/":{
-         "get":{
-            "parameters":[
-               {
-                  "name":"name",
-                  "in":"query",
-                  "required":true,
-                  "allowEmptyValue":false,
-                  "default":null,
-                  "schema":{
-                     "type":"string"
-                  }
-               }
-            ],
-            "summary":"\nSearh partner by name\n",
-            "responses":{
-               "400":{
-                  "description":"One of the given parameter is not valid"
-               },
-               "401":{
-                  "description":"The user is not authorized. Authentication is required"
-               },
-               "404":{
-                  "description":"Requested resource not found"
-               },
-               "403":{
-                  "description":"You don't have the permission to access the requested resource."
-               },
-               "200":{
-                  "content":{
-                     "application/json":{
-                        "schema":{
-                           "type":"object",
-                           "required":[
-                              "count",
-                              "rows"
-                           ],
-                           "properties":{
-                              "count":{
-                                 "type":"integer"
-                              },
-                              "rows":{
-                                 "type":"array",
-                                 "items":{
-                                    "type":"object",
-                                    "required":[
-                                       "city",
-                                       "id",
-                                       "name",
-                                       "street",
-                                       "zip"
-                                    ],
-                                    "properties":{
-                                       "name":{
-                                          "type":"string"
-                                       },
-                                       "street":{
-                                          "type":"string"
-                                       },
-                                       "street2":{
-                                          "nullable":true,
-                                          "type":"string"
-                                       },
-                                       "zip":{
-                                          "type":"string"
-                                       },
-                                       "city":{
-                                          "type":"string"
-                                       },
-                                       "phone":{
-                                          "nullable":true,
-                                          "type":"string"
-                                       },
-                                       "state":{
-                                          "type":"object",
-                                          "required":[
-
-                                          ],
-                                          "properties":{
-                                             "id":{
-                                                "nullable":true,
-                                                "type":"integer"
-                                             },
-                                             "name":{
-                                                "type":"string"
-                                             }
-                                          }
-                                       },
-                                       "country":{
-                                          "type":"object",
-                                          "required":[
-                                             "id"
-                                          ],
-                                          "properties":{
-                                             "id":{
-                                                "nullable":false,
-                                                "type":"integer"
-                                             },
-                                             "name":{
-                                                "type":"string"
-                                             }
-                                          }
-                                       },
-                                       "is_company":{
-                                          "type":"boolean"
-                                       },
-                                       "id":{
-                                          "type":"integer"
-                                       }
-                                    }
-                                 }
-                              }
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-         }
-      },
       "/{id}/update":{
          "post":{
+            "summary":"\nUpdate partner informations\n",
             "requestBody":{
                "content":{
                   "application/json":{
@@ -898,7 +1223,6 @@
             "parameters":[
 
             ],
-            "summary":"\nUpdate partner informations\n",
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
