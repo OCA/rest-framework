@@ -3,7 +3,6 @@
 from odoo.addons.component.core import Component
 
 from .. import restapi
-from ..controllers.main import RestController
 from .common import RestServiceRegistryCase
 
 
@@ -13,18 +12,6 @@ class TestControllerBuilder(RestServiceRegistryCase):
     In this class we test the generation of odoo controllers from the services
     component
     """
-
-    def setUp(self):
-        super().setUp()
-
-        # Define a base test controller here to avoid to have this controller
-        # registered outside tests
-        class BaseTestController(RestController):
-            _root_path = "/test_controller/"
-            _collection_name = "base.rest.test"
-            _default_auth = "public"
-
-        self._BaseTestController = BaseTestController
 
     def test_01(self):
         """Test controller generated for old API services
@@ -39,7 +26,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
             _inherit = "base.rest.service"
             _name = "test.ping.service"
             _usage = "ping"
-            _collection = self._BaseTestController._collection_name
+            _collection = self._collection_name
             _description = "test"
 
             def get(self, _id, message):
@@ -232,7 +219,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
             _usage = "partner"
-            _collection = self._BaseTestController._collection_name
+            _collection = self._collection_name
             _description = "test"
 
             @restapi.method(
@@ -317,7 +304,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
             _usage = "partner"
-            _collection = self._BaseTestController._collection_name
+            _collection = self._collection_name
             _description = "test"
 
             @restapi.method(
