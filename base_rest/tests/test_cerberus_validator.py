@@ -10,8 +10,8 @@ from ..restapi import CerberusValidator
 
 
 class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
-    """ Test all the methods that must be implemented by CerberusValidator to
-    be a valid RestMethodParam """
+    """Test all the methods that must be implemented by CerberusValidator to
+    be a valid RestMethodParam"""
 
     @classmethod
     def setUpClass(cls):

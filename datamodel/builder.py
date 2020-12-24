@@ -16,7 +16,7 @@ from .core import DEFAULT_CACHE_SIZE, DatamodelRegistry, _datamodel_databases
 
 
 class DatamodelBuilder(models.AbstractModel):
-    """ Build the datamodel classes
+    """Build the datamodel classes
 
     And register them in a global registry.
 
@@ -79,7 +79,7 @@ class DatamodelBuilder(models.AbstractModel):
             self.load_datamodels(module.name, datamodels_registry=datamodels_registry)
 
     def load_datamodels(self, module, datamodels_registry=None):
-        """ Build every datamodel known by MetaDatamodel for an odoo module
+        """Build every datamodel known by MetaDatamodel for an odoo module
 
         The final datamodel (composed by all the Datamodel classes in this
         module) will be pushed into the registry.

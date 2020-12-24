@@ -5,8 +5,7 @@ from collections import OrderedDict
 
 
 def cerberus_to_json(schema):
-    """Convert a Cerberus schema to a JSON schema
-    """
+    """Convert a Cerberus schema to a JSON schema"""
     result = OrderedDict()
     required = []
     properties = OrderedDict()

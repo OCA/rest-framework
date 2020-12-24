@@ -14,7 +14,7 @@ _rest_controllers_per_module = collections.defaultdict(list)
 
 
 class RestServicesRegistry(dict):
-    """ Holds a registry of REST services where key is the root of the path on
+    """Holds a registry of REST services where key is the root of the path on
     which the methods of your ` RestController`` are registred and value is the
     name of the collection on which your ``RestServiceComponent`` implementing
     the business logic of your service is registered."""
