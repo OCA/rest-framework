@@ -3,7 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import copy
-import unittest
 from contextlib import contextmanager
 
 import odoo
@@ -103,7 +102,7 @@ class SavepointDatamodelCase(common.SavepointCase, DatamodelMixin):
 
 
 class DatamodelRegistryCase(
-    unittest.TestCase, common.MetaCase("DummyCase", (object,), {})
+    common.TreeCase, common.MetaCase("DummyCase", (object,), {})
 ):
     """ This test case can be used as a base for writings tests on datamodels
 
