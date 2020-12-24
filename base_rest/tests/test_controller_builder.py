@@ -13,6 +13,14 @@ class TestControllerBuilder(RestServiceRegistryCase):
     component
     """
 
+    def setUp(self):
+        super().setUp()
+        RestServiceRegistryCase._setup_registry(self)
+
+    def tearDown(self):
+        super().tearDown()
+        RestServiceRegistryCase._teardown_registry(self)
+
     def test_01(self):
         """Test controller generated for old API services
 
@@ -22,6 +30,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
         implementation, these routes where hardcoded into the base controller.
         """
 
+        # pylint: disable=R7980
         class TestServiceOldApi(Component):
             _inherit = "base.rest.service"
             _name = "test.ping.service"
@@ -215,6 +224,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
         required method to route the requests to the methods
         """
 
+        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -300,6 +310,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
     def test_03(self):
         """Check that the controller builder takes care of services inheritance"""
 
+        # pylint: disable=R7980
         class TestPartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
