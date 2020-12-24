@@ -15,7 +15,14 @@ This repo holds addons developed to ease the development of REST services into O
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Unported addons
+---------------
+addon | version | summary
+--- | --- | ---
+[base_rest](base_rest/) | 13.0.2.1.2 (unported) | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest_demo](base_rest_demo/) | 13.0.2.0.1 (unported) | Demo addon for Base REST
+[graphql_base](graphql_base/) | 13.0.1.0.0 (unported) | Base GraphQL/GraphiQL controller
+[graphql_demo](graphql_demo/) | 13.0.1.0.0 (unported) | GraphQL Demo
 
 [//]: # (end addons)
 
