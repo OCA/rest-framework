@@ -20,6 +20,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
         """ Simple test case
         """
 
+        # pylint: disable=R7980
         class PartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -104,6 +105,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
         we check that these parameters are into the openapi specification
         """
 
+        # pylint: disable=R7980
         class PartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
