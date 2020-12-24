@@ -15,5 +15,5 @@
     "data": [],
     "demo": [],
     "external_dependencies": {"python": ["jsondiff"]},
-    "installable": True,
+    "installable": False,
 }

@@ -1,6 +1,1 @@
-cerberus
-pyquerystring
-parse-accept-language
-jsondiff
-graphene
-graphql-server-core
+# generated from manifests external_dependencies
