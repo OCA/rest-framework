@@ -8,17 +8,14 @@ from .common import TransactionRestServiceRegistryCase
 
 
 class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
-    """Test openapi document generation from REST services
-
-    """
+    """Test openapi document generation from REST services"""
 
     def setUp(self):
         super(TestOpenAPIGenerator, self).setUp()
         self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
 
     def test_01(self):
-        """ Simple test case
-        """
+        """Simple test case"""
 
         # pylint: disable=R7980
         class PartnerService(Component):
