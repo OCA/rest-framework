@@ -201,12 +201,8 @@ class RestApiMethodTransformer(object):
         :return: A list of routes used to get access to the method
         """
         method_name = method.__name__
-        arg_spec = inspect.getargspec(method)
-        id_in_path_required = False
-        if "_id" in arg_spec.args:
-            id_in_path_required = True
-        if "_id" in (arg_spec.keywords or {}):
-            id_in_path_required = True
+        signature = inspect.signature(method)
+        id_in_path_required = "_id" in signature.parameters
         path = "/{}".format(method_name)
         if id_in_path_required:
             path = "/<int:id>" + path
