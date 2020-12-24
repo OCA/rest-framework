@@ -5,7 +5,7 @@ from ..core import Datamodel
 
 
 class BaseDatamodel(Datamodel):
-    """ This is the base datamodel for every datamodel
+    """This is the base datamodel for every datamodel
 
     It is implicitely inherited by all datamodels.
 
