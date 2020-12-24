@@ -98,7 +98,7 @@ class RestMethodParam(object):
     def to_openapi_requestbody(self, service):
         return {}
 
-    def to_openapi_response(self, service):
+    def to_openapi_responses(self, service):
         return {}
 
 
