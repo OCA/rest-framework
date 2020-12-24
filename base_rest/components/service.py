@@ -2,28 +2,17 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 
-import inspect
 import logging
-import textwrap
-from collections import OrderedDict
 
 from werkzeug.exceptions import NotFound
 
-from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
-from odoo.tools.translate import _
 
 from odoo.addons.component.core import AbstractComponent
 
-from ..core import _rest_services_databases
-from ..tools import cerberus_to_json
+from ..apispec.base_rest_service_apispec import BaseRestServiceAPISpec
 
 _logger = logging.getLogger(__name__)
-
-try:
-    from cerberus import Validator
-except ImportError:
-    _logger.debug("Can not import cerberus")
 
 
 def to_int(val):
@@ -91,40 +80,12 @@ class BaseRestService(AbstractComponent):
             message = "REST call url %s method %s"
             _logger.debug(message, *args, extra=extra)
 
-    def _get_validator(self, validator_method):
-        if not hasattr(self, validator_method):
-            return None
-        v = getattr(self, validator_method)()
-        if isinstance(v, dict):
-            return Validator(v, purge_unknown=True)
-        return v
-
-    def _get_input_validator(self, method_name):
-        return self._get_validator("_validator_%s" % method_name)
-
-    def _get_output_validator(self, method_name):
-        return self._get_validator("_validator_return_%s" % method_name)
-
-    def _get_input_schema(self, method_name):
-        validator = self._get_input_validator(method_name)
-        if not validator:
-            return None
-        return validator.schema
-
-    def _get_output_schema(self, method_name):
-        validator = self._get_output_validator(method_name)
-        if not validator:
-            return None
-        return validator.schema
-
-    def _secure_input(self, method, params):
+    def _prepare_input_params(self, method, params):
         """
-        This internal method is used to validate and sanitize the parameters
-        expected by the given method.  These parameters are validated and
-        sanitized according to a schema provided by a method  following the
-        naming convention: '_validator_{method_name}'. If the method is
-        decorated with `@skip_secure_params` the check and sanitize of the
-        parameters are skipped.
+        Internal method used to process the input_param parameter. The
+        result will be used to call the final method. The processing is
+        delegated to the `resapi.RestMethodParam` instance specified by the
+        restapi.method` decorator on the method.
         :param method:
         :param params:
         :return:
@@ -132,73 +93,73 @@ class BaseRestService(AbstractComponent):
         method_name = method.__name__
         if hasattr(method, "skip_secure_params"):
             return params
-        v = self._get_input_validator(method_name)
-        if v is None:
-            raise ValidationError(
-                _("No input schema defined for method %s in service %s")
-                % (method_name, self._name)
-            )
-        if v.validate(params):
-            return v.document
-        raise UserError(_("BadRequest %s") % v.errors)
-
-    def _secure_output(self, method, response):
-        """
-        Internal method used to validate the output of the given method.
-        This response is validated according to a schema defined for the
-        method, with the convention '_validator_return_{method_name}'.
-        If the method is decorated with `@skip_secure_response` checks of
-        the response are skipped.
-        :param method: str or function
-        :param response: dict/json
-        :return: dict/json
-        """
-        method_name = method
-        if callable(method):
-            method_name = method.__name__
-        if hasattr(method, "skip_secure_response"):
-            return response
-        v = self._get_output_validator(method_name)
-        if not v:
-            _logger.warning(
-                "DEPRECATED: You must define an output schema for method %s "
-                "in service %s",
-                method_name,
-                self._name,
-            )
-            return response
-        if v.validate(response):
-            return v.document
-        raise SystemError(_("Invalid Response %s") % v.errors)
-
-    def dispatch(self, method_name, _id=None, params=None):
-        """
-        This method dispatch the call to expected public method name.
-        Before the call the parameters are secured by a call to
-        `secure_input` and the result is also secured by a call to
-        `_secure_output`
-        :param method_name:
-        :param _id:
-        :param params: A dictionary with the parameters of the method. Once
-                       secured and sanitized, these parameters will be passed
-                       to the method as keyword args.
-        :return:
-        """
-        params = params or {}
-        if not self._is_public_api_method(method_name):
+        routing = getattr(method, "routing", None)
+        if not routing:
             _logger.warning(
                 "Method %s is not a public method of service %s",
                 method_name,
                 self._name,
             )
             raise NotFound()
-        func = getattr(self, method_name, None)
-        secure_params = self._secure_input(func, params)
-        if _id:
-            secure_params["_id"] = _id
-        res = func(**secure_params)
-        self._log_call(func, params, secure_params, res)
-        return self._secure_output(func, res)
+        input_param = routing["input_param"]
+        if input_param:
+            return input_param.from_params(self, params)
+        return {}
+
+    def _prepare_response(self, method, result):
+        """
+        Internal method used to process the result of the method called by the
+        controller. The result of this process is returned to the controller
+
+        The processing is delegated to the `resapi.RestMethodParam` instance
+        specified by the `restapi.method` decorator on the method.
+        :param method: method
+        :param response:
+        :return: dict/json or `http.Response`
+        """
+        method_name = method
+        if callable(method):
+            method_name = method.__name__
+        if hasattr(method, "skip_secure_response"):
+            return result
+        routing = getattr(method, "routing", None)
+        output_param = routing["output_param"]
+        if not output_param:
+            _logger.warning(
+                "DEPRECATED: You must define an output schema for method %s "
+                "in service %s",
+                method_name,
+                self._name,
+            )
+            return result
+        return output_param.to_response(self, result)
+
+    def dispatch(self, method_name, *args, params=None):
+        """
+        This method dispatch the call to the final method.
+        Before the call parameters are processed by the
+        `restapi.RestMethodParam` object specified as input_param object.
+        The result of the method is therefore given to the
+        `restapi.RestMethodParam` object specified as output_param to build
+        the final response returned by the service
+        :param method_name:
+        :param *args: query path paramters args
+        :param params: A dictionary with the parameters of the method. Once
+                       secured and sanitized, these parameters will be passed
+                       to the method as keyword args.
+        :return:
+        """
+        method = getattr(self, method_name, object())
+        params = params or {}
+        secure_params = self._prepare_input_params(method, params)
+        if isinstance(secure_params, dict):
+            # for backward compatibility methods expecting json params
+            # are declared as m(self, p1=None, p2=None) or m(self, **params)
+            res = method(*args, **secure_params)
+        else:
+            res = method(*args, secure_params)
+        self._log_call(method, params, secure_params, res)
+        return self._prepare_response(method, res)
 
     def _validator_delete(self):
         """
@@ -219,36 +180,7 @@ class BaseRestService(AbstractComponent):
         Return the description of this REST service as an OpenAPI json document
         :return: json document
         """
-        root = OrderedDict()
-        root["openapi"] = "3.0.0"
-        root["info"] = self._get_openapi_info()
-        root["servers"] = self._get_openapi_servers()
-        root["paths"] = self._get_openapi_paths()
-        return root
-
-    def _get_openapi_info(self):
-        return {
-            "title": "%s REST services" % self._usage,
-            "description": textwrap.dedent(self._description or ""),
-        }
-
-    def _get_openapi_servers(self):
-        services_registry = _rest_services_databases.get(self.env.cr.dbname, {})
-        collection_path = ""
-        for path, spec in list(services_registry.items()):
-            if spec["collection_name"] == self._collection:
-                collection_path = path[1:-1]  # remove '/'
-                break
-        return [
-            {
-                "url": "%s/%s/%s"
-                % (
-                    self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
-                    collection_path,
-                    self._usage,
-                )
-            }
-        ]
+        return BaseRestServiceAPISpec(self).to_dict()
 
     def _get_openapi_default_parameters(self):
         return []
@@ -266,119 +198,3 @@ class BaseRestService(AbstractComponent):
                 "requested resource."
             },
         }
-
-    def _is_public_api_method(self, method_name):
-        """
-        Return True if the method is into the public API
-        :param method_name:
-        :return:
-        """
-        if method_name.startswith("_"):
-            return False
-        if not hasattr(self, method_name):
-            return False
-        if hasattr(BaseRestService, method_name):
-            # exclude methods from base class
-            return False
-        return True
-
-    def _get_openapi_paths(self):  # noqa: C901
-        paths = OrderedDict()
-        public_methods = {}
-        for name, data in inspect.getmembers(self, inspect.ismethod):
-            if not self._is_public_api_method(name):
-                continue
-            public_methods[name] = data
-
-        default_parameters = self._get_openapi_default_parameters()
-        default_responses = self._get_openapi_default_responses()
-
-        for name, method in list(public_methods.items()):
-            id_in_path_required = False
-            arg_spec = inspect.getargspec(method)
-            if "_id" in arg_spec.args:
-                id_in_path_required = True
-            if "_id" in (arg_spec.keywords or {}):
-                id_in_path_required = True
-            parameters = default_parameters.copy()
-            responses = default_responses.copy()
-            path_info = {
-                "summary": textwrap.dedent(method.__doc__ or ""),
-                "parameters": parameters,
-                "responses": responses,
-            }
-            if id_in_path_required:
-                parameters.append(
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Item id",
-                        "required": True,
-                        "schema": {"type": "integer"},
-                    }
-                )
-            input_schema = self._get_input_schema(name)
-            output_schema = self._get_output_schema(name)
-            json_input_schema = cerberus_to_json(input_schema)
-
-            if not output_schema:
-                # for backward compatibility output schema is not required
-                # DEPRECATED
-                responses["200"] = {"description": "Unknown response type"}
-            else:
-                json_output_schema = cerberus_to_json(output_schema)
-                responses["200"] = {
-                    "content": {"application/json": {"schema": json_output_schema}}
-                }
-
-            if name in ("search", "get"):
-                get = {"get": path_info}
-                # parameter for http GET are url query parameters
-                for prop, spec in list(json_input_schema["properties"].items()):
-                    params = {
-                        "name": prop,
-                        "in": "query",
-                        "required": prop in json_input_schema["required"],
-                        "allowEmptyValue": spec.get("nullable", False),
-                        "default": spec.get("default"),
-                    }
-                    if spec.get("schema"):
-                        params["schema"] = spec.get("schema")
-                    else:
-                        params["schema"] = {"type": spec["type"]}
-                    if spec.get("items"):
-                        params["schema"]["items"] = spec.get("items")
-                    if "enum" in spec:
-                        params["schema"]["enum"] = spec["enum"]
-
-                    parameters.append(params)
-
-                    if spec["type"] == "array":
-                        # To correctly handle array into the url query string,
-                        # the name must ends with []
-                        params["name"] = params["name"] + "[]"
-
-                if name == "get":
-                    paths.setdefault("/{id}", {}).update(get)
-                    paths["/{id}/get"] = get
-                if name == "search":
-                    paths["/"] = get
-                    paths["/search"] = get
-            elif name == "delete":
-                paths.setdefault("/{id}", {}).update({"delete": path_info})
-                paths["/{id}/delete"] = {"post": path_info}
-            else:
-                # parameter for HTTP Post are given as a json document into the
-                # requestBody
-                path_info["requestBody"] = {
-                    "content": {"application/json": {"schema": json_input_schema}}
-                }
-                path = "/" + name
-                if id_in_path_required:
-                    path = "/{id}/" + name
-                paths[path] = {"post": path_info}
-                if name == "update":
-                    paths.setdefault("/{id}", {}).update({"put": path_info})
-            # sort paramters to ease comparison into unittests
-            parameters.sort(key=lambda a: a["name"])
-        return paths
