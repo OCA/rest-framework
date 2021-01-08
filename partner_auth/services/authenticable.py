@@ -54,12 +54,25 @@ class BaseAuthenticable(AbstractComponent):
     def sign_out(self):
         return self._sign_out()
 
-    def _change_password(self, payload, backend, authenticable):
-        return backend.change_password(payload, authenticable)
+    @restapi.method(
+        [(["/reset_password"], "POST")],
+        input_param=restapi.Datamodel("authenticable.reset.password.input"),
+        auth="public",
+    )
+    def reset_password(self, params):
+        directory = self._get_directory()
+        partner_auth = self.env["partner.auth"].sudo().reset_password(
+            directory, params.reset_token, params.password)
+        return self._successfull_sign_in(partner_auth)
 
-    def _reset_password(self, payload):
-        return (
-            self.env[payload.backend.backend_name]
-            .browse(payload.backend.backend_id)
-            .reset_password(payload.authenticable_identifier)
-        )
+    @restapi.method(
+        [(["/forgot_password"], "POST")],
+        input_param=restapi.Datamodel("authenticable.forget.password.input"),
+        auth="public",
+    )
+    def forgot_password(self, params):
+        directory = self._get_directory()
+        self.env["partner.auth"].sudo().with_delay().forgot_password(
+            directory, params.login
+            )
+        return {}

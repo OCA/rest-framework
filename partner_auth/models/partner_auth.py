@@ -3,7 +3,9 @@
 import passlib
 import logging
 from odoo import api, fields, models
-from odoo.exceptions import AccessDenied
+from odoo.exceptions import AccessDenied, UserError
+from odoo.addons.auth_signup.models.res_partner import random_token
+from datetime import datetime, timedelta
 
 # please read passlib great documentation
 # https://passlib.readthedocs.io
@@ -30,6 +32,8 @@ class PartnerAuth(models.Model):
     login = fields.Char(compute="_compute_login", store=True)
     password = fields.Char(compute="_compute_password", inverse="_set_password")
     encrypted_password = fields.Char()
+    reset_token = fields.Char()
+    token_expiration = fields.Datetime()
 
     _sql_constraints = [
         (
@@ -92,17 +96,45 @@ class PartnerAuth(models.Model):
             raise AccessDenied()
         return self.browse(_id)
 
-#
-#    def change_password(self, password):
-#        pwd_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
-#        pwd_field = self._authenticable_pwd_hash
-#        setattr(self, pwd_field, pwd_hash)
-#        return "Success"
-#
-#    def reset_password(self):
-#        pass
-#
-#    def sign_out(self):
-#        pass
-#
-#
+    def _get_template(self, directory):
+        return directory.forget_password_template_id
+
+    def _generate_token(self, directory):
+        self.write({
+            "reset_token": random_token(),
+            "token_expiration": datetime.now() + timedelta(
+                    minutes=directory.reset_password_token_duration
+                ),
+            })
+
+    def reset_password(self, directory, reset_token, password):
+        auth = self.search([
+            ('reset_token', '=', reset_token),
+            ('directory_id', '=', directory.id)
+            ], limit=1)
+        if auth and auth.token_expiration > datetime.now():
+            auth.write({
+                "password": password,
+                "reset_token": False,
+                "token_expiration": False,
+                })
+            return auth
+        else:
+            raise UserError(_("The link is not valid, please request a new one"))
+
+    def forgot_password(self, directory, login):
+        auth = self.search([
+            ("directory_id", "=", directory.id),
+            ("login", "=", login),
+            ])
+        if auth:
+            auth._generate_token(directory)
+            template = self._get_template(directory)
+            if not template:
+                raise UserError(
+                    _("Template is missing for directory {}").format(directory.name)
+                    )
+            template.sudo().send_mail(auth.id)
+            return "Partner Auth reset password token sent"
+        else:
+            return "No Partner Auth found, skip"

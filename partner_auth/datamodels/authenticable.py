@@ -13,3 +13,16 @@ class AuthenticableSigninInput(Datamodel):
 
 class AuthenticableSigninOutput(Datamodel):
     _name = "authenticable.signin.output"
+
+
+class AuthenticableForgetPasswordInput(Datamodel):
+    _name = "authenticable.forget.password.input"
+
+    login = fields.Str(required=True)
+
+
+class AuthenticableResetPasswordInput(Datamodel):
+    _name = "authenticable.reset.password.input"
+
+    reset_token = fields.Str(required=True)
+    password = fields.Str(required=True)
