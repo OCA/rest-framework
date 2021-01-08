@@ -13,3 +13,11 @@ class DirectoryAuth(models.Model):
     _description = 'Directory Auth'
 
     name = fields.Char(required=True)
+    reset_password_token_duration = fields.Integer(
+        default=1440,
+        help="In minute, default 1440 minutes => 24h",
+        )
+    forget_password_template_id = fields.Many2one(
+        "mail.template",
+        "Mail Template",
+        )
