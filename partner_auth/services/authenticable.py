@@ -1,8 +1,11 @@
 # Copyright 2020 Akretion
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo.addons.component.core import AbstractComponent
-from odoo.addons.base_rest import restapi
+from odoo import _
+from odoo.exceptions import AccessError
 from odoo.http import request
+
+from odoo.addons.base_rest import restapi
+from odoo.addons.component.core import AbstractComponent
 
 
 class BaseAuthenticable(AbstractComponent):
@@ -27,15 +30,18 @@ class BaseAuthenticable(AbstractComponent):
     )
     def sign_in(self, params):
         directory = self._get_directory()
-        partner_auth = self.env["partner.auth"].sudo().sign_in(
-            directory, params.login, params.password)
+        partner_auth = (
+            self.env["partner.auth"]
+            .sudo()
+            .sign_in(directory, params.login, params.password)
+        )
         if partner_auth:
             return self._successfull_sign_in(partner_auth)
         else:
             return self._invalid_sign_in()
 
     def _invalid_sign_in(self):
-        raise AccessError("Invalid Login or Password")
+        raise AccessError(_("Invalid Login or Password"))
 
     def _successfull_sign_in(self, partner_auth):
         data = self._prepare_sign_in_data(partner_auth)
@@ -61,8 +67,11 @@ class BaseAuthenticable(AbstractComponent):
     )
     def reset_password(self, params):
         directory = self._get_directory()
-        partner_auth = self.env["partner.auth"].sudo().reset_password(
-            directory, params.reset_token, params.password)
+        partner_auth = (
+            self.env["partner.auth"]
+            .sudo()
+            .reset_password(directory, params.reset_token, params.password)
+        )
         return self._successfull_sign_in(partner_auth)
 
     @restapi.method(
@@ -74,5 +83,5 @@ class BaseAuthenticable(AbstractComponent):
         directory = self._get_directory()
         self.env["partner.auth"].sudo().with_delay().forgot_password(
             directory, params.login
-            )
+        )
         return {}
