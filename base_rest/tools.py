@@ -1,12 +1,11 @@
 # Copyright 2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
-
+import inspect
 from collections import OrderedDict
 
 
 def cerberus_to_json(schema):
-    """Convert a Cerberus schema to a JSON schema
-    """
+    """Convert a Cerberus schema to a JSON schema"""
     result = OrderedDict()
     required = []
     properties = OrderedDict()
@@ -99,3 +98,21 @@ def _get_field_props(spec):  # noqa: C901
             pass
 
     return resp
+
+
+def _inspect_methods(cls):
+    """Return all methods of a given class as (name, value) pairs sorted by
+    name.
+    inspect.getmembers was initially used. Unfortunately, instance's properties
+    was accessed into the loop and could raise some exception since we are
+    into the startup process and all the resources are not yet initialized.
+    """
+    results = []
+    for attribute in inspect.classify_class_attrs(cls):
+        if attribute.kind != "method":
+            continue
+        name = attribute.name
+        method = getattr(cls, name)
+        results.append((name, method))
+    results.sort(key=lambda pair: pair[0])
+    return results

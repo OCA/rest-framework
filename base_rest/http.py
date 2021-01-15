@@ -4,6 +4,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import datetime
+import decimal
 import json
 import logging
 import sys
@@ -49,6 +50,8 @@ class JSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif isinstance(obj, datetime.date):
             return obj.isoformat()
+        elif isinstance(obj, decimal.Decimal):
+            return float(obj)
         return super(JSONEncoder, self).default(obj)
 
 
@@ -113,7 +116,12 @@ class HttpRestRequest(HttpRequest):
         super(HttpRestRequest, self).__init__(httprequest)
         if self.httprequest.mimetype == "application/json":
             data = self.httprequest.get_data().decode(self.httprequest.charset)
-            self.params = json.loads(data)
+            try:
+                self.params = json.loads(data)
+            except ValueError as e:
+                msg = "Invalid JSON data: %s" % str(e)
+                _logger.info("%s: %s", self.httprequest.path, msg)
+                raise BadRequest(msg)
         else:
             # We reparse the query_string in order to handle data structure
             # more information on https://github.com/aventurella/pyquerystring
@@ -164,25 +172,25 @@ class HttpRestRequest(HttpRequest):
 
     def _handle_exception(self, exception):
         """Called within an except block to allow converting exceptions
-           to abitrary responses. Anything returned (except None) will
-           be used as response."""
+        to abitrary responses. Anything returned (except None) will
+        be used as response."""
         if isinstance(exception, SessionExpiredException):
             # we don't want to return the login form as plain html page
             # we want to raise a proper exception
             return wrapJsonException(Unauthorized(ustr(exception)))
         try:
             return super(HttpRestRequest, self)._handle_exception(exception)
-        except (UserError, ValidationError) as e:
-            extra_info = getattr(e, "rest_json_info", None)
-            return wrapJsonException(
-                BadRequest(e.name), include_description=True, extra_info=extra_info
-            )
         except MissingError as e:
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(NotFound(ustr(e)), extra_info=extra_info)
         except (AccessError, AccessDenied) as e:
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(Forbidden(ustr(e)), extra_info=extra_info)
+        except (UserError, ValidationError) as e:
+            extra_info = getattr(e, "rest_json_info", None)
+            return wrapJsonException(
+                BadRequest(e.args[0]), include_description=True, extra_info=extra_info
+            )
         except HTTPException as e:
             extra_info = getattr(e, "rest_json_info", None)
             return wrapJsonException(e, extra_info=extra_info)
