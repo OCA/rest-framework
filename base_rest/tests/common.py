@@ -54,7 +54,6 @@ class RestServiceRegistryCase(ComponentRegistryCase):
     # pylint: disable=W8106
     @staticmethod
     def _setup_registry(class_or_instance):
-        super().setUpClass()
         ComponentRegistryCase._setup_registry(class_or_instance)
 
         class_or_instance._service_registry = RestServicesRegistry()
