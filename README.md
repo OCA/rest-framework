@@ -15,12 +15,20 @@ This repo holds addons developed to ease the development of REST services into O
 
 [//]: # (addons)
 
+Available addons
+----------------
+addon | version | summary
+--- | --- | ---
+[base_rest](base_rest/) | 14.0.2.1.2 | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest_datamodel](base_rest_datamodel/) | 14.0.1.0.0 | Datamodel binding for base_rest
+[base_rest_demo](base_rest_demo/) | 14.0.2.0.1 | Demo addon for Base REST
+[datamodel](datamodel/) | 14.0.1.0.0 | This addon allows you to define simple data models supporting serialization/deserialization
+
+
 Unported addons
 ---------------
 addon | version | summary
 --- | --- | ---
-[base_rest](base_rest/) | 13.0.2.1.2 (unported) | Develop your own high level REST APIs for Odoo thanks to this addon.
-[base_rest_demo](base_rest_demo/) | 13.0.2.0.1 (unported) | Demo addon for Base REST
 [graphql_base](graphql_base/) | 13.0.1.0.0 (unported) | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 13.0.1.0.0 (unported) | GraphQL Demo
 
