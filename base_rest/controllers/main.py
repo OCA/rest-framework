@@ -1,14 +1,12 @@
 # Copyright 2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import inspect
 import logging
 from contextlib import contextmanager
-from urllib.parse import urljoin
 
 from werkzeug.exceptions import BadRequest
 
-from odoo.http import Controller, ControllerType, Response, request, route
+from odoo.http import Controller, ControllerType, Response, request
 
 from odoo.addons.component.core import WorkContext, _get_addon_name
 
@@ -47,99 +45,12 @@ class RestControllerType(ControllerType):
             if not hasattr(cls, "_module"):
                 cls._module = _get_addon_name(cls.__module__)
             _rest_controllers_per_module[cls._module].append(
-                {"root_path": root_path, "collection_name": collection_name}
+                {
+                    "root_path": root_path,
+                    "collection_name": collection_name,
+                    "controller_class": cls,
+                }
             )
-
-    @classmethod
-    def _add_default_methods(cls, bases, members):
-        if "RestController" in globals() and RestController in bases:
-
-            @route(
-                [
-                    "<string:_service_name>",
-                    "<string:_service_name>/search",
-                    "<string:_service_name>/<int:_id>",
-                    "<string:_service_name>/<int:_id>/get",
-                ],
-                methods=["GET"],
-            )
-            def get(self, _service_name, _id=None, **params):
-                method_name = "get" if _id else "search"
-                return self._process_method(_service_name, method_name, _id, params)
-
-            @route(
-                [
-                    "<string:_service_name>",
-                    "<string:_service_name>/<string:method_name>",
-                    "<string:_service_name>/<int:_id>",
-                    "<string:_service_name>/<int:_id>/<string:method_name>",
-                ],
-                methods=["POST"],
-            )
-            def modify(self, _service_name, _id=None, method_name=None, **params):
-                if not method_name:
-                    method_name = "update" if _id else "create"
-                if method_name == "get":
-                    _logger.error(
-                        "HTTP POST with method name 'get' is not allowed. "
-                        "(service name: %s)",
-                        _service_name,
-                    )
-                    raise BadRequest()
-                return self._process_method(_service_name, method_name, _id, params)
-
-            @route(["<string:_service_name>/<int:_id>"], methods=["PUT"])
-            def update(self, _service_name, _id, **params):
-                return self._process_method(_service_name, "update", _id, params)
-
-            @route(["<string:_service_name>/<int:_id>"], methods=["DELETE"])
-            def delete(self, _service_name, _id):
-                return self._process_method(_service_name, "delete", _id)
-
-            members.update(
-                {"get": get, "modify": modify, "update": update, "delete": delete}
-            )
-
-    @classmethod
-    def _prepend_route_path(cls, klass):
-        """Add the root path to all the route defined by the controller"""
-        if not klass._root_path:
-            return
-        # Add the root_path to the routes defined into the controller
-        for member in inspect.getmembers(klass, predicate=inspect.isfunction):
-            method = member[1]
-            if (
-                not hasattr(method, "original_func")
-                or "rest_routes_patched" in method.routing
-            ):
-                continue
-            routing = method.routing
-            routes = routing.get("routes")
-            patched_routes = []
-            for _route in routes:
-                patched_routes.append(urljoin(klass._root_path, _route))
-            routing["routes"] = patched_routes
-            methods = routing["methods"]
-            if "auth" not in routing:
-                auth = klass._default_auth
-                if len(methods) == 1:
-                    method = methods[0]
-                    if method in klass._auth_by_method:
-                        auth = klass._auth_by_method[method]
-                routing["auth"] = auth
-            if "cors" not in routing:
-                routing["cors"] = klass._cors
-            if "csrf" not in routing:
-                routing["csrf"] = klass._csrf
-            routing["rest_routes_patched"] = True
-
-    def __new__(cls, name, bases, members):
-        # concrete RestController Factory
-        RestControllerType._add_default_methods(bases, members)
-        # we create our concrete controller
-        klass = type.__new__(cls, name, bases, members)
-        RestControllerType._prepend_route_path(klass)
-        return klass
 
 
 class RestController(Controller, metaclass=RestControllerType):
@@ -225,8 +136,8 @@ class RestController(Controller, metaclass=RestControllerType):
             raise BadRequest()
         return True
 
-    def _process_method(self, service_name, method_name, _id=None, params=None):
+    def _process_method(self, service_name, method_name, *args, params=None):
         self._validate_method_name(method_name)
         with self.service_component(service_name) as service:
-            result = service.dispatch(method_name, _id, params)
+            result = service.dispatch(method_name, *args, params=params)
             return self.make_response(result)

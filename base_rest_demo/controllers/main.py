@@ -14,3 +14,9 @@ class BaseRestDemoPrivateApiController(main.RestController):
     _root_path = "/base_rest_demo_api/private/"
     _collection_name = "base.rest.demo.private.services"
     _default_auth = "user"
+
+
+class BaseRestDemoNewApiController(main.RestController):
+    _root_path = "/base_rest_demo_api/new_api/"
+    _collection_name = "base.rest.demo.new_api.services"
+    _default_auth = "public"
