@@ -5,7 +5,7 @@
     "name": "Base Rest Datamodel",
     "summary": """
         Datamodel binding for base_rest""",
-    "version": "13.0.1.0.0",
+    "version": "13.0.2.0.0",
     "license": "AGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/rest-framework",
