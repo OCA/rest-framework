@@ -376,6 +376,10 @@ systems can interact with Odoo.</p>
 requires a deep understanding of Odoo’s internal data model. When used
 extensively, it creates a strong coupling between Odoo internals and client
 systems, therefore increasing maintenance costs.</p>
+<p>Once developed, an <a class="reference external" href="https://spec.openapis.org/oas/v3.0.3">OpenApi</a> documentation
+is generated from the source code and available via a
+<a class="reference external" href="https://swagger.io/tools/swagger-ui/">Swagger UI</a> served by your odoo server
+at <cite>https://my_odoo_server/api-docs</cite>.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -430,6 +434,15 @@ in production</strong>.</p>
 <p>The business logic of your service must be implemented into a component
 (<tt class="docutils literal">odoo.addons.component.core.Component</tt>) that inherit from
 ‘base.rest.service’</p>
+<p>Initially, base_rest expose by default all public methods defined in a service.
+The conventions for accessing methods via HTTP were as follows:</p>
+<ul class="simple">
+<li>The method <tt class="docutils literal">def get(self, _id)</tt> if defined, is accessible via HTTP GET routes <tt class="docutils literal"><span class="pre">&lt;string:_service_name&gt;/&lt;int:_id&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;string:_service_name&gt;/&lt;int:_id&gt;/get</span></tt>.</li>
+<li>The method <tt class="docutils literal">def search(self, **params)</tt> if defined, is accessible via the HTTP GET routes <tt class="docutils literal">&lt;string:_service_name&gt;/</tt> and <tt class="docutils literal"><span class="pre">&lt;string:_service_name&gt;/search</span></tt>.</li>
+<li>The method <tt class="docutils literal">def delete(self, _id)</tt> if defined, is accessible via the HTTP DELETE route <tt class="docutils literal"><span class="pre">&lt;string:_service_name&gt;/&lt;int:_id&gt;</span></tt>.</li>
+<li>The <tt class="docutils literal">def update(self, _id, **params)</tt> method, if defined, is accessible via the HTTP PUT route <tt class="docutils literal"><span class="pre">&lt;string:_service_name&gt;/&lt;int:_id&gt;</span></tt>.</li>
+<li>Other methods are only accessible via HTTP POST routes <tt class="docutils literal">&lt;string:_service_name&gt;</tt> or <tt class="docutils literal"><span class="pre">&lt;string:_service_name&gt;/&lt;string:method_name&gt;</span></tt> or <tt class="docutils literal"><span class="pre">&lt;string:_service_name&gt;/&lt;int:_id&gt;</span></tt> or <tt class="docutils literal"><span class="pre">&lt;string:_service_name&gt;/&lt;int:_id&gt;/&lt;string:method_name&gt;</span></tt></li>
+</ul>
 <pre class="code python literal-block">
 <span class="kn">from</span> <span class="nn">odoo.addons.component.core</span> <span class="kn">import</span> <span class="n">Component</span>
 
@@ -475,7 +488,7 @@ in production</strong>.</p>
     <span class="k">def</span> <span class="nf">_validator_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">'message'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">}}</span>
 </pre>
-<p>Once your have implemented your services (ping, …), you must tell to Odoo
+<p>Once you have implemented your services (ping, …), you must tell to Odoo
 how to access to these services. This process is done by implementing a
 controller that inherits from  <tt class="docutils literal">odoo.addons.base_rest.controllers.main.RestController</tt></p>
 <pre class="code python literal-block">
@@ -528,8 +541,106 @@ to access to your services</p>
 <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_service_name</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_method</span><span class="p">(</span><span class="n">_service_name</span><span class="p">,</span> <span class="s1">'delete'</span><span class="p">,</span> <span class="n">_id</span><span class="p">)</span>
 </pre>
-<p>The HTTP GET ‘<a class="reference external" href="http://my_odoo/my_services_api/ping">http://my_odoo/my_services_api/ping</a>’ will be dispatched to the
-method <tt class="docutils literal">PingService.search</tt></p>
+<p>As result an HTTP GET call to ‘<a class="reference external" href="http://my_odoo/my_services_api/ping">http://my_odoo/my_services_api/ping</a>’ will be
+dispatched to the method <tt class="docutils literal">PingService.search</tt></p>
+<p>In addition to easily exposing your methods, the module allows you to define
+data schemas to which the exchanged data must conform. These schemas are defined
+on the basis of <a class="reference external" href="https://docs.python-cerberus.org/en/stable/">Cerberus schemas</a>
+and associated to the methods using the
+following naming convention. For a method <cite>my_method</cite>:</p>
+<ul class="simple">
+<li><tt class="docutils literal">def _validator_my_method(self):</tt> will be called to get the schema required to
+validate the input parameters.</li>
+<li><tt class="docutils literal">def _validator_return_my_method(self):</tt> if defined, will be called to get
+the schema used to validate the response.</li>
+</ul>
+<p>In order to offer even more flexibility, a new API has been developed.</p>
+<p>This new API replaces the implicit approach used to expose a service by the use
+of a python decorator to explicitly mark a method as being available via the
+REST API: <tt class="docutils literal">odoo.addons.base_rest.restapi.method</tt>.</p>
+<pre class="code python literal-block">
+<span class="k">class</span> <span class="nc">PartnerNewApiService</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;base.rest.service&quot;</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;partner.new_api.service&quot;</span>
+    <span class="n">_usage</span> <span class="o">=</span> <span class="s2">&quot;partner&quot;</span>
+    <span class="n">_collection</span> <span class="o">=</span> <span class="s2">&quot;base.rest.demo.new_api.services&quot;</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;
+        Partner New API Services
+        Services developed with the new api provided by base_rest
+    &quot;&quot;&quot;</span>
+
+    <span class="nd">&#64;restapi</span><span class="o">.</span><span class="n">method</span><span class="p">(</span>
+        <span class="p">[([</span><span class="s2">&quot;/&lt;int:id&gt;/get&quot;</span><span class="p">,</span> <span class="s2">&quot;/&lt;int:id&gt;&quot;</span><span class="p">],</span> <span class="s2">&quot;GET&quot;</span><span class="p">)],</span>
+        <span class="n">output_param</span><span class="o">=</span><span class="n">restapi</span><span class="o">.</span><span class="n">CerberusValidator</span><span class="p">(</span><span class="s2">&quot;_get_partner_schema&quot;</span><span class="p">),</span>
+        <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;public&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.partner&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">browse</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_get_partner_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="p">}</span>
+</pre>
+<p>Thanks to this new api, you are now free to specify your own routes but also
+to use other object types as parameter or response to your methods.
+For example, <cite>base_rest_datamodel</cite> allows you to use Datamodel object instance
+into your services.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">marshmallow</span> <span class="kn">import</span> <span class="n">fields</span>
+
+<span class="kn">from</span> <span class="nn">odoo.addons.base_rest</span> <span class="kn">import</span> <span class="n">restapi</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.component.core</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.datamodel.core</span> <span class="kn">import</span> <span class="n">Datamodel</span>
+
+
+<span class="k">class</span> <span class="nc">PartnerSearchParam</span><span class="p">(</span><span class="n">Datamodel</span><span class="p">):</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;partner.search.param&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PartnerShortInfo</span><span class="p">(</span><span class="n">Datamodel</span><span class="p">):</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;partner.short.info&quot;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PartnerNewApiService</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;base.rest.service&quot;</span>
+    <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;partner.new_api.service&quot;</span>
+    <span class="n">_usage</span> <span class="o">=</span> <span class="s2">&quot;partner&quot;</span>
+    <span class="n">_collection</span> <span class="o">=</span> <span class="s2">&quot;base.rest.demo.new_api.services&quot;</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;
+        Partner New API Services
+        Services developed with the new api provided by base_rest
+    &quot;&quot;&quot;</span>
+
+    <span class="nd">&#64;restapi</span><span class="o">.</span><span class="n">method</span><span class="p">(</span>
+        <span class="p">[([</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;/search&quot;</span><span class="p">],</span> <span class="s2">&quot;GET&quot;</span><span class="p">)],</span>
+        <span class="n">input_param</span><span class="o">=</span><span class="n">restapi</span><span class="o">.</span><span class="n">Datamodel</span><span class="p">(</span><span class="s2">&quot;partner.search.param&quot;</span><span class="p">),</span>
+        <span class="n">output_param</span><span class="o">=</span><span class="n">restapi</span><span class="o">.</span><span class="n">Datamodel</span><span class="p">(</span><span class="s2">&quot;partner.short.info&quot;</span><span class="p">,</span> <span class="n">is_list</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;public&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partner_search_param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;
+        Search for partners
+        :param partner_search_param: An instance of partner.search.param
+        :return: List of partner.short.info
+        &quot;&quot;&quot;</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">partner_search_param</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="n">domain</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;like&quot;</span><span class="p">,</span> <span class="n">partner_search_param</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">partner_search_param</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="n">domain</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">partner_search_param</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">PartnerShortInfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">datamodels</span><span class="p">[</span><span class="s2">&quot;partner.short.info&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.partner&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PartnerShortInfo</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">res</span>
+</pre>
 </div>
 <div class="section" id="known-issues-roadmap">
 <h1><a class="toc-backref" href="#id7">Known issues / Roadmap</a></h1>
