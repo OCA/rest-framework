@@ -9,7 +9,9 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo12-addon-base_rest',
+        'odoo12-addon-base_rest_datamodel',
         'odoo12-addon-base_rest_demo',
+        'odoo12-addon-datamodel',
         'odoo12-addon-graphql_base',
         'odoo12-addon-graphql_demo',
     ],
