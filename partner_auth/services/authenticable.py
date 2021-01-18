@@ -5,6 +5,7 @@ from odoo.exceptions import AccessError
 from odoo.http import request
 
 from odoo.addons.base_rest import restapi
+from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import AbstractComponent
 
 
@@ -25,7 +26,7 @@ class BaseAuthenticable(AbstractComponent):
 
     @restapi.method(
         [(["/sign_in"], "POST")],
-        input_param=restapi.Datamodel("authenticable.signin.input"),
+        input_param=Datamodel("authenticable.signin.input"),
         auth="public",
     )
     def sign_in(self, params):
@@ -62,7 +63,7 @@ class BaseAuthenticable(AbstractComponent):
 
     @restapi.method(
         [(["/reset_password"], "POST")],
-        input_param=restapi.Datamodel("authenticable.reset.password.input"),
+        input_param=Datamodel("authenticable.reset.password.input"),
         auth="public",
     )
     def reset_password(self, params):
@@ -76,7 +77,7 @@ class BaseAuthenticable(AbstractComponent):
 
     @restapi.method(
         [(["/forgot_password"], "POST")],
-        input_param=restapi.Datamodel("authenticable.forget.password.input"),
+        input_param=Datamodel("authenticable.forget.password.input"),
         auth="public",
     )
     def forgot_password(self, params):
