@@ -5,7 +5,7 @@ cache:
   - $HOME/.cache/pre-commit
 
 python:
-  - "3.5"
+  - "3.6"
 
 addons:
   postgresql: "9.6"
@@ -24,7 +24,7 @@ jobs:
       python: 3.6
       before_install:
       install: pip install pre-commit
-      script: pre-commit run --all --show-diff-on-failure
+      script: pre-commit run --all --show-diff-on-failure --verbose --color always
       after_success:
     - stage: test
       env:
@@ -35,7 +35,7 @@ jobs:
 
 env:
   global:
-  - VERSION="12.0" TESTS="0" LINT_CHECK="0" MAKEPOT="0"
+  - VERSION="12.0" TESTS="0" LINT_CHECK="0" MAKEPOT="0" MQT_DEP="PIP"
 
 install:
   - git clone --depth=1 https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools
