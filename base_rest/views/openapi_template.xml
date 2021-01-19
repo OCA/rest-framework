@@ -18,7 +18,6 @@
                 </script>
 
                 <t t-call-assets="web.assets_common" t-js="false" />
-                <t t-call-assets="web.assets_frontend" t-js="false" />
                 <t t-call-assets="base_rest.assets_swagger" t-js="false" />
                 <link
                     href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700"
