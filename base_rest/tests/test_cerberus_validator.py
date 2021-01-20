@@ -6,6 +6,7 @@ from cerberus import Validator
 from odoo.exceptions import UserError
 from odoo.tests.common import MetaCase, TreeCase
 
+from ..components.cerberus_validator import BaseRestCerberusValidator
 from ..restapi import CerberusValidator
 
 
@@ -270,6 +271,9 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
             def _get_simple_schema(self):
                 return {"name": {"type": "string", "required": True, "nullable": True}}
 
+            def component(self, *args, **kwargs):
+                return BaseRestCerberusValidator(unittest.mock.Mock())
+
         v = CerberusValidator(schema="_get_simple_schema")
         validator = v.get_cerberus_validator(MyService())
         self.assertTrue(validator)
@@ -284,6 +288,9 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
                 return Validator(
                     {"name": {"type": "string", "required": False}}, require_all=True
                 )
+
+            def component(self, *args, **kwargs):
+                return BaseRestCerberusValidator(unittest.mock.Mock())
 
         v = CerberusValidator(schema="_get_simple_schema")
         validator = v.get_cerberus_validator(MyService())
