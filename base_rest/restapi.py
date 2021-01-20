@@ -169,8 +169,8 @@ class CerberusValidator(RestMethodParam):
     def get_cerberus_validator(self, service):
         schema = self._schema
         if isinstance(self._schema, str):
-            # schema is a method name to call on service to get the schema or
-            schema = getattr(service, self._schema)()
+            validator_component = service.component(usage="cerberus.validator")
+            schema = validator_component.get_validator_handler(service, self._schema)()
         if isinstance(schema, Validator):
             return schema
         if isinstance(schema, dict):
