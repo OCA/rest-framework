@@ -14,10 +14,10 @@ class BaseRestCerberusValidator(Component):
             _usage = "cerberus.validator"
             _collection = "mycollection"
 
-            def get_validator_handler(self, service, method_name, direction):
+            def get_validator_handler(self, service, method_name):
                 # customize
 
-            def has_validator_handler(self, service, method_name, direction):
+            def has_validator_handler(self, service, method_name):
                 # customize
 
     """
@@ -26,7 +26,7 @@ class BaseRestCerberusValidator(Component):
     _usage = "cerberus.validator"
     _is_rest_service_component = False  # marker to retrieve REST components
 
-    def get_validator_handler(self, service, method_name, direction):
+    def get_validator_handler(self, service, method_name):
         """Get the validator handler for a method
 
         By default, it returns the method on the current service instance. It
@@ -34,12 +34,10 @@ class BaseRestCerberusValidator(Component):
 
         The returned method will be called without arguments, and is expected
         to return the schema.
-
-        direction is either "input" for request schema or "output" for responses.
         """
         return getattr(service, method_name)
 
-    def has_validator_handler(self, service, method_name, direction):
+    def has_validator_handler(self, service, method_name):
         """Return if the service has a validator handler for a method
 
         By default, it returns True if the the method exists on the service. It
@@ -47,7 +45,5 @@ class BaseRestCerberusValidator(Component):
 
         The returned method will be called without arguments, and is expected
         to return the schema.
-
-        direction is either "input" for request schema or "output" for responses.
         """
         return hasattr(service, method_name)
