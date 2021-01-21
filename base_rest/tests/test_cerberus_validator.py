@@ -277,7 +277,7 @@ class TestCerberusValidator(unittest.TestCase, MetaCase("DummyCase", (object,), 
                 return BaseRestCerberusValidator(unittest.mock.Mock())
 
         v = CerberusValidator(schema="_get_simple_schema")
-        validator = v.get_cerberus_validator(MyService())
+        validator = v.get_cerberus_validator(MyService(), "output")
         self.assertTrue(validator)
         self.assertDictEqual(
             validator.root_schema.schema,
@@ -295,5 +295,34 @@ class TestCerberusValidator(unittest.TestCase, MetaCase("DummyCase", (object,), 
                 return BaseRestCerberusValidator(unittest.mock.Mock())
 
         v = CerberusValidator(schema="_get_simple_schema")
-        validator = v.get_cerberus_validator(MyService())
+        validator = v.get_cerberus_validator(MyService(), "input")
+        self.assertTrue(validator.require_all)
+
+    def test_custom_validator_handler(self):
+        assertEq = self.assertEqual
+
+        class CustomBaseRestCerberusValidator(BaseRestCerberusValidator):
+            def get_validator_handler(self, service, method_name, direction):
+                # In your implementation, this is where you can handle how the
+                # validator is retrieved / computed (dispatch to dedicated
+                # components...).
+                assertEq(service, my_service)
+                assertEq(method_name, "my_endpoint")
+                assertEq(direction, "input")
+                # A callable with no parameter is expected.
+                return lambda: Validator(
+                    {"name": {"type": "string", "required": False}}, require_all=True
+                )
+
+            def has_validator_handler(self, service, method_name, direction):
+                return True
+
+        class MyService(object):
+            def component(self, *args, **kwargs):
+                return CustomBaseRestCerberusValidator(unittest.mock.Mock())
+
+        my_service = MyService()
+
+        v = CerberusValidator(schema="my_endpoint")
+        validator = v.get_cerberus_validator(my_service, "input")
         self.assertTrue(validator.require_all)
