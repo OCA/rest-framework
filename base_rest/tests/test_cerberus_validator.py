@@ -1,6 +1,8 @@
 # Copyright 2020 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
+import unittest
+
 from cerberus import Validator
 
 from odoo.exceptions import UserError
