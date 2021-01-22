@@ -20,6 +20,7 @@ from odoo.addons.component.tests.common import (
     new_rollbacked_env,
 )
 
+from ..components.cerberus_validator import BaseRestCerberusValidator
 from ..components.service import BaseRestService
 from ..controllers.main import RestController, _PseudoCollection
 from ..core import RestServicesRegistry, _rest_services_databases
@@ -91,8 +92,9 @@ class RestServiceRegistryCase(ComponentRegistryCase):
                 class_or_instance._service_registry
             )
 
-        # register our base component
+        # register our base components
         BaseRestService._build_component(class_or_instance.comp_registry)
+        BaseRestCerberusValidator._build_component(class_or_instance.comp_registry)
 
         # Define a base test controller here to avoid to have this controller
         # registered outside tests
