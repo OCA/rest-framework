@@ -19,6 +19,7 @@ from odoo.addons.component.tests.common import (
     new_rollbacked_env,
 )
 
+from ..components.cerberus_validator import BaseRestCerberusValidator
 from ..components.service import BaseRestService
 from ..controllers.main import RestController
 from ..core import RestServicesRegistry, _rest_services_databases
@@ -82,6 +83,7 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             RestServiceRegistration._build_controllers_routes(self._service_registry)
         # register our base component
         self._build_components(BaseRestService)
+        self._build_components(BaseRestCerberusValidator)
 
         @self.addCleanup
         def reset_env():

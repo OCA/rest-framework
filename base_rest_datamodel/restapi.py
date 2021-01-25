@@ -52,19 +52,23 @@ class Datamodel(restapi.RestMethodParam):
     # and use a reference to the schema into the parameters
     def to_openapi_requestbody(self, service):
         return {
-            "content": {"application/json": {"schema": self.to_json_schema(service)}}
+            "content": {
+                "application/json": {"schema": self.to_json_schema(service, "input")}
+            }
         }
 
     def to_openapi_responses(self, service):
         return {
             "200": {
                 "content": {
-                    "application/json": {"schema": self.to_json_schema(service)}
+                    "application/json": {
+                        "schema": self.to_json_schema(service, "output")
+                    }
                 }
             }
         }
 
-    def to_json_schema(self, service):
+    def to_json_schema(self, service, direction):
         converter = self._get_converter()
         schema = self._get_schema(service)
         return converter.resolve_nested_schema(schema)
