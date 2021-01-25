@@ -115,19 +115,19 @@ class CerberusValidator(RestMethodParam):
         self._is_list = is_list
 
     def from_params(self, service, params):
-        validator = self.get_cerberus_validator(service)
+        validator = self.get_cerberus_validator(service, "input")
         if validator.validate(params):
             return validator.document
         raise UserError(_("BadRequest %s") % validator.errors)
 
     def to_response(self, service, result):
-        validator = self.get_cerberus_validator(service)
+        validator = self.get_cerberus_validator(service, "output")
         if validator.validate(result):
             return validator.document
         raise SystemError(_("Invalid Response %s") % validator.errors)
 
     def to_openapi_query_parameters(self, service):
-        json_schema = self.to_json_schema(service)
+        json_schema = self.to_json_schema(service, "input")
         parameters = []
         for prop, spec in list(json_schema["properties"].items()):
             params = {
@@ -157,24 +157,29 @@ class CerberusValidator(RestMethodParam):
 
     def to_openapi_requestbody(self, service):
         return {
-            "content": {"application/json": {"schema": self.to_json_schema(service)}}
+            "content": {
+                "application/json": {"schema": self.to_json_schema(service, "input")}
+            }
         }
 
     def to_openapi_responses(self, service):
-        json_schema = self.to_json_schema(service)
+        json_schema = self.to_json_schema(service, "output")
         return {"200": {"content": {"application/json": {"schema": json_schema}}}}
 
-    def get_cerberus_validator(self, service):
+    def get_cerberus_validator(self, service, direction):
+        assert direction in ("input", "output")
         schema = self._schema
         if isinstance(self._schema, str):
-            # schema is a method name to call on service to get the schema or
-            schema = getattr(service, self._schema)()
+            validator_component = service.component(usage="cerberus.validator")
+            schema = validator_component.get_validator_handler(
+                service, self._schema, direction
+            )()
         if isinstance(schema, Validator):
             return schema
         if isinstance(schema, dict):
             return Validator(schema, purge_unknown=True)
         raise Exception(_("Unable to get cerberus schema from %s") % self._schema)
 
-    def to_json_schema(self, service):
-        schema = self.get_cerberus_validator(service).schema
+    def to_json_schema(self, service, direction):
+        schema = self.get_cerberus_validator(service, direction).schema
         return cerberus_to_json(schema)

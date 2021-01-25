@@ -237,17 +237,21 @@ class RestApiMethodTransformer(object):
 
         return routes
 
-    def _method_to_input_param(self, method):
-        validator_method_name = "_validator_{}".format(method.__name__)
-        if hasattr(self._service, validator_method_name):
+    def _method_to_param(self, validator_method_name, direction):
+        validator_component = self._service.component(usage="cerberus.validator")
+        if validator_component.has_validator_handler(
+            self._service, validator_method_name, direction
+        ):
             return restapi.CerberusValidator(schema=validator_method_name)
         return None
 
+    def _method_to_input_param(self, method):
+        validator_method_name = "_validator_{}".format(method.__name__)
+        return self._method_to_param(validator_method_name, "input")
+
     def _method_to_output_param(self, method):
         validator_method_name = "_validator_return_{}".format(method.__name__)
-        if hasattr(self._service, validator_method_name):
-            return restapi.CerberusValidator(schema=validator_method_name)
-        return None
+        return self._method_to_param(validator_method_name, "output")
 
 
 class RestApiServiceControllerGenerator(object):
