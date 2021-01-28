@@ -26,7 +26,7 @@ class PartnerAuth(models.Model):
 
     partner_id = fields.Many2one("res.partner", "Partner", required=True)
     directory_id = fields.Many2one("directory.auth", "Directory", required=True)
-    login = fields.Char(compute="_compute_login", store=True)
+    login = fields.Char(compute="_compute_login", store=True, required=True)
     password = fields.Char(compute="_compute_password", inverse="_inverse_password")
     encrypted_password = fields.Char()
     reset_token = fields.Char()
