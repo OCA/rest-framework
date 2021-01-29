@@ -40,6 +40,17 @@ class PartnerAuth(models.Model):
         ),
     ]
 
+    # hack to solve sql constraint
+    def _add_login_for_create(self, data):
+        partner = self.env["res.partner"].browse(data["partner_id"])
+        data["login"] = partner.email
+
+    @api.model_create_multi
+    def create(self, data_list):
+        for data in data_list:
+            self._add_login_for_create(data)
+        return super().create(data_list)
+
     @api.depends("partner_id.email")
     def _compute_login(self):
         for record in self:
