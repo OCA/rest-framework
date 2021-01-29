@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="menu_rest_api_log" model="ir.ui.menu">
+        <field name="parent_id" ref="base_rest.menu_rest_api_root"/>
+        <field name="name">Logs</field>
+        <field name="sequence" eval="80"/>
+        <field name="action" ref="rest_log.action_rest_log"/>
+    </record>
+</odoo>
