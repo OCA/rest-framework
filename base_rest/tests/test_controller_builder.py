@@ -3,23 +3,15 @@
 from odoo.addons.component.core import Component
 
 from .. import restapi
-from .common import RestServiceRegistryCase
+from .common import TransactionRestServiceRegistryCase
 
 
-class TestControllerBuilder(RestServiceRegistryCase):
+class TestControllerBuilder(TransactionRestServiceRegistryCase):
     """Test Odoo controller builder
 
     In this class we test the generation of odoo controllers from the services
     component
     """
-
-    def setUp(self):
-        super().setUp()
-        RestServiceRegistryCase._setup_registry(self)
-
-    def tearDown(self):
-        super().tearDown()
-        RestServiceRegistryCase._teardown_registry(self)
 
     def test_01(self):
         """Test controller generated for old API services
@@ -82,7 +74,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
                 return {"message": {"type": "string"}}
 
         self.assertFalse(self._get_controller_for(TestServiceOldApi))
-        self._build_services(TestServiceOldApi)
+        self._build_services(self, TestServiceOldApi)
         controller = self._get_controller_for(TestServiceOldApi)
 
         routes = self._get_controller_route_methods(controller)
@@ -260,7 +252,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
                 return {"name": {"type": "string", "required": True}}
 
         self.assertFalse(self._get_controller_for(TestServiceNewApi))
-        self._build_services(TestServiceNewApi)
+        self._build_services(self, TestServiceNewApi)
         controller = self._get_controller_for(TestServiceNewApi)
 
         routes = self._get_controller_route_methods(controller)
@@ -349,7 +341,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
                 pass
 
         self.assertFalse(self._get_controller_for(TestPartnerService))
-        self._build_services(TestPartnerService, TestInheritPartnerService)
+        self._build_services(self, TestPartnerService, TestInheritPartnerService)
         controller = self._get_controller_for(TestPartnerService)
 
         routes = self._get_controller_route_methods(controller)
