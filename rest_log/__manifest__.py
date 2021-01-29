@@ -20,4 +20,5 @@
         "views/rest_log_views.xml",
         "views/menu.xml",
     ],
+    "pre_init_hook": "pre_init_hook",
 }
