@@ -1,0 +1,2 @@
+"id","name","model_id/id","group_id/id","perm_read","perm_write","perm_create","perm_unlink"
+"access_rest_log","access_rest_log","model_rest_log","rest_log.group_rest_log_manager",1,0,0,0
