@@ -15,7 +15,8 @@ from odoo.addons.auth_signup.models.res_partner import random_token
 # https://passlib.readthedocs.io/en/stable/narr/quickstart.html#choosing-a-hash
 # be carefull odoo requirements use an old version of passlib
 # careful about the random salts each time a context is created
-DEFAULT_CRYPT_CONTEXT = passlib.context.CryptContext(["pbkdf2_sha512"])
+DEFAULT_CRYPT_ALGORITHM = "pbkdf2_sha512"
+DEFAULT_SALT_SIZE = 16
 
 
 _logger = logging.getLogger(__name__)
@@ -73,8 +74,12 @@ class PartnerAuth(models.Model):
         for record in self:
             record.login = record.partner_id.email
 
-    def _crypt_context(self):
-        return DEFAULT_CRYPT_CONTEXT
+    def _crypt_context(
+        self, algorithm=DEFAULT_CRYPT_ALGORITHM, salt_size=DEFAULT_SALT_SIZE
+    ):
+        return passlib.context.CryptContext(
+            [algorithm], pbkdf2_sha512__salt_size=salt_size
+        )
 
     def _check_no_empty(self, login, password):
         # double check by security but calling this through a service should
@@ -138,7 +143,7 @@ class PartnerAuth(models.Model):
         )
 
     def _hash_token_set_password(self, token):
-        return self._crypt_context().using(salt_size=0).hash(token)
+        return self._crypt_context(salt_size=0).hash(token)
 
     def set_password(self, directory, token_set_password, password):
         hashed_token = self._hash_token_set_password(token_set_password)
