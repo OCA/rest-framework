@@ -8,15 +8,14 @@ import passlib
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessDenied, UserError
 
-from odoo.addons.auth_signup.models.res_partner import random_token
-
 # please read passlib great documentation
 # https://passlib.readthedocs.io
 # https://passlib.readthedocs.io/en/stable/narr/quickstart.html#choosing-a-hash
 # be carefull odoo requirements use an old version of passlib
-# careful about the random salts each time a context is created
-DEFAULT_CRYPT_ALGORITHM = "pbkdf2_sha512"
-DEFAULT_SALT_SIZE = 16
+DEFAULT_CRYPT_CONTEXT = passlib.context.CryptContext(["pbkdf2_sha512"])
+DEFAULT_CRYPT_CONTEXT_TOKEN = passlib.context.CryptContext(
+    ["pbkdf2_sha512"], pbkdf2_sha512__salt_size=0
+)
 
 
 _logger = logging.getLogger(__name__)
@@ -31,11 +30,6 @@ class PartnerAuth(models.Model):
     login = fields.Char(compute="_compute_login", store=True, required=True)
     password = fields.Char(compute="_compute_password", inverse="_inverse_password")
     encrypted_password = fields.Char()
-    token_set_password = fields.Char(
-        compute="_compute_token_set_password",
-        inverse="_inverse_token_set_password",
-        help="Token used by the client to set a new password",
-    )
     token_set_password_encrypted = fields.Char()
     token_expiration = fields.Datetime()
 
@@ -58,28 +52,13 @@ class PartnerAuth(models.Model):
             self._add_login_for_create(data)
         return super().create(data_list)
 
-    def _compute_token_set_password(self):
-        for rec in self:
-            rec.token_set_password = ""
-
-    def _inverse_token_set_password(self):
-        # TODO add check on group
-        for record in self:
-            record.token_set_password_encrypted = self._hash_token_set_password(
-                record.token_set_password
-            )
-
     @api.depends("partner_id.email")
     def _compute_login(self):
         for record in self:
             record.login = record.partner_id.email
 
-    def _crypt_context(
-        self, algorithm=DEFAULT_CRYPT_ALGORITHM, salt_size=DEFAULT_SALT_SIZE
-    ):
-        return passlib.context.CryptContext(
-            [algorithm], pbkdf2_sha512__salt_size=salt_size
-        )
+    def _crypt_context(self):
+        return DEFAULT_CRYPT_CONTEXT
 
     def _check_no_empty(self, login, password):
         # double check by security but calling this through a service should
@@ -133,20 +112,20 @@ class PartnerAuth(models.Model):
     def _get_template_invite_set_password(self, directory):
         return directory.invite_set_password_template_id
 
-    def _generate_token(self, directory):
+    def _generate_token(self, directory):  # TODO complete me
         self.write(
             {
-                "token_set_password": random_token(),
+                # "token_set_password": random_token(),
                 "token_expiration": datetime.now()
                 + timedelta(minutes=directory.set_password_token_duration),
             }
         )
 
-    def _hash_token_set_password(self, token):
-        return self._crypt_context(salt_size=0).hash(token)
+    def _encrypt_token(self, token):
+        return DEFAULT_CRYPT_CONTEXT_TOKEN.hash(token)
 
     def set_password(self, directory, token_set_password, password):
-        hashed_token = self._hash_token_set_password(token_set_password)
+        hashed_token = self._encrypt_token(token_set_password)
         partner_auth = self.env["partner.auth"].search(
             [
                 ("token_set_password_encrypted", "like", hashed_token),
