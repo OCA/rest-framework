@@ -21,8 +21,8 @@ class AuthenticableForgetPasswordInput(Datamodel):
     login = fields.Str(required=True)
 
 
-class AuthenticableResetPasswordInput(Datamodel):
-    _name = "authenticable.reset.password.input"
+class AuthenticableSetPasswordInput(Datamodel):
+    _name = "authenticable.set.password.input"
 
-    reset_token = fields.Str(required=True)
+    token_set_password = fields.Str(required=True)
     password = fields.Str(required=True)

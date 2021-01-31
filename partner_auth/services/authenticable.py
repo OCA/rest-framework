@@ -62,16 +62,16 @@ class BaseAuthenticable(AbstractComponent):
         return self._sign_out()
 
     @restapi.method(
-        [(["/reset_password"], "POST")],
-        input_param=Datamodel("authenticable.reset.password.input"),
+        [(["/set_password"], "POST")],
+        input_param=Datamodel("authenticable.set.password.input"),
         auth="public",
     )
-    def reset_password(self, params):
+    def set_password(self, params):
         directory = self._get_directory()
         partner_auth = (
             self.env["partner.auth"]
             .sudo()
-            .reset_password(directory, params.reset_token, params.password)
+            .set_password(directory, params.token_set_password, params.password)
         )
         return self._successfull_sign_in(partner_auth)
 
