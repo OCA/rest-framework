@@ -8,6 +8,8 @@ import passlib
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessDenied, UserError
 
+from odoo.addons.auth_signup.models.res_partner import random_token
+
 # please read passlib great documentation
 # https://passlib.readthedocs.io
 # https://passlib.readthedocs.io/en/stable/narr/quickstart.html#choosing-a-hash
@@ -112,14 +114,16 @@ class PartnerAuth(models.Model):
     def _get_template_invite_set_password(self, directory):
         return directory.invite_set_password_template_id
 
-    def _generate_token(self, directory):  # TODO complete me
+    def _generate_token(self):
+        token = random_token()
         self.write(
             {
-                # "token_set_password": random_token(),
+                "token_set_password_encrypted": self._encrypt_token(token),
                 "token_expiration": datetime.now()
-                + timedelta(minutes=directory.set_password_token_duration),
+                + timedelta(minutes=self.directory_id.set_password_token_duration),
             }
         )
+        return token
 
     def _encrypt_token(self, token):
         return DEFAULT_CRYPT_CONTEXT_TOKEN.hash(token)
@@ -128,7 +132,7 @@ class PartnerAuth(models.Model):
         hashed_token = self._encrypt_token(token_set_password)
         partner_auth = self.env["partner.auth"].search(
             [
-                ("token_set_password_encrypted", "like", hashed_token),
+                ("token_set_password_encrypted", "=", hashed_token),
                 ("directory_id", "=", directory.id),
             ]
         )
@@ -136,7 +140,7 @@ class PartnerAuth(models.Model):
             partner_auth.write(
                 {
                     "password": password,
-                    "token_set_password": False,
+                    "token_set_password_encrypted": False,
                     "token_expiration": False,
                 }
             )
@@ -145,6 +149,7 @@ class PartnerAuth(models.Model):
             raise UserError(_("The token is not valid, please request a new one"))
 
     def forgot_password(self, directory, login):
+        # forgot_password is called from a job so we return the result as a string
         auth = self.search(
             [
                 ("directory_id", "=", directory.id),
@@ -152,7 +157,6 @@ class PartnerAuth(models.Model):
             ]
         )
         if auth:
-            auth._generate_token(directory)
             template = self._get_template_forgot_password(directory)
             if not template:
                 raise UserError(
@@ -160,7 +164,8 @@ class PartnerAuth(models.Model):
                         directory.name
                     )
                 )
-            template.sudo().send_mail(auth.id)
+            token = auth._generate_token()
+            template.sudo().with_context(token=token).send_mail(auth.id)
             return "Partner Auth reset password token sent"
         else:
             return "No Partner Auth found, skip"
@@ -169,7 +174,6 @@ class PartnerAuth(models.Model):
         """Use to send an invitation to the user to set
         his password for the first time"""
         self.ensure_one()
-        self._generate_token(self.directory_id)
         template = self._get_template_invite_set_password(self.directory_id)
         if not template:
             raise UserError(
@@ -177,5 +181,6 @@ class PartnerAuth(models.Model):
                     "Invitation to Set Password template is missing for directory {}"
                 ).format(self.directory_id.name)
             )
-        template.send_mail(self.id)
-        return "Partner Auth Invitation to Set Password sent"
+        token = self._generate_token()
+        template.with_context(token=token).send_mail(self.id)
+        return True
