@@ -1,6 +1,7 @@
 # Copyright 2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import json
 import logging
 from contextlib import contextmanager
 
@@ -90,7 +91,7 @@ class RestController(Controller, metaclass=RestControllerType):
             # The response has been build by the called method...
             return data
         # By default return result as json
-        return request.make_json_response(data)
+        return request.make_response(json.dumps(data))
 
     @property
     def collection_name(self):
