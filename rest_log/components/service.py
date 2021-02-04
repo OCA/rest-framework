@@ -31,6 +31,8 @@ class BaseRESTService(AbstractComponent):
         return self._dispatch_with_db_logging(method_name, *args, params=params)
 
     def _dispatch_with_db_logging(self, method_name, *args, params=None):
+        # TODO: consider refactoring thi using a savepoint as described here
+        # https://github.com/OCA/rest-framework/pull/106#pullrequestreview-582099258
         try:
             result = super().dispatch(method_name, *args, params=params)
         except exceptions.UserError as orig_exception:
