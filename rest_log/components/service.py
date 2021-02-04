@@ -13,24 +13,11 @@ from odoo.http import request
 
 from odoo.addons.component.core import AbstractComponent
 
-
-class RESTServiceDispatchException(Exception):
-
-    rest_json_info = {}
-
-    def __init__(self, message, log_entry_url):
-        super().__init__(message)
-        self.rest_json_info = {"log_entry_url": log_entry_url}
-
-
-class RESTServiceUserErrorException(RESTServiceDispatchException, exceptions.UserError):
-    """User error wrapped exception."""
-
-
-class RESTServiceValidationErrorException(
-    RESTServiceDispatchException, exceptions.ValidationError
-):
-    """Validation error wrapped exception."""
+from ..exceptions import (
+    RESTServiceDispatchException,
+    RESTServiceUserErrorException,
+    RESTServiceValidationErrorException,
+)
 
 
 class BaseRESTService(AbstractComponent):
