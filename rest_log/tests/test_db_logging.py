@@ -11,8 +11,27 @@ from .common import TestDBLoggingBase
 
 
 class DBLoggingCase(TestDBLoggingBase):
+    def test_log_enabled(self):
+        self.service._log_calls_in_db = False
+        with self._get_mocked_request():
+            # no conf no flag
+            self.assertFalse(self.service._db_logging_active())
+            # by conf for collection
+            self.env["ir.config_parameter"].sudo().set_param(
+                "rest.log.active", self.service._collection
+            )
+            self.assertTrue(self.service._db_logging_active())
+            # by conf for usage
+            self.env["ir.config_parameter"].sudo().set_param(
+                "rest.log.active", self.service._usage
+            )
+            self.assertTrue(self.service._db_logging_active())
+            # no conf, service class flag
+            self.env["ir.config_parameter"].sudo().set_param("rest.log.active", "")
+            self.service._log_calls_in_db = True
+            self.assertTrue(self.service._db_logging_active())
+
     def test_no_log_entry(self):
-        self.assertTrue(self.service._log_calls_in_db)
         self.service._log_calls_in_db = False
         log_entry_count = self.log_model.search_count([])
         with self._get_mocked_request():
