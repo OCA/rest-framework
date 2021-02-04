@@ -51,8 +51,9 @@ class BaseRESTService(AbstractComponent):
         log_entry = self._log_call_in_db(
             self.env, request, *args, params=params, result=result
         )
-        log_entry_url = self._get_log_entry_url(log_entry)
-        result["log_entry_url"] = log_entry_url
+        if isinstance(result, dict):
+            log_entry_url = self._get_log_entry_url(log_entry)
+            result["log_entry_url"] = log_entry_url
         return result
 
     def _dispatch_exception(self, exception_klass, orig_exception, *args, params=None):
