@@ -68,7 +68,7 @@ class BaseRESTService(AbstractComponent):
         log_entry = self._log_call_in_db(
             self.env, request, method_name, *args, params=params, result=result
         )
-        if log_entry:
+        if log_entry and isinstance(result, dict):
             log_entry_url = self._get_log_entry_url(log_entry)
             result["log_entry_url"] = log_entry_url
         return result
