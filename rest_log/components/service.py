@@ -22,18 +22,13 @@ from ..exceptions import (
 
 class BaseRESTService(AbstractComponent):
     _inherit = "base.rest.service"
-    # can be overridden to disable logging of requests to DB
-    _log_calls_in_db = True
+    # can be overridden to enable logging of requests to DB
+    _log_calls_in_db = False
 
     def dispatch(self, method_name, *args, params=None):
         if not self._db_logging_active():
             return super().dispatch(method_name, *args, params=params)
         return self._dispatch_with_db_logging(method_name, *args, params=params)
-
-    def _db_logging_active(self):
-        return (
-            request and self._log_calls_in_db and self.env["rest.log"].logging_active()
-        )
 
     def _dispatch_with_db_logging(self, method_name, *args, params=None):
         try:
@@ -133,3 +128,18 @@ class BaseRESTService(AbstractComponent):
         if not values:
             return
         return env["rest.log"].sudo().create(values)
+
+    def _db_logging_active(self):
+        enabled = self._log_calls_in_db
+        if not enabled:
+            conf = self._get_log_active_conf()
+            enabled = self._collection in conf or self._usage in conf
+        return request and enabled and self.env["rest.log"].logging_active()
+
+    def _get_log_active_param(self):
+        param = self.env["ir.config_parameter"].sudo().get_param("rest.log.active")
+        return param.strip() if param else ""
+
+    def _get_log_active_conf(self):
+        param = self._get_log_active_param()
+        return tuple([x.strip() for x in param.split(",") if x.strip()])

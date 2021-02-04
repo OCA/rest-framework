@@ -28,6 +28,7 @@ class TestDBLoggingBase(SavepointRestServiceRegistryCase):
             _usage = "logmycalls"
             _collection = class_or_instance._collection_name
             _description = "Test log my calls"
+            _log_calls_in_db = True
 
             @restapi.method(
                 [(["/<int:id>/get", "/<int:id>"], "GET")],
