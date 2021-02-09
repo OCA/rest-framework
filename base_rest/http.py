@@ -211,7 +211,7 @@ ori_get_request = Root.get_request
 
 def get_request(self, httprequest):
     db = httprequest.session.db
-    if db:
+    if db and odoo.service.db.exp_db_exist(db):
         # on the very first request processed by a worker,
         # registry is not loaded yet
         # so we enforce its loading here to make sure that
