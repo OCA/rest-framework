@@ -1,5 +1,5 @@
 # Copyright 2020 Camptocamp SA (http://www.camptocamp.com)
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 # from urllib.parse import urlparse
 # import mock
 import json
