@@ -18,7 +18,7 @@ addon | version | summary
 [datamodel](datamodel/) | 13.0.2.0.0 | This addon allows you to define simple data models supporting serialization/deserialization
 [graphql_base](graphql_base/) | 13.0.1.0.0 | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 13.0.1.0.0 | GraphQL Demo
-[rest_log](rest_log/) | 13.0.1.0.2 | Track REST API calls into DB
+[rest_log](rest_log/) | 13.0.1.1.0 | Track REST API calls into DB
 
 [//]: # (end addons)
 
