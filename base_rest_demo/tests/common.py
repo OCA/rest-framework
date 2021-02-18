@@ -5,8 +5,10 @@ import json
 import os
 
 from odoo.addons.base_rest.controllers.main import _PseudoCollection
-from odoo.addons.base_rest.tests.common import BaseRestCase
+from odoo.addons.base_rest.tests.common import BaseRestCase, RegistryMixin
 from odoo.addons.component.core import WorkContext
+from odoo.addons.component.tests.common import SavepointComponentCase
+from odoo.addons.datamodel.tests.common import SavepointDatamodelCase
 
 DATA_DIR = os.path.join(os.path.realpath(os.path.dirname(__file__)), "data")
 
@@ -30,3 +32,16 @@ def get_canonical_json(file_name):
     path = os.path.join(DATA_DIR, file_name)
     with open(path, "r") as f:
         return json.load(f)
+
+
+class NewServiceCommonCase(
+    SavepointComponentCase, SavepointDatamodelCase, RegistryMixin
+):
+    @classmethod
+    def _get_service(cls, service_name):
+        collection = _PseudoCollection("base.rest.demo.new_api.services", cls.env)
+        work = WorkContext(
+            model_name="rest.service.registration",
+            collection=collection,
+        )
+        return work.component(usage=service_name)
