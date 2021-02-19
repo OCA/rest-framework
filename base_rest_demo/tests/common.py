@@ -41,7 +41,6 @@ class NewServiceCommonCase(
     def _get_service(cls, service_name):
         collection = _PseudoCollection("base.rest.demo.new_api.services", cls.env)
         work = WorkContext(
-            model_name="rest.service.registration",
-            collection=collection,
+            model_name="rest.service.registration", collection=collection
         )
         return work.component(usage=service_name)
