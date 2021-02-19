@@ -406,9 +406,9 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         res = new_instance.dump()
         self.assertEqual(res, {"items": [{"idx": 1}, {"idx": 2}, {"idx": 3}]})
 
-    def test_env(self):
+    def test_registry(self):
         """
-        Tests that the current env is always available on datamodel instances
+        Tests that the current registry is always available on datamodel instances
         and schema
         """
 
@@ -424,13 +424,13 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         Item._build_datamodel(self.datamodel_registry)
         Parent = self.env.datamodels["parent"]
         p = Parent()
-        self.assertEqual(p.env, self.env)
+        self.assertEqual(p._registry, self.env.datamodels.registry)
         schema = Parent.get_schema()
-        self.assertEqual(schema._env, self.env)
+        self.assertEqual(schema._registry, self.env.datamodels.registry)
         instance = Parent.load({"items": [{"idx": 1}, {"idx": 2}]})
-        self.assertEqual(instance.items[0].env, self.env)
+        self.assertEqual(instance.items[0]._registry, self.env.datamodels.registry)
         schema = instance.items[0].get_schema()
-        self.assertEqual(schema._env, self.env)
+        self.assertEqual(schema._registry, self.env.datamodels.registry)
 
 
 class TestRegistryAccess(TransactionDatamodelCase):

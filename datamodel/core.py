@@ -2,7 +2,6 @@
 # Copyright 2019 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import functools
 import logging
 from collections import OrderedDict, defaultdict
 
@@ -93,7 +92,7 @@ _datamodel_databases = DatamodelDatabases()
 
 @marshmallow.post_load
 def __make_object__(self, data, **kwargs):
-    datamodel = self._env.datamodels[self._datamodel_name]
+    datamodel = self._registry[self._datamodel_name]
     return datamodel(__post_load__=True, __schema__=self, **data)
 
 
@@ -192,11 +191,6 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
     def __init__(self, context=None, partial=None, env=None, **kwargs):
         self._env = env
         super().__init__(context=context, partial=partial, **kwargs)
-
-    @property
-    def env(self):
-        """ Current datamodels registry"""
-        return self._env
 
     @classmethod
     def get_schema(cls, **kwargs):
@@ -324,7 +318,9 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
             for parent in bases:
                 if issubclass(parent, MarshmallowModel):
                     parent_schemas.append(parent.__schema_class__)
-            schema_class = type(name + "Schema", tuple(parent_schemas), {})
+            schema_class = type(
+                name + "Schema", tuple(parent_schemas), {"_registry": registry}
+            )
             DatamodelClass.__schema_class__ = schema_class
         else:
             attrs = {
@@ -378,17 +374,7 @@ class DataModelFactory(object):
         self.registry = registry
 
     def __getitem__(self, key):
-        model = self.registry[key]
-        model.__init__ = functools.partialmethod(model.__init__, env=self.env)
-
-        @classmethod
-        def __get_schema_class__(cls, **kwargs):
-            cls = cls.__schema_class__(**kwargs)
-            cls._env = self.env
-            return cls
-
-        model.__get_schema_class__ = __get_schema_class__
-        return model
+        return self.registry[key]
 
 
 @property
