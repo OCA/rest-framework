@@ -5,6 +5,8 @@
 import mock
 from marshmallow_objects.models import Model as MarshmallowModel
 
+from odoo import api
+
 from .. import fields
 from ..core import Datamodel
 from .common import DatamodelRegistryCase, TransactionDatamodelCase
@@ -431,6 +433,43 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         self.assertEqual(instance.items[0].env, self.env)
         schema = instance.items[0].get_schema()
         self.assertEqual(schema._env, self.env)
+
+    def test_env2(self):
+        """
+        Tests that the same datamodel from 2 different envs provides the right
+        env as property
+        """
+        env2 = api.Environment(self.env.cr, self.env.uid, {"env2": True})
+
+        class Parent(Datamodel):
+            _name = "parent"
+            items = fields.NestedModel("item", many=True)
+
+        class Item(Datamodel):
+            _name = "item"
+            idx = fields.Integer()
+
+        Parent._build_datamodel(self.datamodel_registry)
+        Item._build_datamodel(self.datamodel_registry)
+        ParentEnv1 = self.env.datamodels["parent"]
+        ParentEnv2 = env2.datamodels["parent"]
+        p1 = ParentEnv1()
+        p2 = ParentEnv2()
+        self.assertNotEqual(p1.env, p2.env)
+        self.assertEqual(p1.env, self.env)
+        self.assertEqual(p2.env, env2)
+        schema1 = ParentEnv1.get_schema()
+        self.assertEqual(schema1._env, self.env)
+        schema2 = ParentEnv2.get_schema()
+        self.assertEqual(schema2._env, env2)
+        instance1 = ParentEnv1.load({"items": [{"idx": 1}, {"idx": 2}]})
+        self.assertEqual(instance1.items[0].env, self.env)
+        schema = instance1.items[0].get_schema()
+        self.assertEqual(schema._env, self.env)
+        instance2 = ParentEnv2.load({"items": [{"idx": 1}, {"idx": 2}]})
+        self.assertEqual(instance2.items[0].env, env2)
+        schema = instance2.items[0].get_schema()
+        self.assertEqual(schema._env, env2)
 
 
 class TestRegistryAccess(TransactionDatamodelCase):
