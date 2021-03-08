@@ -2,6 +2,8 @@
 # @author Simone Orsi <simahawk@gmail.com>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
+import contextlib
+
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest.tests.common import SavepointRestServiceRegistryCase
 from odoo.addons.component.core import Component
@@ -48,12 +50,11 @@ class TestDBLoggingBase(SavepointRestServiceRegistryCase):
         LoggedService._build_component(class_or_instance.comp_registry)
         return class_or_instance._get_service_component(class_or_instance, "logmycalls")
 
+    @contextlib.contextmanager
     def _get_mocked_request(self, httprequest=None, extra_headers=None):
-        mocked_request = MockRequest(self.env)
-        # Make sure headers are there, no header in default mocked request :(
-        headers = {"Cookie": "IaMaCookie!", "Api-Key": "I_MUST_STAY_SECRET"}
-        headers.update(extra_headers or {})
-        httprequest = httprequest or {}
-        httprequest["headers"] = headers
-        mocked_request.request["httprequest"] = httprequest
-        return mocked_request
+        with MockRequest(self.env) as mocked_request:
+            mocked_request.httprequest = httprequest or mocked_request.httprequest
+            headers = {"Cookie": "IaMaCookie!", "Api-Key": "I_MUST_STAY_SECRET"}
+            headers.update(extra_headers or {})
+            mocked_request.httprequest.headers = headers
+            yield mocked_request
