@@ -36,7 +36,9 @@ class RestControllerType(ControllerType):
             # our RestConrtroller must be a direct child of Controller
             bases += (Controller,)
         super(RestControllerType, cls).__init__(name, bases, attrs)
-        if "RestController" not in globals() or RestController not in bases:
+        if "RestController" not in globals() or not any(
+            issubclass(b, RestController) for b in bases
+        ):
             return
         # register the rest controller into the rest controllers registry
         root_path = getattr(cls, "_root_path", None)
