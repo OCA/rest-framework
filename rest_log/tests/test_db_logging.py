@@ -1,8 +1,9 @@
 # Copyright 2020 Camptocamp SA (http://www.camptocamp.com)
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 # from urllib.parse import urlparse
-# import mock
 import json
+
+import mock
 
 from odoo import exceptions
 from odoo.tools import mute_logger
@@ -70,7 +71,9 @@ class DBLoggingCase(TestDBLoggingBase):
         params = {"some": "value"}
         kw = {"result": {"data": "worked!"}}
         # test full data request only once, other tests will skip this part
-        httprequest = {"url": "https://my.odoo.test/service/endpoint", "method": "POST"}
+        httprequest = mock.Mock(
+            url="https://my.odoo.test/service/endpoint", method="POST"
+        )
         extra_headers = {"KEEP-ME": "FOO"}
         with self._get_mocked_request(
             httprequest=httprequest, extra_headers=extra_headers
@@ -79,8 +82,8 @@ class DBLoggingCase(TestDBLoggingBase):
                 self.env, mocked_request, params=params, **kw
             )
         expected = {
-            "request_url": httprequest["url"],
-            "request_method": httprequest["method"],
+            "request_url": httprequest.url,
+            "request_method": httprequest.method,
             "state": "success",
             "error": False,
             "exception_name": False,
