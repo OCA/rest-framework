@@ -35,17 +35,21 @@ repos:
   - id: mixed-line-ending
     args: ["--fix=lf"]
 - repo: https://github.com/pre-commit/mirrors-pylint
-  rev: v2.3.1
+  rev: v2.5.3
   hooks:
-  - id: pylint
-    name: pylint with optional checks
-    args: ["--rcfile=.pylintrc", "--exit-zero"]
-    verbose: true
-    additional_dependencies: ["pylint-odoo==3.5.0"]
-  - id: pylint
-    name: pylint with mandatory checks
-    args: ["--rcfile=.pylintrc-mandatory"]
-    additional_dependencies: ["pylint-odoo==3.5.0"]
+    - id: pylint
+      name: pylint with optional checks
+      args:
+        - --rcfile=.pylintrc
+        - --exit-zero
+      verbose: true
+      additional_dependencies: &pylint_deps
+        - pylint-odoo==3.5.0
+    - id: pylint
+      name: pylint with mandatory checks
+      args:
+        - --rcfile=.pylintrc-mandatory
+      additional_dependencies: *pylint_deps
 - repo: https://github.com/asottile/pyupgrade
   rev: v1.24.0
   hooks:
