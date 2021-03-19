@@ -317,7 +317,8 @@ class BaseRestService(AbstractComponent):
                 )
             input_schema = self._get_input_schema(name)
             output_schema = self._get_output_schema(name)
-            json_input_schema = cerberus_to_json(input_schema)
+
+            json_input_schema = cerberus_to_json(input_schema or {})
 
             if not output_schema:
                 # for backward compatibility output schema is not required
@@ -332,7 +333,7 @@ class BaseRestService(AbstractComponent):
             if name in ("search", "get"):
                 get = {"get": path_info}
                 # parameter for http GET are url query parameters
-                for prop, spec in json_input_schema["properties"].items():
+                for prop, spec in json_input_schema.get("properties", {}).items():
                     params = {
                         "name": prop,
                         "in": "query",
