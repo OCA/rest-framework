@@ -9,8 +9,7 @@ from odoo.addons.website.tools import MockRequest
 
 
 class TestDBLoggingBase(SavepointRestServiceRegistryCase):
-    """Test DB logging for REST calls.
-    """
+    """Test DB logging for REST calls."""
 
     @classmethod
     def setUpClass(cls):

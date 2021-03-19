@@ -6,9 +6,7 @@ _logger = logging.getLogger(__name__)
 
 
 def pre_init_hook(cr):
-    """On first install copy recods from shopfloor_log table if available.
-
-    """
+    """On first install copy recods from shopfloor_log table if available."""
     cr.execute("SELECT 1 FROM pg_class WHERE relname = 'rest_log'")
     if cr.fetchone():
         # rest_log was already installed
