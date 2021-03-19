@@ -103,7 +103,24 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             _collection_name = class_or_instance._collection_name
             _default_auth = "public"
 
+            @http.route("/my_controller_route_without_auth")
+            def my_controller_route_without_auth(self):
+                return {}
+
+            @http.route("/my_controller_route_with_auth_public", auth="public")
+            def my_controller_route_with_auth_public(self):
+                return {}
+
+            @http.route("/my_controller_route_without_auth_2", auth=None)
+            def my_controller_route_without_auth_2(self):
+                return {}
+
         class_or_instance._BaseTestController = BaseTestController
+        class_or_instance._controller_route_method_names = {
+            "my_controller_route_without_auth",
+            "my_controller_route_with_auth_public",
+            "my_controller_route_without_auth_2",
+        }
 
     @staticmethod
     def _teardown_registry(class_or_instance):
