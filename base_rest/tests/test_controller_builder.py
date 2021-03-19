@@ -98,7 +98,8 @@ class TestControllerBuilder(RestServiceRegistryCase):
                 "delete_delete",
                 "post_my_method",
                 "post_my_instance_method",
-            },
+            }
+            | self._controller_route_method_names,
         )
         self.assertTrue(controller)
         # the generated method_name is always the {http_method}_{method_name}
@@ -265,7 +266,9 @@ class TestControllerBuilder(RestServiceRegistryCase):
 
         routes = self._get_controller_route_methods(controller)
         self.assertSetEqual(
-            set(routes.keys()), {"get_get", "get_get_name", "post_update_name"}
+            set(routes.keys()),
+            {"get_get", "get_get_name", "post_update_name"}
+            | self._controller_route_method_names,
         )
 
         method = routes["get_get"]
@@ -354,7 +357,9 @@ class TestControllerBuilder(RestServiceRegistryCase):
 
         routes = self._get_controller_route_methods(controller)
         self.assertSetEqual(
-            set(routes.keys()), {"get_get", "get_get_name", "post_update_name"}
+            set(routes.keys()),
+            {"get_get", "get_get_name", "post_update_name"}
+            | self._controller_route_method_names,
         )
 
         method = routes["get_get"]
@@ -394,4 +399,81 @@ class TestControllerBuilder(RestServiceRegistryCase):
                 "csrf": False,
                 "routes": ["/test_controller/partner/<int:id>/change_name"],
             },
+        )
+
+
+class TestControllerBuilder2(TransactionRestServiceRegistryCase):
+    """Test Odoo controller builder
+
+    In this class we test the generation of odoo controllers from the services
+    component
+
+    The test requires a fresh base crontroller
+    """
+
+    def test_04(self):
+        """Test controller generated from services with new API methods and
+        old api takes into account the _default_auth
+        Routes directly defined on the RestConroller without auth should also
+        use the _default_auth
+        """
+        default_auth = "my_default_auth"
+        self._BaseTestController._default_auth = default_auth
+
+        # pylint: disable=R7980
+        class TestService(Component):
+            _inherit = "base.rest.service"
+            _name = "test.partner.service"
+            _usage = "partner"
+            _collection = self._collection_name
+            _description = "test"
+
+            @restapi.method([(["/new_api_method_with_auth"], "GET")], auth="public")
+            def new_api_method_with_auth(self, _id):
+                return {"name": self.env["res.partner"].browse(_id).name}
+
+            @restapi.method([(["/new_api_method_without_auth"], "GET")])
+            def new_api_method_without_auth(self, _id):
+                return {"name": self.env["res.partner"].browse(_id).name}
+
+            # OLD API method withour auth
+            def get(self, _id, message):
+                pass
+
+            # Validator
+            def _validator_get(self):
+                # no parameters by default
+                return {}
+
+        self._build_services(self, TestService)
+        controller = self._get_controller_for(TestService)
+
+        routes = self._get_controller_route_methods(controller)
+        self.assertEqual(
+            routes["get_new_api_method_with_auth"].routing["auth"],
+            "public",
+            "wrong auth for get_new_api_method_with_auth",
+        )
+        self.assertEqual(
+            routes["get_new_api_method_without_auth"].routing["auth"],
+            default_auth,
+            "wrong auth for get_new_api_method_without_auth",
+        )
+        self.assertEqual(
+            routes["get_get"].routing["auth"], default_auth, "wrong auth for get_get"
+        )
+        self.assertEqual(
+            routes["my_controller_route_without_auth"].routing["auth"],
+            default_auth,
+            "wrong auth for my_controller_route_without_auth",
+        )
+        self.assertEqual(
+            routes["my_controller_route_with_auth_public"].routing["auth"],
+            "public",
+            "wrong auth for my_controller_route_with_auth_public",
+        )
+        self.assertEqual(
+            routes["my_controller_route_without_auth_2"].routing["auth"],
+            default_auth,
+            "wrong auth for my_controller_route_without_auth_2",
         )
