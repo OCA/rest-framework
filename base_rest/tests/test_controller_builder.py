@@ -3,10 +3,10 @@
 from odoo.addons.component.core import Component
 
 from .. import restapi
-from .common import RestServiceRegistryCase
+from .common import TransactionRestServiceRegistryCase
 
 
-class TestControllerBuilder(RestServiceRegistryCase):
+class TestControllerBuilder(TransactionRestServiceRegistryCase):
     """Test Odoo controller builder
 
     In this class we test the generation of odoo controllers from the services
@@ -22,6 +22,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
         implementation, these routes where hardcoded into the base controller.
         """
 
+        # pylint: disable=R7980
         class TestServiceOldApi(Component):
             _inherit = "base.rest.service"
             _name = "test.ping.service"
@@ -73,7 +74,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
                 return {"message": {"type": "string"}}
 
         self.assertFalse(self._get_controller_for(TestServiceOldApi))
-        self._build_services(TestServiceOldApi)
+        self._build_services(self, TestServiceOldApi)
         controller = self._get_controller_for(TestServiceOldApi)
 
         routes = self._get_controller_route_methods(controller)
@@ -215,6 +216,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
         required method to route the requests to the methods
         """
 
+        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -250,7 +252,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
                 return {"name": {"type": "string", "required": True}}
 
         self.assertFalse(self._get_controller_for(TestServiceNewApi))
-        self._build_services(TestServiceNewApi)
+        self._build_services(self, TestServiceNewApi)
         controller = self._get_controller_for(TestServiceNewApi)
 
         routes = self._get_controller_route_methods(controller)
@@ -300,6 +302,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
     def test_03(self):
         """Check that the controller builder takes care of services inheritance"""
 
+        # pylint: disable=R7980
         class TestPartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -338,7 +341,7 @@ class TestControllerBuilder(RestServiceRegistryCase):
                 pass
 
         self.assertFalse(self._get_controller_for(TestPartnerService))
-        self._build_services(TestPartnerService, TestInheritPartnerService)
+        self._build_services(self, TestPartnerService, TestInheritPartnerService)
         controller = self._get_controller_for(TestPartnerService)
 
         routes = self._get_controller_route_methods(controller)

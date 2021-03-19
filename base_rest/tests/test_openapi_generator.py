@@ -12,14 +12,11 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
 
     """
 
-    def setUp(self):
-        super(TestOpenAPIGenerator, self).setUp()
-        self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
-
     def test_01(self):
         """ Simple test case
         """
 
+        # pylint: disable=R7980
         class PartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -38,8 +35,8 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             def _get_partner_schema(self):
                 return {"name": {"type": "string", "required": True}}
 
-        self._build_services(PartnerService)
-        service = self._get_service_component("partner")
+        self._build_services(self, PartnerService)
+        service = self._get_service_component(self, "partner")
         openapi = service.to_openapi()
         self.assertTrue(openapi)
 
@@ -104,6 +101,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
         we check that these parameters are into the openapi specification
         """
 
+        # pylint: disable=R7980
         class PartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -117,8 +115,8 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             def update_name(self, _id, _name):
                 """update_name"""
 
-        self._build_services(PartnerService)
-        service = self._get_service_component("partner")
+        self._build_services(self, PartnerService)
+        service = self._get_service_component(self, "partner")
         openapi = service.to_openapi()
         self.assertTrue(openapi)
         paths = openapi["paths"]
