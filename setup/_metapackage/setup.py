@@ -12,6 +12,7 @@ setuptools.setup(
         'odoo14-addon-base_rest_datamodel',
         'odoo14-addon-base_rest_demo',
         'odoo14-addon-datamodel',
+        'odoo14-addon-rest_log',
     ],
     classifiers=[
         'Programming Language :: Python',
