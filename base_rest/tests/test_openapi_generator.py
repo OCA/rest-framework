@@ -10,10 +10,6 @@ from .common import TransactionRestServiceRegistryCase
 class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
     """Test openapi document generation from REST services"""
 
-    def setUp(self):
-        super(TestOpenAPIGenerator, self).setUp()
-        self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
-
     def test_01(self):
         """Simple test case"""
 
@@ -36,8 +32,8 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             def _get_partner_schema(self):
                 return {"name": {"type": "string", "required": True}}
 
-        self._build_services(PartnerService)
-        service = self._get_service_component("partner")
+        self._build_services(self, PartnerService)
+        service = self._get_service_component(self, "partner")
         openapi = service.to_openapi()
         self.assertTrue(openapi)
 
@@ -116,8 +112,8 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             def update_name(self, _id, _name):
                 """update_name"""
 
-        self._build_services(PartnerService)
-        service = self._get_service_component("partner")
+        self._build_services(self, PartnerService)
+        service = self._get_service_component(self, "partner")
         openapi = service.to_openapi()
         self.assertTrue(openapi)
         paths = openapi["paths"]
@@ -151,3 +147,57 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
                 "schema": {"type": "integer", "format": "int32"},
             },
         )
+
+    def test_03(self):
+        """Test default parameters and default responses
+
+        You can define default parameters and responses at service level.
+        In this test we check that these parameters and responses are into the
+        openapi specification
+        """
+        default_params = [
+            {
+                "name": "API-KEY",
+                "in": "header",
+                "description": "API key for Authorization",
+                "required": True,
+                "schema": {"type": "string"},
+                "style": "simple",
+            }
+        ]
+
+        # pylint: disable=R7980
+        class PartnerService(Component):
+            _inherit = "base.rest.service"
+            _name = "test.partner.service"
+            _usage = "partner"
+            _collection = self._collection_name
+            _description = "Sercice description"
+
+            @restapi.method(
+                [(["/<int:id>/update_name/<string:name>"], "POST")], auth="public"
+            )
+            def update_name(self, _id, _name):
+                """update_name"""
+
+            def _get_openapi_default_parameters(self):
+                defaults = super()._get_openapi_default_parameters()
+                defaults.extend(default_params)
+                return defaults
+
+            def _get_openapi_default_responses(self):
+                responses = super()._get_openapi_default_responses().copy()
+                responses["999"] = "TEST"
+                return responses
+
+        self._build_services(self, PartnerService)
+        service = self._get_service_component(self, "partner")
+        openapi = service.to_openapi()
+        paths = openapi["paths"]
+        self.assertIn("/{id}/update_name/{name}", paths)
+        path = paths["/{id}/update_name/{name}"]
+        self.assertIn("post", path)
+        parameters = path["post"].get("parameters", [])
+        self.assertListEqual(parameters, default_params)
+        responses = path["post"].get("responses", [])
+        self.assertIn("999", responses)

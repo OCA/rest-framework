@@ -7,7 +7,7 @@
 import copy
 
 from odoo import http
-from odoo.tests.common import TransactionCase, get_db_name
+from odoo.tests.common import SavepointCase, TransactionCase, get_db_name
 
 from odoo.addons.component.core import (
     WorkContext,
@@ -20,8 +20,6 @@ from odoo.addons.component.tests.common import (
     new_rollbacked_env,
 )
 
-from ..components.cerberus_validator import BaseRestCerberusValidator
-from ..components.service import BaseRestService
 from ..controllers.main import RestController, _PseudoCollection
 from ..core import RestServicesRegistry, _rest_services_databases
 from ..tools import _inspect_methods
@@ -81,6 +79,7 @@ class RestServiceRegistryCase(ComponentRegistryCase):
         # simulate the --test-enable behavior by excluding the current addon
         # which is in 'to install' / 'to upgrade' with --test-enable).
         current_addon = _get_addon_name(class_or_instance.__module__)
+
         with new_rollbacked_env() as env:
             RestServiceRegistration = env["rest.service.registration"]
             RestServiceRegistration.build_registry(
@@ -92,9 +91,8 @@ class RestServiceRegistryCase(ComponentRegistryCase):
                 class_or_instance._service_registry
             )
 
-        # register our base components
-        BaseRestService._build_component(class_or_instance.comp_registry)
-        BaseRestCerberusValidator._build_component(class_or_instance.comp_registry)
+        # register our components
+        class_or_instance.comp_registry.load_components("base_rest")
 
         # Define a base test controller here to avoid to have this controller
         # registered outside tests
@@ -105,7 +103,24 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             _collection_name = class_or_instance._collection_name
             _default_auth = "public"
 
+            @http.route("/my_controller_route_without_auth")
+            def my_controller_route_without_auth(self):
+                return {}
+
+            @http.route("/my_controller_route_with_auth_public", auth="public")
+            def my_controller_route_with_auth_public(self):
+                return {}
+
+            @http.route("/my_controller_route_without_auth_2", auth=None)
+            def my_controller_route_without_auth_2(self):
+                return {}
+
         class_or_instance._BaseTestController = BaseTestController
+        class_or_instance._controller_route_method_names = {
+            "my_controller_route_without_auth",
+            "my_controller_route_with_auth_public",
+            "my_controller_route_without_auth_2",
+        }
 
     @staticmethod
     def _teardown_registry(class_or_instance):
@@ -117,15 +132,21 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             db_name
         ] = class_or_instance._original_services_registry
 
-    def _build_services(self, *classes):
-        self._build_components(*classes)
+    @staticmethod
+    def _build_services(class_or_instance, *classes):
+        class_or_instance._build_components(*classes)
         with new_rollbacked_env() as env:
             RestServiceRegistration = env["rest.service.registration"]
-            current_addon = _get_addon_name(self.__module__)
-            RestServiceRegistration.load_services(current_addon, self._service_registry)
-            RestServiceRegistration._build_controllers_routes(self._service_registry)
+            current_addon = _get_addon_name(class_or_instance.__module__)
+            RestServiceRegistration.load_services(
+                current_addon, class_or_instance._service_registry
+            )
+            RestServiceRegistration._build_controllers_routes(
+                class_or_instance._service_registry
+            )
 
-    def _get_controller_for(self, service):
+    @staticmethod
+    def _get_controller_for(service):
         addon_name = "{}_{}_{}".format(
             get_db_name(),
             service._collection.replace(".", "_"),
@@ -136,12 +157,25 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             return
         return controllers[0][1]
 
-    def _get_controller_route_methods(self, controller):
+    @staticmethod
+    def _get_controller_route_methods(controller):
         methods = {}
         for name, method in _inspect_methods(controller):
             if hasattr(method, "routing"):
                 methods[name] = method
         return methods
+
+    @staticmethod
+    def _get_service_component(class_or_instance, usage):
+        collection = _PseudoCollection(
+            class_or_instance._collection_name, class_or_instance.env
+        )
+        work = WorkContext(
+            model_name="rest.service.registration",
+            collection=collection,
+            components_registry=class_or_instance.comp_registry,
+        )
+        return work.component(usage=usage)
 
 
 class TransactionRestServiceRegistryCase(TransactionCase, RestServiceRegistryCase):
@@ -152,19 +186,28 @@ class TransactionRestServiceRegistryCase(TransactionCase, RestServiceRegistryCas
         # super)
         TransactionCase.setUp(self)
         RestServiceRegistryCase._setup_registry(self)
+        self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
 
     def tearDown(self):
         RestServiceRegistryCase._teardown_registry(self)
         TransactionCase.tearDown(self)
 
-    def _get_service_component(self, usage):
-        collection = _PseudoCollection(self._collection_name, self.env)
-        work = WorkContext(
-            model_name="rest.service.registration",
-            collection=collection,
-            components_registry=self.comp_registry,
-        )
-        return work.component(usage=usage)
+
+class SavepointRestServiceRegistryCase(SavepointCase, RestServiceRegistryCase):
+
+    # pylint: disable=W8106
+    @classmethod
+    def setUpClass(cls):
+        # resolve an inheritance issue (common.SavepointCase does not use
+        # super)
+        SavepointCase.setUpClass()
+        RestServiceRegistryCase._setup_registry(cls)
+        cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
+
+    @classmethod
+    def tearDownClass(cls):
+        RestServiceRegistryCase._teardown_registry(cls)
+        SavepointCase.tearDownClass()
 
 
 class BaseRestCase(SavepointComponentCase, RegistryMixin):
@@ -172,11 +215,11 @@ class BaseRestCase(SavepointComponentCase, RegistryMixin):
     def setUpClass(cls):
         super().setUpClass()
         cls.setUpRegistry()
+        cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
 
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
         self.registry.enter_test_mode(self.env.cr)
-        self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
 
     def tearDown(self):
         self.registry.leave_test_mode()
