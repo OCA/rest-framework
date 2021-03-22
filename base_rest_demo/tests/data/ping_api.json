@@ -30,9 +30,6 @@
                   }
                }
             },
-            "parameters":[
-
-            ],
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -86,9 +83,6 @@
                   }
                }
             },
-            "parameters":[
-
-            ],
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -229,9 +223,6 @@
                   }
                }
             },
-            "parameters":[
-
-            ],
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -294,9 +285,6 @@
                   }
                }
             },
-            "parameters":[
-
-            ],
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -408,9 +396,6 @@
                   }
                }
             },
-            "parameters":[
-
-            ],
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -462,9 +447,6 @@
                   }
                }
             },
-            "parameters":[
-
-            ],
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
@@ -671,9 +653,6 @@
                   }
                }
             },
-            "parameters":[
-
-            ],
             "responses":{
                "400":{
                   "description":"One of the given parameter is not valid"
