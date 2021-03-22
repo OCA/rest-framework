@@ -29,6 +29,9 @@ from ..core import (
 )
 from ..tools import _inspect_methods
 
+# Decorator attribute added on a route function (cfr Odoo's route)
+ROUTING_DECORATOR_ATTR = "routing"
+
 
 class RestServiceRegistation(models.AbstractModel):
     """Register REST services into the REST services registry
@@ -93,6 +96,27 @@ class RestServiceRegistation(models.AbstractModel):
         # register our conroller into the list of available controllers
         name_class = ("{}.{}".format(ctrl_cls.__module__, ctrl_cls.__name__), ctrl_cls)
         http.controllers_per_module[addon_name].append(name_class)
+        self._update_auth_method_controller(controller_class=ctrl_cls)
+
+    def _update_auth_method_controller(self, controller_class):
+        """
+        Set the automatic auth on controller's routes.
+
+        During definition of new controller, the _default_auth should be
+        applied on every routes (cfr @route odoo's decorator).
+        This auth attribute should be applied only if the route doesn't already
+        define it.
+        :return:
+        """
+        # If the controller class doesn't have the _default_auth, we don't
+        # have to define it on every routes.
+        if not hasattr(controller_class, "_default_auth"):
+            return
+        controller_default_auth = {"auth": controller_class._default_auth}
+        for _name, method in _inspect_methods(controller_class):
+            routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
+            if routing is not None and not routing.get("auth"):
+                routing.update(controller_default_auth)
 
     def _get_services(self, collection_name):
         collection = _PseudoCollection(collection_name, self.env)
@@ -161,7 +185,7 @@ class RestApiMethodTransformer(object):
         for name, method in _inspect_methods(self._service.__class__):
             if not self._is_public_api_method(name):
                 continue
-            if not hasattr(method, "routing"):
+            if not hasattr(method, ROUTING_DECORATOR_ATTR):
                 methods_to_fix.append(method)
         for method in methods_to_fix:
             self._fix_method_decorator(method)
