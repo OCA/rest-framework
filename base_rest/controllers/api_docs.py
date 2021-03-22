@@ -62,7 +62,7 @@ class ApiDocsController(Controller):
     def _filter_service_components(self, components):
         r = []
         for c in components:
-            if hasattr(c, "_is_rest_service_component") and c._usage:
+            if getattr(c, "_is_rest_service_component", None) and c._usage:
                 r.append(c)
         return r
 
