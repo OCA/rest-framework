@@ -12,9 +12,9 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[base_rest](base_rest/) | 13.0.3.0.4 | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest](base_rest/) | 13.0.3.0.5 | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_datamodel](base_rest_datamodel/) | 13.0.2.0.1 | Datamodel binding for base_rest
-[base_rest_demo](base_rest_demo/) | 13.0.3.0.0 | Demo addon for Base REST
+[base_rest_demo](base_rest_demo/) | 13.0.3.0.1 | Demo addon for Base REST
 [datamodel](datamodel/) | 13.0.2.0.0 | This addon allows you to define simple data models supporting serialization/deserialization
 [graphql_base](graphql_base/) | 13.0.1.0.0 | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 13.0.1.0.0 | GraphQL Demo
