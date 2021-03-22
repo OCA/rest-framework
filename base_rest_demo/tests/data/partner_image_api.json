@@ -12,6 +12,7 @@
   "paths": {
     "/{id}/get": {
       "get": {
+        "summary": "\nGet partner's image\n",
         "parameters": [
           {
             "name": "size",
@@ -25,7 +26,20 @@
             }
           }
         ],
-        "summary": "\nGet partner's image\n"
+        "responses": {
+          "400": {
+            "description": "One of the given parameter is not valid"
+          },
+          "401": {
+            "description": "The user is not authorized. Authentication is required"
+          },
+          "404": {
+            "description": "Requested resource not found"
+          },
+          "403": {
+            "description": "You don't have the permission to access the requested resource."
+          }
+        }
       },
       "parameters": [
         {
@@ -54,7 +68,21 @@
               "enum": ["small", "medium", "large"]
             }
           }
-        ]
+        ],
+        "responses": {
+          "400": {
+            "description": "One of the given parameter is not valid"
+          },
+          "401": {
+            "description": "The user is not authorized. Authentication is required"
+          },
+          "404": {
+            "description": "Requested resource not found"
+          },
+          "403": {
+            "description": "You don't have the permission to access the requested resource."
+          }
+        }
       },
       "parameters": [
         {

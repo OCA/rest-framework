@@ -24,7 +24,20 @@
             }
           }
         },
-        "parameters": []
+        "responses": {
+          "400": {
+            "description": "One of the given parameter is not valid"
+          },
+          "401": {
+            "description": "The user is not authorized. Authentication is required"
+          },
+          "404": {
+            "description": "Requested resource not found"
+          },
+          "403": {
+            "description": "You don't have the permission to access the requested resource."
+          }
+        }
       },
       "parameters": [
         {
@@ -102,7 +115,6 @@
             }
           }
         },
-        "parameters": [],
         "responses": {
           "400": {
             "description": "One of the given parameter is not valid"
@@ -247,7 +259,6 @@
             }
           }
         },
-        "parameters": [],
         "responses": {
           "400": {
             "description": "One of the given parameter is not valid"
@@ -436,7 +447,6 @@
     "/{id}/get": {
       "get": {
         "summary": "\nGet partner's informations\n",
-        "parameters": [],
         "responses": {
           "400": {
             "description": "One of the given parameter is not valid"
@@ -531,7 +541,6 @@
     "/{id}": {
       "get": {
         "summary": "\nGet partner's informations\n",
-        "parameters": [],
         "responses": {
           "400": {
             "description": "One of the given parameter is not valid"
@@ -685,7 +694,6 @@
             }
           }
         },
-        "parameters": [],
         "responses": {
           "400": {
             "description": "One of the given parameter is not valid"
@@ -828,7 +836,6 @@
             }
           }
         },
-        "parameters": [],
         "responses": {
           "400": {
             "description": "One of the given parameter is not valid"
@@ -1080,7 +1087,6 @@
             }
           }
         },
-        "parameters": [],
         "responses": {
           "400": {
             "description": "One of the given parameter is not valid"

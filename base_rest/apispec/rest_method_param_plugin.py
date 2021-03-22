@@ -31,30 +31,41 @@ class RestMethodParamPlugin(BasePlugin):
         if not operations:
             return
         for method, params in operations.items():
-            input_param = routing.get("input_param")
-            output_param = routing.get("output_param")
-            if input_param and isinstance(input_param, RestMethodParam):
-                parameters = params.get("parameters", [])
-                # add default paramters provided by the sevice
-                parameters.extend(self._default_parameters)
-                if method == "get":
-                    # get quey params from RequestMethodParam object
-                    parameters.extend(
-                        input_param.to_openapi_query_parameters(self._service)
-                    )
-                    # sort paramters to ease comparison into unittests
-                else:
-                    # get requestBody from RequestMethodParam object
-                    request_body = params.get("requestBody", {})
-                    request_body.update(
-                        input_param.to_openapi_requestbody(self._service)
-                    )
-                    params["requestBody"] = request_body
-                parameters.sort(key=lambda a: a["name"])
+            parameters = self._generate_pamareters(routing, method, params)
+            if parameters:
                 params["parameters"] = parameters
-            if output_param and isinstance(output_param, RestMethodParam):
-                responses = params.get("responses", {})
-                # get response from RequestMethodParam object
-                responses.update(self._default_responses.copy())
-                responses.update(output_param.to_openapi_responses(self._service))
+            responses = self._generate_responses(routing, method, params)
+            if responses:
                 params["responses"] = responses
+
+    def _generate_pamareters(self, routing, method, params):
+        parameters = params.get("parameters", [])
+        # add default paramters provided by the sevice
+        parameters.extend(self._default_parameters)
+        input_param = routing.get("input_param")
+        if input_param and isinstance(input_param, RestMethodParam):
+            if method == "get":
+                # get quey params from RequestMethodParam object
+                parameters.extend(
+                    input_param.to_openapi_query_parameters(self._service)
+                )
+            else:
+                # get requestBody from RequestMethodParam object
+                request_body = params.get("requestBody", {})
+                request_body.update(input_param.to_openapi_requestbody(self._service))
+                params["requestBody"] = request_body
+            # sort paramters to ease comparison into unittests
+            parameters.sort(key=lambda a: a["name"])
+        return parameters
+
+    def _generate_responses(self, routing, method, params):
+        responses = params.get("responses", {})
+        # add default responses provided by the service
+        responses.update(self._default_responses.copy())
+        output_param = routing.get("output_param")
+        if output_param and isinstance(output_param, RestMethodParam):
+            responses = params.get("responses", {})
+            # get response from RequestMethodParam object
+            responses.update(self._default_responses.copy())
+            responses.update(output_param.to_openapi_responses(self._service))
+        return responses
