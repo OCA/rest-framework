@@ -12,7 +12,7 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[base_rest](base_rest/) | 12.0.3.0.4 | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest](base_rest/) | 12.0.3.0.5 | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_datamodel](base_rest_datamodel/) | 12.0.2.0.1 | Datamodel binding for base_rest
 [base_rest_demo](base_rest_demo/) | 12.0.3.0.0 | Demo addon for Base REST
 [datamodel](datamodel/) | 12.0.2.0.0 | This addon allows you to define simple data models supporting serialization/deserialization
