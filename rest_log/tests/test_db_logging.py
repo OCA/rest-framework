@@ -12,25 +12,48 @@ from .common import TestDBLoggingBase
 
 
 class DBLoggingCase(TestDBLoggingBase):
+    def test_log_enabled_conf_parsing(self):
+        key1 = "coll1.service1.endpoint"
+        key2 = "coll1.service2.endpoint:failed"
+        key3 = "coll2.service1.endpoint:success"
+        self.env["ir.config_parameter"].sudo().set_param(
+            "rest.log.active", ",".join((key1, key2, key3))
+        )
+        expected = {
+            # fmt:off
+            "coll1.service1.endpoint": ("success", "failed"),
+            "coll1.service2.endpoint": ("failed", ),
+            "coll2.service1.endpoint": ("success", ),
+            # fmt: on
+        }
+        self.assertEqual(self.env["rest.log"]._get_log_active_conf(), expected)
+
     def test_log_enabled(self):
         self.service._log_calls_in_db = False
         with self._get_mocked_request():
             # no conf no flag
-            self.assertFalse(self.service._db_logging_active())
+            self.assertFalse(self.service._db_logging_active("avg_endpoint"))
             # by conf for collection
             self.env["ir.config_parameter"].sudo().set_param(
                 "rest.log.active", self.service._collection
             )
-            self.assertTrue(self.service._db_logging_active())
+            self.assertTrue(self.service._db_logging_active("avg_endpoint"))
             # by conf for usage
             self.env["ir.config_parameter"].sudo().set_param(
-                "rest.log.active", self.service._usage
+                "rest.log.active", self.service._collection + "." + self.service._usage
             )
-            self.assertTrue(self.service._db_logging_active())
+            self.assertTrue(self.service._db_logging_active("avg_endpoint"))
+            # by conf for usage and endpoint
+            self.env["ir.config_parameter"].sudo().set_param(
+                "rest.log.active",
+                self.service._collection + "." + self.service._usage + ".avg_endpoint",
+            )
+            self.assertTrue(self.service._db_logging_active("avg_endpoint"))
+            self.assertFalse(self.service._db_logging_active("not_so_avg_endpoint"))
             # no conf, service class flag
             self.env["ir.config_parameter"].sudo().set_param("rest.log.active", "")
             self.service._log_calls_in_db = True
-            self.assertTrue(self.service._db_logging_active())
+            self.assertTrue(self.service._db_logging_active("avg_endpoint"))
 
     def test_no_log_entry(self):
         self.service._log_calls_in_db = False
@@ -79,7 +102,7 @@ class DBLoggingCase(TestDBLoggingBase):
             httprequest=httprequest, extra_headers=extra_headers
         ) as mocked_request:
             entry = self.service._log_call_in_db(
-                self.env, mocked_request, params=params, **kw
+                self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
             "request_url": httprequest.url,
@@ -108,7 +131,7 @@ class DBLoggingCase(TestDBLoggingBase):
         kw = {"result": {}}
         with self._get_mocked_request() as mocked_request:
             entry = self.service._log_call_in_db(
-                self.env, mocked_request, params=params, **kw
+                self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
             "state": "failed",
@@ -131,7 +154,7 @@ class DBLoggingCase(TestDBLoggingBase):
         kw = {"result": {}, "traceback": fake_tb, "orig_exception": orig_exception}
         with self._get_mocked_request() as mocked_request:
             entry = self.service._log_call_in_db(
-                self.env, mocked_request, params=params, **kw
+                self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
             "state": "failed",
@@ -158,7 +181,7 @@ class DBLoggingCase(TestDBLoggingBase):
         kw = {"result": {}, "traceback": fake_tb, "orig_exception": orig_exception}
         with self._get_mocked_request() as mocked_request:
             entry = self.service._log_call_in_db(
-                self.env, mocked_request, params=params, **kw
+                self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
             "state": "failed",
