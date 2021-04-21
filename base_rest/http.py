@@ -52,6 +52,8 @@ class JSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif isinstance(obj, decimal.Decimal):
             return float(obj)
+        elif isinstance(obj, set):
+            return tuple(obj)
         return super(JSONEncoder, self).default(obj)
 
 
