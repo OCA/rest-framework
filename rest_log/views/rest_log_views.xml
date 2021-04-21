@@ -5,6 +5,7 @@
         <field name="model">rest.log</field>
         <field name="arch" type="xml">
             <tree decoration-danger="state == 'failed'">
+                <field name="collection" optional="hide" />
                 <field name="create_uid" />
                 <field name="create_date" />
                 <field name="request_method" />
@@ -27,6 +28,7 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="collection" />
                             <field name="request_url" />
                             <field name="request_method" />
                         </group>
@@ -76,6 +78,7 @@
         <field name="model">rest.log</field>
         <field name="arch" type="xml">
             <search>
+                <field name="collection" />
                 <field name="state" />
                 <field name="request_url" />
                 <field name="request_method" />
@@ -111,6 +114,12 @@
                     domain="[('severity', '=', 'functional')]"
                 />
                 <group expand="0" string="Group By">
+                    <filter
+                        string="Collection"
+                        name="by_collection"
+                        domain="[]"
+                        context="{'group_by': 'collection'}"
+                    />
                     <filter
                         string="User"
                         name="by_user"

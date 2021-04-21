@@ -115,6 +115,7 @@ class BaseRESTService(AbstractComponent):
                 exception_name = orig_exception.__module__ + "." + exception_name
             exception_message = self._get_exception_message(orig_exception)
         return {
+            "collection": self._collection,
             "request_url": httprequest.url,
             "request_method": httprequest.method,
             "params": json.dumps(params, indent=4, sort_keys=True),
