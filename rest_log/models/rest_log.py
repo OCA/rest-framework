@@ -25,6 +25,7 @@ class RESTLog(models.Model):
         "UnboundLocalError": "severe",
     }
 
+    collection = fields.Char(index=True)
     request_url = fields.Char(readonly=True, string="Request URL")
     request_method = fields.Char(readonly=True)
     params = fields.Text(readonly=True)
