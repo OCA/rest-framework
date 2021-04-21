@@ -11,6 +11,7 @@ from werkzeug.urls import url_encode, url_join
 from odoo import exceptions, registry
 from odoo.http import request
 
+from odoo.addons.base_rest.http import JSONEncoder
 from odoo.addons.component.core import AbstractComponent
 
 from ..exceptions import (
@@ -18,6 +19,11 @@ from ..exceptions import (
     RESTServiceUserErrorException,
     RESTServiceValidationErrorException,
 )
+
+
+def json_dump(data):
+    """Encode data to JSON as we like."""
+    return json.dumps(data, cls=JSONEncoder, indent=4, sort_keys=True)
 
 
 class BaseRESTService(AbstractComponent):
@@ -118,9 +124,9 @@ class BaseRESTService(AbstractComponent):
             "collection": self._collection,
             "request_url": httprequest.url,
             "request_method": httprequest.method,
-            "params": json.dumps(params, indent=4, sort_keys=True),
-            "headers": json.dumps(headers, indent=4, sort_keys=True),
-            "result": json.dumps(result, indent=4, sort_keys=True),
+            "params": json_dump(params),
+            "headers": json_dump(headers),
+            "result": json_dump(result),
             "error": error,
             "exception_name": exception_name,
             "exception_message": exception_message,
