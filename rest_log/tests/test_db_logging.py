@@ -105,6 +105,7 @@ class DBLoggingCase(TestDBLoggingBase):
                 self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
+            "collection": self.service._collection,
             "request_url": httprequest.url,
             "request_method": httprequest.method,
             "state": "success",
@@ -134,6 +135,7 @@ class DBLoggingCase(TestDBLoggingBase):
                 self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
+            "collection": self.service._collection,
             "state": "failed",
             "result": "{}",
             "error": False,
@@ -157,6 +159,7 @@ class DBLoggingCase(TestDBLoggingBase):
                 self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
+            "collection": self.service._collection,
             "state": "failed",
             "result": "{}",
             "error": fake_tb,
@@ -184,6 +187,7 @@ class DBLoggingCase(TestDBLoggingBase):
                 self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
+            "collection": self.service._collection,
             "state": "failed",
             "result": "{}",
             "error": fake_tb,
