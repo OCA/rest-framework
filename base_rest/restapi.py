@@ -12,7 +12,13 @@ from .tools import cerberus_to_json
 
 
 def method(
-    routes, input_param=None, output_param=None, auth=None, cors=None, csrf=False
+    routes,
+    input_param=None,
+    output_param=None,
+    auth=None,
+    cors=None,
+    csrf=False,
+    endpoint_params_to_kwargs=False,
 ):
     """Decorator marking the decorated method as being a handler for
     REST requests. The method must be part of a component inheriting from
@@ -38,6 +44,8 @@ def method(
     :param cors: The Access-Control-Allow-Origin cors directive value.
     :param bool csrf: Whether CSRF protection should be enabled for the route.
                       Defaults to ``False``
+    :param bool endpoint_params_to_kwargs: Pass the query parameters as keyword
+                arguments, following the same logic than Werkzeug
 
     """
 
@@ -54,6 +62,7 @@ def method(
             "routes": _routes,
             "input_param": input_param,
             "output_param": output_param,
+            "endpoint_params_to_kwargs": endpoint_params_to_kwargs,
         }
 
         @functools.wraps(f)
