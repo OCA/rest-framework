@@ -71,3 +71,13 @@ class PartnerNewApiService(Component):
 
     def _get(self, _id):
         return self.env["res.partner"].browse(_id)
+
+    @restapi.method(
+        [(["/<int:partner_id>/<string:demo_field>/get"], "GET")],
+        output_param=Datamodel("partner.info"),
+        auth="public",
+        endpoint_params_to_kwargs=True,
+    )
+    def get_with_kwargs(self, partner_id=False, demo_field=False):
+        assert demo_field
+        return self.get(partner_id)
