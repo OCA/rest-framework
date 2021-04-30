@@ -379,7 +379,14 @@ class DataModelFactory(object):
 
     def __getitem__(self, key):
         model = self.registry[key]
-        model.__init__ = functools.partialmethod(model.__init__, env=self.env)
+        __initial__init__ = getattr(model, "__initial__init__", None)
+        if not __initial__init__:
+            __initial__init__ = model.__init__
+            setattr(model, "__initial__init__", __initial__init__)  # noqa: B010
+        # The env to propagate should always be the one from where we access
+        # to the registry. In the same time we must ensure that the patched
+        # constructor is the original one and not an already patched one
+        model.__init__ = functools.partialmethod(__initial__init__, env=self.env)
 
         @classmethod
         def __get_schema_class__(cls, **kwargs):
@@ -388,6 +395,7 @@ class DataModelFactory(object):
             return cls
 
         model.__get_schema_class__ = __get_schema_class__
+
         return model
 
 
