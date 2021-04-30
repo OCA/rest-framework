@@ -6,7 +6,7 @@
         <link
             rel="stylesheet"
             type="text/css"
-            href="/base_rest/static/lib/swagger-ui-3.17.0/swagger-ui.css"
+            href="/base_rest/static/lib/swagger-ui-3.40.0/swagger-ui.css"
         />
         <link
             rel="stylesheet"
@@ -15,11 +15,11 @@
         />
         <script
             type="text/javascript"
-            src="/base_rest/static/lib/swagger-ui-3.17.0/swagger-ui-bundle.js"
+            src="/base_rest/static/lib/swagger-ui-3.40.0/swagger-ui-bundle.js"
         />
         <script
             type="text/javascript"
-            src="/base_rest/static/lib/swagger-ui-3.17.0/swagger-ui-standalone-preset.js"
+            src="/base_rest/static/lib/swagger-ui-3.40.0/swagger-ui-standalone-preset.js"
         />
         <script type="text/javascript" src="/base_rest/static/src/js/swagger_ui.js" />
     </template>
