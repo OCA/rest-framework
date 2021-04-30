@@ -24,7 +24,7 @@ class BaseRestServiceAPISpec(APISpec):
             openapi_version="3.0.0",
             info={
                 "description": textwrap.dedent(
-                    getattr(self._service, "_description", "")
+                    getattr(self._service, "_description", "") or ""
                 )
             },
             servers=self._get_servers(),
