@@ -11,6 +11,7 @@ from werkzeug.urls import url_encode, url_join
 from odoo import exceptions, registry
 from odoo.http import request
 
+from odoo.addons.base_rest.http import JSONEncoder
 from odoo.addons.component.core import AbstractComponent
 
 from ..exceptions import (
@@ -20,13 +21,18 @@ from ..exceptions import (
 )
 
 
+def json_dump(data):
+    """Encode data to JSON as we like."""
+    return json.dumps(data, cls=JSONEncoder, indent=4, sort_keys=True)
+
+
 class BaseRESTService(AbstractComponent):
     _inherit = "base.rest.service"
     # can be overridden to enable logging of requests to DB
     _log_calls_in_db = False
 
     def dispatch(self, method_name, *args, params=None):
-        if not self._db_logging_active():
+        if not self._db_logging_active(method_name):
             return super().dispatch(method_name, *args, params=params)
         return self._dispatch_with_db_logging(method_name, *args, params=params)
 
@@ -51,9 +57,9 @@ class BaseRESTService(AbstractComponent):
                 RESTServiceDispatchException, orig_exception, *args, params=params
             )
         log_entry = self._log_call_in_db(
-            self.env, request, *args, params=params, result=result
+            self.env, request, method_name, *args, params=params, result=result
         )
-        if isinstance(result, dict):
+        if log_entry:
             log_entry_url = self._get_log_entry_url(log_entry)
             result["log_entry_url"] = log_entry_url
         return result
@@ -115,34 +121,32 @@ class BaseRESTService(AbstractComponent):
                 exception_name = orig_exception.__module__ + "." + exception_name
             exception_message = self._get_exception_message(orig_exception)
         return {
+            "collection": self._collection,
             "request_url": httprequest.url,
             "request_method": httprequest.method,
-            "params": json.dumps(params, indent=4, sort_keys=True),
-            "headers": json.dumps(headers, indent=4, sort_keys=True),
-            "result": json.dumps(result, indent=4, sort_keys=True),
+            "params": json_dump(params),
+            "headers": json_dump(headers),
+            "result": json_dump(result),
             "error": error,
             "exception_name": exception_name,
             "exception_message": exception_message,
             "state": "success" if result else "failed",
         }
 
-    def _log_call_in_db(self, env, _request, *args, params=None, **kw):
+    def _log_call_in_db(self, env, _request, method_name, *args, params=None, **kw):
         values = self._log_call_in_db_values(_request, *args, params=params, **kw)
-        if not values:
+        enabled_states = self._get_matching_active_conf(method_name)
+        if not values or enabled_states and values["state"] not in enabled_states:
             return
         return env["rest.log"].sudo().create(values)
 
-    def _db_logging_active(self):
+    def _db_logging_active(self, method_name):
         enabled = self._log_calls_in_db
         if not enabled:
-            conf = self._get_log_active_conf()
-            enabled = self._collection in conf or self._usage in conf
+            enabled = bool(self._get_matching_active_conf(method_name))
         return request and enabled and self.env["rest.log"].logging_active()
 
-    def _get_log_active_param(self):
-        param = self.env["ir.config_parameter"].sudo().get_param("rest.log.active")
-        return param.strip() if param else ""
-
-    def _get_log_active_conf(self):
-        param = self._get_log_active_param()
-        return tuple([x.strip() for x in param.split(",") if x.strip()])
+    def _get_matching_active_conf(self, method_name):
+        return self.env["rest.log"]._get_matching_active_conf(
+            self._collection, self._usage, method_name
+        )
