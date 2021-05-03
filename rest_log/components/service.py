@@ -43,10 +43,15 @@ class BaseRESTService(AbstractComponent):
             result = super().dispatch(method_name, *args, params=params)
         except exceptions.UserError as orig_exception:
             self._dispatch_exception(
-                RESTServiceUserErrorException, orig_exception, *args, params=params
+                method_name,
+                RESTServiceUserErrorException,
+                orig_exception,
+                *args,
+                params=params,
             )
         except exceptions.ValidationError as orig_exception:
             self._dispatch_exception(
+                method_name,
                 RESTServiceValidationErrorException,
                 orig_exception,
                 *args,
@@ -54,7 +59,11 @@ class BaseRESTService(AbstractComponent):
             )
         except Exception as orig_exception:
             self._dispatch_exception(
-                RESTServiceDispatchException, orig_exception, *args, params=params
+                method_name,
+                RESTServiceDispatchException,
+                orig_exception,
+                *args,
+                params=params,
             )
         log_entry = self._log_call_in_db(
             self.env, request, method_name, *args, params=params, result=result
@@ -64,7 +73,9 @@ class BaseRESTService(AbstractComponent):
             result["log_entry_url"] = log_entry_url
         return result
 
-    def _dispatch_exception(self, exception_klass, orig_exception, *args, params=None):
+    def _dispatch_exception(
+        self, method_name, exception_klass, orig_exception, *args, params=None
+    ):
         tb = traceback.format_exc()
         # TODO: how to test this? Cannot rollback nor use another cursor
         self.env.cr.rollback()
@@ -73,6 +84,7 @@ class BaseRESTService(AbstractComponent):
             log_entry = self._log_call_in_db(
                 env,
                 request,
+                method_name,
                 *args,
                 params=params,
                 traceback=tb,
