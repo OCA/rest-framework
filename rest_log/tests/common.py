@@ -4,22 +4,14 @@
 
 import contextlib
 
+from odoo import exceptions
+
 from odoo.addons.base_rest import restapi
-from odoo.addons.base_rest.tests.common import SavepointRestServiceRegistryCase
 from odoo.addons.component.core import Component
 from odoo.addons.website.tools import MockRequest
 
 
-class TestDBLoggingBase(SavepointRestServiceRegistryCase):
-    """Test DB logging for REST calls."""
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
-        cls.service = cls._get_service(cls)
-        cls.log_model = cls.env["rest.log"].sudo()
-
+class TestDBLoggingMixin(object):
     @staticmethod
     def _get_service(class_or_instance):
         # pylint: disable=R7980
@@ -42,6 +34,16 @@ class TestDBLoggingBase(SavepointRestServiceRegistryCase):
 
             def _get_out_schema(self):
                 return {"name": {"type": "string", "required": True}}
+
+            @restapi.method([(["/fail/<string:how>"], "GET")], auth="public")
+            def fail(self, how):
+                """Test a failure"""
+                exc = {
+                    "value": ValueError,
+                    "validation": exceptions.ValidationError,
+                    "user": exceptions.UserError,
+                }
+                raise exc[how]("Failed as you wanted!")
 
         class_or_instance.comp_registry.load_components("rest_log")
         # class_or_instance._build_services(class_or_instance, LoggedService)
