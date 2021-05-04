@@ -329,6 +329,15 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             {"field_str1": "str1", "field_str2": "str2", "field_str3": "str3"},
         )
 
+    def test_recursion(self):
+        class Datamodel1(Datamodel):
+            _name = "datamodel1"
+            field_str = fields.String()
+
+        Datamodel1._build_datamodel(self.datamodel_registry)
+        for _i in range(0, 1000):
+            self.env.datamodels["datamodel1"](field_str="1234")
+
     def test_nested_model(self):
         """ Test nested model serialization/deserialization"""
 
