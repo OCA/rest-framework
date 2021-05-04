@@ -5,13 +5,25 @@ import json
 
 import mock
 
-from odoo import exceptions
+from odoo import exceptions, registry
 from odoo.tools import mute_logger
 
-from .common import TestDBLoggingBase
+from odoo.addons.base_rest.tests.common import (
+    SavepointRestServiceRegistryCase,
+    TransactionRestServiceRegistryCase,
+)
+from odoo.addons.rest_log import exceptions as log_exceptions  # pylint: disable=W7950
+
+from .common import TestDBLoggingMixin
 
 
-class DBLoggingCase(TestDBLoggingBase):
+class TestDBLogging(SavepointRestServiceRegistryCase, TestDBLoggingMixin):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.service = cls._get_service(cls)
+        cls.log_model = cls.env["rest.log"].sudo()
+
     def test_log_enabled_conf_parsing(self):
         key1 = "coll1.service1.endpoint"
         key2 = "coll1.service2.endpoint:failed"
@@ -69,26 +81,6 @@ class DBLoggingCase(TestDBLoggingBase):
             resp = self.service.dispatch("get", 100)
         self.assertIn("log_entry_url", resp)
         self.assertTrue(self.log_model.search_count([]) > log_entry_count)
-
-    # # TODO: this is very tricky because when the exception is raised
-    # # the transaction is explicitly rolled back and then our test env is gone
-    # # and everything right after is broken.
-    # # To fully test this we need a different test class setup and advanced mocking
-    # # and/or rewrite code so that we can it properly.
-    # # def test_log_exception(self):
-    # #     mock_path = \
-    # #         "odoo.addons.REST.services.checkout.Checkout.scan_document"
-    # #     log_entry_count = self.log_model.search_count([])
-    # #     with self._get_mocked_request():
-    # #         with mock.patch(mock_path, autospec=True) as mocked:
-    # #             exc = exceptions.UserError("Sorry, you broke it!")
-    # #             mocked.side_effect = exc
-    # #             resp = self.service.dispatch(
-    # #                 "scan_document", params={"barcode": self.picking.name})
-    # #     self.assertIn("log_entry_url", resp)
-    # #     self.assertTrue(self.log_model.search_count([]) > log_entry_count)
-    # #     log_entry_data = urlparse(resp["log_entry_url"])
-    # #     pass
 
     def test_log_entry_values_success(self):
         params = {"some": "value"}
@@ -231,3 +223,60 @@ class DBLoggingCase(TestDBLoggingBase):
         expected = self.log_model.EXCEPTION_SEVERITY_MAPPING.copy()
         expected["ValueError"] = "warning"
         self.assertEqual(mapping, expected)
+
+
+class TestDBLoggingException(TransactionRestServiceRegistryCase, TestDBLoggingMixin):
+    def setUp(self):
+        super().setUp()
+        self.service = self._get_service(self)
+
+    def _test_exception(self, test_type, wrapping_exc, exc_name, severity):
+        log_model = self.env["rest.log"].sudo()
+        initial_entries = log_model.search([])
+        entry_url_from_exc = None
+        # with mock.patch.object(type(self.env.cr), "rollback"):
+        with self._get_mocked_request():
+            try:
+                self.service.dispatch("fail", test_type)
+            except Exception as err:
+                # Not using `assertRaises` to inspect the exception directly
+                self.assertTrue(isinstance(err, wrapping_exc))
+                self.assertEqual(
+                    self.service._get_exception_message(err), "Failed as you wanted!"
+                )
+                entry_url_from_exc = err.rest_json_info["log_entry_url"]
+        with registry(self.env.cr.dbname).cursor() as cr:
+            env = self.env(cr=cr)
+            log_model = env["rest.log"].sudo()
+            entry = log_model.search([]) - initial_entries
+            expected = {
+                "collection": self.service._collection,
+                "state": "failed",
+                "result": "null",
+                "exception_name": exc_name,
+                "exception_message": "Failed as you wanted!",
+                "severity": severity,
+            }
+            self.assertRecordValues(entry, [expected])
+            self.assertEqual(entry_url_from_exc, self.service._get_log_entry_url(entry))
+
+    def test_log_exception_user(self):
+        self._test_exception(
+            "user",
+            log_exceptions.RESTServiceUserErrorException,
+            "odoo.exceptions.UserError",
+            "functional",
+        )
+
+    def test_log_exception_validation(self):
+        self._test_exception(
+            "validation",
+            log_exceptions.RESTServiceValidationErrorException,
+            "odoo.exceptions.ValidationError",
+            "functional",
+        )
+
+    def test_log_exception_value(self):
+        self._test_exception(
+            "value", log_exceptions.RESTServiceDispatchException, "ValueError", "severe"
+        )
