@@ -134,7 +134,7 @@ class BaseRestService(AbstractComponent):
             return result
         return output_param.to_response(self, result)
 
-    def dispatch(self, method_name, *args, params=None):
+    def dispatch(self, method_name, *args, params=None, **kwargs):
         """
         This method dispatch the call to the final method.
         Before the call parameters are processed by the
@@ -155,9 +155,11 @@ class BaseRestService(AbstractComponent):
         if isinstance(secure_params, dict):
             # for backward compatibility methods expecting json params
             # are declared as m(self, p1=None, p2=None) or m(self, **params)
-            res = method(*args, **secure_params)
+            final_params = kwargs.copy()
+            final_params.update(secure_params)
+            res = method(*args, **final_params)
         else:
-            res = method(*args, secure_params)
+            res = method(*args, secure_params, **kwargs)
         self._log_call(method, params, secure_params, res)
         return self._prepare_response(method, res)
 

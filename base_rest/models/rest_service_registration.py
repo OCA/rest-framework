@@ -329,7 +329,17 @@ class RestApiServiceControllerGenerator(object):
                 default_route = routes[0]
                 rule = Rule(default_route)
                 Map(rules=[rule])
-                if rule.arguments:
+                if rule.arguments and routing["endpoint_params_to_kwargs"]:
+                    method = METHOD_TMPL_WITH_KWARGS.format(
+                        method_name=method_name,
+                        service_name=self._service_name,
+                        service_method_name=name,
+                        args=", ".join("%s=False" % arg for arg in rule.arguments),
+                        args_value=", ".join(
+                            "{}={}".format(arg, arg) for arg in rule.arguments
+                        ),
+                    )
+                elif rule.arguments:
                     method = METHOD_TMPL_WITH_ARGS.format(
                         method_name=method_name,
                         service_name=self._service_name,
@@ -364,6 +374,15 @@ def {method_name}(self, **kwargs):
     )
 """
 
+METHOD_TMPL_WITH_KWARGS = """
+def {method_name}(self, {args}, **kwargs):
+    return self._process_method(
+        "{service_name}",
+        "{service_method_name}",
+        params=kwargs,
+        {args_value},
+    )
+"""
 
 METHOD_TMPL_WITH_ARGS = """
 def {method_name}(self, {args}, **kwargs):
