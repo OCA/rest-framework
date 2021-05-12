@@ -6,6 +6,6 @@
     </record>
     <record id="config_rest_log_enabled" model="ir.config_parameter">
         <field name="key">rest.log.active</field>
-        <field name="value"></field>
+        <field name="value">  </field>
     </record>
 </odoo>

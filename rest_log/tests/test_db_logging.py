@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2020 Camptocamp SA (http://www.camptocamp.com)
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 # from urllib.parse import urlparse
@@ -8,19 +9,17 @@ import mock
 from odoo import exceptions, registry
 from odoo.tools import mute_logger
 
-from odoo.addons.base_rest.tests.common import (
-    SavepointRestServiceRegistryCase,
-    TransactionRestServiceRegistryCase,
-)
+from odoo.addons.base_rest.tests.common import BaseRestCase, RegistryMixin
+from odoo.addons.component.tests.common import TransactionComponentCase
 from odoo.addons.rest_log import exceptions as log_exceptions  # pylint: disable=W7950
 
 from .common import TestDBLoggingMixin
 
 
-class TestDBLogging(SavepointRestServiceRegistryCase, TestDBLoggingMixin):
+class TestDBLogging(BaseRestCase, TestDBLoggingMixin):
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
+        super(TestDBLogging, cls).setUpClass()
         cls.service = cls._get_service(cls)
         cls.log_model = cls.env["rest.log"].sudo()
 
@@ -225,10 +224,19 @@ class TestDBLogging(SavepointRestServiceRegistryCase, TestDBLoggingMixin):
         self.assertEqual(mapping, expected)
 
 
-class TestDBLoggingException(TransactionRestServiceRegistryCase, TestDBLoggingMixin):
-    def setUp(self):
-        super().setUp()
+class TestDBLoggingException(
+    TransactionComponentCase, RegistryMixin, TestDBLoggingMixin
+):
+    def setUp(self, *args, **kwargs):
+        super(TestDBLoggingException, self).setUp(*args, **kwargs)
+        self.registry.enter_test_mode()
+        self.setUpRegistry()
+        self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
         self.service = self._get_service(self)
+
+    def tearDown(self):
+        self.registry.leave_test_mode()
+        super(TestDBLoggingException, self).tearDown()
 
     def _test_exception(self, test_type, wrapping_exc, exc_name, severity):
         log_model = self.env["rest.log"].sudo()
@@ -237,7 +245,7 @@ class TestDBLoggingException(TransactionRestServiceRegistryCase, TestDBLoggingMi
         # with mock.patch.object(type(self.env.cr), "rollback"):
         with self._get_mocked_request():
             try:
-                self.service.dispatch("fail", test_type)
+                self.service.dispatch("fail", params={"how": test_type})
             except Exception as err:
                 # Not using `assertRaises` to inspect the exception directly
                 self.assertTrue(isinstance(err, wrapping_exc))

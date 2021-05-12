@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2020 Camptocamp SA (http://www.camptocamp.com)
 # @author Guewen Baconnier <guewen.baconnier@camptocamp.com>
 # @author Simone Orsi <simahawk@gmail.com>
