@@ -20,6 +20,4 @@
         "views/rest_log_views.xml",
         "views/menu.xml",
     ],
-    "post_init_hook": "post_init_hook",
-    "installable": False,
 }
