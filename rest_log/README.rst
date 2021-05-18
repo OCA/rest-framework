@@ -32,7 +32,8 @@ This module add DB logging for REST requests.
 It also inject in the response the URL of the log entry created.
 
 NOTE: this feature was implemented initially inside shopfloor app.
-If shopfloor is installed, log records will be copied from its table.
+Up to version 13.0.1.2.1 of this module,
+if shopfloor is installed, log records will be copied from its table.
 
 .. IMPORTANT::
    This is an alpha version, the data model and design can change at any time without warning.
