@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo10-addon-base_rest',
         'odoo10-addon-base_rest_demo',
+        'odoo10-addon-rest_log',
     ],
     classifiers=[
         'Programming Language :: Python',
