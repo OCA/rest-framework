@@ -12,9 +12,9 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[base_rest](base_rest/) | 10.0.2.1.0 | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest](base_rest/) | 10.0.2.2.0 | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_demo](base_rest_demo/) | 10.0.2.0.0 | Demo addon for Base REST
-[rest_log](rest_log/) | 10.0.1.2.1 | Track REST API calls into DB
+[rest_log](rest_log/) | 10.0.1.3.0 | Track REST API calls into DB
 
 [//]: # (end addons)
 
