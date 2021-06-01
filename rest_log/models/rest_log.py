@@ -126,7 +126,8 @@ class RESTLog(models.Model):
         Called from a cron.
         """
         deadline = datetime.now() - timedelta(days=self._logs_retention_days())
-        logs = self.search([("create_date", "<=", deadline)])
+        deadline_str = datetime.strftime(deadline, tools.DEFAULT_SERVER_DATE_FORMAT)
+        logs = self.search([("create_date", "<=", deadline_str)])
         if logs:
             logs.unlink()
         return True
