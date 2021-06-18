@@ -1,5 +1,5 @@
 # Copyright 2019 ACSONE SA/NV
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html)
 
 {
     "name": "Datamodel",
@@ -7,7 +7,7 @@
         This addon allows you to define simple data models supporting
         serialization/deserialization""",
     "version": "14.0.2.0.0",
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "development_status": "Beta",
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
