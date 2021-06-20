@@ -12,21 +12,27 @@ from odoo.addons.base_rest import restapi
 
 
 class Datamodel(restapi.RestMethodParam):
-    def __init__(self, name, is_list=False):
+    def __init__(self, name, is_list=False, partial=None):
         """
 
-        :param name: The datamdel name
+        :param name: The datamodel name
         :param is_list: Should be set to True if params is a collection so that
                         the object will be de/serialized from/to a list
+        :param partial: Should be set to True if params are partial, i.e. they
+                        do not contain values for each field of the datamodel
         """
         self._name = name
         self._is_list = is_list
+        self._partial = partial
 
     def from_params(self, service, params):
         ModelClass = service.env.datamodels[self._name]
         try:
             return ModelClass.load(
-                params, many=self._is_list, unknown=marshmallow.EXCLUDE
+                params,
+                many=self._is_list,
+                unknown=marshmallow.EXCLUDE,
+                partial=self._partial,
             )
         except ValidationError as ve:
             raise UserError(_("BadRequest %s") % ve.messages)
