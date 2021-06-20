@@ -37,7 +37,9 @@ class Datamodel(restapi.RestMethodParam):
             json = [i.dump() for i in result]
         else:
             json = result.dump()
-        errors = ModelClass.validate(json, many=self._is_list)
+        errors = ModelClass.validate(
+            json, many=self._is_list, unknown=marshmallow.EXCLUDE
+        )
         if errors:
             raise SystemError(_("Invalid Response %s") % errors)
         return json
