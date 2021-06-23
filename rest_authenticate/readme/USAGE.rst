@@ -1,0 +1,29 @@
+Authentication
+~~~~~~~~~~~~~~
+
+To authenticate you need to :code:`POST` a request on :code:`[ODOO HOST]/session/auth/login` with the
+following body::
+
+    {
+        "db": [DB_NAME],
+        "login": [LOGIN],
+        "password": [PASSWORD]
+    }
+
+If the authentication is successful, the response will contain (in addition to the usual response of the JSON-RPC
+authentication)::
+
+    {
+        ...
+        "session": {
+            "sid": "ff6b4bac7a590e7960abfc0ac38361433ecac1d6",
+            "expires_at": "2021-09-21 16:53:56"
+        }
+    }
+
+This :code:`sid` value can then be used in the header of the subsequent requests under the :code:`X-Openerp-Session-Id` key.
+
+Logout
+~~~~~~
+
+To logout you need to :code:`POST` a request on :code:`[ODOO HOST]/session/auth/logout` with an empty body.
