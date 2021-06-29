@@ -43,10 +43,13 @@ def method(
 
     def decorator(f):
         _routes = []
-        for paths, http_method in routes:
+        for paths, http_methods in routes:
             if not isinstance(paths, list):
                 paths = [paths]
-            _routes.append(([p for p in paths], http_method))
+            if not isinstance(http_methods, list):
+                http_methods = [http_methods]
+            for m in http_methods:
+                _routes.append(([p for p in paths], m))
         routing = {
             "csrf": csrf,
             "auth": auth,
