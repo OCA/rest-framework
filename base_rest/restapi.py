@@ -35,7 +35,9 @@ def method(
                   the `to_response` method with this result and then return
                   the result of this call.
     :param auth: The type of authentication method
-    :param cors: The Access-Control-Allow-Origin cors directive value.
+    :param cors: The Access-Control-Allow-Origin cors directive value. When
+                 set, this automatically adds OPTIONS to allowed http methods
+                 so the Odoo request handler will accept it.
     :param bool csrf: Whether CSRF protection should be enabled for the route.
                       Defaults to ``False``
 
@@ -48,6 +50,8 @@ def method(
                 paths = [paths]
             if not isinstance(http_methods, list):
                 http_methods = [http_methods]
+            if cors and "OPTIONS" not in http_methods:
+                http_methods.append("OPTIONS")
             for m in http_methods:
                 _routes.append(([p for p in paths], m))
         routing = {
