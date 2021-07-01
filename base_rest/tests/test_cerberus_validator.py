@@ -10,9 +10,10 @@ from odoo.tests.common import MetaCase, TreeCase
 
 from ..components.cerberus_validator import BaseRestCerberusValidator
 from ..restapi import CerberusValidator
+from .common import TestCase
 
 
-class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
+class TestCerberusValidator(TestCase, MetaCase("DummyCase", (object,), {})):
     """Test all the methods that must be implemented by CerberusValidator to
     be a valid RestMethodParam"""
 
