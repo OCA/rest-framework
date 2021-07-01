@@ -5,6 +5,8 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import copy
+import sys
+import unittest
 
 from odoo import http
 from odoo.tests.common import SavepointCase, TransactionCase, get_db_name
@@ -23,6 +25,19 @@ from odoo.addons.component.tests.common import (
 from ..controllers.main import RestController, _PseudoCollection
 from ..core import RestServicesRegistry, _rest_services_databases
 from ..tools import _inspect_methods
+
+if sys.version_info < (3, 8):
+    # This commit
+    # https://github.com/odoo/odoo/commit/ed831abd7d91ee873a1a92ecea2de316a025754f
+    # introduced a backward imcompatible change
+    # that makes simple unit tests ran through Odoo suite fail
+    # because `doClassCleanups` is not defined.
+    # They defined it on `TreeCase` so... there we go.
+    from odoo.tests.common import TreeCase
+
+    TestCase = TreeCase
+else:
+    TestCase = unittest.TestCase
 
 
 class RegistryMixin(object):
