@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import copy
+import sys
 import unittest
 from contextlib import contextmanager
 
@@ -16,6 +17,19 @@ from ..core import (
     _datamodel_databases,
     _get_addon_name,
 )
+
+if sys.version_info < (3, 8):
+    # This commit
+    # https://github.com/odoo/odoo/commit/ed831abd7d91ee873a1a92ecea2de316a025754f
+    # introduced a backward imcompatible change
+    # that makes simple unit tests ran through Odoo suite fail
+    # because `doClassCleanups` is not defined.
+    # They defined it on `TreeCase` so... there we go.
+    from odoo.tests.common import TreeCase
+
+    TestCase = TreeCase
+else:
+    TestCase = unittest.TestCase
 
 
 @contextmanager
@@ -59,7 +73,7 @@ class DatamodelMixin(object):
 
 
 class TransactionDatamodelCase(common.TransactionCase, DatamodelMixin):
-    """ A TransactionCase that loads all the datamodels
+    """A TransactionCase that loads all the datamodels
 
     It it used like an usual Odoo's TransactionCase, but it ensures
     that all the datamodels of the current addon and its dependencies
@@ -81,7 +95,7 @@ class TransactionDatamodelCase(common.TransactionCase, DatamodelMixin):
 
 
 class SavepointDatamodelCase(common.SavepointCase, DatamodelMixin):
-    """ A SavepointCase that loads all the datamodels
+    """A SavepointCase that loads all the datamodels
 
     It is used like an usual Odoo's SavepointCase, but it ensures
     that all the datamodels of the current addon and its dependencies
@@ -102,10 +116,8 @@ class SavepointDatamodelCase(common.SavepointCase, DatamodelMixin):
         DatamodelMixin.setUp(self)
 
 
-class DatamodelRegistryCase(
-    unittest.TestCase, common.MetaCase("DummyCase", (object,), {})
-):
-    """ This test case can be used as a base for writings tests on datamodels
+class DatamodelRegistryCase(TestCase, common.MetaCase("DummyCase", (object,), {})):
+    """This test case can be used as a base for writings tests on datamodels
 
     This test case is meant to test datamodels in a special datamodel registry,
     where you want to have maximum control on which datamodels are loaded
