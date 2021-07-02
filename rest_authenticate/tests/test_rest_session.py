@@ -10,8 +10,7 @@ HOST = "127.0.0.1"
 PORT = odoo.tools.config["http_port"]
 
 
-@odoo.tests.common.at_install(False)
-@odoo.tests.common.post_install(True)
+@odoo.tests.tagged("post_install", "-at_install")
 class TestSessionRestAPI(HttpCase):
     def setUp(self):
         super().setUp()
@@ -32,7 +31,6 @@ class TestSessionRestAPI(HttpCase):
         self.assertEqual(response.headers["Content-Type"], "application/json")
         data = response.json()
         session = root.session_store.get(data["session"]["sid"])
-        self.assertIsNotNone(session)
         self.assertEqual(session.login, self.user.login)
 
     @odoo.tools.mute_logger("odoo.addons.base_rest.http")
