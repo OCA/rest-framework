@@ -10,8 +10,9 @@ following body::
         "password": [PASSWORD]
     }
 
-If the authentication is successful, the response will contain (in addition to the usual response of the JSON-RPC
-authentication)::
+:code:`"db"` is not mandatory if Odoo is able to determine it unequivocally (e.g. single database server or
+:code:`dbfilter` parameter). If the authentication is successful, the response will contain (in addition to the usual
+response of the JSON-RPC authentication)::
 
     {
         ...
