@@ -21,7 +21,11 @@ authentication)::
         }
     }
 
-This :code:`sid` value can then be used in the header of the subsequent requests under the :code:`X-Openerp-Session-Id` key.
+This :code:`sid` value can then be sent in subsequent requests in the following ways:
+
+* header :code:`X-Openerp-Session-Id`
+* cookie named `session_id`
+* request param `session_id`
 
 Logout
 ~~~~~~
