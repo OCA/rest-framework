@@ -26,7 +26,7 @@ class DatamodelBuilder(models.AbstractModel):
         """If `marshmallow_field` is a nested datamodel (relational field), we build
         a default model_serializer class (if it does not exist yet).
 
-        The default model_serializer simply return the `display_name` and the `id`
+        The default model_serializer simply returns the `display_name` and the `id`
         """
         nested_name = getattr(marshmallow_field, "datamodel_name", None)
         if nested_name and nested_name not in registry:
@@ -130,6 +130,10 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
         model = self.env[self._model]
         if "id" in self._model_fields and getattr(self, "id", None):
             return model.browse(self.id)
+        return self._new_odoo_record()
+
+    def _new_odoo_record(self):
+        model = self.env[self._model]
         default_values = model.default_get(model._fields.keys())
         return self.env[self._model].new(default_values)
 
@@ -140,7 +144,7 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
 
     def to_recordset(self, create=True):
         """Create or modify a recordset (singleton) related to self"""
-        res = self.get_odoo_record()
+        res = self.get_odoo_record() or self._new_odoo_record()
         self_fields = (
             self.dump().keys()
         )  # in case of partial not all fields are considered
