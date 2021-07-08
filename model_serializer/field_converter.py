@@ -92,9 +92,8 @@ class RelationalConverter(FieldConverter):
         kwargs["many"] = isinstance(
             self.odoo_field, (odoo_fields.One2many, odoo_fields.Many2many)
         )
-        target_model = self.odoo_field.comodel_name
-        nested_class = "_auto_nested_serializer.{}".format(target_model)
-        kwargs["nested"] = nested_class
+        kwargs["nested"] = "generic.minimal.serializer"
+        kwargs["metadata"] = {"odoo_model": self.odoo_field.comodel_name}
         return kwargs
 
     def _marshmallow_field_class(self):

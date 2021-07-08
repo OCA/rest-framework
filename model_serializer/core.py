@@ -1,88 +1,19 @@
 from odoo import _, models
 from odoo.exceptions import ValidationError
 
-from odoo.addons.datamodel.core import Datamodel, MetaDatamodel, _datamodel_databases
+from odoo.addons.datamodel.core import Datamodel, MetaDatamodel
 
 from .field_converter import convert_field
 
 
-def to_camelcase(txt):
-    tokens = [t.title() for t in txt.split("._")]
-    return "".join(tokens)
-
-
-class DatamodelBuilder(models.AbstractModel):
-    _inherit = "datamodel.builder"
-
-    def load_datamodels(self, module, datamodels_registry=None):
-        super().load_datamodels(module, datamodels_registry=datamodels_registry)
-        datamodels_registry = (
-            datamodels_registry or _datamodel_databases[self.env.cr.dbname]
-        )
-        for datamodel_class in MetaDatamodel._modules_datamodels[module]:
-            self._extend_model_serializer(datamodel_class, datamodels_registry)
-
-    def _build_default_nested_class(self, marshmallow_field, odoo_field, registry):
-        """If `marshmallow_field` is a nested datamodel (relational field), we build
-        a default model_serializer class (if it does not exist yet).
-
-        The default model_serializer simply returns the `display_name` and the `id`
-        """
-        nested_name = getattr(marshmallow_field, "datamodel_name", None)
-        if nested_name and nested_name not in registry:
-            nested_attrs = {
-                "_name": nested_name,
-                "_model": odoo_field.comodel_name,
-                "_model_fields": ["id", "display_name"],
-            }
-            nested_class = MetaDatamodel(
-                to_camelcase(nested_name), (ModelSerializer,), nested_attrs
-            )
-            registry[nested_name] = nested_class
-            nested_class._build_datamodel(registry)
-            self._extend_model_serializer(nested_class, registry)
-
-    def _extend_model_serializer(self, datamodel_class, registry):
-        """Extend the datamodel_class with the fields declared in `_model_fields`"""
-        if issubclass(datamodel_class, ModelSerializer):
-            attrs = {
-                "_inherit": datamodel_class._name,
-                "_model_fields": datamodel_class._model_fields,
-                "_model": datamodel_class._model,
-            }
-            bases = (ModelSerializer,)
-            name = datamodel_class.__name__ + "Child"
-            odoo_model = self.env[datamodel_class._model]
-            for field_name in datamodel_class._model_fields:
-                if not hasattr(datamodel_class, field_name):
-                    odoo_field = odoo_model._fields[field_name]
-                    marshmallow_field = convert_field(odoo_field)
-                    if marshmallow_field:
-                        attrs[field_name] = marshmallow_field
-                        self._build_default_nested_class(
-                            marshmallow_field, odoo_field, registry
-                        )
-
-            parent_class = registry[datamodel_class._name]
-            if getattr(parent_class, "_model_fields", None):
-                _model_fields = list(
-                    set(attrs["_model_fields"] + parent_class._model_fields)
-                )
-                attrs["_model_fields"] = _model_fields
-            new_class = MetaDatamodel(name, bases, attrs)
-            new_class._build_datamodel(registry)
+class ClassOrInstanceMethod(classmethod):
+    def __get__(self, instance, type_):
+        descr_get = super().__get__ if instance is None else self.__func__.__get__
+        return descr_get(instance, type_)
 
 
 class MetaModelSerializer(MetaDatamodel):
     def __init__(self, name, bases, attrs):
-        register = attrs.get("_register")
-        if register and not (attrs.get("_model") and attrs.get("_model_fields")):
-            raise ValidationError(
-                _(
-                    "Model Serializers require '_model' and '_model_fields' "
-                    "attributes to be defined"
-                )
-            )
         super(MetaModelSerializer, self).__init__(name, bases, attrs)
 
 
@@ -93,20 +24,93 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
     _model_fields = []
 
     @classmethod
-    def from_recordset(cls, recordset, many=False):
+    def _check_nested_class(cls, marshmallow_field, registry):
+        """If `marshmallow_field` is a nested datamodel (relational field), we check
+        if the nested datamodel class exists
+        """
+        nested_name = getattr(marshmallow_field, "datamodel_name", None)
+        if nested_name and nested_name not in registry:
+            raise ValidationError(
+                _("'{}' datamodel does not exist").format(nested_name)
+            )
+
+    @classmethod
+    def _extend_from_odoo_model(cls, registry, env):
+        """Extend the datamodel to contain the declared Odoo model fields"""
+        attrs = {
+            "_inherit": cls._name,
+            "_model_fields": getattr(cls, "_model_fields", []),
+            "_model": getattr(cls, "_model", None),
+        }
+        bases = (ModelSerializer,)
+        name = cls.__name__ + "Child"
+        parent_class = registry[cls._name]
+        has_model_fields = bool(attrs["_model_fields"])
+        if getattr(parent_class, "_model_fields", None):
+            has_model_fields = True
+        if getattr(parent_class, "_model", None):
+            if attrs["_model"] and attrs["_model"] != parent_class._model:
+                raise ValidationError(
+                    _(
+                        "Error in {}: Model Serializers cannot inherit "
+                        "from a class having a different '_model' attribute"
+                    ).format(cls.__name__)
+                )
+            attrs["_model"] = parent_class._model
+
+        if not (attrs["_model"] and has_model_fields):
+            raise ValidationError(
+                _(
+                    "Error in {}: Model Serializers require '_model' and "
+                    "'_model_fields' attributes to be defined"
+                ).format(cls.__name__)
+            )
+
+        odoo_model = env[attrs["_model"]]
+        for field_name in cls._model_fields:
+            if not hasattr(cls, field_name):
+                odoo_field = odoo_model._fields[field_name]
+                marshmallow_field = convert_field(odoo_field)
+                if marshmallow_field:
+                    attrs[field_name] = marshmallow_field
+            else:
+                marshmallow_field = getattr(cls.__schema_class__, field_name)
+            cls._check_nested_class(marshmallow_field, registry)
+        return MetaDatamodel(name, bases, attrs)
+
+    @property
+    def _model_name(self):
+        if self.context.get("odoo_model"):
+            return self.context["odoo_model"]
+        return self._model
+
+    @_model_name.setter
+    def _model_name(self, value):
+        if not self.context:
+            self.context = {}
+        self.context["odoo_model"] = value
+
+    @classmethod
+    def from_recordset(cls, recordset, *, many=False):
         """Transform a recordset into a (list of) datamodel(s)"""
+
+        def convert_null_value(val):
+            if val:
+                return val
+            if val is False or isinstance(val, models.BaseModel):
+                return None
+            return val
+
         res = []
-        if not many:
-            recordset = recordset[:1]
+        datamodels = recordset.env.datamodels
+        recordset = recordset if many else recordset[:1]
         for record in recordset:
-            instance = cls(partial=True)
+            instance = cls(partial=True, context={"odoo_model": record._name})
             for model_field in cls._model_fields:
                 schema_field = instance.__schema__.fields[model_field]
                 nested_datamodel_name = getattr(schema_field, "datamodel_name", None)
                 if nested_datamodel_name and record[model_field]:
-                    nested_datamodel_class = recordset.env.datamodels[
-                        nested_datamodel_name
-                    ]
+                    nested_datamodel_class = datamodels[nested_datamodel_name]
                     if hasattr(nested_datamodel_class, "from_recordset"):
                         setattr(
                             instance,
@@ -116,9 +120,7 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
                             ),
                         )
                 else:
-                    value = (
-                        None if record[model_field] is False else record[model_field]
-                    )
+                    value = convert_null_value(record[model_field])
                     setattr(instance, model_field, value)
             res.append(instance)
         if res and not many:
@@ -126,47 +128,75 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
         return res
 
     def get_odoo_record(self):
-        """Get an existing record matching `self`. Meant to be overridden"""
-        model = self.env[self._model]
+        """Get an existing record matching `self`. Meant to be overridden
+        TODO: optimize this to deal with multiple instances at once
+        """
+        odoo_model = self.env[self._model_name]
         if "id" in self._model_fields and getattr(self, "id", None):
-            return model.browse(self.id)
+            return odoo_model.browse(self.id)
         return self._new_odoo_record()
 
     def _new_odoo_record(self):
-        model = self.env[self._model]
-        default_values = model.default_get(model._fields.keys())
-        return self.env[self._model].new(default_values)
+        odoo_model = self.env[self._model_name]
+        default_values = odoo_model.default_get(odoo_model._fields.keys())
+        return odoo_model.new(default_values)
 
     def _process_model_value(self, value, model_field):
         if hasattr(self, "validate_{}".format(model_field)):
             return getattr(self, "validate_{}".format(model_field))(value)
         return value
 
-    def to_recordset(self, create=True):
-        """Create or modify a recordset (singleton) related to self"""
-        res = self.get_odoo_record() or self._new_odoo_record()
-        self_fields = (
-            self.dump().keys()
-        )  # in case of partial not all fields are considered
-        model_fields = set(self_fields) & set(self._model_fields)
-        for model_field in model_fields:
-            schema_field = self.__schema__.fields[model_field]
-            if schema_field.dump_only:
-                continue
-            value = getattr(self, model_field)
-            nested_datamodel_name = getattr(schema_field, "datamodel_name", None)
-            if nested_datamodel_name:
-                comodel = self.env[res._fields[model_field].comodel_name]
-                value = [value] if isinstance(value, Datamodel) else value
-                value = comodel.union(
-                    *[
-                        nested_instance.to_recordset(create=False)
-                        for nested_instance in value
-                    ]
-                )
-            res[model_field] = self._process_model_value(value, model_field)
-        if create and isinstance(res.id, models.NewId):
-            values = {field_name: res[field_name] for field_name in res._cache}
-            values = res._convert_to_write(values)
-            res = res.create(values)
-        return res
+    @classmethod
+    def _many_to_recordset(cls, instances, create=True, start=None):
+        """Transform `instances` into a corresponding recordset
+
+        :param instances: datamodels to transform
+        :param create: whether to create new records or keep them in memory
+        :param start: if instances is empty, or if the serializer is generic (used
+                      for different models), allows to determine the target Odoo
+                      model
+        :return: a recordset
+        """
+        if not instances:
+            return start if isinstance(start, models.BaseModel) else []
+        env = instances[0].env
+        recordset = (
+            start
+            if isinstance(start, models.BaseModel)
+            else env[instances[0]._model].browse([])
+        )
+        model_name = recordset._name
+        for instance in instances:
+            instance._model_name = model_name
+            record = instance.get_odoo_record() or instance._new_odoo_record()
+            # in case of partial, not all fields are considered
+            self_fields = instance.dump().keys()
+            model_fields = set(self_fields) & set(instance._model_fields)
+            for model_field in model_fields:
+                schema_field = instance.__schema__.fields[model_field]
+                if schema_field.dump_only:
+                    continue
+                value = getattr(instance, model_field)
+                nested_datamodel_name = getattr(schema_field, "datamodel_name", None)
+                if nested_datamodel_name:
+                    comodel = instance.env[record._fields[model_field].comodel_name]
+                    nested_instances = value if isinstance(value, list) else [value]
+                    nested_start = comodel.browse([])
+                    value = env.datamodels[nested_datamodel_name]._many_to_recordset(
+                        nested_instances, create=False, start=nested_start
+                    )
+                record[model_field] = instance._process_model_value(value, model_field)
+            if create and isinstance(record.id, models.NewId):
+                values = {
+                    field_name: record[field_name] for field_name in record._cache
+                }
+                values = record._convert_to_write(values)
+                record = record.create(values)
+            recordset += record
+        return record
+
+    @ClassOrInstanceMethod
+    def to_recordset(self, *, instances=None, create=True, start=None):
+        if instances is None and isinstance(self, ModelSerializer):
+            instances = [self]
+        return self._many_to_recordset(instances, create=create, start=start)
