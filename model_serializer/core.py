@@ -109,7 +109,7 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
             for model_field in cls._model_fields:
                 schema_field = instance.__schema__.fields[model_field]
                 nested_datamodel_name = getattr(schema_field, "datamodel_name", None)
-                if nested_datamodel_name and record[model_field]:
+                if nested_datamodel_name:
                     nested_datamodel_class = datamodels[nested_datamodel_name]
                     if hasattr(nested_datamodel_class, "from_recordset"):
                         setattr(
@@ -123,8 +123,8 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
                     value = convert_null_value(record[model_field])
                     setattr(instance, model_field, value)
             res.append(instance)
-        if res and not many:
-            return res[0]
+        if not many:
+            return res[0] if res else None
         return res
 
     def get_odoo_record(self):
