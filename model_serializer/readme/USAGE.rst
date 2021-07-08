@@ -90,7 +90,7 @@ modified like so::
         _model = "res.country"
         _model_fields = ["code", "name"]
 
-    def get_odoo_record(self):
-        if self.code:
-            return self.env[self._model].search([("code", "=", self.code)])
-        return super().get_odoo_record()
+        def get_odoo_record(self):
+            if self.code:
+                return self.env[self._model].search([("code", "=", self.code)])
+            return super().get_odoo_record()

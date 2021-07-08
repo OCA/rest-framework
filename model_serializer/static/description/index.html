@@ -487,10 +487,10 @@ class CountryInfo(ModelSerializer):
     _model = &quot;res.country&quot;
     _model_fields = [&quot;code&quot;, &quot;name&quot;]
 
-def get_odoo_record(self):
-    if self.code:
-        return self.env[self._model].search([(&quot;code&quot;, &quot;=&quot;, self.code)])
-    return super().get_odoo_record()
+    def get_odoo_record(self):
+        if self.code:
+            return self.env[self._model].search([(&quot;code&quot;, &quot;=&quot;, self.code)])
+        return super().get_odoo_record()
 </pre>
 </div>
 </div>
