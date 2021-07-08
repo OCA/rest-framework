@@ -453,7 +453,7 @@ class PartnerInfo(ModelSerializer):
     _model = &quot;res.partner&quot;
     _model_fields = [&quot;id&quot;, &quot;name&quot;, &quot;country_id&quot;]
 
-    country = NestedModel(&quot;country.info&quot;)
+    country_id = NestedModel(&quot;country.info&quot;)
 
 class CountryInfo(ModelSerializer):
     _name = &quot;country.info&quot;
