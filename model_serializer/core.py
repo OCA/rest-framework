@@ -74,7 +74,7 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
                 if marshmallow_field:
                     attrs[field_name] = marshmallow_field
             else:
-                marshmallow_field = getattr(cls.__schema_class__, field_name)
+                marshmallow_field = cls.__schema_class__._declared_fields[field_name]
             cls._check_nested_class(marshmallow_field, registry)
         return MetaDatamodel(name, bases, attrs)
 

@@ -13,6 +13,11 @@ from ..field_converter import Binary
 from ..serializers import GenericMinimalSerializer
 
 
+def _schema_field(model_serializer_cls, field_name):
+    schema_cls = model_serializer_cls.__schema_class__
+    return schema_cls._declared_fields.get(field_name)
+
+
 class TestModelSerializer(DatamodelRegistryCase):
     """Test build of ModelSerializer"""
 
@@ -59,11 +64,9 @@ class TestModelSerializer(DatamodelRegistryCase):
             _inherit = "modelserializer1"
 
         for serializer_class in (ModelSerializer1, ModelSerializer2):
-            self._full_build_model_serializer(serializer_class)
-            full_cls = self.env.datamodels[serializer_class._name]
+            full_cls = self._full_build_model_serializer(serializer_class)
             self.assertTrue(hasattr(full_cls, "id"))
-            schema_cls = full_cls.__schema_class__
-            self.assertIsInstance(schema_cls.id, fields.Integer)
+            self.assertIsInstance(_schema_field(full_cls, "id"), fields.Integer)
 
     def test_03_simple_field_converter(self):
         """Ensure that non-relational fields are correctly converted"""
@@ -114,10 +117,9 @@ class TestModelSerializer(DatamodelRegistryCase):
             _model_fields = list(fields_conversion)
 
         full_cls = self._full_build_model_serializer(PartnerSerializer)
-        schema_cls = full_cls.__schema_class__
         for field_name in fields_conversion:
             odoo_field_cls, marsh_field_cls, attrs = fields_conversion[field_name]
-            this_field = getattr(schema_cls, field_name)
+            this_field = _schema_field(full_cls, field_name)
             self.assertIsInstance(this_field, marsh_field_cls)
             for attr, attr_val in attrs.items():
                 msg = (
@@ -137,12 +139,10 @@ class TestModelSerializer(DatamodelRegistryCase):
             _model_fields = ["user_id"]
 
         full_cls = self._full_build_model_serializer(PartnerSerializer)
-        schema_cls = full_cls.__schema_class__
-        self.assertIsInstance(schema_cls.user_id, NestedModel)
-        self.assertEqual(
-            schema_cls.user_id.datamodel_name, "generic.minimal.serializer"
-        )
-        self.assertFalse(schema_cls.user_id.many)
+        user_field = _schema_field(full_cls, "user_id")
+        self.assertIsInstance(user_field, NestedModel)
+        self.assertEqual(user_field.datamodel_name, "generic.minimal.serializer")
+        self.assertFalse(user_field.many)
 
     def test_05_from_recordset(self):
         """Test `from_recordset` method with only simple fields"""
@@ -205,8 +205,8 @@ class TestModelSerializer(DatamodelRegistryCase):
 
         user_dm_cls = self._full_build_model_serializer(UserSerializer)
         datamodel_cls = self._full_build_model_serializer(PartnerSerializer)
-        schema_cls = datamodel_cls.__schema_class__
-        self.assertEqual(schema_cls.user_id.datamodel_name, "user_serializer")
+        user_field = _schema_field(datamodel_cls, "user_id")
+        self.assertEqual(user_field.datamodel_name, "user_serializer")
         self.partner = self.env["res.partner"].create(
             {"name": "Test Partner", "user_id": SUPERUSER_ID}
         )
