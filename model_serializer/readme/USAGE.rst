@@ -51,7 +51,7 @@ It is possible to override the default definition of fields as such::
         _model = "res.partner"
         _model_fields = ["id", "name", "country_id"]
 
-        country = NestedModel("country.info")
+        country_id = NestedModel("country.info")
 
     class CountryInfo(ModelSerializer):
         _name = "country.info"
