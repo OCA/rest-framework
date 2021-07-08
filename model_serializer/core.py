@@ -146,8 +146,21 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
             return getattr(self, "validate_{}".format(model_field))(value)
         return value
 
+    def _get_partial_fields(self):
+        """Return the list of fields actually used to instantiate `self`"""
+        res = []
+        received_keys = self.dump().keys()
+        actual_field_names = {
+            field.data_key: name
+            for name, field in self.__schema__._declared_fields.items()
+            if field.data_key
+        }
+        for received_key in received_keys:
+            res.append(actual_field_names.get(received_key) or received_key)
+        return res
+
     @classmethod
-    def _many_to_recordset(cls, instances, create=True, start=None):
+    def _many_to_recordset(cls, instances, create=True, write=True, start=None):
         """Transform `instances` into a corresponding recordset
 
         :param instances: datamodels to transform
@@ -170,8 +183,8 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
             instance._model_name = model_name
             record = instance.get_odoo_record() or instance._new_odoo_record()
             # in case of partial, not all fields are considered
-            self_fields = instance.dump().keys()
-            model_fields = set(self_fields) & set(instance._model_fields)
+            received_fields = instance._get_partial_fields()
+            model_fields = set(received_fields) & set(instance._model_fields)
             for model_field in model_fields:
                 schema_field = instance.__schema__.fields[model_field]
                 if schema_field.dump_only:
@@ -186,17 +199,19 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
                         nested_instances, create=False, start=nested_start
                     )
                 record[model_field] = instance._process_model_value(value, model_field)
-            if create and isinstance(record.id, models.NewId):
-                values = {
-                    field_name: record[field_name] for field_name in record._cache
-                }
-                values = record._convert_to_write(values)
+            values = {field_name: record[field_name] for field_name in model_fields}
+            values = record._convert_to_write(values)
+            if isinstance(record.id, models.NewId) and create:
                 record = record.create(values)
+            if isinstance(record.id, int) and write:
+                record.write(values)
             recordset += record
         return record
 
     @class_or_instancemethod
-    def to_recordset(self, *, instances=None, create=True, start=None):
+    def to_recordset(self, *, instances=None, create=True, write=True, start=None):
         if instances is None and isinstance(self, ModelSerializer):
             instances = [self]
-        return self._many_to_recordset(instances, create=create, start=start)
+        return self._many_to_recordset(
+            instances, create=create, write=write, start=start
+        )
