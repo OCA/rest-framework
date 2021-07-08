@@ -6,7 +6,7 @@ from odoo.addons.datamodel.core import Datamodel, MetaDatamodel
 from .field_converter import convert_field
 
 
-class ClassOrInstanceMethod(classmethod):
+class class_or_instancemethod(classmethod):  # pylint: disable=class-camelcase
     def __get__(self, instance, type_):
         descr_get = super().__get__ if instance is None else self.__func__.__get__
         return descr_get(instance, type_)
@@ -195,7 +195,7 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
             recordset += record
         return record
 
-    @ClassOrInstanceMethod
+    @class_or_instancemethod
     def to_recordset(self, *, instances=None, create=True, start=None):
         if instances is None and isinstance(self, ModelSerializer):
             instances = [self]
