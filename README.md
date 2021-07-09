@@ -15,7 +15,7 @@ addon | version | summary
 [base_rest](base_rest/) | 13.0.3.1.1 | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_datamodel](base_rest_datamodel/) | 13.0.3.0.0 | Datamodel binding for base_rest
 [base_rest_demo](base_rest_demo/) | 13.0.3.0.1 | Demo addon for Base REST
-[datamodel](datamodel/) | 13.0.3.0.0 | This addon allows you to define simple data models supporting serialization/deserialization
+[datamodel](datamodel/) | 13.0.3.0.1 | This addon allows you to define simple data models supporting serialization/deserialization
 [graphql_base](graphql_base/) | 13.0.1.0.0 | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 13.0.1.0.0 | GraphQL Demo
 [rest_log](rest_log/) | 13.0.1.3.0 | Track REST API calls into DB
