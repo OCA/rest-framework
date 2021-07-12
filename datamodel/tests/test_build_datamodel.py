@@ -365,6 +365,44 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         self.assertEqual(new_instance.name, instance.name)
         self.assertEqual(new_instance.child.field_str, instance.child.field_str)
 
+    def test_list_nested_model(self):
+        """ Test list model of nested model serialization/deserialization"""
+
+        class Parent(Datamodel):
+            _name = "parent"
+            name = fields.String()
+            list_child = fields.List(fields.NestedModel("child"))
+
+        class Child(Datamodel):
+            _name = "child"
+            field_str = fields.String()
+
+        Parent._build_datamodel(self.datamodel_registry)
+        Child._build_datamodel(self.datamodel_registry)
+
+        Parent = self.env.datamodels["parent"]
+        Child = self.env.datamodels["child"]
+
+        childs = [
+            Child(field_str="My 1st other string"),
+            Child(field_str="My 2nd other string"),
+        ]
+        instance = Parent(name="Parent", list_child=childs)
+        res = instance.dump()
+        self.assertDictEqual(
+            res,
+            {
+                "list_child": [
+                    {"field_str": "My 1st other string"},
+                    {"field_str": "My 2nd other string"},
+                ],
+                "name": "Parent",
+            },
+        )
+        new_instance = instance.load(res)
+        self.assertEqual(new_instance.name, instance.name)
+        self.assertEqual(new_instance.list_child, instance.list_child)
+
     def test_many(self):
         """Test loads of many"""
 
