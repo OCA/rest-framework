@@ -134,7 +134,7 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
         odoo_model = self.env[self._model_name]
         if "id" in self._model_fields and getattr(self, "id", None):
             return odoo_model.browse(self.id)
-        return self._new_odoo_record()
+        return odoo_model.browse([])
 
     def _new_odoo_record(self):
         odoo_model = self.env[self._model_name]
@@ -149,7 +149,7 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
     def _get_partial_fields(self):
         """Return the list of fields actually used to instantiate `self`"""
         res = []
-        received_keys = self.dump().keys()
+        received_keys = self.dump(many=False).keys()
         actual_field_names = {
             field.data_key: name
             for name, field in self.__schema__._declared_fields.items()
@@ -159,59 +159,60 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
             res.append(actual_field_names.get(received_key) or received_key)
         return res
 
-    @classmethod
-    def _many_to_recordset(cls, instances, create=True, write=True, start=None):
-        """Transform `instances` into a corresponding recordset
+    def convert_to_values(self, model=None):
+        """Transform `self` into a dictionary to create or write an odoo record"""
 
-        :param instances: datamodels to transform
-        :param create: whether to create new records or keep them in memory
-        :param start: if instances is empty, or if the serializer is generic (used
-                      for different models), allows to determine the target Odoo
-                      model
-        :return: a recordset
-        """
-        if not instances:
-            return start if isinstance(start, models.BaseModel) else []
-        env = instances[0].env
-        recordset = (
-            start
-            if isinstance(start, models.BaseModel)
-            else env[instances[0]._model].browse([])
-        )
-        model_name = recordset._name
-        for instance in instances:
-            instance._model_name = model_name
-            record = instance.get_odoo_record() or instance._new_odoo_record()
-            # in case of partial, not all fields are considered
-            received_fields = instance._get_partial_fields()
-            model_fields = set(received_fields) & set(instance._model_fields)
-            for model_field in model_fields:
-                schema_field = instance.__schema__.fields[model_field]
-                if schema_field.dump_only:
-                    continue
-                value = getattr(instance, model_field)
-                nested_datamodel_name = getattr(schema_field, "datamodel_name", None)
-                if nested_datamodel_name:
-                    comodel = instance.env[record._fields[model_field].comodel_name]
-                    nested_instances = value if isinstance(value, list) else [value]
-                    nested_start = comodel.browse([])
-                    value = env.datamodels[nested_datamodel_name]._many_to_recordset(
-                        nested_instances, create=False, start=nested_start
-                    )
-                record[model_field] = instance._process_model_value(value, model_field)
-            values = {field_name: record[field_name] for field_name in model_fields}
-            values = record._convert_to_write(values)
-            if isinstance(record.id, models.NewId) and create:
-                record = record.create(values)
-            if isinstance(record.id, int) and write:
-                record.write(values)
-            recordset += record
-        return record
+        def convert_related_values(dics):
+            res = [(6, 0, [])]
+            for dic in dics:
+                rec_id = dic.pop("id", None)
+                if rec_id:
+                    res[0][2].append(rec_id)
+                    if dic:
+                        res.append((1, rec_id, dic))
+                    else:
+                        res.append((4, rec_id))
+                res.append((0, 0, dic))
+            return res
 
-    @class_or_instancemethod
-    def to_recordset(self, *, instances=None, create=True, write=True, start=None):
-        if instances is None and isinstance(self, ModelSerializer):
-            instances = [self]
-        return self._many_to_recordset(
-            instances, create=create, write=write, start=start
-        )
+        model_name = model or self._model
+        self._model_name = model_name
+        record = self.get_odoo_record()
+        values = {"id": record.id} if record else {}
+        # in case of partial, not all fields are considered
+        received_fields = self._get_partial_fields()
+        model_fields = set(received_fields) & set(self._model_fields)
+        for model_field in model_fields:
+            schema_field = self.__schema__.fields[model_field]
+            if schema_field.dump_only:
+                continue
+            value = getattr(self, model_field)
+            nested_datamodel_name = getattr(schema_field, "datamodel_name", None)
+            nested_datamodel = (
+                self.env.datamodels[nested_datamodel_name]
+                if nested_datamodel_name
+                else None
+            )
+            if nested_datamodel and issubclass(nested_datamodel, ModelSerializer):
+                odoo_field = record._fields[model_field]
+                if odoo_field.type == "many2one":
+                    value._model_name = odoo_field.comodel_name
+                    value = value.to_recordset().id
+                else:
+                    nested_values = [
+                        instance.convert_to_values(model=odoo_field.comodel_name)
+                        for instance in value
+                    ]
+                    value = convert_related_values(nested_values)
+            values[model_field] = self._process_model_value(value, model_field)
+        return values
+
+    def to_recordset(self):
+        """Transform `self` into a corresponding recordset"""
+        record = self.get_odoo_record()
+        values = self.convert_to_values(model=self._model_name)
+        if record:
+            record.write(values)
+            return record
+        else:
+            return self.env[self._model_name].create(values)

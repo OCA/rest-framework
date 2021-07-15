@@ -15,3 +15,6 @@ class GenericAbstractSerializer(ModelSerializer):
 class GenericMinimalSerializer(GenericAbstractSerializer):
     _name = "generic.minimal.serializer"
     _model_fields = ["id", "display_name"]
+
+    def to_recordset(self):
+        return self.get_odoo_record()
