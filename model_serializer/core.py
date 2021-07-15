@@ -23,6 +23,11 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
     _model = None
     _model_fields = []
 
+    def dump(self, many=None):
+        with self.__dump_mode_on__():
+            dump = self.__schema__.dump(self, many=many)
+            return dump
+
     @classmethod
     def _check_nested_class(cls, marshmallow_field, registry):
         """If `marshmallow_field` is a nested datamodel (relational field), we check
