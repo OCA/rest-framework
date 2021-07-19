@@ -11,6 +11,7 @@ This code is inspired by ``odoo.addons.component.builder.ComponentBuilder``
 
 """
 import inspect
+import logging
 
 from werkzeug.routing import Map, Rule
 
@@ -33,7 +34,10 @@ from ..tools import _inspect_methods
 ROUTING_DECORATOR_ATTR = "routing"
 
 
-class RestServiceRegistation(models.AbstractModel):
+_logger = logging.getLogger(__name__)
+
+
+class RestServiceRegistration(models.AbstractModel):
     """Register REST services into the REST services registry
 
     This class allows us to hook the registration of the root urls of all
@@ -72,6 +76,7 @@ class RestServiceRegistation(models.AbstractModel):
                 self._build_controller(service, controller_def)
 
     def _build_controller(self, service, controller_def):
+        _logger.info("Build service %s for controller_def %s", service, controller_def)
         base_controller_cls = controller_def["controller_class"]
         # build our new controller class
         ctrl_cls = RestApiServiceControllerGenerator(
@@ -173,7 +178,29 @@ class RestServiceRegistation(models.AbstractModel):
     def load_services(self, module, services_registry):
         controller_defs = _rest_controllers_per_module.get(module, [])
         for controller_def in controller_defs:
-            services_registry[controller_def["root_path"]] = controller_def
+            root_path = controller_def["root_path"]
+            is_base_contoller = not getattr(
+                controller_def["controller_class"], "_generated", False
+            )
+            if is_base_contoller:
+                current_controller = (
+                    services_registry[root_path]["controller_class"]
+                    if root_path in services_registry
+                    else None
+                )
+                services_registry[controller_def["root_path"]] = controller_def
+                if (
+                    current_controller
+                    and current_controller != controller_def["controller_class"]
+                ):
+                    _logger.error(
+                        "Only one REST controller can be safely declared for root path %s\n "
+                        "Registering controller %s\n "
+                        "Registered controller%s\n",
+                        root_path,
+                        controller_def,
+                        services_registry[controller_def["root_path"]],
+                    )
 
     def _init_global_registry(self):
         services_registry = RestServicesRegistry()
@@ -309,9 +336,11 @@ class RestApiServiceControllerGenerator(object):
         :return: A new controller child of base_controller defining the routes
         required to serve the method of the services.
         """
-        return type(
+        controller = type(
             self._new_cls_name, (self._base_controller,), self._generate_methods()
         )
+        controller._generated = True
+        return controller
 
     def _generate_methods(self):
         """Generate controller's methods and associated routes
