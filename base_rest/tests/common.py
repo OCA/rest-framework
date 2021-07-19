@@ -21,7 +21,11 @@ from odoo.addons.component.tests.common import (
 )
 
 from ..controllers.main import RestController, _PseudoCollection
-from ..core import RestServicesRegistry, _rest_services_databases
+from ..core import (
+    RestServicesRegistry,
+    _rest_controllers_per_module,
+    _rest_services_databases,
+)
 from ..tools import _inspect_methods
 
 
@@ -62,6 +66,9 @@ class RestServiceRegistryCase(ComponentRegistryCase):
 
         class_or_instance._controllers_per_module = copy.deepcopy(
             http.controllers_per_module
+        )
+        class_or_instance._original_addon_rest_controllers_per_module = copy.deepcopy(
+            _rest_controllers_per_module[_get_addon_name(class_or_instance.__module__)]
         )
         db_name = get_db_name()
 
@@ -137,6 +144,10 @@ class RestServiceRegistryCase(ComponentRegistryCase):
         _rest_services_databases[
             db_name
         ] = class_or_instance._original_services_registry
+        class_or_instance._service_registry = {}
+        _rest_controllers_per_module[
+            _get_addon_name(class_or_instance.__module__)
+        ] = class_or_instance._original_addon_rest_controllers_per_module
 
     @staticmethod
     def _build_services(class_or_instance, *classes):
