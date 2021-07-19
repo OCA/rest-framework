@@ -8,7 +8,8 @@ from ..restapi import RestMethodParam
 
 class RestMethodParamPlugin(BasePlugin):
     """
-    APISpec plugin to generate path from a services method
+    APISpec plugin to generate path parameters and responses from a services
+    method
     """
 
     def __init__(self, service):
