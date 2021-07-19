@@ -175,41 +175,17 @@ class BaseRestService(AbstractComponent):
         """
         return {}
 
-    def to_openapi(self):
+    def _get_api_spec(self, **params):
+        return BaseRestServiceAPISpec(self, **params)
+
+    def to_openapi(self, **params):
         """
         Return the description of this REST service as an OpenAPI json document
         :return: json document
         """
-        root = OrderedDict()
-        root["openapi"] = "3.0.0"
-        root["info"] = self._get_openapi_info()
-        root["servers"] = self._get_openapi_servers()
-        root["paths"] = self._get_openapi_paths()
-        return root
-
-    def _get_openapi_info(self):
-        return {
-            "title": "%s REST services" % self._usage,
-            "description": textwrap.dedent(self._description or ""),
-        }
-
-    def _get_openapi_servers(self):
-        services_registry = _rest_services_databases.get(self.env.cr.dbname, {})
-        collection_path = ""
-        for path, spec in list(services_registry.items()):
-            if spec["collection_name"] == self._collection:
-                collection_path = path[1:-1]  # remove '/'
-                break
-        return [
-            {
-                "url": "%s/%s/%s"
-                % (
-                    self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
-                    collection_path,
-                    self._usage,
-                )
-            }
-        ]
+        api_spec = self._get_api_spec(**params)
+        api_spec.generate_paths()
+        return api_spec.to_dict()
 
     def _get_openapi_default_parameters(self):
         return []

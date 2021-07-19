@@ -8,6 +8,7 @@ from apispec import APISpec
 
 from ..core import _rest_services_databases
 from .rest_method_param_plugin import RestMethodParamPlugin
+from .rest_method_security_plugin import RestMethodSecurityPlugin
 from .restapi_method_route_plugin import RestApiMethodRoutePlugin
 
 
@@ -16,7 +17,7 @@ class BaseRestServiceAPISpec(APISpec):
     APISpec object from base.rest.service component
     """
 
-    def __init__(self, service_component):
+    def __init__(self, service_component, **params):
         self._service = service_component
         super(BaseRestServiceAPISpec, self).__init__(
             title="%s REST services" % self._service._usage,
@@ -31,9 +32,10 @@ class BaseRestServiceAPISpec(APISpec):
             plugins=[
                 RestApiMethodRoutePlugin(self._service),
                 RestMethodParamPlugin(self._service),
+                RestMethodSecurityPlugin(self._service),
             ],
         )
-        self._generate_paths()
+        self._params = params
 
     def _get_servers(self):
         env = self._service.env
@@ -66,7 +68,7 @@ class BaseRestServiceAPISpec(APISpec):
                     routing=routing,
                 )
 
-    def _generate_paths(self):
+    def generate_paths(self):
         for _name, method in inspect.getmembers(self._service, inspect.ismethod):
             routing = getattr(method, "routing", None)
             if not routing:
