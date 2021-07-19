@@ -95,10 +95,12 @@ class RestServiceRegistation(models.AbstractModel):
         # register our conroller into the list of available controllers
         name_class = ("{}.{}".format(ctrl_cls.__module__, ctrl_cls.__name__), ctrl_cls)
         http.controllers_per_module[addon_name].append(name_class)
-        self._update_auth_method_controller(controller_class=ctrl_cls)
+        self._apply_defaults_to_controller_routes(controller_class=ctrl_cls)
 
-    def _update_auth_method_controller(self, controller_class):
+    def _apply_defaults_to_controller_routes(self, controller_class):
         """
+        Apply default routes properties defined on the controller_class to
+        routes where properties are missing
         Set the automatic auth on controller's routes.
 
         During definition of new controller, the _default_auth should be
@@ -107,15 +109,29 @@ class RestServiceRegistation(models.AbstractModel):
         define it.
         :return:
         """
-        # If the controller class doesn't have the _default_auth, we don't
-        # have to define it on every routes.
-        if not hasattr(controller_class, "_default_auth"):
-            return
-        controller_default_auth = {"auth": controller_class._default_auth}
         for _name, method in _inspect_methods(controller_class):
             routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
-            if routing is not None and not routing.get("auth"):
-                routing.update(controller_default_auth)
+            if not routing:
+                continue
+            self._apply_default_if_not_set(controller_class, routing, "auth")
+            self._apply_default_if_not_set(controller_class, routing, "csrf")
+            self._apply_default_if_not_set(controller_class, routing, "save_session")
+            self._apply_default_cors_if_not_set(controller_class, routing)
+
+    def _apply_default_if_not_set(self, controller_class, routing, attr_name):
+        default_attr_name = "_default_" + attr_name
+        if hasattr(controller_class, default_attr_name) and attr_name not in routing:
+            routing[attr_name] = getattr(controller_class, default_attr_name)
+
+    def _apply_default_cors_if_not_set(self, controller_class, routing):
+        default_attr_name = "_default_cors"
+        if hasattr(controller_class, default_attr_name) and "cors" not in routing:
+            cors = getattr(controller_class, default_attr_name)
+            routing["cors"] = cors
+            if cors and "OPTIONS" not in routing.get("methods", ["OPTIONS"]):
+                # add http method 'OPTIONS' required by cors if the route is
+                # restricted to specific method
+                routing["methods"].append("OPTIONS")
 
     def _get_services(self, collection_name):
         collection = _PseudoCollection(collection_name, self.env)
@@ -204,18 +220,10 @@ class RestApiMethodTransformer(object):
         routes = self._method_to_routes(method)
         input_param = self._method_to_input_param(method)
         output_param = self._method_to_output_param(method)
-        auth = self._method_to_auth(method)
         decorated_method = restapi.method(
-            routes=routes, input_param=input_param, output_param=output_param, auth=auth
+            routes=routes, input_param=input_param, output_param=output_param
         )(getattr(self._service.__class__, method_name))
         setattr(self._service.__class__, method_name, decorated_method)
-
-    def _method_to_auth(self, method):
-        method_name = method.__name__
-        auth = self._controller_class._default_auth
-        if method_name in self._controller_class._auth_by_method:
-            auth = self._controller_class._auth_by_method[method_name]
-        return auth
 
     def _method_to_routes(self, method):
         """
@@ -343,13 +351,14 @@ class RestApiServiceControllerGenerator(object):
                     )
                 exec(method, _globals)
                 method_exec = _globals[method_name]
-                method_exec = http.route(
-                    ["{}{}".format(root_path, r) for r in routes],
+                route_params = dict(
+                    route=["{}{}".format(root_path, r) for r in routes],
                     methods=[http_method],
-                    auth=routing["auth"],
-                    cors=routing["cors"],
-                    csrf=routing["csrf"],
-                )(method_exec)
+                )
+                for attr in {"auth", "cors", "csrf", "save_session"}:
+                    if attr in routing:
+                        route_params[attr] = routing[attr]
+                method_exec = http.route(**route_params)(method_exec)
                 methods[method_name] = method_exec
         return methods
 
