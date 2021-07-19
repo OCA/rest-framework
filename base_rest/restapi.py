@@ -105,6 +105,52 @@ class RestMethodParam(object):
         return {}
 
 
+class BinaryData(RestMethodParam):
+    def __init__(self, mediatypes="*/*", required=False):
+        if not isinstance(mediatypes, list):
+            mediatypes = [mediatypes]
+        self._mediatypes = mediatypes
+        self._required = required
+
+    @property
+    def _binary_content_schema(self):
+        return {
+            mediatype: {
+                "schema": {
+                    "type": "string",
+                    "format": "binary",
+                    "required": self._required,
+                }
+            }
+            for mediatype in self._mediatypes
+        }
+
+    def to_openapi_requestbody(self, service):
+        return {"content": self._binary_content_schema}
+
+    def to_openapi_responses(self, service):
+        return {"200": {"content": self._binary_content_schema}}
+
+    def to_response(self, service, result):
+        if not isinstance(result, http.Response):
+            # The response has not been build by the called method...
+            result = self._to_http_response(result)
+        return result
+
+    def from_params(self, service, params):
+        return params
+
+    def _to_http_response(self, result):
+        mediatype = self._mediatypes[0] if len(self._mediatypes) == 1 else "*/*"
+        headers = [
+            ("Content-Type", mediatype),
+            ("X-Content-Type-Options", "nosniff"),
+            ("Content-Disposition", http.content_disposition("file")),
+            ("Content-Length", len(result)),
+        ]
+        return http.request.make_response(result, headers)
+
+
 class CerberusValidator(RestMethodParam):
     def __init__(self, schema=None, is_list=False):
         """
