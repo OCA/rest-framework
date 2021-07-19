@@ -103,12 +103,18 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             _collection_name = class_or_instance._collection_name
             _default_auth = "public"
 
-            @http.route("/my_controller_route_without_auth")
-            def my_controller_route_without_auth(self):
+            @http.route("/my_controller_route_without")
+            def my_controller_route_without(self):
                 return {}
 
-            @http.route("/my_controller_route_with_auth_public", auth="public")
-            def my_controller_route_with_auth_public(self):
+            @http.route(
+                "/my_controller_route_with",
+                auth="public",
+                cors="http://with_cors",
+                csrf="False",
+                save_session="False",
+            )
+            def my_controller_route_with(self):
                 return {}
 
             @http.route("/my_controller_route_without_auth_2", auth=None)
@@ -117,8 +123,8 @@ class RestServiceRegistryCase(ComponentRegistryCase):
 
         class_or_instance._BaseTestController = BaseTestController
         class_or_instance._controller_route_method_names = {
-            "my_controller_route_without_auth",
-            "my_controller_route_with_auth_public",
+            "my_controller_route_without",
+            "my_controller_route_with",
             "my_controller_route_without_auth_2",
         }
 

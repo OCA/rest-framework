@@ -107,6 +107,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                     "/test_controller/ping/<int:id>/get",
                     "/test_controller/ping/<int:id>",
                 ],
+                "save_session": True,
             },
         )
 
@@ -119,6 +120,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/ping/search", "/test_controller/ping/"],
+                "save_session": True,
             },
         )
 
@@ -134,6 +136,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                     "/test_controller/ping/<int:id>/update",
                     "/test_controller/ping/<int:id>",
                 ],
+                "save_session": True,
             },
         )
 
@@ -146,6 +149,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/ping/<int:id>"],
+                "save_session": True,
             },
         )
 
@@ -158,6 +162,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/ping/create", "/test_controller/ping/"],
+                "save_session": True,
             },
         )
 
@@ -170,6 +175,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/ping/<int:id>/delete"],
+                "save_session": True,
             },
         )
 
@@ -182,6 +188,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/ping/<int:id>"],
+                "save_session": True,
             },
         )
 
@@ -194,6 +201,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/ping/my_method"],
+                "save_session": True,
             },
         )
 
@@ -206,6 +214,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/ping/<int:id>/my_instance_method"],
+                "save_session": True,
             },
         )
 
@@ -275,6 +284,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                     "/test_controller/partner/<int:id>/get",
                     "/test_controller/partner/<int:id>",
                 ],
+                "save_session": True,
             },
         )
 
@@ -287,6 +297,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/partner/<int:id>/get_name"],
+                "save_session": True,
             },
         )
 
@@ -299,6 +310,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/partner/<int:id>/change_name"],
+                "save_session": True,
             },
         )
 
@@ -366,6 +378,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                     "/test_controller/partner/<int:id>/get",
                     "/test_controller/partner/<int:id>",
                 ],
+                "save_session": True,
             },
         )
 
@@ -378,6 +391,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/partner/<int:id>/get_name"],
+                "save_session": True,
             },
         )
 
@@ -390,6 +404,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/partner/<int:id>/change_name"],
+                "save_session": True,
             },
         )
 
@@ -400,7 +415,7 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
     In this class we test the generation of odoo controllers from the services
     component
 
-    The test requires a fresh base crontroller
+    The test requires a fresh base controller
     """
 
     def test_04(self):
@@ -410,7 +425,13 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
         use the _default_auth
         """
         default_auth = "my_default_auth"
+        default_cors = "*"
+        default_csrf = True
+        default_save_session = True
         self._BaseTestController._default_auth = default_auth
+        self._BaseTestController._default_cors = default_cors
+        self._BaseTestController._default_csrf = default_csrf
+        self._BaseTestController._default_save_session = default_save_session
 
         # pylint: disable=R7980
         class TestService(Component):
@@ -420,15 +441,21 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
             _collection = self._collection_name
             _description = "test"
 
-            @restapi.method([(["/new_api_method_with_auth"], "GET")], auth="public")
-            def new_api_method_with_auth(self, _id):
+            @restapi.method(
+                [(["/new_api_method_with"], "GET")],
+                auth="public",
+                cors="http://my_site",
+                csrf=not default_csrf,
+                save_session=not default_save_session,
+            )
+            def new_api_method_with(self, _id):
                 return {"name": self.env["res.partner"].browse(_id).name}
 
-            @restapi.method([(["/new_api_method_without_auth"], "GET")])
-            def new_api_method_without_auth(self, _id):
+            @restapi.method([(["/new_api_method_without"], "GET")])
+            def new_api_method_without(self, _id):
                 return {"name": self.env["res.partner"].browse(_id).name}
 
-            # OLD API method withour auth
+            # OLD API method
             def get(self, _id, message):
                 pass
 
@@ -441,31 +468,60 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
         controller = self._get_controller_for(TestService)
 
         routes = self._get_controller_route_methods(controller)
+        for attr, default in [
+            ("auth", default_auth),
+            ("cors", default_cors),
+            ("csrf", default_csrf),
+            ("save_session", default_save_session),
+        ]:
+            self.assertEqual(
+                routes["get_new_api_method_without"].routing[attr],
+                default,
+                "wrong %s" % attr,
+            )
+        self.assertEqual(routes["get_new_api_method_with"].routing["auth"], "public")
         self.assertEqual(
-            routes["get_new_api_method_with_auth"].routing["auth"],
-            "public",
-            "wrong auth for get_new_api_method_with_auth",
+            routes["get_new_api_method_with"].routing["cors"], "http://my_site"
         )
         self.assertEqual(
-            routes["get_new_api_method_without_auth"].routing["auth"],
-            default_auth,
-            "wrong auth for get_new_api_method_without_auth",
+            routes["get_new_api_method_with"].routing["csrf"], not default_csrf
         )
+        self.assertEqual(
+            routes["get_new_api_method_with"].routing["save_session"],
+            not default_save_session,
+        )
+
         self.assertEqual(
             routes["get_get"].routing["auth"], default_auth, "wrong auth for get_get"
         )
-        self.assertEqual(
-            routes["my_controller_route_without_auth"].routing["auth"],
-            default_auth,
-            "wrong auth for my_controller_route_without_auth",
-        )
-        self.assertEqual(
-            routes["my_controller_route_with_auth_public"].routing["auth"],
-            "public",
-            "wrong auth for my_controller_route_with_auth_public",
-        )
+
+        for attr, default in [
+            ("auth", default_auth),
+            ("cors", default_cors),
+            ("csrf", default_csrf),
+            ("save_session", default_save_session),
+        ]:
+            self.assertEqual(
+                routes["my_controller_route_without"].routing[attr],
+                default,
+                "wrong %s" % attr,
+            )
+
+        routing = routes["my_controller_route_with"].routing
+        for attr, value in [
+            ("auth", "public"),
+            ("cors", "http://with_cors"),
+            ("csrf", "False"),
+            ("save_session", "False"),
+        ]:
+
+            self.assertEqual(
+                routing[attr],
+                value,
+                "wrong %s" % attr,
+            )
         self.assertEqual(
             routes["my_controller_route_without_auth_2"].routing["auth"],
-            default_auth,
+            None,
             "wrong auth for my_controller_route_without_auth_2",
         )
