@@ -198,3 +198,11 @@ class BaseRestService(AbstractComponent):
                 "requested resource."
             },
         }
+
+    @property
+    def request(self):
+        return self.work.request
+
+    @property
+    def controller(self):
+        return self.work.controller
