@@ -21,7 +21,11 @@ from odoo.addons.component.tests.common import (
 )
 
 from ..controllers.main import RestController, _PseudoCollection
-from ..core import RestServicesRegistry, _rest_services_databases
+from ..core import (
+    RestServicesRegistry,
+    _rest_controllers_per_module,
+    _rest_services_databases,
+)
 from ..tools import _inspect_methods
 
 
@@ -63,6 +67,9 @@ class RestServiceRegistryCase(ComponentRegistryCase):
         class_or_instance._controllers_per_module = copy.deepcopy(
             http.controllers_per_module
         )
+        class_or_instance._original_addon_rest_controllers_per_module = copy.deepcopy(
+            _rest_controllers_per_module[_get_addon_name(class_or_instance.__module__)]
+        )
         db_name = get_db_name()
 
         # makes the test component registry available for the db name
@@ -103,12 +110,18 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             _collection_name = class_or_instance._collection_name
             _default_auth = "public"
 
-            @http.route("/my_controller_route_without_auth")
-            def my_controller_route_without_auth(self):
+            @http.route("/my_controller_route_without")
+            def my_controller_route_without(self):
                 return {}
 
-            @http.route("/my_controller_route_with_auth_public", auth="public")
-            def my_controller_route_with_auth_public(self):
+            @http.route(
+                "/my_controller_route_with",
+                auth="public",
+                cors="http://with_cors",
+                csrf="False",
+                save_session="False",
+            )
+            def my_controller_route_with(self):
                 return {}
 
             @http.route("/my_controller_route_without_auth_2", auth=None)
@@ -117,8 +130,8 @@ class RestServiceRegistryCase(ComponentRegistryCase):
 
         class_or_instance._BaseTestController = BaseTestController
         class_or_instance._controller_route_method_names = {
-            "my_controller_route_without_auth",
-            "my_controller_route_with_auth_public",
+            "my_controller_route_without",
+            "my_controller_route_with",
             "my_controller_route_without_auth_2",
         }
 
@@ -131,6 +144,10 @@ class RestServiceRegistryCase(ComponentRegistryCase):
         _rest_services_databases[
             db_name
         ] = class_or_instance._original_services_registry
+        class_or_instance._service_registry = {}
+        _rest_controllers_per_module[
+            _get_addon_name(class_or_instance.__module__)
+        ] = class_or_instance._original_addon_rest_controllers_per_module
 
     @staticmethod
     def _build_services(class_or_instance, *classes):

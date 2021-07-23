@@ -37,7 +37,12 @@
           "403": {
             "description": "You don't have the permission to access the requested resource."
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       },
       "parameters": [
         {
@@ -192,7 +197,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       }
     },
     "/": {
@@ -336,7 +346,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       },
       "get": {
         "summary": "\nSearh partner by name\n",
@@ -441,7 +456,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       }
     },
     "/{id}/get": {
@@ -524,7 +544,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       },
       "parameters": [
         {
@@ -618,7 +643,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       },
       "parameters": [
         {
@@ -771,7 +801,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       },
       "put": {
         "summary": "\nUpdate partner informations\n",
@@ -913,7 +948,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       }
     },
     "/search": {
@@ -1020,7 +1060,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       }
     },
     "/{id}/update": {
@@ -1164,7 +1209,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "user": []
+          }
+        ]
       },
       "parameters": [
         {
@@ -1179,5 +1229,14 @@
       ]
     }
   },
-  "openapi": "3.0.0"
+  "openapi": "3.0.0",
+  "components": {
+    "securitySchemes": {
+      "user": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session_id"
+      }
+    }
+  }
 }

@@ -5,15 +5,13 @@ import functools
 
 from cerberus import Validator
 
-from odoo import _
+from odoo import _, http
 from odoo.exceptions import UserError
 
 from .tools import cerberus_to_json
 
 
-def method(
-    routes, input_param=None, output_param=None, auth=None, cors=None, csrf=False
-):
+def method(routes, input_param=None, output_param=None, **kw):
     """Decorator marking the decorated method as being a handler for
       REST requests. The method must be part of a component inheriting from
     ``base.rest.service``.
@@ -40,6 +38,8 @@ def method(
                    so the Odoo request handler will accept it.
       :param bool csrf: Whether CSRF protection should be enabled for the route.
                         Defaults to ``False``
+      :param bool save_session: Whether HTTP session should be saved into the
+                                session store: Default to ``True``
 
     """
 
@@ -50,18 +50,16 @@ def method(
                 paths = [paths]
             if not isinstance(http_methods, list):
                 http_methods = [http_methods]
-            if cors and "OPTIONS" not in http_methods:
+            if kw.get("cors") and "OPTIONS" not in http_methods:
                 http_methods.append("OPTIONS")
             for m in http_methods:
                 _routes.append(([p for p in paths], m))
         routing = {
-            "csrf": csrf,
-            "auth": auth,
-            "cors": cors,
             "routes": _routes,
             "input_param": input_param,
             "output_param": output_param,
         }
+        routing.update(kw)
 
         @functools.wraps(f)
         def response_wrap(*args, **kw):
@@ -105,6 +103,52 @@ class RestMethodParam(object):
 
     def to_openapi_responses(self, service):
         return {}
+
+
+class BinaryData(RestMethodParam):
+    def __init__(self, mediatypes="*/*", required=False):
+        if not isinstance(mediatypes, list):
+            mediatypes = [mediatypes]
+        self._mediatypes = mediatypes
+        self._required = required
+
+    @property
+    def _binary_content_schema(self):
+        return {
+            mediatype: {
+                "schema": {
+                    "type": "string",
+                    "format": "binary",
+                    "required": self._required,
+                }
+            }
+            for mediatype in self._mediatypes
+        }
+
+    def to_openapi_requestbody(self, service):
+        return {"content": self._binary_content_schema}
+
+    def to_openapi_responses(self, service):
+        return {"200": {"content": self._binary_content_schema}}
+
+    def to_response(self, service, result):
+        if not isinstance(result, http.Response):
+            # The response has not been build by the called method...
+            result = self._to_http_response(result)
+        return result
+
+    def from_params(self, service, params):
+        return params
+
+    def _to_http_response(self, result):
+        mediatype = self._mediatypes[0] if len(self._mediatypes) == 1 else "*/*"
+        headers = [
+            ("Content-Type", mediatype),
+            ("X-Content-Type-Options", "nosniff"),
+            ("Content-Disposition", http.content_disposition("file")),
+            ("Content-Length", len(result)),
+        ]
+        return http.request.make_response(result, headers)
 
 
 class CerberusValidator(RestMethodParam):

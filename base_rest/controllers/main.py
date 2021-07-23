@@ -44,8 +44,7 @@ class RestControllerType(ControllerType):
         root_path = getattr(cls, "_root_path", None)
         collection_name = getattr(cls, "_collection_name", None)
         if root_path and collection_name:
-            if not hasattr(cls, "_module"):
-                cls._module = _get_addon_name(cls.__module__)
+            cls._module = _get_addon_name(cls.__module__)
             _rest_controllers_per_module[cls._module].append(
                 {
                     "root_path": root_path,
@@ -53,31 +52,81 @@ class RestControllerType(ControllerType):
                     "controller_class": cls,
                 }
             )
+            _logger.info(
+                "Added rest controller %s for module %s",
+                _rest_controllers_per_module[cls._module][-1],
+                cls._module,
+            )
 
 
 class RestController(Controller, metaclass=RestControllerType):
     """Generic REST Controller
 
-    This controller provides generic routes conform to commen REST usages.
-    You must inherit of this controller into your code to register your REST
-    routes. At the same time you must fill 2 required informations:
+    This controller is the base controller used by as base controller for all the REST
+    controller generated from the service components.
+
+    You must inherit of this controller into your code to register the root path
+    used to serve all the services defined for the given collection name.
+    This registration requires 2 parameters:
 
     _root_path:
     _collection_name:
 
+    Only one controller by _collection_name, _root_path should exists into an
+    odoo database. If more than one controller exists, a warning is issued into
+    the log at startup and the concrete controller used as base class
+    for the services registered into the collection name and served at the
+    root path is not predictable.
+
+    Module A:
+        class ControllerA(RestController):
+            _root_path='/my_path/'
+            _collection_name='my_services_collection'
+
+    Module B depends A:                               A
+        class ControllerB(ControllerA):             /  \
+            pass                                   B    C
+                                                  /
+    Module C depends A:                          D
+        class ControllerC(ControllerA):
+            pass
+
+    Module D depends B:
+        class ControllerB(ControllerB):
+            pass
+
+    In the preceding illustration, services in module C will never be served
+    by controller D or B. Therefore if the generic dispatch method is overridden
+    in  B or D, this override wil never apply to services in C since in Odoo
+    controllers are not designed to be inherited. That's why it's an error
+    to have more than one controller registered for the same root path and
+    collection name.
+
+    The following properties can be specified to define common properties to
+    apply to generated REST routes.
+
+    _default_auth: The default authentication to apply to all pre defined routes.
+                    default: 'user'
+    _default_cors: The default Access-Control-Allow-Origin cors directive value.
+                   default: None
+    _default_csrf: Whether CSRF protection should be enabled for the route.
+                   default: False
+    _default_save_session: Whether session should be saved into the session store
+                           default: True
     """
 
     _root_path = None
     _collection_name = None
     # The default authentication to apply to all pre defined routes.
     _default_auth = "user"
-    # You can use this parameter to specify an authentication method by HTTP
-    # method ie: {'GET': None, 'POST': 'user'}
-    _auth_by_method = {}
-    # The default The Access-Control-Allow-Origin cors directive value.
-    _cors = None
+    # The default Access-Control-Allow-Origin cors directive value.
+    _default_cors = None
     # Whether CSRF protection should be enabled for the route.
-    _csrf = False
+    _default_csrf = False
+    # Whether session should be saved into the session store
+    _default_save_session = True
+
+    _component_context_provider = "component_context_provider"
 
     def _get_component_context(self):
         """
@@ -85,7 +134,15 @@ class RestController(Controller, metaclass=RestControllerType):
         context
         :return: dict of key value.
         """
-        return {"request": request}
+        collection = self.collection
+        work = WorkContext(
+            model_name="rest.service.registration",
+            collection=collection,
+            request=request,
+            controller=self,
+        )
+        provider = work.component(usage=self._component_context_provider)
+        return provider._get_component_context()
 
     def make_response(self, data):
         if isinstance(data, Response):

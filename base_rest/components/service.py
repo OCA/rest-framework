@@ -175,12 +175,17 @@ class BaseRestService(AbstractComponent):
         """
         return {}
 
-    def to_openapi(self):
+    def _get_api_spec(self, **params):
+        return BaseRestServiceAPISpec(self, **params)
+
+    def to_openapi(self, **params):
         """
         Return the description of this REST service as an OpenAPI json document
         :return: json document
         """
-        return BaseRestServiceAPISpec(self).to_dict()
+        api_spec = self._get_api_spec(**params)
+        api_spec.generate_paths()
+        return api_spec.to_dict()
 
     def _get_openapi_default_parameters(self):
         return []
@@ -198,3 +203,11 @@ class BaseRestService(AbstractComponent):
                 "requested resource."
             },
         }
+
+    @property
+    def request(self):
+        return self.work.request
+
+    @property
+    def controller(self):
+        return self.work.controller
