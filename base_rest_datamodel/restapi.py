@@ -18,8 +18,10 @@ class Datamodel(restapi.RestMethodParam):
         :param name: The datamodel name
         :param is_list: Should be set to True if params is a collection so that
                         the object will be de/serialized from/to a list
-        :param partial: Should be set to True if params are partial, i.e. they
-                        do not contain values for each field of the datamodel
+        :param partial: Whether to ignore missing fields and not require
+            any fields declared. Propagates down to ``Nested`` fields as well. If
+            its value is an iterable, only missing fields listed in that iterable
+            will be ignored. Use dot delimiters to specify nested fields.
         """
         self._name = name
         self._is_list = is_list
