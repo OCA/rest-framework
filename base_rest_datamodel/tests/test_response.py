@@ -3,16 +3,12 @@
 import marshmallow
 import mock
 
-import odoo
-
 from odoo.addons.base_rest_datamodel import restapi
 from odoo.addons.datamodel import fields
 from odoo.addons.datamodel.core import Datamodel
 from odoo.addons.datamodel.tests import common
 
 
-@odoo.tests.common.at_install(False)
-@odoo.tests.common.post_install(True)
 class TestDataModel(common.DatamodelRegistryCase):
     def _to_response(self, instance):
         restapi_datamodel = restapi.Datamodel(instance._name)
