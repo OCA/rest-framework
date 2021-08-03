@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo14-addon-base_rest',
         'odoo14-addon-base_rest_auth_api_key',
+        'odoo14-addon-base_rest_auth_jwt',
         'odoo14-addon-base_rest_datamodel',
         'odoo14-addon-base_rest_demo',
         'odoo14-addon-datamodel',
