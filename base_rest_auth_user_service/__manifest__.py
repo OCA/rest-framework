@@ -2,8 +2,8 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
 {
-    "name": "REST Authenticate",
-    "summary": "Authenticate using a REST call",
+    "name": "REST Authentication Service",
+    "summary": "Login/logout from session using a REST call",
     "version": "13.0.1.0.0",
     "development_status": "Alpha",
     "license": "LGPL-3",
