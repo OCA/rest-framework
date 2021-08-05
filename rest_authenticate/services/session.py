@@ -42,7 +42,7 @@ class SessionAuthenticationService(Component):
         }
         return result
 
-    @restapi.method([(["/logout"], "POST")])
+    @restapi.method([(["/logout"], "POST")], auth="user")
     def logout(self):
         request.session.logout(keep_db=True)
         return {"message": "Successful logout"}
