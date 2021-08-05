@@ -25,7 +25,7 @@ class SessionAuthenticationService(Component):
     _usage = "auth"
     _collection = "session.rest.services"
 
-    @restapi.method([(["/login"], "POST")])
+    @restapi.method([(["/login"], "POST")], auth="public")
     def authenticate(self):
         params = request.params
         db_name = params.get("db", db_monodb())
