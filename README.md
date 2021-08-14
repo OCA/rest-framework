@@ -10,10 +10,10 @@ This repo holds addons developed to ease the development of REST services into O
 
 Available addons
 ----------------
-addon | version | summary
---- | --- | ---
-[base_rest](base_rest/) | 11.0.2.0.3 | Develop your own high level REST APIs for Odoo thanks to this addon.
-[base_rest_demo](base_rest_demo/) | 11.0.2.0.0 | Demo addon for Base REST
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[base_rest](base_rest/) | 11.0.2.0.3 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest_demo](base_rest_demo/) | 11.0.2.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Demo addon for Base REST
 
 [//]: # (end addons)
 
