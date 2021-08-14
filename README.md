@@ -17,23 +17,23 @@ This repo holds addons developed to ease the development of REST services into O
 
 Available addons
 ----------------
-addon | version | summary
---- | --- | ---
-[base_rest](base_rest/) | 14.0.4.0.0 | Develop your own high level REST APIs for Odoo thanks to this addon.
-[base_rest_auth_api_key](base_rest_auth_api_key/) | 14.0.1.0.1 | Base Rest: Add support for the auth_api_key security policy into the openapi documentation
-[base_rest_auth_jwt](base_rest_auth_jwt/) | 14.0.1.0.1 | Base Rest: Add support for the auth_jwt security policy into the openapi documentation
-[base_rest_datamodel](base_rest_datamodel/) | 14.0.4.0.0 | Datamodel binding for base_rest
-[base_rest_demo](base_rest_demo/) | 14.0.4.0.0 | Demo addon for Base REST
-[datamodel](datamodel/) | 14.0.3.0.1 | This addon allows you to define simple data models supporting serialization/deserialization
-[rest_log](rest_log/) | 14.0.1.0.2 | Track REST API calls into DB
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[base_rest](base_rest/) | 14.0.4.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest_auth_api_key](base_rest_auth_api_key/) | 14.0.1.0.1 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Base Rest: Add support for the auth_api_key security policy into the openapi documentation
+[base_rest_auth_jwt](base_rest_auth_jwt/) | 14.0.1.0.1 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Base Rest: Add support for the auth_jwt security policy into the openapi documentation
+[base_rest_datamodel](base_rest_datamodel/) | 14.0.4.0.0 |  | Datamodel binding for base_rest
+[base_rest_demo](base_rest_demo/) | 14.0.4.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Demo addon for Base REST
+[datamodel](datamodel/) | 14.0.3.0.1 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | This addon allows you to define simple data models supporting serialization/deserialization
+[rest_log](rest_log/) | 14.0.1.0.2 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | Track REST API calls into DB
 
 
 Unported addons
 ---------------
-addon | version | summary
---- | --- | ---
-[graphql_base](graphql_base/) | 13.0.1.0.0 (unported) | Base GraphQL/GraphiQL controller
-[graphql_demo](graphql_demo/) | 13.0.1.0.0 (unported) | GraphQL Demo
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[graphql_base](graphql_base/) | 13.0.1.0.0 (unported) | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | Base GraphQL/GraphiQL controller
+[graphql_demo](graphql_demo/) | 13.0.1.0.0 (unported) | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | GraphQL Demo
 
 [//]: # (end addons)
 
