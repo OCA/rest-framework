@@ -23,7 +23,7 @@ Datamodel
     :target: https://runbot.odoo-community.org/runbot/271/12.0
     :alt: Try me on Runbot
 
-|badge1| |badge2| |badge3| |badge4| |badge5| 
+|badge1| |badge2| |badge3| |badge4| |badge5|
 
 This addon allows you to define simple data models supporting serialization/deserialization
 to/from json
@@ -145,6 +145,9 @@ Contributors
 ~~~~~~~~~~~~
 
 * Laurent Mignon <laurent.mignon@acsone.eu>
+* `Tecnativa <https://www.tecnativa.com>`_:
+
+    * Carlos Roca
 
 Maintainers
 ~~~~~~~~~~~
@@ -165,7 +168,7 @@ promote its widespread use.
 
 Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
-|maintainer-lmignon| 
+|maintainer-lmignon|
 
 This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/12.0/datamodel>`_ project on GitHub.
 

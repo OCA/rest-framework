@@ -30,10 +30,18 @@ class NestedModel(Nested):
     @property
     def schema(self):
         if not self.nested:
-            self.nested = self.parent._env.datamodels[
+            # Get the major parent to avoid error of _env does not exist
+            super_parent = None
+            parent = self
+            while not super_parent:
+                if not hasattr(parent, "parent"):
+                    super_parent = parent
+                    break
+                parent = parent.parent
+            self.nested = super_parent._env.datamodels[
                 self.datamodel_name
             ].__schema_class__
-            self.nested._env = self.parent._env
+            self.nested._env = super_parent._env
         return super(NestedModel, self).schema
 
     def _deserialize(self, value, attr, data, **kwargs):
