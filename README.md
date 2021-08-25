@@ -24,7 +24,7 @@ addon | version | maintainers | summary
 [base_rest_auth_jwt](base_rest_auth_jwt/) | 14.0.1.0.1 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Base Rest: Add support for the auth_jwt security policy into the openapi documentation
 [base_rest_datamodel](base_rest_datamodel/) | 14.0.4.0.0 |  | Datamodel binding for base_rest
 [base_rest_demo](base_rest_demo/) | 14.0.4.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Demo addon for Base REST
-[datamodel](datamodel/) | 14.0.3.0.1 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | This addon allows you to define simple data models supporting serialization/deserialization
+[datamodel](datamodel/) | 14.0.3.0.2 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | This addon allows you to define simple data models supporting serialization/deserialization
 [rest_log](rest_log/) | 14.0.1.0.2 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | Track REST API calls into DB
 
 
