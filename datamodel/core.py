@@ -5,6 +5,9 @@
 import functools
 import logging
 from collections import OrderedDict, defaultdict
+from contextlib import ExitStack
+
+from marshmallow import INCLUDE
 
 from odoo.api import Environment
 from odoo.tools import LastOrderedSet, OrderedSet
@@ -39,6 +42,14 @@ def _get_addon_name(full_name):
     else:
         addon_name = module_parts[0]
     return addon_name
+
+
+def _get_nested_schemas(schema):
+    res = [schema]
+    for field in schema.fields.values():
+        if getattr(field, "schema", None):
+            res += _get_nested_schemas(field.schema)
+    return res
 
 
 class DatamodelDatabases(dict):
@@ -131,6 +142,13 @@ class MetaDatamodel(ModelMeta):
 
         self._modules_datamodels[self._module].append(self)
 
+    def __call__(self, *args, **kwargs):
+        """Allow to set any field (including 'dump_only') at instantiation
+        This is not an issue thanks to cleanup during (de)serialization
+        """
+        kwargs["unknown"] = kwargs.get("unknown", INCLUDE)
+        return super().__call__(*args, **kwargs)
+
 
 class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
     """Main Datamodel Model
@@ -206,6 +224,18 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
         :return:
         """
         return cls.__get_schema_class__(**kwargs)
+
+    @classmethod
+    def validate(cls, data, context=None, many=None, partial=None, unknown=None):
+        schema = cls.__get_schema_class__(
+            context=context, partial=partial, unknown=unknown
+        )
+        all_schemas = _get_nested_schemas(schema)
+        with ExitStack() as stack:
+            # propagate 'unknown' to each nested schema during validate
+            for nested_schema in all_schemas:
+                stack.enter_context(cls.propagate_unknwown(nested_schema, unknown))
+            return schema.validate(data, many=many, partial=partial)
 
     @classmethod
     def _build_datamodel(cls, registry):
