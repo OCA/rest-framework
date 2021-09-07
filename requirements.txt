@@ -1,5 +1,4 @@
 # generated from manifests external_dependencies
-apispec
 apispec>=4.0.0
 cerberus
 jsondiff
