@@ -76,7 +76,7 @@ class RestServiceRegistration(models.AbstractModel):
                 self._build_controller(service, controller_def)
 
     def _build_controller(self, service, controller_def):
-        _logger.info("Build service %s for controller_def %s", service, controller_def)
+        _logger.debug("Build service %s for controller_def %s", service, controller_def)
         base_controller_cls = controller_def["controller_class"]
         # build our new controller class
         ctrl_cls = RestApiServiceControllerGenerator(
