@@ -52,7 +52,7 @@ class RestControllerType(ControllerType):
                     "controller_class": cls,
                 }
             )
-            _logger.info(
+            _logger.debug(
                 "Added rest controller %s for module %s",
                 _rest_controllers_per_module[cls._module][-1],
                 cls._module,
