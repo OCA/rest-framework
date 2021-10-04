@@ -169,6 +169,13 @@ class RestController(Controller, metaclass=RestControllerType):
         """
         collection = self.collection
         params = self._get_component_context()
+        env = collection.env
+        collection.env = env(
+            context=dict(
+                env.context,
+                authenticated_partner_id=params.get("authenticated_partner_id"),
+            )
+        )
         yield WorkContext(
             model_name="rest.service.registration", collection=collection, **params
         )
