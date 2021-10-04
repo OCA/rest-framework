@@ -641,6 +641,12 @@ into your services.</p>
             <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PartnerShortInfo</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">res</span>
 </pre>
+<p>The BaseRestServiceContextProvider provides context for your services,
+including authenticated_partner_id.
+You are free to redefine the method _get_authenticated_partner_id() to pass the
+authenticated_partner_id based on the authentication mechanism of your choice.
+See base_rest_auth_jwt for an example.</p>
+<p>In addition, authenticated_partner_id is available in record rule evaluation context.</p>
 </div>
 <div class="section" id="known-issues-roadmap">
 <h1><a class="toc-backref" href="#id7">Known issues / Roadmap</a></h1>
