@@ -455,6 +455,12 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
             def new_api_method_without(self, _id):
                 return {"name": self.env["res.partner"].browse(_id).name}
 
+            @restapi.method(
+                [(["/new_api_method_with_public_or"], "GET")], auth="public_or_default"
+            )
+            def new_api_method_with_public_or(self, _id):
+                return {"name": self.env["res.partner"].browse(_id).name}
+
             # OLD API method
             def get(self, _id, message):
                 pass
@@ -524,4 +530,8 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
             routes["my_controller_route_without_auth_2"].routing["auth"],
             None,
             "wrong auth for my_controller_route_without_auth_2",
+        )
+        self.assertEqual(
+            routes["get_new_api_method_with_public_or"].routing["auth"],
+            "public_or_my_default_auth",
         )

@@ -32,7 +32,11 @@ def method(routes, input_param=None, output_param=None, **kw):
                     call to the decorated method, the http handler first call
                     the `to_response` method with this result and then return
                     the result of this call.
-      :param auth: The type of authentication method
+      :param auth: The type of authentication method. A special auth method
+                   named 'public_or_default' can be used. In such a case
+                   when the HTTP route will be generated, the auth method
+                   will be computed from the '_default_auth' property defined
+                   on the controller with 'public_or_' as prefix.
       :param cors: The Access-Control-Allow-Origin cors directive value. When
                    set, this automatically adds OPTIONS to allowed http methods
                    so the Odoo request handler will accept it.
