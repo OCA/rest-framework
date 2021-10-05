@@ -1,5 +1,7 @@
 # Copyright 2020 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
+from contextlib import contextmanager
+
 from odoo.addons.component.core import Component
 
 from .. import restapi
@@ -455,12 +457,6 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
             def new_api_method_without(self, _id):
                 return {"name": self.env["res.partner"].browse(_id).name}
 
-            @restapi.method(
-                [(["/new_api_method_with_public_or"], "GET")], auth="public_or_default"
-            )
-            def new_api_method_with_public_or(self, _id):
-                return {"name": self.env["res.partner"].browse(_id).name}
-
             # OLD API method
             def get(self, _id, message):
                 pass
@@ -531,7 +527,94 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
             None,
             "wrong auth for my_controller_route_without_auth_2",
         )
+
+    def test_05(self):
+        """Test auth="public_or_default" on restapi.method
+
+        The auth method on the route should be public_or_my_default_auth
+        since the ir.http model provides the _auth_method_public_or_my_default_auth methods
+        """
+        default_auth = "my_default_auth"
+        self._BaseTestController._default_auth = default_auth
+
+        # pylint: disable=R7980
+        class TestService(Component):
+            _inherit = "base.rest.service"
+            _name = "test.partner.service"
+            _usage = "partner"
+            _collection = self._collection_name
+            _description = "test"
+
+            @restapi.method(
+                [(["/new_api_method_with_public_or"], "GET")], auth="public_or_default"
+            )
+            def new_api_method_with_public_or(self, _id):
+                return {"name": self.env["res.partner"].browse(_id).name}
+
+            # Validator
+            def _validator_get(self):
+                # no parameters by default
+                return {}
+
+        # delare the auth méthod on ir.http
+        with _add_method(
+            self.env["ir.http"],
+            "_auth_method_public_or_my_default_auth",
+            lambda a: True,
+        ):
+            self._build_services(self, TestService)
+
+        controller = self._get_controller_for(TestService)
+        routes = self._get_controller_route_methods(controller)
+
         self.assertEqual(
             routes["get_new_api_method_with_public_or"].routing["auth"],
             "public_or_my_default_auth",
         )
+
+    def test_06(self):
+        """Test auth="public_or_default" on restapi.method
+
+        The auth method on the route should be the default_auth configurerd on the controller
+        since the ir.http model doesn't provides the _auth_method_public_or_my_default_auth
+        methods
+        """
+        default_auth = "my_default_auth"
+        self._BaseTestController._default_auth = default_auth
+
+        # pylint: disable=R7980
+        class TestService(Component):
+            _inherit = "base.rest.service"
+            _name = "test.partner.service"
+            _usage = "partner"
+            _collection = self._collection_name
+            _description = "test"
+
+            @restapi.method(
+                [(["/new_api_method_with_public_or"], "GET")], auth="public_or_default"
+            )
+            def new_api_method_with_public_or(self, _id):
+                return {"name": self.env["res.partner"].browse(_id).name}
+
+            # Validator
+            def _validator_get(self):
+                # no parameters by default
+                return {}
+
+        self._build_services(self, TestService)
+        controller = self._get_controller_for(TestService)
+        routes = self._get_controller_route_methods(controller)
+
+        self.assertEqual(
+            routes["get_new_api_method_with_public_or"].routing["auth"],
+            "my_default_auth",
+        )
+
+
+@contextmanager
+def _add_method(obj, name, method):
+    try:
+        setattr(obj.__class__, name, method)
+        yield
+    finally:
+        delattr(obj.__class__, name)
