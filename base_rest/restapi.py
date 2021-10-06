@@ -32,7 +32,43 @@ def method(routes, input_param=None, output_param=None, **kw):
                     call to the decorated method, the http handler first call
                     the `to_response` method with this result and then return
                     the result of this call.
-      :param auth: The type of authentication method
+      :param auth: The type of authentication method. A special auth method
+                   named 'public_or_default' can be used. In such a case
+                   when the HTTP route will be generated, the auth method
+                   will be computed from the '_default_auth' property defined
+                   on the controller with 'public_or_' as prefix.
+                   The purpose of 'public_or_default' auth method is to provide
+                   a way to specify that a method should work for anonymous users
+                   but can be enhanced when an authenticated user is know.
+                   It implies that when the 'default' auth part of 'public_or_default'
+                   will be replaced by the default_auth specified on the controller
+                   in charge of registering the web services, an auth method with
+                   the same name is defined into odoo to provide such a behavior.
+                   In the following example, the auth method on my ping service
+                   will be `public_or_jwt` since this authentication method is
+                   provided by the auth_jwt addon.
+
+                    .. code-block:: python
+
+                        class PingService(Component):
+                            _inherit = "base.rest.service"
+                            _name = "ping_service"
+                            _usage = "ping"
+                            _collection = "test.api.services"
+
+                            @restapi.method(
+                                [(["/<string:message>""], "GET")],
+                                auth="public_or_auth",
+                            )
+                            def _ping(self, message):
+                                return {"message": message}
+
+
+                        class MyRestController(main.RestController):
+                            _root_path = '/test/'
+                            _collection_name = "test.api.services"
+                            _default_auth = "jwt'
+
       :param cors: The Access-Control-Allow-Origin cors directive value. When
                    set, this automatically adds OPTIONS to allowed http methods
                    so the Odoo request handler will accept it.

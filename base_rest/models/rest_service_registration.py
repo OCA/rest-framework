@@ -118,7 +118,7 @@ class RestServiceRegistration(models.AbstractModel):
             routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
             if not routing:
                 continue
-            self._apply_default_if_not_set(controller_class, routing, "auth")
+            self._apply_default_auth_if_not_set(controller_class, routing)
             self._apply_default_if_not_set(controller_class, routing, "csrf")
             self._apply_default_if_not_set(controller_class, routing, "save_session")
             self._apply_default_cors_if_not_set(controller_class, routing)
@@ -127,6 +127,28 @@ class RestServiceRegistration(models.AbstractModel):
         default_attr_name = "_default_" + attr_name
         if hasattr(controller_class, default_attr_name) and attr_name not in routing:
             routing[attr_name] = getattr(controller_class, default_attr_name)
+
+    def _apply_default_auth_if_not_set(self, controller_class, routing):
+        default_attr_name = "_default_auth"
+        default_auth = getattr(controller_class, default_attr_name, None)
+        if default_auth:
+            if "auth" in routing:
+                auth = routing["auth"]
+                if auth == "public_or_default":
+                    alternative_auth = "public_or_" + default_auth
+                    if getattr(
+                        self.env["ir.http"], "_auth_method_%s" % alternative_auth, None
+                    ):
+                        routing["auth"] = alternative_auth
+                    else:
+                        _logger.debug(
+                            "No %s auth method available: Fallback on %s",
+                            alternative_auth,
+                            default_auth,
+                        )
+                        routing["auth"] = default_auth
+            else:
+                routing["auth"] = default_auth
 
     def _apply_default_cors_if_not_set(self, controller_class, routing):
         default_attr_name = "_default_cors"
