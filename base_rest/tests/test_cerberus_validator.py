@@ -10,6 +10,7 @@ from odoo.tests.common import MetaCase, TreeCase
 
 from ..components.cerberus_validator import BaseRestCerberusValidator
 from ..restapi import CerberusValidator
+from ..tools import cerberus_to_json
 
 
 class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
@@ -326,3 +327,73 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
         v = CerberusValidator(schema="my_endpoint")
         validator = v.get_cerberus_validator(my_service, "input")
         self.assertTrue(validator.require_all)
+
+    def test_cerberus_key_value_mapping_to_openapi(self):
+        schema = {
+            "indexes": {
+                "type": "dict",
+                "required": True,
+                "nullable": True,
+                "keysrules": {"type": "string"},
+                "valuesrules": {"type": "string"},
+            }
+        }
+        openapi = cerberus_to_json(schema)
+        self.assertDictEqual(
+            openapi,
+            {
+                "type": "object",
+                "required": ["indexes"],
+                "properties": {
+                    "indexes": {
+                        "nullable": True,
+                        "type": "object",
+                        "additionalProperties": {"type": "string"},
+                    }
+                },
+            },
+        )
+        schema = {
+            "indexes": {
+                "type": "dict",
+                "required": True,
+                "nullable": True,
+                "keysrules": {"type": "string"},
+                "valuesrules": {
+                    "type": "dict",
+                    "schema": {
+                        "id": {
+                            "type": "integer",
+                            "required": True,
+                            "nullable": False,
+                        },
+                        "name": {"type": "string"},
+                    },
+                },
+            }
+        }
+        openapi = cerberus_to_json(schema)
+        self.assertDictEqual(
+            openapi,
+            {
+                "type": "object",
+                "required": ["indexes"],
+                "properties": {
+                    "indexes": {
+                        "nullable": True,
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "required": ["id"],
+                            "properties": {
+                                "id": {
+                                    "nullable": False,
+                                    "type": "integer",
+                                },
+                                "name": {"type": "string"},
+                            },
+                        },
+                    }
+                },
+            },
+        )
