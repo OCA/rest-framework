@@ -1,12 +1,14 @@
 # Copyright 2018 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
+import abc
 import functools
+import json
 
 from cerberus import Validator
 
 from odoo import _, http
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 from .tools import cerberus_to_json
 
@@ -109,7 +111,8 @@ def method(routes, input_param=None, output_param=None, **kw):
     return decorator
 
 
-class RestMethodParam(object):
+class RestMethodParam(abc.ABC):
+    @abc.abstractmethod
     def from_params(self, service, params):
         """
         This method is called to process the parameters received at the
@@ -121,7 +124,8 @@ class RestMethodParam(object):
         :return: Value into the format expected by the method
         """
 
-    def to_response(self, service, result):
+    @abc.abstractmethod
+    def to_response(self, service, result) -> http.Response:
         """
         This method is called to prepare the result of the call to the method
         in a format suitable by the controller (http.Response or JSON dict).
@@ -131,13 +135,20 @@ class RestMethodParam(object):
         :return: http.Response or JSON dict
         """
 
-    def to_openapi_query_parameters(self, service, spec):
+    @abc.abstractmethod
+    def to_openapi_query_parameters(self, service, spec) -> dict:
         return {}
 
-    def to_openapi_requestbody(self, service, spec):
+    @abc.abstractmethod
+    def to_openapi_requestbody(self, service, spec) -> dict:
         return {}
 
-    def to_openapi_responses(self, service, spec):
+    @abc.abstractmethod
+    def to_openapi_responses(self, service, spec) -> dict:
+        return {}
+
+    @abc.abstractmethod
+    def to_json_schema(self, service, spec, direction) -> dict:
         return {}
 
 
@@ -148,21 +159,27 @@ class BinaryData(RestMethodParam):
         self._mediatypes = mediatypes
         self._required = required
 
+    def to_json_schema(self, service, spec, direction):
+        return {
+            "type": "string",
+            "format": "binary",
+            "required": self._required,
+        }
+
     @property
     def _binary_content_schema(self):
         return {
-            mediatype: {
-                "schema": {
-                    "type": "string",
-                    "format": "binary",
-                    "required": self._required,
-                }
-            }
+            mediatype: {"schema": self.to_json_schema(None, None, None)}
             for mediatype in self._mediatypes
         }
 
-    def to_openapi_requestbody(self, services, spec):
+    def to_openapi_requestbody(self, service, spec):
         return {"content": self._binary_content_schema}
+
+    def to_openapi_query_parameters(self, service, spec):
+        raise NotImplementedError(
+            "BinaryData are not (?yet?) supported as query paramters"
+        )
 
     def to_openapi_responses(self, service, spec):
         return {"200": {"content": self._binary_content_schema}}
@@ -210,7 +227,7 @@ class CerberusValidator(RestMethodParam):
         raise SystemError(_("Invalid Response %s") % validator.errors)
 
     def to_openapi_query_parameters(self, service, spec):
-        json_schema = self.to_json_schema(service, "input")
+        json_schema = self.to_json_schema(service, spec, "input")
         parameters = []
         for prop, spec in list(json_schema["properties"].items()):
             params = {
@@ -239,11 +256,11 @@ class CerberusValidator(RestMethodParam):
         return parameters
 
     def to_openapi_requestbody(self, service, spec):
-        json_schema = self.to_json_schema(service, "input")
+        json_schema = self.to_json_schema(service, spec, "input")
         return {"content": {"application/json": {"schema": json_schema}}}
 
     def to_openapi_responses(self, service, spec):
-        json_schema = self.to_json_schema(service, "output")
+        json_schema = self.to_json_schema(service, spec, "output")
         return {"200": {"content": {"application/json": {"schema": json_schema}}}}
 
     def get_cerberus_validator(self, service, direction):
@@ -260,7 +277,7 @@ class CerberusValidator(RestMethodParam):
             return Validator(schema, purge_unknown=True)
         raise Exception(_("Unable to get cerberus schema from %s") % self._schema)
 
-    def to_json_schema(self, service, direction):
+    def to_json_schema(self, service, spec, direction):
         schema = self.get_cerberus_validator(service, direction).schema
         return cerberus_to_json(schema)
 
@@ -322,7 +339,7 @@ class CerberusListValidator(CerberusValidator):
             )
         return values
 
-    def to_json_schema(self, service, direction):
+    def to_json_schema(self, service, spec, direction):
         cerberus_schema = self.get_cerberus_validator(service, direction).schema
         json_schema = cerberus_to_json(cerberus_schema)
         json_schema = {"type": "array", "items": json_schema}
@@ -333,3 +350,73 @@ class CerberusListValidator(CerberusValidator):
         if self._unique_items is not None:
             json_schema["uniqueItems"] = self._unique_items
         return json_schema
+
+
+class MultipartFormData(RestMethodParam):
+    def __init__(self, parts):
+        """This allows to create multipart/form-data endpoints.
+        :param parts:  list of RestMethodParam
+        """
+        if not isinstance(parts, dict):
+            raise ValidationError(_("You must provide a dict of RestMethodParam"))
+        self._parts = parts
+
+    def to_openapi_properties(self, service, spec, direction):
+        properties = {}
+        for key, part in self._parts.items():
+            properties[key] = part.to_json_schema(service, spec, direction)
+        return properties
+
+    def to_openapi_encoding(self):
+        encodings = {}
+        for key, part in self._parts.items():
+            if isinstance(part, BinaryData):
+                encodings[key] = {"contentType": ", ".join(part._mediatypes)}
+        return encodings
+
+    def to_json_schema(self, service, spec, direction):
+        res = {
+            "multipart/form-data": {
+                "schema": {
+                    "type": "object",
+                    "properties": self.to_openapi_properties(service, spec, direction),
+                }
+            }
+        }
+        encoding = self.to_openapi_encoding()
+        if len(encoding) > 0:
+            res["multipart/form-data"]["schema"]["encoding"] = encoding
+        return res
+
+    def from_params(self, service, params):
+        for key, part in self._parts.items():
+            param = None
+            if isinstance(part, BinaryData):
+                param = part.from_params(service, params[key])
+            else:
+                # If the part is not Binary, it should be JSON
+                try:
+                    json_param = json.loads(
+                        params[key]
+                    )  # multipart ony sends its parts as string
+                except json.JSONDecodeError as error:
+                    raise ValidationError(
+                        _("{}'s JSON content is malformed: {}".format(key, error))
+                    )
+                param = part.from_params(service, json_param)
+            params[key] = param
+        return params
+
+    def to_openapi_query_parameters(self, service, spec):
+        raise NotImplementedError(
+            "MultipartFormData are not (?yet?) supported as query paramters"
+        )
+
+    def to_openapi_requestbody(self, service, spec):
+        return {"content": self.to_json_schema(service, spec, "input")}
+
+    def to_openapi_responses(self, service, spec):
+        return {"200": {"content": self.to_json_schema(service, spec, "output")}}
+
+    def to_response(self, service, result):
+        raise NotImplementedError()

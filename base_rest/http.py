@@ -122,6 +122,9 @@ class HttpRestRequest(HttpRequest):
                 msg = "Invalid JSON data: %s" % str(e)
                 _logger.info("%s: %s", self.httprequest.path, msg)
                 raise BadRequest(msg)
+        elif self.httprequest.mimetype == "multipart/form-data":
+            # Do not reassign self.params
+            pass
         else:
             # We reparse the query_string in order to handle data structure
             # more information on https://github.com/aventurella/pyquerystring
