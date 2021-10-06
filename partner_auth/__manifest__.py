@@ -8,7 +8,7 @@
     "version": "14.0.1.0.0",
     "license": "AGPL-3",
     "author": "Akretion,Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/rest-authenticable",
+    "website": "https://github.com/akretion/rest-authenticable",
     "depends": ["component", "base_rest_datamodel", "mail"],
     "data": [
         "security/res_group.xml",
