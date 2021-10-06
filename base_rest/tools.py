@@ -6,6 +6,8 @@ from collections import OrderedDict
 
 _logger = logging.getLogger(__name__)
 
+SUPPORTED_META = ["title", "description", "example", "examples"]
+
 
 def cerberus_to_json(schema):
     """Convert a Cerberus schema to a JSON schema"""
@@ -44,6 +46,11 @@ def _get_field_props(spec):  # noqa: C901
     if "description" in spec:
         resp["description"] = spec["description"]
 
+    if "meta" in spec:
+        for key in SUPPORTED_META:
+            value = spec["meta"].get(key)
+            if value:
+                resp[key] = value
     if "allowed" in spec:
         resp["enum"] = spec["allowed"]
 

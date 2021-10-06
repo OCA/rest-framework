@@ -397,3 +397,49 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
                 },
             },
         )
+
+    def test_cerberus_meta_to_openapi(self):
+        schema = {
+            "indexes": {
+                "type": "dict",
+                "meta": {
+                    "description": "A key/value mapping where Key is the model "
+                    "name used to fill the index and value is the "
+                    "index name",
+                    "example": {
+                        "shopinvader.category": "demo_elasticsearch_backend_"
+                        "shopinvader_category_en_US",
+                        "shopinvader.variant": "demo_elasticsearch_backend_"
+                        "shopinvader_variant_en_US",
+                    },
+                },
+                "required": True,
+                "nullable": True,
+                "keysrules": {"type": "string"},
+                "valuesrules": {"type": "string"},
+            }
+        }
+        openapi = cerberus_to_json(schema)
+        self.assertDictEqual(
+            openapi,
+            {
+                "type": "object",
+                "required": ["indexes"],
+                "properties": {
+                    "indexes": {
+                        "description": "A key/value mapping where Key is the model "
+                        "name used to fill the index and value is "
+                        "the index name",
+                        "example": {
+                            "shopinvader.category": "demo_elasticsearch_backend_"
+                            "shopinvader_category_en_US",
+                            "shopinvader.variant": "demo_elasticsearch_backend_"
+                            "shopinvader_variant_en_US",
+                        },
+                        "nullable": True,
+                        "type": "object",
+                        "additionalProperties": {"type": "string"},
+                    }
+                },
+            },
+        )
