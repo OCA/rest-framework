@@ -188,18 +188,14 @@ class BinaryData(RestMethodParam):
 
 
 class CerberusValidator(RestMethodParam):
-    def __init__(self, schema=None, is_list=False):
+    def __init__(self, schema):
         """
 
         :param schema: can be dict as cerberus schema, an instance of
                        cerberus.Validator or a sting with the method name to
                        call on the service to get the schema or the validator
-        :param is_list: Not implemented. Should be set to True if params is a
-                        collection so that the object will be de/serialized
-                        from/to a list
         """
         self._schema = schema
-        self._is_list = is_list
 
     def from_params(self, service, params):
         validator = self.get_cerberus_validator(service, "input")
@@ -243,11 +239,8 @@ class CerberusValidator(RestMethodParam):
         return parameters
 
     def to_openapi_requestbody(self, service):
-        return {
-            "content": {
-                "application/json": {"schema": self.to_json_schema(service, "input")}
-            }
-        }
+        json_schema = self.to_json_schema(service, "input")
+        return {"content": {"application/json": {"schema": json_schema}}}
 
     def to_openapi_responses(self, service):
         json_schema = self.to_json_schema(service, "output")
@@ -270,3 +263,73 @@ class CerberusValidator(RestMethodParam):
     def to_json_schema(self, service, direction):
         schema = self.get_cerberus_validator(service, direction).schema
         return cerberus_to_json(schema)
+
+
+class CerberusListValidator(CerberusValidator):
+    def __init__(self, schema, min_items=None, max_items=None, unique_items=None):
+        """
+        :param schema: Cerberus list item schema
+                       can be dict as cerberus schema, an instance of
+                       cerberus.Validator or a sting with the method name to
+                       call on the service to get the schema or the validator
+        :param min_items: A list instance is valid against "min_items" if its
+                          size is greater than, or equal to, min_items.
+                          The value MUST be a non-negative integer.
+        :param max_items: A list instance is valid against "max_items" if its
+                          size is less than, or equal to, max_items.
+                          The value MUST be a non-negative integer.
+        :param unique_items: Used to document that the list should only
+                             contain unique items.
+                             (Not enforced at validation time)
+        """
+        super(CerberusListValidator, self).__init__(schema=schema)
+        self._min_items = min_items
+        self._max_items = max_items
+        self._unique_items = unique_items
+
+    def from_params(self, service, params):
+        return self._do_validate(service, data=params, direction="input")
+
+    def to_response(self, service, result):
+        return self._do_validate(service, data=result, direction="output")
+
+    def to_openapi_query_parameters(self, service):
+        raise NotImplementedError("List are not (?yet?) supported as query paramters")
+
+    def _do_validate(self, service, data, direction):
+        validator = self.get_cerberus_validator(service, direction)
+        values = []
+        ExceptionClass = UserError if direction == "input" else SystemError
+        for idx, p in enumerate(data):
+            if not validator.validate(p):
+                raise ExceptionClass(
+                    _("BadRequest item %s :%s") % (idx, validator.errors)
+                )
+            values.append(validator.document)
+        if self._min_items is not None and len(values) < self._min_items:
+            raise ExceptionClass(
+                _(
+                    "BadRequest: Not enough items in the list (%s < %s)"
+                    % (len(values), self._min_items)
+                )
+            )
+        if self._max_items is not None and len(values) > self._max_items:
+            raise ExceptionClass(
+                _(
+                    "BadRequest: Too many items in the list (%s > %s)"
+                    % (len(values), self._max_items)
+                )
+            )
+        return values
+
+    def to_json_schema(self, service, direction):
+        cerberus_schema = self.get_cerberus_validator(service, direction).schema
+        json_schema = cerberus_to_json(cerberus_schema)
+        json_schema = {"type": "array", "items": json_schema}
+        if self._min_items is not None:
+            json_schema["minItems"] = self._min_items
+        if self._max_items is not None:
+            json_schema["maxItems"] = self._max_items
+        if self._unique_items is not None:
+            json_schema["uniqueItems"] = self._unique_items
+        return json_schema
