@@ -581,6 +581,15 @@ REST API: <tt class="docutils literal">odoo.addons.base_rest.restapi.method</tt>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
         <span class="p">}</span>
+
+    <span class="nd">&#64;restapi</span><span class="o">.</span><span class="n">method</span><span class="p">(</span>
+        <span class="p">[([</span><span class="s2">&quot;/list&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">],</span> <span class="s2">&quot;GET&quot;</span><span class="p">)],</span>
+        <span class="n">output_param</span><span class="o">=</span><span class="n">restapi</span><span class="o">.</span><span class="n">CerberusListValidator</span><span class="p">(</span><span class="s2">&quot;_get_partner_schema&quot;</span><span class="p">),</span>
+        <span class="n">auth</span><span class="o">=</span><span class="s2">&quot;public&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">partners</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.partner&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">([])</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">partners</span><span class="p">]</span>
 </pre>
 <p>Thanks to this new api, you are now free to specify your own routes but also
 to use other object types as parameter or response to your methods.

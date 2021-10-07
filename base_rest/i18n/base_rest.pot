@@ -20,6 +20,24 @@ msgid "BadRequest %s"
 msgstr ""
 
 #. module: base_rest
+#: code:addons/base_rest/restapi.py:0
+#, python-format
+msgid "BadRequest item %s :%s"
+msgstr ""
+
+#. module: base_rest
+#: code:addons/base_rest/restapi.py:0
+#, python-format
+msgid "BadRequest: Not enough items in the list (%s < %s)"
+msgstr ""
+
+#. module: base_rest
+#: code:addons/base_rest/restapi.py:0
+#, python-format
+msgid "BadRequest: Too many items in the list (%s > %s)"
+msgstr ""
+
+#. module: base_rest
 #: model:ir.model.fields,field_description:base_rest.field_ir_rule__display_name
 #: model:ir.model.fields,field_description:base_rest.field_rest_service_registration__display_name
 msgid "Display Name"
