@@ -4,7 +4,7 @@
 {
     "name": "REST Authentication Service",
     "summary": "Login/logout from session using a REST call",
-    "version": "13.0.1.0.0",
+    "version": "13.0.1.0.1",
     "development_status": "Alpha",
     "license": "LGPL-3",
     "website": "https://github.com/OCA/rest-framework",
