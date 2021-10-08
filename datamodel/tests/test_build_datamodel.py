@@ -71,15 +71,15 @@ class TestBuildDatamodel(DatamodelRegistryCase):
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
-            field_str1 = fields.String(missing="field_str1")
+            field_str1 = fields.String(load_default="field_str1")
 
         class Datamodel2(Datamodel):
             _inherit = "datamodel1"
-            field_str2 = fields.String(missing="field_str2")
+            field_str2 = fields.String(load_default="field_str2")
 
         class Datamodel3(Datamodel):
             _inherit = "datamodel1"
-            field_str3 = fields.String(missing="field_str3")
+            field_str3 = fields.String(load_default="field_str3")
 
         Datamodel1._build_datamodel(self.datamodel_registry)
         Datamodel2._build_datamodel(self.datamodel_registry)
@@ -94,18 +94,18 @@ class TestBuildDatamodel(DatamodelRegistryCase):
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
-            field_int = fields.Int(missing=1)
+            field_int = fields.Int(load_default=1)
 
         class Datamodel2(Datamodel):
             _name = "datamodel2"
             _inherit = "datamodel1"
-            field_boolean = fields.Boolean(missing=True)
-            field_int = fields.Int(missing=2)
+            field_boolean = fields.Boolean(load_default=True)
+            field_int = fields.Int(load_default=2)
 
         class Datamodel3(Datamodel):
             _name = "datamodel3"
             _inherit = "datamodel1"
-            field_float = fields.Float(missing=0.3)
+            field_float = fields.Float(load_default=0.3)
 
         class Datamodel4(Datamodel):
             _name = "datamodel4"
@@ -150,18 +150,18 @@ class TestBuildDatamodel(DatamodelRegistryCase):
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
-            field_int = fields.Int(missing=1)
+            field_int = fields.Int(load_default=1)
 
         class Datamodel2(Datamodel):
             _name = "datamodel2"
             _inherit = "datamodel1"
-            field_boolean = fields.Boolean(missing=True)
-            field_int = fields.Int(missing=2)
+            field_boolean = fields.Boolean(load_default=True)
+            field_int = fields.Int(load_default=2)
 
         class Datamodel3(Datamodel):
             _name = "datamodel3"
             _inherit = "datamodel1"
-            field_float = fields.Float(missing=0.3)
+            field_float = fields.Float(load_default=0.3)
 
         class Datamodel4(Datamodel):
             _name = "datamodel4"
@@ -308,16 +308,16 @@ class TestBuildDatamodel(DatamodelRegistryCase):
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
-            field_str1 = fields.String(missing="str1")
+            field_str1 = fields.String(load_default="str1")
 
         class Datamodel2(Datamodel):
             _name = "datamodel2"
-            field_str2 = fields.String(missing="str2")
+            field_str2 = fields.String(load_default="str2")
 
         class Datamodel2bis(Datamodel):
             _name = "datamodel2"
             _inherit = ["datamodel2", "datamodel1"]
-            field_str3 = fields.String(missing="str3")
+            field_str3 = fields.String(load_default="str3")
 
         Datamodel1._build_datamodel(self.datamodel_registry)
         Datamodel2._build_datamodel(self.datamodel_registry)
