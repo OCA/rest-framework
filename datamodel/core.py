@@ -5,6 +5,9 @@
 import functools
 import logging
 from collections import OrderedDict, defaultdict
+from contextlib import ExitStack
+
+from marshmallow import INCLUDE
 
 from odoo.api import Environment
 from odoo.tools import LastOrderedSet, OrderedSet
@@ -41,12 +44,20 @@ def _get_addon_name(full_name):
     return addon_name
 
 
+def _get_nested_schemas(schema):
+    res = [schema]
+    for field in schema.fields.values():
+        if getattr(field, "schema", None):
+            res += _get_nested_schemas(field.schema)
+    return res
+
+
 class DatamodelDatabases(dict):
     """ Holds a registry of datamodels for each database """
 
 
 class DatamodelRegistry(object):
-    """ Store all the datamodel and allow to retrieve them by name
+    """Store all the datamodel and allow to retrieve them by name
 
     The key is the ``_name`` of the datamodels.
 
@@ -98,7 +109,7 @@ def __make_object__(self, data, **kwargs):
 
 
 class MetaDatamodel(ModelMeta):
-    """ Metaclass for Datamodel
+    """Metaclass for Datamodel
 
     Every new :class:`Datamodel` will be added to ``_modules_datamodels``,
     that will be used by the datamodel builder.
@@ -131,9 +142,16 @@ class MetaDatamodel(ModelMeta):
 
         self._modules_datamodels[self._module].append(self)
 
+    def __call__(self, *args, **kwargs):
+        """Allow to set any field (including 'dump_only') at instantiation
+        This is not an issue thanks to cleanup during (de)serialization
+        """
+        kwargs["unknown"] = kwargs.get("unknown", INCLUDE)
+        return super().__call__(*args, **kwargs)
+
 
 class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
-    """ Main Datamodel Model
+    """Main Datamodel Model
 
     All datamodels have a Python inheritance either on
     :class:`Datamodel`.
@@ -208,8 +226,20 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
         return cls.__get_schema_class__(**kwargs)
 
     @classmethod
+    def validate(cls, data, context=None, many=None, partial=None, unknown=None):
+        schema = cls.__get_schema_class__(
+            context=context, partial=partial, unknown=unknown
+        )
+        all_schemas = _get_nested_schemas(schema)
+        with ExitStack() as stack:
+            # propagate 'unknown' to each nested schema during validate
+            for nested_schema in all_schemas:
+                stack.enter_context(cls.propagate_unknwown(nested_schema, unknown))
+            return schema.validate(data, many=many, partial=partial)
+
+    @classmethod
     def _build_datamodel(cls, registry):
-        """ Instantiate a given Datamodel in the datamodels registry.
+        """Instantiate a given Datamodel in the datamodels registry.
 
         This method is called at the end of the Odoo's registry build.  The
         caller is :meth:`datamodel.builder.DatamodelBuilder.load_datamodels`.
@@ -350,7 +380,7 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 
     @classmethod
     def _complete_datamodel_build(cls):
-        """ Complete build of the new datamodel class
+        """Complete build of the new datamodel class
 
         After the datamodel has been built from its bases, this method is
         called, and can be used to customize the class before it can be used.
