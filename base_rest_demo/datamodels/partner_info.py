@@ -18,4 +18,4 @@ class PartnerInfo(Datamodel):
     phone = fields.String(required=False, allow_none=True)
     state = NestedModel("state.info")
     country = NestedModel("country.info")
-    is_componay = fields.Boolean(required=False, allow_none=False)
+    is_company = fields.Boolean(required=False, allow_none=False)
