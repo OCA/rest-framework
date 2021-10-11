@@ -246,6 +246,15 @@ REST API: ``odoo.addons.base_rest.restapi.method``.
                 "name": {"type": "string", "required": True}
             }
 
+        @restapi.method(
+            [(["/list", "/"], "GET")],
+            output_param=restapi.CerberusListValidator("_get_partner_schema"),
+            auth="public",
+        )
+        def list(self):
+            partners = self.env["res.partner"].search([])
+            return [{"name": p.name} for p in partners]
+
 Thanks to this new api, you are now free to specify your own routes but also
 to use other object types as parameter or response to your methods.
 For example, `base_rest_datamodel` allows you to use Datamodel object instance
