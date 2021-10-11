@@ -4,6 +4,7 @@
 from odoo.http import controllers_per_module
 
 from ..controllers.main import (
+    BaseRestDemoJwtApiController,
     BaseRestDemoNewApiController,
     BaseRestDemoPrivateApiController,
     BaseRestDemoPublicApiController,
@@ -16,7 +17,7 @@ class TestController(CommonCase):
         # at the end of the start process, our tow controllers must into the
         # controller registered
         controllers = controllers_per_module["base_rest_demo"]
-        self.assertEqual(len(controllers), 3)
+        self.assertEqual(len(controllers), 4)
 
         self.assertIn(
             (
@@ -39,6 +40,14 @@ class TestController(CommonCase):
                 "odoo.addons.base_rest_demo.controllers.main."
                 "BaseRestDemoNewApiController",
                 BaseRestDemoNewApiController,
+            ),
+            controllers,
+        )
+        self.assertIn(
+            (
+                "odoo.addons.base_rest_demo.controllers.main."
+                "BaseRestDemoJwtApiController",
+                BaseRestDemoJwtApiController,
             ),
             controllers,
         )
