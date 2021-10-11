@@ -20,6 +20,7 @@ msgid "BadRequest %s"
 msgstr ""
 
 #. module: base_rest
+#: model:ir.model.fields,field_description:base_rest.field_ir_rule__display_name
 #: model:ir.model.fields,field_description:base_rest.field_rest_service_registration__display_name
 msgid "Display Name"
 msgstr ""
@@ -30,6 +31,7 @@ msgid "Docs"
 msgstr ""
 
 #. module: base_rest
+#: model:ir.model.fields,field_description:base_rest.field_ir_rule__id
 #: model:ir.model.fields,field_description:base_rest.field_rest_service_registration__id
 msgid "ID"
 msgstr ""
@@ -41,6 +43,7 @@ msgid "Invalid Response %s"
 msgstr ""
 
 #. module: base_rest
+#: model:ir.model.fields,field_description:base_rest.field_ir_rule____last_update
 #: model:ir.model.fields,field_description:base_rest.field_rest_service_registration____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -54,6 +57,11 @@ msgstr ""
 #. module: base_rest
 #: model:ir.model,name:base_rest.model_rest_service_registration
 msgid "REST Services Registration Model"
+msgstr ""
+
+#. module: base_rest
+#: model:ir.model,name:base_rest.model_ir_rule
+msgid "Record Rule"
 msgstr ""
 
 #. module: base_rest
