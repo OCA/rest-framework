@@ -307,6 +307,14 @@ into your services.
                 res.append(PartnerShortInfo(id=p.id, name=p.name))
             return res
 
+The BaseRestServiceContextProvider provides context for your services,
+including authenticated_partner_id.
+You are free to redefine the method _get_authenticated_partner_id() to pass the
+authenticated_partner_id based on the authentication mechanism of your choice.
+See base_rest_auth_jwt for an example.
+
+In addition, authenticated_partner_id is available in record rule evaluation context.
+
 Known issues / Roadmap
 ======================
 
