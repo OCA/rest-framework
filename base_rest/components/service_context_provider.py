@@ -22,4 +22,5 @@ class BaseRestServiceContextProvider(Component):
         return {
             "request": self.request,
             "authenticated_partner_id": self.authenticated_partner_id,
+            "collection": self.collection,
         }

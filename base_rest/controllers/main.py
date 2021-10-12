@@ -6,6 +6,7 @@ from contextlib import contextmanager
 
 from werkzeug.exceptions import BadRequest
 
+from odoo import models
 from odoo.http import Controller, ControllerType, Response, request
 
 from odoo.addons.component.core import WorkContext, _get_addon_name
@@ -128,16 +129,15 @@ class RestController(Controller, metaclass=RestControllerType):
 
     _component_context_provider = "component_context_provider"
 
-    def _get_component_context(self):
+    def _get_component_context(self, collection=None):
         """
         This method can be inherited to add parameter into the component
         context
         :return: dict of key value.
         """
-        collection = self.collection
         work = WorkContext(
             model_name="rest.service.registration",
-            collection=collection,
+            collection=collection or self.default_collection,
             request=request,
             controller=self,
         )
@@ -156,39 +156,37 @@ class RestController(Controller, metaclass=RestControllerType):
         return self._collection_name
 
     @property
-    def collection(self):
+    def default_collection(self):
         return _PseudoCollection(self.collection_name, request.env)
 
     @contextmanager
-    def work_on_component(self):
+    def work_on_component(self, collection=None):
         """
         Return the component that implements the methods of the requested
         service.
         :param service_name:
         :return: an instance of base.rest.service component
         """
-        collection = self.collection
-        params = self._get_component_context()
+        collection = collection or self.default_collection
+        component_ctx = self._get_component_context(collection=collection)
         env = collection.env
         collection.env = env(
             context=dict(
                 env.context,
-                authenticated_partner_id=params.get("authenticated_partner_id"),
+                authenticated_partner_id=component_ctx.get("authenticated_partner_id"),
             )
         )
-        yield WorkContext(
-            model_name="rest.service.registration", collection=collection, **params
-        )
+        yield WorkContext(model_name="rest.service.registration", **component_ctx)
 
     @contextmanager
-    def service_component(self, service_name):
+    def service_component(self, service_name, collection=None):
         """
         Return the component that implements the methods of the requested
         service.
         :param service_name:
         :return: an instance of base.rest.service component
         """
-        with self.work_on_component() as work:
+        with self.work_on_component(collection=collection) as work:
             service = work.component(usage=service_name)
             yield service
 
@@ -202,8 +200,12 @@ class RestController(Controller, metaclass=RestControllerType):
             raise BadRequest()
         return True
 
-    def _process_method(self, service_name, method_name, *args, params=None):
+    def _process_method(
+        self, service_name, method_name, *args, collection=None, params=None
+    ):
         self._validate_method_name(method_name)
-        with self.service_component(service_name) as service:
+        if isinstance(collection, models.Model) and not collection:
+            raise request.not_found()
+        with self.service_component(service_name, collection=collection) as service:
             result = service.dispatch(method_name, *args, params=params)
             return self.make_response(result)
