@@ -415,21 +415,23 @@ class RestApiServiceControllerGenerator(object):
 
 
 METHOD_TMPL = """
-def {method_name}(self, **kwargs):
+def {method_name}(self, collection=None, **kwargs):
     return self._process_method(
         "{service_name}",
         "{service_method_name}",
+        collection=collection,
         params=kwargs
     )
 """
 
 
 METHOD_TMPL_WITH_ARGS = """
-def {method_name}(self, {args}, **kwargs):
+def {method_name}(self, {args}, collection=None, **kwargs):
     return self._process_method(
         "{service_name}",
         "{service_method_name}",
         *[{args}],
+        collection=collection,
         params=kwargs
     )
 """
