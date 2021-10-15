@@ -29,7 +29,7 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             _description = "test"
 
             @restapi.method(
-                [(["/<int:id>/get", "/<int:id>"], "GET")],
+                [(["/<int:_id>/get", "/<int:_id>"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )
@@ -73,7 +73,7 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             _description = "test"
 
             @restapi.method(
-                [(["/<int:id>/get", "/<int:id>"], "GET")],
+                [(["/<int:_id>/get", "/<int:_id>"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )
@@ -119,7 +119,7 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             _description = "test"
 
             @restapi.method(
-                [(["/<int:id>/get", "/<int:id>"], "GET")],
+                [(["/<int:_id>/get", "/<int:_id>"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )

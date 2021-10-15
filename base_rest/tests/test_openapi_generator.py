@@ -22,7 +22,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             _description = "Sercice description"
 
             @restapi.method(
-                [(["/<int:id>/get", "/<int:id>"], "GET")],
+                [(["/<int:_id>/get", "/<int:_id>"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )
@@ -49,9 +49,9 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
 
         paths = openapi["paths"]
         # The paths must contains 2 entries (1 by routes)
-        self.assertSetEqual({"/{id}/get", "/{id}"}, set(openapi["paths"]))
+        self.assertSetEqual({"/{_id}/get", "/{_id}"}, set(openapi["paths"]))
 
-        for p in ["/{id}/get", "/{id}"]:
+        for p in ["/{_id}/get", "/{_id}"]:
             path = paths[p]
             # The method for the paths is get
             self.assertIn("get", path)
@@ -85,7 +85,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
                 path.get("parameters", [{}])[0],
                 {
                     "in": "path",
-                    "name": "id",
+                    "name": "_id",
                     "required": True,
                     "schema": {"type": "integer", "format": "int32"},
                 },
@@ -107,7 +107,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             _description = "Sercice description"
 
             @restapi.method(
-                [(["/<int:id>/update_name/<string:name>"], "POST")], auth="public"
+                [(["/<int:_id>/update_name/<string:name>"], "POST")], auth="public"
             )
             def update_name(self, _id, _name):
                 """update_name"""
@@ -117,15 +117,15 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
         openapi = service.to_openapi()
         self.assertTrue(openapi)
         paths = openapi["paths"]
-        self.assertIn("/{id}/update_name/{name}", paths)
-        path = paths["/{id}/update_name/{name}"]
+        self.assertIn("/{_id}/update_name/{name}", paths)
+        path = paths["/{_id}/update_name/{name}"]
         self.assertIn("post", path)
         parameters = path["parameters"]
         self.assertEqual(2, len(parameters))
         name_param = {}
         id_param = {}
         for p in parameters:
-            if p["name"] == "id":
+            if p["name"] == "_id":
                 id_param = p
             else:
                 name_param = p
@@ -142,7 +142,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             id_param,
             {
                 "in": "path",
-                "name": "id",
+                "name": "_id",
                 "required": True,
                 "schema": {"type": "integer", "format": "int32"},
             },
@@ -175,7 +175,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             _description = "Sercice description"
 
             @restapi.method(
-                [(["/<int:id>/update_name/<string:name>"], "POST")], auth="public"
+                [(["/<int:_id>/update_name/<string:name>"], "POST")], auth="public"
             )
             def update_name(self, _id, _name):
                 """update_name"""
@@ -194,8 +194,8 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
         service = self._get_service_component(self, "partner")
         openapi = service.to_openapi()
         paths = openapi["paths"]
-        self.assertIn("/{id}/update_name/{name}", paths)
-        path = paths["/{id}/update_name/{name}"]
+        self.assertIn("/{_id}/update_name/{name}", paths)
+        path = paths["/{_id}/update_name/{name}"]
         self.assertIn("post", path)
         parameters = path["post"].get("parameters", [])
         self.assertListEqual(parameters, default_params)

@@ -106,8 +106,8 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": [
-                    "/test_controller/ping/<int:id>/get",
-                    "/test_controller/ping/<int:id>",
+                    "/test_controller/ping/<int:_id>/get",
+                    "/test_controller/ping/<int:_id>",
                 ],
                 "save_session": True,
             },
@@ -135,8 +135,8 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": [
-                    "/test_controller/ping/<int:id>/update",
-                    "/test_controller/ping/<int:id>",
+                    "/test_controller/ping/<int:_id>/update",
+                    "/test_controller/ping/<int:_id>",
                 ],
                 "save_session": True,
             },
@@ -150,7 +150,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "auth": "public",
                 "cors": None,
                 "csrf": False,
-                "routes": ["/test_controller/ping/<int:id>"],
+                "routes": ["/test_controller/ping/<int:_id>"],
                 "save_session": True,
             },
         )
@@ -176,7 +176,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "auth": "public",
                 "cors": None,
                 "csrf": False,
-                "routes": ["/test_controller/ping/<int:id>/delete"],
+                "routes": ["/test_controller/ping/<int:_id>/delete"],
                 "save_session": True,
             },
         )
@@ -189,7 +189,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "auth": "public",
                 "cors": None,
                 "csrf": False,
-                "routes": ["/test_controller/ping/<int:id>"],
+                "routes": ["/test_controller/ping/<int:_id>"],
                 "save_session": True,
             },
         )
@@ -215,7 +215,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "auth": "public",
                 "cors": None,
                 "csrf": False,
-                "routes": ["/test_controller/ping/<int:id>/my_instance_method"],
+                "routes": ["/test_controller/ping/<int:_id>/my_instance_method"],
                 "save_session": True,
             },
         )
@@ -237,7 +237,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
             _description = "test"
 
             @restapi.method(
-                [(["/<int:id>/get", "/<int:id>"], "GET")],
+                [(["/<int:_id>/get", "/<int:_id>"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )
@@ -245,7 +245,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 return {"name": self.env["res.partner"].browse(_id).name}
 
             @restapi.method(
-                [(["/<int:id>/get_name"], "GET")],
+                [(["/<int:_id>/get_name"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )
@@ -253,7 +253,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 return {"name": self.env["res.partner"].browse(_id).name}
 
             @restapi.method(
-                [(["/<int:id>/change_name"], "POST")],
+                [(["/<int:_id>/change_name"], "POST")],
                 input_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="user",
             )
@@ -283,8 +283,8 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": [
-                    "/test_controller/partner/<int:id>/get",
-                    "/test_controller/partner/<int:id>",
+                    "/test_controller/partner/<int:_id>/get",
+                    "/test_controller/partner/<int:_id>",
                 ],
                 "save_session": True,
             },
@@ -298,7 +298,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "auth": "public",
                 "cors": None,
                 "csrf": False,
-                "routes": ["/test_controller/partner/<int:id>/get_name"],
+                "routes": ["/test_controller/partner/<int:_id>/get_name"],
                 "save_session": True,
             },
         )
@@ -311,7 +311,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "auth": "user",
                 "cors": None,
                 "csrf": False,
-                "routes": ["/test_controller/partner/<int:id>/change_name"],
+                "routes": ["/test_controller/partner/<int:_id>/change_name"],
                 "save_session": True,
             },
         )
@@ -328,7 +328,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
             _description = "test"
 
             @restapi.method(
-                [(["/<int:id>/get", "/<int:id>"], "GET")],
+                [(["/<int:_id>/get", "/<int:_id>"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )
@@ -342,7 +342,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
             _inherit = "test.partner.service"
 
             @restapi.method(
-                [(["/<int:id>/get_name"], "GET")],
+                [(["/<int:_id>/get_name"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )
@@ -350,7 +350,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 return {"name": self.env["res.partner"].browse(_id).name}
 
             @restapi.method(
-                [(["/<int:id>/change_name"], "POST")],
+                [(["/<int:_id>/change_name"], "POST")],
                 input_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="user",
             )
@@ -377,8 +377,8 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": [
-                    "/test_controller/partner/<int:id>/get",
-                    "/test_controller/partner/<int:id>",
+                    "/test_controller/partner/<int:_id>/get",
+                    "/test_controller/partner/<int:_id>",
                 ],
                 "save_session": True,
             },
@@ -392,7 +392,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "auth": "public",
                 "cors": None,
                 "csrf": False,
-                "routes": ["/test_controller/partner/<int:id>/get_name"],
+                "routes": ["/test_controller/partner/<int:_id>/get_name"],
                 "save_session": True,
             },
         )
@@ -405,7 +405,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "auth": "user",
                 "cors": None,
                 "csrf": False,
-                "routes": ["/test_controller/partner/<int:id>/change_name"],
+                "routes": ["/test_controller/partner/<int:_id>/change_name"],
                 "save_session": True,
             },
         )

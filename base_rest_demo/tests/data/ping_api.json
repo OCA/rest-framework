@@ -195,7 +195,7 @@
         }
       }
     },
-    "/{id}/delete": {
+    "/{_id}/delete": {
       "post": {
         "summary": "\nDelete method description ...\n",
         "requestBody": {
@@ -242,7 +242,7 @@
       "parameters": [
         {
           "in": "path",
-          "name": "id",
+          "name": "_id",
           "required": true,
           "schema": {
             "type": "integer",
@@ -251,7 +251,7 @@
         }
       ]
     },
-    "/{id}": {
+    "/{_id}": {
       "delete": {
         "summary": "\nDelete method description ...\n",
         "requestBody": {
@@ -298,7 +298,7 @@
       "parameters": [
         {
           "in": "path",
-          "name": "id",
+          "name": "_id",
           "required": true,
           "schema": {
             "type": "integer",
@@ -448,7 +448,7 @@
         }
       }
     },
-    "/{id}/get": {
+    "/{_id}/get": {
       "get": {
         "summary": "\nThis method is used to get the information of the object specified\nby Id.\n",
         "parameters": [
@@ -499,7 +499,7 @@
       "parameters": [
         {
           "in": "path",
-          "name": "id",
+          "name": "_id",
           "required": true,
           "schema": {
             "type": "integer",
@@ -597,7 +597,7 @@
         }
       }
     },
-    "/{id}/update": {
+    "/{_id}/update": {
       "post": {
         "summary": "\nUpdate method description ...\n",
         "requestBody": {
@@ -648,7 +648,7 @@
       "parameters": [
         {
           "in": "path",
-          "name": "id",
+          "name": "_id",
           "required": true,
           "schema": {
             "type": "integer",

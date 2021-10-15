@@ -285,32 +285,32 @@ class RestApiMethodTransformer(object):
         id_in_path_required = "_id" in signature.parameters
         path = "/{}".format(method_name)
         if id_in_path_required:
-            path = "/<int:id>" + path
+            path = "/<int:_id>" + path
         if method_name in ("get", "search"):
             paths = [path]
             path = "/"
             if id_in_path_required:
-                path = "/<int:id>"
+                path = "/<int:_id>"
             paths.append(path)
             return [(paths, "GET")]
         elif method_name == "delete":
             routes = [(path, "POST")]
             path = "/"
             if id_in_path_required:
-                path = "/<int:id>"
+                path = "/<int:_id>"
             routes.append((path, "DELETE"))
         elif method_name == "update":
             paths = [path]
             path = "/"
             if id_in_path_required:
-                path = "/<int:id>"
+                path = "/<int:_id>"
             paths.append(path)
             routes = [(paths, "POST"), (path, "PUT")]
         elif method_name == "create":
             paths = [path]
             path = "/"
             if id_in_path_required:
-                path = "/<int:id>"
+                path = "/<int:_id>"
             paths.append(path)
             routes = [(paths, "POST")]
         else:

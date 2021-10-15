@@ -10,7 +10,7 @@
     }
   ],
   "paths": {
-    "/{id}/get": {
+    "/{_id}/get": {
       "get": {
         "summary": "\nGet partner's image\n",
         "parameters": [
@@ -49,7 +49,7 @@
       "parameters": [
         {
           "in": "path",
-          "name": "id",
+          "name": "_id",
           "required": true,
           "schema": {
             "type": "integer",
@@ -58,7 +58,7 @@
         }
       ]
     },
-    "/{id}": {
+    "/{_id}": {
       "get": {
         "summary": "\nGet partner's image\n",
         "parameters": [
@@ -97,7 +97,7 @@
       "parameters": [
         {
           "in": "path",
-          "name": "id",
+          "name": "_id",
           "required": true,
           "schema": {
             "type": "integer",

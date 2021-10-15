@@ -32,7 +32,7 @@ class TestDBLoggingBase(SavepointRestServiceRegistryCase):
             _log_calls_in_db = True
 
             @restapi.method(
-                [(["/<int:id>/get", "/<int:id>"], "GET")],
+                [(["/<int:_id>/get", "/<int:_id>"], "GET")],
                 output_param=restapi.CerberusValidator("_get_out_schema"),
                 auth="public",
             )

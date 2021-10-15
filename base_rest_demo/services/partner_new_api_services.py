@@ -16,7 +16,7 @@ class PartnerNewApiService(Component):
     """
 
     @restapi.method(
-        [(["/<int:id>/get", "/<int:id>"], "GET")],
+        [(["/<int:_id>/get", "/<int:_id>"], "GET")],
         output_param=Datamodel("partner.info"),
         auth="public",
     )
