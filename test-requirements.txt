@@ -1,1 +1,0 @@
-odoo14-addon-component @ git+https://github.com/OCA/connector@refs/pull/393/head#subdirectory=setup/component
