@@ -149,6 +149,16 @@ class BaseRestService(AbstractComponent):
                        to the method as keyword args.
         :return:
         """
+        if args:
+            _logger.debug(
+                "The use of *args will not be supported in 15.0. "
+                "All rest methods should be adapted to support "
+                "keyword arguments for path paramters.\n"
+                "Service: %s\n"
+                "Method: %s\n",
+                self._name,
+                method_name,
+            )
         method = getattr(self, method_name, object())
         params = params or {}
         secure_params = self._prepare_input_params(method, params)

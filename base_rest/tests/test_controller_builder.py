@@ -249,6 +249,14 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
             def update_name(self, _id, **params):
                 pass
 
+            @restapi.method(
+                [(["/<int:invoice_id>/<string:partner_id>/change_partner"], "POST")],
+                input_param=restapi.CerberusValidator("_get_partner_schema"),
+                auth="user",
+            )
+            def change_partner(self, partner_id=None, invoice_id=None, **params):
+                pass
+
             def _get_partner_schema(self):
                 return {"name": {"type": "string", "required": True}}
 
@@ -259,7 +267,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
         routes = self._get_controller_route_methods(controller)
         self.assertSetEqual(
             set(routes.keys()),
-            {"get_get", "get_get_name", "post_update_name"}
+            {"get_get", "get_get_name", "post_update_name", "post_change_partner"}
             | self._controller_route_method_names,
         )
 
@@ -299,6 +307,21 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
                 "cors": None,
                 "csrf": False,
                 "routes": ["/test_controller/partner/<int:id>/change_name"],
+            },
+        )
+
+        method = routes["post_change_partner"]
+        self.assertDictEqual(
+            method.routing,
+            {
+                "methods": ["POST"],
+                "auth": "user",
+                "cors": None,
+                "csrf": False,
+                "routes": [
+                    "/test_controller/partner/<int:invoice_id>"
+                    "/<string:partner_id>/change_partner"
+                ],
             },
         )
 

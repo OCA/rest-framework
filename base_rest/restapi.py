@@ -46,6 +46,8 @@ def method(
                       Defaults to ``False``
     :param bool endpoint_params_to_kwargs: Pass the query parameters as keyword
                 arguments, following the same logic than Werkzeug
+                Pay attention that this behavior will be the default one into
+                Odoo 15.
 
     """
 
