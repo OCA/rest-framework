@@ -31,16 +31,18 @@ class BaseRESTService(AbstractComponent):
     # can be overridden to enable logging of requests to DB
     _log_calls_in_db = False
 
-    def dispatch(self, method_name, *args, params=None):
+    def dispatch(self, method_name, *args, params=None, **kwargs):
         if not self._db_logging_active(method_name):
-            return super().dispatch(method_name, *args, params=params)
-        return self._dispatch_with_db_logging(method_name, *args, params=params)
+            return super().dispatch(method_name, *args, params=params, **kwargs)
+        return self._dispatch_with_db_logging(
+            method_name, *args, params=params, **kwargs
+        )
 
-    def _dispatch_with_db_logging(self, method_name, *args, params=None):
+    def _dispatch_with_db_logging(self, method_name, *args, params=None, **kwargs):
         # TODO: consider refactoring thi using a savepoint as described here
         # https://github.com/OCA/rest-framework/pull/106#pullrequestreview-582099258
         try:
-            result = super().dispatch(method_name, *args, params=params)
+            result = super().dispatch(method_name, *args, params=params, **kwargs)
         except exceptions.UserError as orig_exception:
             self._dispatch_exception(
                 method_name,
@@ -48,6 +50,7 @@ class BaseRESTService(AbstractComponent):
                 orig_exception,
                 *args,
                 params=params,
+                **kwargs
             )
         except exceptions.ValidationError as orig_exception:
             self._dispatch_exception(
@@ -56,6 +59,7 @@ class BaseRESTService(AbstractComponent):
                 orig_exception,
                 *args,
                 params=params,
+                **kwargs
             )
         except Exception as orig_exception:
             self._dispatch_exception(
@@ -64,9 +68,16 @@ class BaseRESTService(AbstractComponent):
                 orig_exception,
                 *args,
                 params=params,
+                **kwargs
             )
         log_entry = self._log_call_in_db(
-            self.env, request, method_name, *args, params=params, result=result
+            self.env,
+            request,
+            method_name,
+            *args,
+            params=params,
+            result=result,
+            **kwargs
         )
         if log_entry:
             log_entry_url = self._get_log_entry_url(log_entry)
@@ -74,7 +85,7 @@ class BaseRESTService(AbstractComponent):
         return result
 
     def _dispatch_exception(
-        self, method_name, exception_klass, orig_exception, *args, params=None
+        self, method_name, exception_klass, orig_exception, *args, params=None, **kwargs
     ):
         tb = traceback.format_exc()
         # TODO: how to test this? Cannot rollback nor use another cursor
@@ -89,6 +100,7 @@ class BaseRESTService(AbstractComponent):
                 params=params,
                 traceback=tb,
                 orig_exception=orig_exception,
+                **kwargs
             )
             log_entry_url = self._get_log_entry_url(log_entry)
         # UserError and alike have `name` attribute to store the msg
