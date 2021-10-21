@@ -1,13 +1,14 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.1.4
+_commit: v1.3.4
 _src_path: https://github.com/OCA/oca-addons-repo-template.git
+ci: Travis
 dependency_installation_mode: PIP
 generate_requirements_txt: true
 include_wkhtmltopdf: false
 odoo_version: 14.0
 rebel_module_groups: []
-repo_description:
-  This repo holds addons developed to ease the development of REST services into Odoo.
+repo_description: This repo holds addons developed to ease the development of REST
+  services into Odoo.
 repo_name: REST frameworks
 repo_slug: rest-framework
 travis_apt_packages: []
