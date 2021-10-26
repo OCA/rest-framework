@@ -251,9 +251,8 @@ class RestApiMethodTransformer(object):
     exposed are decorated and the processing can be based on these decorators.
     """
 
-    def __init__(self, service, controller_def):
+    def __init__(self, service):
         self._service = service
-        self._controller_class = controller_def["controller_class"]
 
     def fix(self):
         methods_to_fix = []
