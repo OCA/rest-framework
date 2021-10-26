@@ -66,11 +66,8 @@ class ApiDocsController(Controller):
         return api_urls
 
     def _filter_service_components(self, components):
-        r = []
-        for c in components:
-            if getattr(c, "_is_rest_service_component", None) and c._usage:
-                r.append(c)
-        return r
+        reg_model = request.env["rest.service.registration"]
+        return [c for c in components if reg_model._filter_service_component(c)]
 
     def _get_service_in_collection(self, collection_name):
         with self.work_on_component(collection_name) as work:
