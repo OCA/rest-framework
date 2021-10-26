@@ -72,8 +72,12 @@ class RestServiceRegistration(models.AbstractModel):
     def _build_controllers_routes(self, services_registry):
         for controller_def in services_registry.values():
             for service in self._get_services(controller_def["collection_name"]):
-                RestApiMethodTransformer(service, controller_def).fix()
+                self._prepare_non_decorated_endpoints(service)
                 self._build_controller(service, controller_def)
+
+    def _prepare_non_decorated_endpoints(self, service):
+        # Autogenerate routing info where missing
+        RestApiMethodTransformer(service).fix()
 
     def _build_controller(self, service, controller_def):
         _logger.debug("Build service %s for controller_def %s", service, controller_def)
