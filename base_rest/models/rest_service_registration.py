@@ -172,11 +172,18 @@ class RestServiceRegistration(models.AbstractModel):
         component_classes = work._lookup_components(usage=None, model_name=None)
         # removes component without collection that are not a rest service
         component_classes = [
-            c
-            for c in component_classes
-            if c._collection and issubclass(c, BaseRestService)
+            c for c in component_classes if self._filter_service_component(c)
         ]
         return [comp(work) for comp in component_classes]
+
+    @staticmethod
+    def _filter_service_component(comp):
+        return (
+            issubclass(comp, BaseRestService)
+            and comp._collection
+            and comp._usage
+            and getattr(comp, "_is_rest_service_component", True)
+        )
 
     def build_registry(self, services_registry, states=None, exclude_addons=None):
         if not states:
