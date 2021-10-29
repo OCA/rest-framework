@@ -72,8 +72,12 @@ class RestServiceRegistration(models.AbstractModel):
     def _build_controllers_routes(self, services_registry):
         for controller_def in services_registry.values():
             for service in self._get_services(controller_def["collection_name"]):
-                RestApiMethodTransformer(service, controller_def).fix()
+                self._prepare_non_decorated_endpoints(service)
                 self._build_controller(service, controller_def)
+
+    def _prepare_non_decorated_endpoints(self, service):
+        # Autogenerate routing info where missing
+        RestApiMethodTransformer(service).fix()
 
     def _build_controller(self, service, controller_def):
         _logger.debug("Build service %s for controller_def %s", service, controller_def)
@@ -168,11 +172,18 @@ class RestServiceRegistration(models.AbstractModel):
         component_classes = work._lookup_components(usage=None, model_name=None)
         # removes component without collection that are not a rest service
         component_classes = [
-            c
-            for c in component_classes
-            if c._collection and issubclass(c, BaseRestService)
+            c for c in component_classes if self._filter_service_component(c)
         ]
         return [comp(work) for comp in component_classes]
+
+    @staticmethod
+    def _filter_service_component(comp):
+        return (
+            issubclass(comp, BaseRestService)
+            and comp._collection
+            and comp._usage
+            and getattr(comp, "_is_rest_service_component", True)
+        )
 
     def build_registry(self, services_registry, states=None, exclude_addons=None):
         if not states:
@@ -240,9 +251,8 @@ class RestApiMethodTransformer(object):
     exposed are decorated and the processing can be based on these decorators.
     """
 
-    def __init__(self, service, controller_def):
+    def __init__(self, service):
         self._service = service
-        self._controller_class = controller_def["controller_class"]
 
     def fix(self):
         methods_to_fix = []
@@ -415,21 +425,23 @@ class RestApiServiceControllerGenerator(object):
 
 
 METHOD_TMPL = """
-def {method_name}(self, **kwargs):
+def {method_name}(self, collection=None, **kwargs):
     return self._process_method(
         "{service_name}",
         "{service_method_name}",
+        collection=collection,
         params=kwargs
     )
 """
 
 
 METHOD_TMPL_WITH_ARGS = """
-def {method_name}(self, {args}, **kwargs):
+def {method_name}(self, {args}, collection=None, **kwargs):
     return self._process_method(
         "{service_name}",
         "{service_method_name}",
         *[{args}],
+        collection=collection,
         params=kwargs
     )
 """
