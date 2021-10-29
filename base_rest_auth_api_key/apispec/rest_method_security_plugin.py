@@ -24,8 +24,11 @@ class RestMethodSecurityPlugin(BasePlugin):
             )
         if not operations:
             return
-        auth = routing.get("auth", self.spec._params.get("default_auth"))
-        if auth == "api_key":
+        default_auth = self.spec._params.get("default_auth")
+        auth = routing.get("auth", default_auth)
+        if auth == "api_key" or (
+            auth == "public_or_default" and default_auth == "api_key"
+        ):
             for _method, params in operations.items():
                 security = params.setdefault("security", [])
                 security.append({"api_key": []})
