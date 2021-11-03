@@ -33,7 +33,7 @@ from odoo.http import HttpRequest, Root, SessionExpiredException, request
 from odoo.tools import ustr
 from odoo.tools.config import config
 
-from .core import _rest_services_databases
+from .core import _rest_services_routes
 
 _logger = logging.getLogger(__name__)
 
@@ -217,11 +217,10 @@ def get_request(self, httprequest):
         # so we enforce its loading here to make sure that
         # _rest_services_databases is not empty
         odoo.registry(db)
-        service_registry = _rest_services_databases.get(db)
-        if service_registry:
-            for root_path in service_registry:
-                if httprequest.path.startswith(root_path):
-                    return HttpRestRequest(httprequest)
+        rest_routes = _rest_services_routes.get(db, [])
+        for root_path in rest_routes:
+            if httprequest.path.startswith(root_path):
+                return HttpRestRequest(httprequest)
     return ori_get_request(self, httprequest)
 
 

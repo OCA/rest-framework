@@ -10,6 +10,8 @@ class RestServicesDatabases(dict):
 
 _rest_services_databases = RestServicesDatabases()
 
+_rest_services_routes = collections.defaultdict(set)
+
 _rest_controllers_per_module = collections.defaultdict(list)
 
 
