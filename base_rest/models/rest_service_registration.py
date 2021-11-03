@@ -27,6 +27,7 @@ from ..core import (
     RestServicesRegistry,
     _rest_controllers_per_module,
     _rest_services_databases,
+    _rest_services_routes,
 )
 from ..tools import _inspect_methods
 
@@ -222,6 +223,7 @@ class RestServiceRegistration(models.AbstractModel):
                     else None
                 )
                 services_registry[controller_def["root_path"]] = controller_def
+                self._register_rest_route(controller_def["root_path"])
                 if (
                     current_controller
                     and current_controller != controller_def["controller_class"]
@@ -239,6 +241,13 @@ class RestServiceRegistration(models.AbstractModel):
         services_registry = RestServicesRegistry()
         _rest_services_databases[self.env.cr.dbname] = services_registry
         return services_registry
+
+    def _register_rest_route(self, route_path):
+        """Register given route path to be handles as RestRequest.
+
+        See base_rest.http.get_request.
+        """
+        _rest_services_routes[self.env.cr.dbname].add(route_path)
 
 
 class RestApiMethodTransformer(object):
