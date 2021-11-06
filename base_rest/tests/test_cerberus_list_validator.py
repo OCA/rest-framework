@@ -48,7 +48,7 @@ class TestCerberusListValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
         cls.maxDiff = None
 
     def test_to_openapi_responses(self):
-        res = self.simple_schema_list_validator.to_openapi_responses(None)
+        res = self.simple_schema_list_validator.to_openapi_responses(None, None)
         self.assertDictEqual(
             res,
             {
@@ -78,7 +78,7 @@ class TestCerberusListValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
                 }
             },
         )
-        res = self.nested_schema_list_validator.to_openapi_responses(None)
+        res = self.nested_schema_list_validator.to_openapi_responses(None, None)
         self.assertDictEqual(
             res,
             {
@@ -113,7 +113,7 @@ class TestCerberusListValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
         )
 
     def test_to_openapi_requestbody(self):
-        res = self.simple_schema_list_validator.to_openapi_requestbody(None)
+        res = self.simple_schema_list_validator.to_openapi_requestbody(None, None)
         self.assertEqual(
             res,
             {
@@ -141,7 +141,7 @@ class TestCerberusListValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
                 }
             },
         )
-        res = self.nested_schema_list_validator.to_openapi_requestbody(None)
+        res = self.nested_schema_list_validator.to_openapi_requestbody(None, None)
         self.assertDictEqual(
             res,
             {
@@ -175,7 +175,7 @@ class TestCerberusListValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
 
     def test_to_openapi_query_parameters(self):
         with self.assertRaises(NotImplementedError):
-            self.simple_schema_list_validator.to_openapi_query_parameters(None)
+            self.simple_schema_list_validator.to_openapi_query_parameters(None, None)
 
     def test_from_params_ignore_unknown(self):
         params = [{"name": "test", "unknown": True}]

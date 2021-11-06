@@ -48,12 +48,14 @@ class RestMethodParamPlugin(BasePlugin):
             if method == "get":
                 # get quey params from RequestMethodParam object
                 parameters.extend(
-                    input_param.to_openapi_query_parameters(self._service)
+                    input_param.to_openapi_query_parameters(self._service, self.spec)
                 )
             else:
                 # get requestBody from RequestMethodParam object
                 request_body = params.get("requestBody", {})
-                request_body.update(input_param.to_openapi_requestbody(self._service))
+                request_body.update(
+                    input_param.to_openapi_requestbody(self._service, self.spec)
+                )
                 params["requestBody"] = request_body
             # sort paramters to ease comparison into unittests
             parameters.sort(key=lambda a: a["name"])
@@ -68,5 +70,7 @@ class RestMethodParamPlugin(BasePlugin):
             responses = params.get("responses", {})
             # get response from RequestMethodParam object
             responses.update(self._default_responses.copy())
-            responses.update(output_param.to_openapi_responses(self._service))
+            responses.update(
+                output_param.to_openapi_responses(self._service, self.spec)
+            )
         return responses
