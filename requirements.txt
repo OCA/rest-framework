@@ -6,4 +6,5 @@ jsondiff
 marshmallow
 marshmallow-objects>=2.0.0
 parse-accept-language
+pydantic
 pyquerystring
