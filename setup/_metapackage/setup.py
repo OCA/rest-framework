@@ -15,6 +15,7 @@ setuptools.setup(
         'odoo13-addon-datamodel',
         'odoo13-addon-graphql_base',
         'odoo13-addon-graphql_demo',
+        'odoo13-addon-model_serializer',
         'odoo13-addon-rest_log',
     ],
     classifiers=[
