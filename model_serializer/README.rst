@@ -23,7 +23,7 @@ Model Serializer
     :target: https://runbot.odoo-community.org/runbot/271/14.0
     :alt: Try me on Runbot
 
-|badge1| |badge2| |badge3| |badge4| |badge5|
+|badge1| |badge2| |badge3| |badge4| |badge5| 
 
 This module takes advantage of the concepts introduced in the `datamodel` module to offer mechanisms similar to
 (a subset of) the `ModelSerializer` in Django REST Framework. That is, use the definition of the Odoo model to
