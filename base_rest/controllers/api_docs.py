@@ -111,7 +111,3 @@ class ApiDocsController(Controller):
     def _get_services_specs(self, path):
         services_registry = _rest_services_databases.get(request.env.cr.dbname, {})
         return services_registry["/" + path + "/"]
-
-    def _get_collection_name(self, name):
-        services_registry = _rest_services_databases.get(request.env.cr.dbname, {})
-        return services_registry["/" + name + "/"]["collection_name"]
