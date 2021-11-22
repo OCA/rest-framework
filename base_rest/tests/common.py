@@ -7,7 +7,7 @@
 import copy
 
 from odoo import http
-from odoo.tests.common import SavepointCase, TransactionCase, get_db_name
+from odoo.tests.common import TransactionCase, get_db_name
 
 from odoo.addons.component.core import (
     WorkContext,
@@ -198,33 +198,30 @@ class RestServiceRegistryCase(ComponentRegistryCase):
 class TransactionRestServiceRegistryCase(TransactionCase, RestServiceRegistryCase):
 
     # pylint: disable=W8106
-    def setUp(self):
-        # resolve an inheritance issue (common.TransactionCase does not use
-        # super)
-        TransactionCase.setUp(self)
-        RestServiceRegistryCase._setup_registry(self)
-        self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        RestServiceRegistryCase._setup_registry(cls)
+        cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
 
     def tearDown(self):
         RestServiceRegistryCase._teardown_registry(self)
-        TransactionCase.tearDown(self)
+        super().tearDown(self)
 
 
-class SavepointRestServiceRegistryCase(SavepointCase, RestServiceRegistryCase):
+class SavepointRestServiceRegistryCase(TransactionCase, RestServiceRegistryCase):
 
     # pylint: disable=W8106
     @classmethod
     def setUpClass(cls):
-        # resolve an inheritance issue (common.SavepointCase does not use
-        # super)
-        SavepointCase.setUpClass()
+        super().setUpClass()
         RestServiceRegistryCase._setup_registry(cls)
         cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
 
     @classmethod
     def tearDownClass(cls):
         RestServiceRegistryCase._teardown_registry(cls)
-        SavepointCase.tearDownClass()
+        super().tearDownClass()
 
 
 class BaseRestCase(SavepointComponentCase, RegistryMixin):
