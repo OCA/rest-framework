@@ -5,22 +5,20 @@ from typing import List
 
 import pydantic
 
-from .. import models
-from .common import PydanticRegistryCase, TransactionPydanticRegistryCase
+from .. import models, utils
+from .common import PydanticRegistryCase
 
 
 class TestPydantic(PydanticRegistryCase):
     def test_simple_inheritance(self):
         class Location(models.BaseModel):
-            _name = "location"
             lat = 0.1
             lng = 10.1
 
             def test(self) -> str:
                 return "location"
 
-        class ExtendedLocation(models.BaseModel):
-            _inherit = "location"
+        class ExtendedLocation(Location, extends=Location):
             name: str
 
             def test(self, return_super: bool = False) -> str:
@@ -29,111 +27,130 @@ class TestPydantic(PydanticRegistryCase):
                 return "extended"
 
         self._build_pydantic_classes(Location, ExtendedLocation)
-        ClsLocation = self.pydantic_registry["location"]
+        ClsLocation = self.pydantic_registry[Location.__xreg_name__]
         self.assertTrue(issubclass(ClsLocation, ExtendedLocation))
         self.assertTrue(issubclass(ClsLocation, Location))
-        properties = ClsLocation.schema().get("properties", {}).keys()
-        self.assertSetEqual({"lat", "lng", "name"}, set(properties))
-        location = ClsLocation(name="name", lng=5.0, lat=4.2)
-        self.assertDictEqual(location.dict(), {"lat": 4.2, "lng": 5.0, "name": "name"})
-        self.assertEqual(location.test(), "extended")
-        self.assertEqual(location.test(return_super=True), "location")
+
+        # check that the behaviour is the same for all the definitions
+        # of the same model...
+        classes = Location, ExtendedLocation, ClsLocation
+        for cls in classes:
+            schema = cls.schema()
+            properties = schema.get("properties", {}).keys()
+            self.assertEqual(schema.get("title"), "Location")
+            self.assertSetEqual({"lat", "lng", "name"}, set(properties))
+            location = cls(name="name", lng=5.0, lat=4.2)
+            self.assertDictEqual(
+                location.dict(), {"lat": 4.2, "lng": 5.0, "name": "name"}
+            )
+            self.assertEqual(location.test(), "extended")
+            self.assertEqual(location.test(return_super=True), "location")
 
     def test_composite_inheritance(self):
         class Coordinate(models.BaseModel):
-            _name = "coordinate"
             lat = 0.1
             lng = 10.1
 
         class Name(models.BaseModel):
-            _name = "name"
             name: str
 
-        class Location(models.BaseModel):
-            _name = "location"
-            _inherit = ["name", "coordinate"]
+        class Location(Coordinate, Name):
+            pass
 
         self._build_pydantic_classes(Coordinate, Name, Location)
-        self.assertIn("coordinate", self.pydantic_registry)
-        self.assertIn("name", self.pydantic_registry)
-        self.assertIn("location", self.pydantic_registry)
-        ClsLocation = self.pydantic_registry["location"]
+        ClsLocation = self.pydantic_registry[Location.__xreg_name__]
         self.assertTrue(issubclass(ClsLocation, Coordinate))
         self.assertTrue(issubclass(ClsLocation, Name))
-        properties = ClsLocation.schema().get("properties", {}).keys()
-        self.assertSetEqual({"lat", "lng", "name"}, set(properties))
-        location = ClsLocation(name="name", lng=5.0, lat=4.2)
-        self.assertDictEqual(location.dict(), {"lat": 4.2, "lng": 5.0, "name": "name"})
+
+        # check that the behaviour is the same for all the definitions
+        # of the same model...
+        classes = Location, ClsLocation
+        for cls in classes:
+            properties = cls.schema().get("properties", {}).keys()
+            self.assertSetEqual({"lat", "lng", "name"}, set(properties))
+            location = cls(name="name", lng=5.0, lat=4.2)
+            self.assertDictEqual(
+                location.dict(), {"lat": 4.2, "lng": 5.0, "name": "name"}
+            )
 
     def test_model_relation(self):
+        class Coordinate(models.BaseModel):
+            lat = 0.1
+            lng = 10.1
+
         class Person(models.BaseModel):
-            _name = "person"
             name: str
-            coordinate: "coordinate"
+            coordinate: Coordinate
 
-        class Coordinate(models.BaseModel):
-            _name = "coordinate"
-            lat = 0.1
-            lng = 10.1
+        class ExtendedCoordinate(Coordinate, extends=Coordinate):
+            country: str = None
 
-        self._build_pydantic_classes(Person, Coordinate)
-        self.assertIn("coordinate", self.pydantic_registry)
-        self.assertIn("person", self.pydantic_registry)
-        ClsPerson = self.pydantic_registry["person"]
-        ClsCoordinate = self.pydantic_registry["coordinate"]
-        person = ClsPerson(name="test", coordinate={"lng": 5.0, "lat": 4.2})
-        coordinate = person.coordinate
-        self.assertTrue(isinstance(coordinate, Coordinate))
-        # sub schema are stored into the definition property
-        definitions = ClsPerson.schema().get("definitions", {})
-        self.assertIn("coordinate", definitions)
-        self.assertDictEqual(definitions["coordinate"], ClsCoordinate.schema())
+        self._build_pydantic_classes(Person, Coordinate, ExtendedCoordinate)
+        ClsPerson = self.pydantic_registry[Person.__xreg_name__]
 
-    def test_inherit_bases(self):
-        """ Check all BaseModels inherit from base """
-
-        class Coordinate(models.BaseModel):
-            _name = "coordinate"
-            lat = 0.1
-            lng = 10.1
-
-        class Base(models.BaseModel):
-            _inherit = "base"
-            title: str = "My title"
-
-        self._build_pydantic_classes(Coordinate, Base)
-        self.assertIn("coordinate", self.pydantic_registry)
-        self.assertIn("base", self.pydantic_registry)
-        ClsCoordinate = self.pydantic_registry["coordinate"]
-        self.assertTrue(issubclass(ClsCoordinate, models.Base))
-        properties = ClsCoordinate.schema().get("properties", {}).keys()
-        self.assertSetEqual({"lat", "lng", "title"}, set(properties))
+        # check that the behaviour is the same for all the definitions
+        # of the same model...
+        classes = Person, ClsPerson
+        for cls in classes:
+            person = cls(
+                name="test",
+                coordinate={"lng": 5.0, "lat": 4.2, "country": "belgium"},
+            )
+            coordinate = person.coordinate
+            self.assertTrue(isinstance(coordinate, Coordinate))
+            # sub schema are stored into the definition property
+            definitions = ClsPerson.schema().get("definitions", {})
+            self.assertIn("Coordinate", definitions)
+            coordinate_properties = (
+                definitions["Coordinate"].get("properties", {}).keys()
+            )
+            self.assertSetEqual({"lat", "lng", "country"}, set(coordinate_properties))
 
     def test_from_orm(self):
-        class User(models.BaseModel):
-            _name = "user"
-            _inherit = "odoo_orm_mode"
-            name: str
-            groups: List["group"] = pydantic.Field(alias="groups_id")  # noqa: F821
-
         class Group(models.BaseModel):
-            _name = "group"
-            _inherit = "odoo_orm_mode"
             name: str
 
-        self._build_pydantic_classes(User, Group)
-        ClsUser = self.pydantic_registry["user"]
+        class User(models.BaseModel):
+            name: str
+            groups: List[Group] = pydantic.Field(alias="groups_id")  # noqa: F821
+
+        class OrmMode(models.BaseModel):
+            class Config:
+                orm_mode = True
+                getter_dict = utils.GenericOdooGetter
+
+        class GroupOrm(Group, OrmMode, extends=Group):
+            pass
+
+        class UserOrm(User, OrmMode, extends=User):
+            pass
+
+        self._build_pydantic_classes(Group, User, OrmMode, GroupOrm, UserOrm)
+        ClsUser = self.pydantic_registry[User.__xreg_name__]
+
+        # check that the behaviour is the same for all the definitions
+        # of the same model...
+        classes = User, UserOrm, ClsUser
         odoo_user = self.env.user
-        user = ClsUser.from_orm(odoo_user)
-        expected = {
-            "name": odoo_user.name,
-            "groups": [{"name": g.name} for g in odoo_user.groups_id],
-        }
-        self.assertDictEqual(user.dict(), expected)
+        for cls in classes:
+            user = cls.from_orm(odoo_user)
+            expected = {
+                "name": odoo_user.name,
+                "groups": [{"name": g.name} for g in odoo_user.groups_id],
+            }
+            self.assertDictEqual(user.dict(), expected)
 
+    def test_instance(self):
+        class Location(models.BaseModel):
+            lat = 0.1
+            lng = 10.1
 
-class TestRegistryAccess(TransactionPydanticRegistryCase):
-    def test_registry_access(self):
-        """Check the access to the registry directly on Env"""
-        base = self.env.pydantic_registry["base"]
-        self.assertIsInstance(base(), models.BaseModel)
+        class ExtendedLocation(Location, extends=Location):
+            name: str
+
+        self._build_pydantic_classes(Location, ExtendedLocation)
+
+        inst1 = Location.construct()
+        inst2 = ExtendedLocation.construct()
+        self.assertEqual(inst1.__class__, inst2.__class__)
+        self.assertEqual(inst1.schema(), inst2.schema())

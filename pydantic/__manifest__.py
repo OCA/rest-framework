@@ -17,6 +17,7 @@
     "external_dependencies": {
         "python": [
             "pydantic",
+            "contextvars",
         ]
     },
     "installable": True,
