@@ -9,6 +9,7 @@ from odoo import api
 from odoo.tests import common
 
 from .. import registry, utils
+from ..context import odoo_pydantic_registry
 from ..models import BaseModel
 
 
@@ -39,17 +40,17 @@ class PydanticMixin(object):
             builder.build_registry(pydantic_registry, states=("installed",))
             # build the pydantic classes of the current tested addon
             current_addon = utils._get_addon_name(cls.__module__)
-            builder.build_classes(current_addon, pydantic_registry)
+            pydantic_registry.init_registry([current_addon])
 
     # pylint: disable=W8106
     def setUp(self):
         # should be ready only during tests, never during installation
         # of addons
-        self._pydantics_registry.ready = True
+        token = odoo_pydantic_registry.set(self._pydantics_registry)
 
         @self.addCleanup
         def notready():
-            self._pydantics_registry.ready = False
+            odoo_pydantic_registry.reset(token)
 
 
 class TransactionPydanticCase(common.TransactionCase, PydanticMixin):
@@ -140,7 +141,7 @@ class PydanticRegistryCase(
         # it will be our temporary pydantic registry for our test session
         self.pydantic_registry = registry.PydanticClassesRegistry()
 
-        # it builds the 'final pydantic' for every pydantic of the
+        # it builds the 'final pydantic' class for every pydantic class of the
         # 'pydantic' addon and push them in the pydantic registry
         self.pydantic_registry.load_pydantic_classes("pydantic")
         # build the pydantic classes of every installed addons already installed
@@ -174,6 +175,12 @@ class PydanticRegistryCase(
         # the pydantic classes registry, but we don't mind for the tests.
         self.pydantic_registry.ready = True
 
+        token = odoo_pydantic_registry.set(self.pydantic_registry)
+
+        @self.addCleanup
+        def notready():
+            odoo_pydantic_registry.reset(token)
+
     def tearDown(self):
         super(PydanticRegistryCase, self).tearDown()
         self.restore_registry()
@@ -182,10 +189,12 @@ class PydanticRegistryCase(
         self.pydantic_registry.load_pydantics(module)
 
     def _build_pydantic_classes(self, *classes):
-        for cls in classes:
-            self.pydantic_registry.load_pydantic_class_def(cls)
-        self.pydantic_registry.build_pydantic_classes()
-        self.pydantic_registry.update_forward_refs()
+        with self.pydantic_registry.build_mode():
+            for cls in classes:
+                self.pydantic_registry.load_pydantic_class_def(cls)
+            self.pydantic_registry.build_pydantic_classes()
+            self.pydantic_registry.update_forward_refs()
+            self.pydantic_registry.resolve_submodel_fields()
 
     def backup_registry(self):
         self._original_classes_by_module = collections.defaultdict(list)

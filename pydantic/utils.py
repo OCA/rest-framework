@@ -23,26 +23,23 @@ class GenericOdooGetter(GetterDict):
         import pydantic
         from odoo.addons.pydantic import models, utils
 
-        class UserInfo(models.BaseModel):
-            _name = "user"
+        class Group(models.BaseModel):
             name: str
-            groups: List["group"] = pydantic.Field(alias="groups_id")
 
             class Config:
                 orm_mode = True
                 getter_dict = utils.GenericOdooGetter
 
-        class Group(models.BaseModel):
-            _name="group"
+        class UserInfo(models.BaseModel):
             name: str
+            groups: List[Group] = pydantic.Field(alias="groups_id")
 
             class Config:
                 orm_mode = True
                 getter_dict = utils.GenericOdooGetter
 
         user = self.env.user
-        UserInfoCls = self.env.pydantic_registry["user"]
-        user_info = UserInfoCls.from_orm(user)
+        user_info = UserInfo.from_orm(user)
 
     To avoid having to repeat the specific configuration required for the
     `from_orm` method into each pydantic model, "odoo_orm_mode" can be used
