@@ -27,5 +27,5 @@
             "apispec>=4.0.0",
         ]
     },
-    "installable": True,
+    "installable": False,
 }

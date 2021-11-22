@@ -1,9 +1,0 @@
-# generated from manifests external_dependencies
-apispec
-apispec>=4.0.0
-cerberus
-jsondiff
-marshmallow
-marshmallow-objects>=2.0.0
-parse-accept-language
-pyquerystring

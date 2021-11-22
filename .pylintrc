@@ -8,7 +8,7 @@ manifest_required_authors=Odoo Community Association (OCA)
 manifest_required_keys=license
 manifest_deprecated_keys=description,active
 license_allowed=AGPL-3,GPL-2,GPL-2 or any later version,GPL-3,GPL-3 or any later version,LGPL-3
-valid_odoo_versions=14.0
+valid_odoo_versions=15.0
 
 [MESSAGES CONTROL]
 disable=all
@@ -64,6 +64,38 @@ enable=anomalous-backslash-in-string,
     use-vim-comment,
     wrong-tabs-instead-of-spaces,
     xml-syntax-error,
+    attribute-string-redundant,
+    character-not-valid-in-resource-link,
+    consider-merging-classes-inherited,
+    context-overridden,
+    create-user-wo-reset-password,
+    dangerous-filter-wo-user,
+    dangerous-qweb-replace-wo-priority,
+    deprecated-data-xml-node,
+    deprecated-openerp-xml-node,
+    duplicate-po-message-definition,
+    except-pass,
+    file-not-used,
+    invalid-commit,
+    manifest-maintainers-list,
+    missing-newline-extrafiles,
+    missing-readme,
+    missing-return,
+    odoo-addons-relative-import,
+    old-api7-method-defined,
+    po-msgstr-variables,
+    po-syntax-error,
+    renamed-field-parameter,
+    resource-not-exist,
+    str-format-used,
+    test-folder-imported,
+    translation-contains-variable,
+    translation-positional-used,
+    unnecessary-utf8-coding-comment,
+    website-manifest-key-not-valid-uri,
+    xml-attribute-translatable,
+    xml-deprecated-qweb-directive,
+    xml-deprecated-tree-attribute,
     # messages that do not cause the lint step to fail
     consider-merging-classes-inherited,
     create-user-wo-reset-password,

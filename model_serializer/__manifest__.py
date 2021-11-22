@@ -12,4 +12,5 @@
     "author": "Wakari, Odoo Community Association (OCA)",
     "depends": ["datamodel"],
     "data": [],
+    "installable": False,
 }

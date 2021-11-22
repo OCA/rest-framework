@@ -16,5 +16,5 @@ jobs:
           # We also need to pin to an older version of python for older odoo versions
           # where we are not using black > 21. Older black versions won't work with
           # Python 3.9.8+, and we can't bump black without reformatting.
-          python-version: "3.9.7"
+          python-version: "3.10"
       - uses: pre-commit/action@v2.0.0
