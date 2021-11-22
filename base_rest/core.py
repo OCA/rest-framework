@@ -5,7 +5,7 @@ import collections
 
 
 class RestServicesDatabases(dict):
-    """ Holds a registry of REST services for each database """
+    """Holds a registry of REST services for each database"""
 
 
 _rest_services_databases = RestServicesDatabases()
