@@ -12,7 +12,7 @@
     "website": "https://github.com/OCA/rest-framework",
     "depends": ["base_rest", "auth_jwt"],
     "maintainers": ["lmignon"],
-    "installable": True,
+    "installable": False,
     "auto_install": True,
     "external_dependencies": {
         "python": [
