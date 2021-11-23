@@ -7,7 +7,6 @@ exclude: |
   ^base_rest_auth_user_service/|
   ^base_rest_datamodel/|
   ^base_rest_demo/|
-  ^datamodel/|
   ^graphql_base/|
   ^graphql_demo/|
   ^model_serializer/|
