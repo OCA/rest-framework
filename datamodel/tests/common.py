@@ -60,7 +60,7 @@ class DatamodelMixin(object):
 class TransactionDatamodelCase(common.TransactionCase, DatamodelMixin):
     """A TransactionCase that loads all the datamodels
 
-    It it used like an usual Odoo's TransactionCase, but it ensures
+    It is used like an usual Odoo's TransactionCase, but it ensures
     that all the datamodels of the current addon and its dependencies
     are loaded.
 
@@ -68,7 +68,7 @@ class TransactionDatamodelCase(common.TransactionCase, DatamodelMixin):
 
     @classmethod
     def setUpClass(cls):
-        super(TransactionDatamodelCase, cls).setUpClass()
+        super().setUpClass()
         cls.setUpDatamodel()
 
     # pylint: disable=W8106
@@ -79,30 +79,8 @@ class TransactionDatamodelCase(common.TransactionCase, DatamodelMixin):
         DatamodelMixin.setUp(self)
 
 
-class SavepointDatamodelCase(common.SavepointCase, DatamodelMixin):
-    """A SavepointCase that loads all the datamodels
-
-    It is used like an usual Odoo's SavepointCase, but it ensures
-    that all the datamodels of the current addon and its dependencies
-    are loaded.
-
-    """
-
-    @classmethod
-    def setUpClass(cls):
-        super(SavepointDatamodelCase, cls).setUpClass()
-        cls.setUpDatamodel()
-
-    # pylint: disable=W8106
-    def setUp(self):
-        # resolve an inheritance issue (common.SavepointCase does not call
-        # super)
-        common.SavepointCase.setUp(self)
-        DatamodelMixin.setUp(self)
-
-
 class DatamodelRegistryCase(
-    common.TreeCase, common.MetaCase("DummyCase", (object,), {})
+    common.BaseCase, common.MetaCase("DummyCase", (object,), {})
 ):
     """This test case can be used as a base for writings tests on datamodels
 
@@ -111,10 +89,9 @@ class DatamodelRegistryCase(
     or not, or when you want to create additional datamodels in your tests.
 
     If you only want to *use* the datamodels of the tested addon in your tests,
-    then consider using one of:
+    then consider using:
 
     * :class:`TransactionDatamodelCase`
-    * :class:`SavepointDatamodelCase`
 
     This test case creates a special
     :class:`odoo.addons.datamodel.core.DatamodelRegistry` for the purpose of
@@ -136,8 +113,7 @@ class DatamodelRegistryCase(
     """
 
     def setUp(self):
-        super(DatamodelRegistryCase, self).setUp()
-
+        super().setUp()
         # keep the original classes registered by the metaclass
         # so we'll restore them at the end of the tests, it avoid
         # to pollute it with Stub / Test datamodels
@@ -179,7 +155,7 @@ class DatamodelRegistryCase(
         self.datamodel_registry.ready = True
 
     def tearDown(self):
-        super(DatamodelRegistryCase, self).tearDown()
+        super().tearDown()
         # restore the original metaclass' classes
         MetaDatamodel._modules_datamodels = self._original_datamodels
 
@@ -192,32 +168,18 @@ class DatamodelRegistryCase(
 
 
 class TransactionDatamodelRegistryCase(common.TransactionCase, DatamodelRegistryCase):
-    """ Adds Odoo Transaction in the base Datamodel TestCase """
+    """Adds Odoo Transaction in the base Datamodel TestCase"""
 
     # pylint: disable=W8106
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # resolve an inheritance issue (common.TransactionCase does not use
         # super)
-        common.TransactionCase.setUp(self)
-        DatamodelRegistryCase.setUp(self)
-        self.collection = self.env["collection.base"]
+        common.TransactionCase.setUpClass(cls)
+        DatamodelRegistryCase.setUp(cls)
+        cls.collection = cls.env["collection.base"]
 
-    def teardown(self):
-        common.TransactionCase.tearDown(self)
-        DatamodelRegistryCase.tearDown(self)
-
-
-class SavepointDatamodelRegistryCase(common.SavepointCase, DatamodelRegistryCase):
-    """ Adds Odoo Transaction with Savepoint in the base Datamodel TestCase """
-
-    # pylint: disable=W8106
-    def setUp(self):
-        # resolve an inheritance issue (common.SavepointCase does not use
-        # super)
-        common.SavepointCase.setUp(self)
-        DatamodelRegistryCase.setUp(self)
-        self.collection = self.env["collection.base"]
-
-    def teardown(self):
-        common.SavepointCase.tearDown(self)
-        DatamodelRegistryCase.tearDown(self)
+    @classmethod
+    def tearDownClass(cls):
+        common.TransactionCase.tearDownClass(cls)
+        DatamodelRegistryCase.tearDown(cls)
