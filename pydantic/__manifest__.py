@@ -5,7 +5,7 @@
     "name": "Pydantic",
     "summary": """
         Enhance pydantic to allow model extension""",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1.0.0",
     "development_status": "Beta",
     "license": "LGPL-3",
     "maintainers": ["lmignon"],

@@ -164,6 +164,7 @@ class BaseModel(pydantic.BaseModel, metaclass=ExtendablePydanticModelMeta):
             return super().__new__(cls)
         return cls._get_assembled_cls()(*args, **kwargs)
 
+    # pylint: disable=W8110
     @classmethod
     def update_forward_refs(cls, **localns: Any) -> None:
         for b in cls.__bases__:

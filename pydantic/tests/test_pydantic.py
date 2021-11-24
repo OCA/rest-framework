@@ -10,6 +10,7 @@ from .common import PydanticRegistryCase
 
 
 class TestPydantic(PydanticRegistryCase):
+    # pylint: disable=W8110
     def test_simple_inheritance(self):
         class Location(models.BaseModel):
             lat = 0.1

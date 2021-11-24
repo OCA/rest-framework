@@ -38,7 +38,7 @@ class PydanticClassDefsRegistry(dict):
 
 
 class PydanticClassesDatabases(dict):
-    """ Holds a registry of pydantic classes for each database """
+    """Holds a registry of pydantic classes for each database"""
 
 
 class PydanticClassesRegistry(object):

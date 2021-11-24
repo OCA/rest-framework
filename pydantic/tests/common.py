@@ -64,7 +64,7 @@ class TransactionPydanticCase(common.TransactionCase, PydanticMixin):
 
     @classmethod
     def setUpClass(cls):
-        super(TransactionPydanticCase, cls).setUpClass()
+        super().setUpClass()
         cls.setUpPydantic()
 
     # pylint: disable=W8106
@@ -75,30 +75,8 @@ class TransactionPydanticCase(common.TransactionCase, PydanticMixin):
         PydanticMixin.setUp(self)
 
 
-class SavepointPydanticCase(common.SavepointCase, PydanticMixin):
-    """A SavepointCase that loads all the pydantic classes
-
-    It is used like an usual Odoo's SavepointCase, but it ensures
-    that all the pydantic classes of the current addon and its dependencies
-    are loaded.
-
-    """
-
-    @classmethod
-    def setUpClass(cls):
-        super(SavepointPydanticCase, cls).setUpClass()
-        cls.setUpPydantic()
-
-    # pylint: disable=W8106
-    def setUp(self):
-        # resolve an inheritance issue (common.SavepointCase does not call
-        # super)
-        common.SavepointCase.setUp(self)
-        PydanticMixin.setUp(self)
-
-
 class PydanticRegistryCase(
-    common.TreeCase, common.MetaCase("DummyCase", (object,), {})
+    common.BaseCase, common.MetaCase("DummyCase", (object,), {})
 ):
     """This test case can be used as a base for writings tests on pydantic classes
 
@@ -107,10 +85,9 @@ class PydanticRegistryCase(
     or not, or when you want to create additional pydantic classes in your tests.
 
     If you only want to *use* the pydantic classes of the tested addon in your tests,
-    then consider using one of:
+    then consider using:
 
     * :class:`TransactionPydanticCase`
-    * :class:`SavepointPydanticCase`
 
     This test case creates a special
     :class:`odoo.addons.pydantic.registry.PydanticClassesRegistry` for the purpose of
@@ -132,7 +109,7 @@ class PydanticRegistryCase(
     """
 
     def setUp(self):
-        super(PydanticRegistryCase, self).setUp()
+        super().setUp()
 
         # keep the original classes registered by the annotation
         # so we'll restore them at the end of the tests, it avoid
@@ -182,7 +159,7 @@ class PydanticRegistryCase(
             odoo_pydantic_registry.reset(token)
 
     def tearDown(self):
-        super(PydanticRegistryCase, self).tearDown()
+        super().tearDown()
         self.restore_registry()
 
     def _load_module_pydantics(self, module):
@@ -212,30 +189,17 @@ class PydanticRegistryCase(
 
 
 class TransactionPydanticRegistryCase(common.TransactionCase, PydanticRegistryCase):
-    """ Adds Odoo Transaction in the base Pydantic TestCase """
+    """Adds Odoo Transaction in the base Pydantic TestCase"""
 
     # pylint: disable=W8106
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         # resolve an inheritance issue (common.TransactionCase does not use
         # super)
-        common.TransactionCase.setUp(self)
-        PydanticRegistryCase.setUp(self)
+        common.TransactionCase.setUpClass(cls)
+        PydanticRegistryCase.setUp(cls)
 
-    def teardown(self):
-        common.TransactionCase.tearDown(self)
-        PydanticRegistryCase.tearDown(self)
-
-
-class SavepointPydanticRegistryCase(common.SavepointCase, PydanticRegistryCase):
-    """ Adds Odoo Transaction with Savepoint in the base Pydantic TestCase """
-
-    # pylint: disable=W8106
-    def setUp(self):
-        # resolve an inheritance issue (common.SavepointCase does not use
-        # super)
-        common.SavepointCase.setUp(self)
-        PydanticRegistryCase.setUp(self)
-
-    def teardown(self):
-        common.SavepointCase.tearDown(self)
-        PydanticRegistryCase.tearDown(self)
+    @classmethod
+    def tearDownClass(cls):
+        common.TransactionCase.tearDownClass(cls)
+        PydanticRegistryCase.tearDown(cls)
