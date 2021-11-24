@@ -44,16 +44,14 @@
         </t>
 
         <body>
-            <div id="swagger-ui" />
+            <div id="swagger-ui" t-att-data-settings='json.dumps(swagger_settings)' />
 
             <script>
                  odoo.define('base_rest.swagger', function (require) {
                         var SwaggerUi = require('base_rest.swagger_ui');
-                        var swagger_ui = new SwaggerUi(<t t-esc="api_urls" />, '<t
-                    t-esc="primary_name"
-                />');
+                        var swagger_ui = new SwaggerUi('#swagger-ui');
                         $(function() {
-                            swagger_ui.start('#swagger-ui');
+                            swagger_ui.start();
                         });
                         return swagger_ui;
                     });

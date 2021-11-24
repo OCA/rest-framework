@@ -9,9 +9,10 @@ class RestMethodSecurityPlugin(BasePlugin):
     APISpec plugin to generate path security from a services method
     """
 
-    def __init__(self, service):
+    def __init__(self, service, user_auths=("user",)):
         super(RestMethodSecurityPlugin, self).__init__()
         self._service = service
+        self._supported_user_auths = user_auths
 
     def init_spec(self, spec):
         super(RestMethodSecurityPlugin, self).init_spec(spec)
@@ -29,7 +30,7 @@ class RestMethodSecurityPlugin(BasePlugin):
         if not operations:
             return
         auth = routing.get("auth", self.spec._params.get("default_auth"))
-        if auth == "user":
+        if auth in self._supported_user_auths:
             for _method, params in operations.items():
                 security = params.setdefault("security", [])
                 security.append({"user": []})

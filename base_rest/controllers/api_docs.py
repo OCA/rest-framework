@@ -29,7 +29,11 @@ class ApiDocsController(Controller):
     def index(self, **params):
         self._get_api_urls()
         primary_name = params.get("urls.primaryName")
-        values = {"api_urls": self._get_api_urls(), "primary_name": primary_name}
+        swagger_settings = {
+            "urls": self._get_api_urls(),
+            "urls.primaryName": primary_name,
+        }
+        values = {"swagger_settings": swagger_settings}
         return request.render("base_rest.openapi", values)
 
     @route("/api-docs/<path:collection>/<string:service_name>.json", auth="public")
@@ -107,7 +111,3 @@ class ApiDocsController(Controller):
     def _get_services_specs(self, path):
         services_registry = _rest_services_databases.get(request.env.cr.dbname, {})
         return services_registry["/" + path + "/"]
-
-    def _get_collection_name(self, name):
-        services_registry = _rest_services_databases.get(request.env.cr.dbname, {})
-        return services_registry["/" + name + "/"]["collection_name"]

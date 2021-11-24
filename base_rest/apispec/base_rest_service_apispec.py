@@ -29,11 +29,7 @@ class BaseRestServiceAPISpec(APISpec):
                 )
             },
             servers=self._get_servers(),
-            plugins=[
-                RestApiMethodRoutePlugin(self._service),
-                RestMethodParamPlugin(self._service),
-                RestMethodSecurityPlugin(self._service),
-            ],
+            plugins=self._get_plugins(),
         )
         self._params = params
 
@@ -55,6 +51,13 @@ class BaseRestServiceAPISpec(APISpec):
                     self._service._usage,
                 )
             }
+        ]
+
+    def _get_plugins(self):
+        return [
+            RestApiMethodRoutePlugin(self._service),
+            RestMethodParamPlugin(self._service),
+            RestMethodSecurityPlugin(self._service),
         ]
 
     def _add_method_path(self, method):
