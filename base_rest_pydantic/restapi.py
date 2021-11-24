@@ -1,13 +1,13 @@
 # Copyright 2021 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
+# flake8: noqa
+from pydantic import ValidationError, validate_model
 
 from odoo import _
 from odoo.exceptions import UserError
 
 from odoo.addons.base_rest import restapi
 from odoo.addons.pydantic.models import BaseModel
-
-from pydantic import ValidationError, validate_model
 
 
 def replace_ref_in_schema(item, original_schema):
@@ -149,6 +149,7 @@ class PydanticModelList(PydanticModel):
     def to_openapi_query_parameters(self, service, spec):
         raise NotImplementedError("List are not (?yet?) supported as query paramters")
 
+    # pylint: disable=W8115,W8120
     def _do_validate(self, values, direction):
         ExceptionClass = UserError if direction == "input" else SystemError
         if self._min_items is not None and len(values) < self._min_items:
