@@ -7,7 +7,7 @@
 
 # rest-framework
 
-TODO: add repo description.
+This repository has nice modules to interact with Odoo using JSON an HTTP requests. 
 
 <!-- /!\ do not modify below this line -->
 
