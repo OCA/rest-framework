@@ -6,13 +6,13 @@ import unittest
 from cerberus import Validator
 
 from odoo.exceptions import UserError
-from odoo.tests.common import MetaCase, TreeCase
+from odoo.tests.common import BaseCase, MetaCase
 
 from ..components.cerberus_validator import BaseRestCerberusValidator
 from ..restapi import CerberusListValidator
 
 
-class TestCerberusListValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
+class TestCerberusListValidator(BaseCase, MetaCase("DummyCase", (object,), {})):
     """Test all the methods that must be implemented by CerberusListValidator to
     be a valid RestMethodParam"""
 

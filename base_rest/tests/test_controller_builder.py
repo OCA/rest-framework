@@ -15,6 +15,14 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
     component
     """
 
+    def setUp(self):
+        super().setUp()
+        self._setup_registry(self)
+
+    def tearDown(self):
+        self._teardown_registry(self)
+        super().tearDown()
+
     def test_01(self):
         """Test controller generated for old API services
 
@@ -419,6 +427,14 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
 
     The test requires a fresh base controller
     """
+
+    def setUp(self):
+        super().setUp()
+        self._setup_registry(self)
+
+    def tearDown(self):
+        self._teardown_registry(self)
+        super().tearDown()
 
     def test_04(self):
         """Test controller generated from services with new API methods and

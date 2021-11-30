@@ -10,6 +10,14 @@ from .common import TransactionRestServiceRegistryCase
 class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
     """Test openapi document generation from REST services"""
 
+    def setUp(self):
+        super().setUp()
+        self._setup_registry(self)
+
+    def tearDown(self):
+        self._teardown_registry(self)
+        super().tearDown()
+
     def test_01(self):
         """Simple test case"""
 
@@ -148,6 +156,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             },
         )
 
+    # pylint: disable=W8110
     def test_03(self):
         """Test default parameters and default responses
 

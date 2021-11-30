@@ -18,6 +18,7 @@ class RestMethodParamPlugin(BasePlugin):
         self._default_parameters = service._get_openapi_default_parameters()
         self._default_responses = service._get_openapi_default_responses()
 
+    # pylint: disable=W8110
     def init_spec(self, spec):
         super(RestMethodParamPlugin, self).init_spec(spec)
         self.spec = spec
