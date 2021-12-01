@@ -17,7 +17,7 @@ Datamodel
     :target: https://github.com/OCA/rest-framework/tree/15.0/datamodel
     :alt: OCA/rest-framework
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/rest-framework-14-0/rest-framework-14-0-datamodel
+    :target: https://translation.odoo-community.org/projects/rest-framework-15-0/rest-framework-15-0-datamodel
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runbot-Try%20me-875A7B.png
     :target: https://runbot.odoo-community.org/runbot/271/15.0
