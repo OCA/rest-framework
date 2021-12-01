@@ -18,7 +18,7 @@ To define your own pydantic model you just need to create a class that inherits 
         zip_code: str = None
         city: str
         phone: str = None
-        is_componay : bool = Field(None)
+        is_company : bool = Field(None)
 
 
 In the preceding code, 2 new models are created, one for each class. If you
