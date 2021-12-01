@@ -5,7 +5,7 @@
     "name": "Base Rest Demo",
     "summary": """
         Demo addon for Base REST""",
-    "version": "14.0.4.1.0",
+    "version": "15.0.1.0.0",
     "development_status": "Beta",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
@@ -15,5 +15,5 @@
     "data": [],
     "demo": [],
     "external_dependencies": {"python": ["jsondiff"]},
-    "installable": False,
+    "installable": True,
 }
