@@ -6,7 +6,7 @@
     "summary": """
         This addon allows you to define simple data models supporting
         serialization/deserialization""",
-    "version": "14.0.3.0.4",
+    "version": "15.0.1.0.0",
     "license": "LGPL-3",
     "development_status": "Beta",
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
@@ -16,5 +16,5 @@
     "data": [],
     "demo": [],
     "external_dependencies": {"python": ["marshmallow", "marshmallow-objects>=2.0.0"]},
-    "installable": False,
+    "installable": True,
 }

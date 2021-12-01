@@ -53,7 +53,7 @@ def _get_nested_schemas(schema):
 
 
 class DatamodelDatabases(dict):
-    """ Holds a registry of datamodels for each database """
+    """Holds a registry of datamodels for each database"""
 
 
 class DatamodelRegistry(object):
@@ -213,7 +213,7 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 
     @property
     def env(self):
-        """ Current datamodels registry"""
+        """Current datamodels registry"""
         return self._env
 
     @classmethod
