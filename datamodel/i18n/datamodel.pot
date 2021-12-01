@@ -17,18 +17,3 @@ msgstr ""
 #: model:ir.model,name:datamodel.model_datamodel_builder
 msgid "Datamodel Builder"
 msgstr ""
-
-#. module: datamodel
-#: model:ir.model.fields,field_description:datamodel.field_datamodel_builder__display_name
-msgid "Display Name"
-msgstr ""
-
-#. module: datamodel
-#: model:ir.model.fields,field_description:datamodel.field_datamodel_builder__id
-msgid "ID"
-msgstr ""
-
-#. module: datamodel
-#: model:ir.model.fields,field_description:datamodel.field_datamodel_builder____last_update
-msgid "Last Modified on"
-msgstr ""
