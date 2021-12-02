@@ -8,6 +8,7 @@ setuptools.setup(
     description="Meta package for oca-rest-framework Odoo addons",
     version=version,
     install_requires=[
+        'odoo-addon-base_rest>=15.0dev,<15.1dev',
         'odoo-addon-datamodel>=15.0dev,<15.1dev',
     ],
     classifiers=[
