@@ -9,6 +9,7 @@ class RestMethodSecurityPlugin(BasePlugin):
         super(RestMethodSecurityPlugin, self).__init__()
         self._service = service
 
+    # pylint: disable=W8110
     def init_spec(self, spec):
         super(RestMethodSecurityPlugin, self).init_spec(spec)
         self.spec = spec
