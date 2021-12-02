@@ -7,7 +7,7 @@
 import copy
 
 from odoo import http
-from odoo.tests.common import SavepointCase, TransactionCase, get_db_name
+from odoo.tests.common import TransactionCase, get_db_name
 
 from odoo.addons.component.core import (
     WorkContext,
@@ -16,7 +16,7 @@ from odoo.addons.component.core import (
 )
 from odoo.addons.component.tests.common import (
     ComponentRegistryCase,
-    SavepointComponentCase,
+    TransactionComponentCase,
     new_rollbacked_env,
 )
 
@@ -196,48 +196,56 @@ class RestServiceRegistryCase(ComponentRegistryCase):
 
 
 class TransactionRestServiceRegistryCase(TransactionCase, RestServiceRegistryCase):
+    """Adds Odoo Transaction to inherited from ComponentRegistryCase.
 
-    # pylint: disable=W8106
-    def setUp(self):
-        # resolve an inheritance issue (common.TransactionCase does not use
-        # super)
-        TransactionCase.setUp(self)
-        RestServiceRegistryCase._setup_registry(self)
-        self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
+    This class doesn't set up the registry for you.
+    You're supposed to explicitly call `_setup_registry` and `_teardown_registry`
+    when you need it, either on setUpClass and tearDownClass or setUp and tearDown.
 
-    def tearDown(self):
-        RestServiceRegistryCase._teardown_registry(self)
-        TransactionCase.tearDown(self)
+    class MyTestCase(TransactionRestServiceRegistryCase):
+        def setUp(self):
+            super().setUp()
+            self._setup_registry(self)
 
+        def tearDown(self):
+            self._teardown_registry(self)
+            super().tearDown()
 
-class SavepointRestServiceRegistryCase(SavepointCase, RestServiceRegistryCase):
+    class MyTestCase(TransactionRestServiceRegistryCase):
+        @classmethod
+        def setUpClass(cls):
+            super().setUpClass()
+            cls._setup_registry(cls)
+
+        @classmethod
+        def tearDownClass(cls):
+            cls._teardown_registry(cls)
+            super().tearDownClass()
+    """
 
     # pylint: disable=W8106
     @classmethod
     def setUpClass(cls):
-        # resolve an inheritance issue (common.SavepointCase does not use
+        # resolve an inheritance issue (common.TransactionCase does not use
         # super)
-        SavepointCase.setUpClass()
-        RestServiceRegistryCase._setup_registry(cls)
+        TransactionCase.setUpClass()
         cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
 
     @classmethod
     def tearDownClass(cls):
-        RestServiceRegistryCase._teardown_registry(cls)
-        SavepointCase.tearDownClass()
+        TransactionCase.tearDownClass()
 
 
-class BaseRestCase(SavepointComponentCase, RegistryMixin):
+class BaseRestCase(TransactionComponentCase, RegistryMixin):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.setUpRegistry()
         cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
+        cls.registry.enter_test_mode(cls.env.cr)
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
-        self.registry.enter_test_mode(self.env.cr)
-
-    def tearDown(self):
-        self.registry.leave_test_mode()
-        super().tearDown()
+    # pylint: disable=W8110
+    @classmethod
+    def tearDownClass(cls):
+        cls.registry.leave_test_mode()
+        super().tearDownClass()

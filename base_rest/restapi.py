@@ -296,6 +296,7 @@ class CerberusListValidator(CerberusValidator):
     def to_openapi_query_parameters(self, service):
         raise NotImplementedError("List are not (?yet?) supported as query paramters")
 
+    # pylint: disable=W8120,W8115
     def _do_validate(self, service, data, direction):
         validator = self.get_cerberus_validator(service, direction)
         values = []
