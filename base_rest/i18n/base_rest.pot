@@ -38,32 +38,14 @@ msgid "BadRequest: Too many items in the list (%s > %s)"
 msgstr ""
 
 #. module: base_rest
-#: model:ir.model.fields,field_description:base_rest.field_ir_rule__display_name
-#: model:ir.model.fields,field_description:base_rest.field_rest_service_registration__display_name
-msgid "Display Name"
-msgstr ""
-
-#. module: base_rest
 #: model:ir.ui.menu,name:base_rest.menu_rest_api_docs
 msgid "Docs"
-msgstr ""
-
-#. module: base_rest
-#: model:ir.model.fields,field_description:base_rest.field_ir_rule__id
-#: model:ir.model.fields,field_description:base_rest.field_rest_service_registration__id
-msgid "ID"
 msgstr ""
 
 #. module: base_rest
 #: code:addons/base_rest/restapi.py:0
 #, python-format
 msgid "Invalid Response %s"
-msgstr ""
-
-#. module: base_rest
-#: model:ir.model.fields,field_description:base_rest.field_ir_rule____last_update
-#: model:ir.model.fields,field_description:base_rest.field_rest_service_registration____last_update
-msgid "Last Modified on"
 msgstr ""
 
 #. module: base_rest
