@@ -21,6 +21,7 @@ addon | version | maintainers | summary
 --- | --- | --- | ---
 [base_rest](base_rest/) | 15.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_auth_api_key](base_rest_auth_api_key/) | 15.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Base Rest: Add support for the auth_api_key security policy into the openapi documentation
+[base_rest_datamodel](base_rest_datamodel/) | 15.0.1.0.0 |  | Datamodel binding for base_rest
 [datamodel](datamodel/) | 15.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | This addon allows you to define simple data models supporting serialization/deserialization
 
 
@@ -30,7 +31,6 @@ addon | version | maintainers | summary
 --- | --- | --- | ---
 [base_rest_auth_jwt](base_rest_auth_jwt/) | 14.0.1.1.0 (unported) | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Base Rest: Add support for the auth_jwt security policy into the openapi documentation
 [base_rest_auth_user_service](base_rest_auth_user_service/) | 14.0.1.0.1 (unported) |  | Login/logout from session using a REST call
-[base_rest_datamodel](base_rest_datamodel/) | 14.0.4.1.0 (unported) |  | Datamodel binding for base_rest
 [base_rest_demo](base_rest_demo/) | 14.0.4.1.0 (unported) | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Demo addon for Base REST
 [graphql_base](graphql_base/) | 13.0.1.0.0 (unported) | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 13.0.1.0.0 (unported) | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | GraphQL Demo
