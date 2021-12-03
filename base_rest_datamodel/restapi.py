@@ -37,7 +37,7 @@ class Datamodel(restapi.RestMethodParam):
                 partial=self._partial,
             )
         except ValidationError as ve:
-            raise UserError(_("BadRequest %s") % ve.messages)
+            raise UserError(_("BadRequest %s") % ve.messages) from ve
 
     def to_response(self, service, result):
         ModelClass = service.env.datamodels[self._name]
