@@ -11,6 +11,7 @@ setuptools.setup(
         'odoo-addon-base_rest>=15.0dev,<15.1dev',
         'odoo-addon-base_rest_auth_api_key>=15.0dev,<15.1dev',
         'odoo-addon-base_rest_datamodel>=15.0dev,<15.1dev',
+        'odoo-addon-base_rest_demo>=15.0dev,<15.1dev',
         'odoo-addon-datamodel>=15.0dev,<15.1dev',
     ],
     classifiers=[
