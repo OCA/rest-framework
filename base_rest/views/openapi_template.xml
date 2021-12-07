@@ -7,7 +7,18 @@
             <t t-set="head">
                 <meta name="generator" content="Odoo OpenAPI" />
                 <meta name="description" content="Odoo OpenAPI UI" />
-
+                <link
+                    rel="stylesheet"
+                    href="/base_rest/static/lib/swagger-ui-3.51.1/swagger-ui.css"
+                />
+                <script
+                    type="text/javascript"
+                    src="/base_rest/static/lib/swagger-ui-3.51.1/swagger-ui-bundle.js"
+                />
+                <script
+                    type="text/javascript"
+                    src="/base_rest/static/lib/swagger-ui-3.51.1/swagger-ui-standalone-preset.js"
+                />
                 <script type="text/javascript">
                     odoo.session_info = {
                     is_superuser:<t

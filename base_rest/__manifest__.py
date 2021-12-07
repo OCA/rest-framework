@@ -18,12 +18,9 @@
         "views/base_rest_view.xml",
     ],
     "assets": {
-        "web.assets_backend": [
+        "web.assets_common": [
             "base_rest/static/src/scss/base_rest.scss",
             "base_rest/static/src/js/swagger_ui.js",
-            "base_rest/static/lib/swagger-ui-3.51.1/swagger-ui.css",
-            "base_rest/static/lib/swagger-ui-3.51.1/swagger-ui-bundle.js",
-            "base_rest/static/lib/swagger-ui-3.51.1/swagger-ui-standalone-preset.js",
         ],
     },
     "demo": [],
