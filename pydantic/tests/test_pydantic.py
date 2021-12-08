@@ -3,6 +3,11 @@
 
 from typing import List
 
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 import pydantic
 
 from .. import models, utils
@@ -154,3 +159,18 @@ class TestPydantic(PydanticRegistryCase):
         inst2 = ExtendedLocation.construct()
         self.assertEqual(inst1.__class__, inst2.__class__)
         self.assertEqual(inst1.schema(), inst2.schema())
+
+    def test_issubclass(self):
+        """In this test we check that issublass is lenient when used with
+        GenericAlias
+        """
+        self.assertFalse(issubclass(Literal["test"], models.BaseModel))
+        self.assertFalse(issubclass(Literal, models.BaseModel))
+
+        class Location(models.BaseModel):
+            kind: Literal["view", "bin"]
+            my_list: List[str]
+
+        self._build_pydantic_classes(Location)
+        schema = Location.schema()
+        self.assertTrue(schema)

@@ -151,7 +151,7 @@ class ExtendablePydanticModelMeta(ModelMetaclass):
         """Implement issubclass(sub, cls)."""
         if hasattr(subclass, "_original_cls"):
             return cls.__subclasscheck__(subclass._original_cls)
-        return super().__subclasscheck__(subclass)
+        return isinstance(subclass, type) and super().__subclasscheck__(subclass)
 
 
 class BaseModel(pydantic.BaseModel, metaclass=ExtendablePydanticModelMeta):
