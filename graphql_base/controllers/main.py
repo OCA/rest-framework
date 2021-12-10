@@ -6,8 +6,8 @@ from functools import partial
 
 from graphql_server import (
     HttpQueryError,
-    default_format_error,
     encode_execution_results,
+    format_error_default,
     json_encode,
     load_json_body,
     run_http_query,
@@ -58,12 +58,12 @@ class GraphQLControllerMixin(object):
                 query_data=request.args,
                 batch_enabled=False,
                 catch=False,
-                context={"env": http.request.env},
+                context_value={"env": http.request.env},
             )
             result, status_code = encode_execution_results(
                 execution_results,
                 is_batch=isinstance(data, list),
-                format_error=default_format_error,
+                format_error=format_error_default,
                 encode=partial(json_encode, pretty=False),
             )
             headers = dict()
@@ -76,7 +76,7 @@ class GraphQLControllerMixin(object):
                 env.clear()
             return response
         except HttpQueryError as e:
-            result = json_encode({"errors": [default_format_error(e)]})
+            result = json_encode({"errors": [{"message": str(e)}]})
             headers = dict(e.headers)
             headers["Content-Type"] = "application/json"
             response = http.request.make_response(result, headers=headers)
