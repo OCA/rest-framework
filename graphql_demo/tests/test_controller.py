@@ -6,13 +6,15 @@ import json
 from werkzeug.urls import url_encode
 
 from odoo.tests import HttpCase
-from odoo.tests.common import HOST, PORT
-from odoo.tools import mute_logger
+from odoo.tests.common import HOST
+from odoo.tools import config, mute_logger
 
 
 class TestController(HttpCase):
     def url_open_json(self, url, json):
-        return self.opener.post("http://{}:{}{}".format(HOST, PORT, url), json=json)
+        return self.opener.post(
+            "http://{}:{}{}".format(HOST, config["http_port"], url), json=json
+        )
 
     def _check_all_partners(self, all_partners, companies_only=False):
         domain = []
