@@ -97,6 +97,29 @@ class TestPydantic(PydanticRegistryCase):
         ClsDerivedModel = self.pydantic_registry[DerivedModel.__xreg_name__]
         self.assertTrue(ClsDerivedModel().method(), 5)
 
+    def test_inheritance_new_model_2(self):
+        class MyModel(models.BaseModel):
+            value: int = 2
+
+            def method(self):
+                return self.value
+
+        class DerivedModel(MyModel):  # no extends, I want two different models here
+            value2: int = 3
+
+            def method(self):
+                return super().method() + self.value2
+
+        class MyModelExtended(MyModel, extends=MyModel):
+            def method(self):
+                return super().method() + 1
+
+        self._build_pydantic_classes(MyModel, DerivedModel, MyModelExtended)
+        self.assertTrue(DerivedModel().method(), 6)
+
+        ClsDerivedModel = self.pydantic_registry[DerivedModel.__xreg_name__]
+        self.assertTrue(ClsDerivedModel().method(), 6)
+
     def test_model_relation(self):
         class Coordinate(models.BaseModel):
             lat = 0.1
