@@ -1,7 +1,6 @@
 exclude: |
   (?x)
   # NOT INSTALLABLE ADDONS
-  ^base_rest_auth_jwt/|
   ^base_rest_auth_user_service/|
   ^graphql_base/|
   ^graphql_demo/|
