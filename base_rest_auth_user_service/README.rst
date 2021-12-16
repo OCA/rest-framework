@@ -88,7 +88,6 @@ First official version.
 
 Second version.
 
-
 Bug Tracker
 ===========
 
