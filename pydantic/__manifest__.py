@@ -15,7 +15,7 @@
     "data": [],
     "demo": [],
     "external_dependencies": {
-        "python": ["pydantic", "contextvars", "typing-extensions>=4.0.1"]
+        "python": ["pydantic", "contextvars", "typing-extensions"]
     },
     "installable": True,
 }

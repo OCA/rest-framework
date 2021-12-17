@@ -9,4 +9,4 @@ marshmallow-objects>=2.0.0
 parse-accept-language
 pydantic
 pyquerystring
-typing-extensions>=4.0.1
+typing-extensions
