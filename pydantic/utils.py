@@ -3,7 +3,7 @@
 
 from typing import Any
 
-from odoo import models
+from odoo import fields, models
 
 from pydantic.utils import GetterDict
 
@@ -51,6 +51,18 @@ class GenericOdooGetter(GetterDict):
         res = getattr(self._obj, key, default)
         if isinstance(self._obj, models.BaseModel) and key in self._obj._fields:
             field = self._obj._fields[key]
+            if res is False and field.type != "boolean":
+                return None
+            if field.type == "date" and not res:
+                return None
+            if field.type == "datetime":
+                if not res:
+                    return None
+                # Get the timestamp converted to the client's timezone.
+                # This call also add the tzinfo into the datetime object
+                return fields.Datetime.context_timestamp(self._obj, res)
+            if field.type == "many2one" and not res:
+                return None
             if field.type in ["one2many", "many2many"]:
                 return list(res)
         return res
