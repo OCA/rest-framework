@@ -2,6 +2,8 @@
 apispec
 apispec>=4.0.0
 cerberus
+graphene
+graphql_server
 jsondiff
 marshmallow
 marshmallow-objects>=2.0.0

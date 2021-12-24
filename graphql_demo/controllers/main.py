@@ -13,7 +13,7 @@ class GraphQLController(http.Controller, GraphQLControllerMixin):
     # The GraphiQL route, providing an IDE for developers
     @http.route("/graphiql/demo", auth="user")
     def graphiql(self, **kwargs):
-        return self._handle_graphiql_request(schema)
+        return self._handle_graphiql_request(schema.graphql_schema)
 
     # Optional monkey patch, needed to accept application/json GraphQL
     # requests. If you only need to accept GET requests or POST
@@ -26,4 +26,4 @@ class GraphQLController(http.Controller, GraphQLControllerMixin):
     # (such as origin restrictions) to this route.
     @http.route("/graphql/demo", auth="user", csrf=False)
     def graphql(self, **kwargs):
-        return self._handle_graphql_request(schema)
+        return self._handle_graphql_request(schema.graphql_schema)
