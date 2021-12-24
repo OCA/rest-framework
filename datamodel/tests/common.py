@@ -179,6 +179,22 @@ class TransactionDatamodelRegistryCase(common.TransactionCase, DatamodelRegistry
         DatamodelRegistryCase.setUp(cls)
         cls.collection = cls.env["collection.base"]
 
+    def teardown(self):
+        common.TransactionCase.tearDown(self)
+        DatamodelRegistryCase.tearDown(self)
+
+
+class SavepointDatamodelRegistryCase(common.SavepointCase, DatamodelRegistryCase):
+    """Adds Odoo Transaction with Savepoint in the base Datamodel TestCase"""
+
+    # pylint: disable=W8106
+    def setUp(self):
+        # resolve an inheritance issue (common.SavepointCase does not use
+        # super)
+        common.SavepointCase.setUp(self)
+        DatamodelRegistryCase.setUp(self)
+        self.collection = self.env["collection.base"]
+
     @classmethod
     def tearDownClass(cls):
         common.TransactionCase.tearDownClass(cls)
