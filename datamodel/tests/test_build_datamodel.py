@@ -5,6 +5,8 @@
 import mock
 from marshmallow_objects.models import Model as MarshmallowModel
 
+from odoo import SUPERUSER_ID, api
+
 from .. import fields
 from ..core import Datamodel
 from .common import DatamodelRegistryCase, TransactionDatamodelCase
@@ -40,7 +42,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         self.assertIsInstance(Datamodel2(), MarshmallowModel)
 
     def test_no_name(self):
-        """ Ensure that a datamodel has a _name """
+        """Ensure that a datamodel has a _name"""
 
         class Datamodel1(Datamodel):
             pass
@@ -50,7 +52,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             Datamodel1._build_datamodel(self.datamodel_registry)
 
     def test_register(self):
-        """ Able to register datamodels in datamodels registry """
+        """Able to register datamodels in datamodels registry"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -67,7 +69,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         )
 
     def test_inherit_bases(self):
-        """ Check __bases__ of Datamodel with _inherit """
+        """Check __bases__ of Datamodel with _inherit"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -90,7 +92,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         )
 
     def test_prototype_inherit_bases(self):
-        """ Check __bases__ of Datamodel with _inherit and different _name """
+        """Check __bases__ of Datamodel with _inherit and different _name"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -188,7 +190,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         )
 
     def test_custom_build(self):
-        """ Check that we can hook at the end of a Datamodel build """
+        """Check that we can hook at the end of a Datamodel build"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -204,7 +206,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         self.assertTrue(self.env.datamodels["datamodel1"]._build_done)
 
     def test_inherit_attrs(self):
-        """ Check attributes inheritance of Datamodels with _inherit """
+        """Check attributes inheritance of Datamodels with _inherit"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -236,7 +238,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         self.assertEqual("foo bar", datamodel2.say())
 
     def test_duplicate_datamodel(self):
-        """ Check that we can't have 2 datamodels with the same name """
+        """Check that we can't have 2 datamodels with the same name"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -250,7 +252,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             Datamodel2._build_datamodel(self.datamodel_registry)
 
     def test_no_parent(self):
-        """ Ensure we can't _inherit a non-existent datamodel """
+        """Ensure we can't _inherit a non-existent datamodel"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -261,7 +263,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             Datamodel1._build_datamodel(self.datamodel_registry)
 
     def test_no_parent2(self):
-        """ Ensure we can't _inherit by prototype a non-existent datamodel """
+        """Ensure we can't _inherit by prototype a non-existent datamodel"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -276,7 +278,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             Datamodel2._build_datamodel(self.datamodel_registry)
 
     def test_add_inheritance(self):
-        """ Ensure we can add a new inheritance """
+        """Ensure we can add a new inheritance"""
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"
@@ -297,7 +299,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
                 Datamodel2bis,
                 Datamodel2,
                 self.env.datamodels["datamodel1"],
-                self.env.datamodels["base"],
+                self.env.datamodels.registry.get("base"),
             ),
             self.env.datamodels["datamodel2"].__bases__,
         )
@@ -339,7 +341,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             self.env.datamodels["datamodel1"](field_str="1234")
 
     def test_nested_model(self):
-        """ Test nested model serialization/deserialization"""
+        """Test nested model serialization/deserialization"""
 
         class Parent(Datamodel):
             _name = "parent"
@@ -366,7 +368,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         self.assertEqual(new_instance.child.field_str, instance.child.field_str)
 
     def test_list_nested_model(self):
-        """ Test list model of nested model serialization/deserialization"""
+        """Test list model of nested model serialization/deserialization"""
 
         class Parent(Datamodel):
             _name = "parent"
@@ -469,6 +471,9 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         self.assertEqual(instance.items[0].env, self.env)
         schema = instance.items[0].get_schema()
         self.assertEqual(schema._env, self.env)
+        another_env = api.Environment(self.env.registry.cursor(), SUPERUSER_ID, {})
+        new_p = another_env.datamodels["parent"]()
+        self.assertEqual(new_p.env, another_env)
 
 
 class TestRegistryAccess(TransactionDatamodelCase):

@@ -2,7 +2,6 @@
 # Copyright 2019 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html)
 
-import functools
 import logging
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
@@ -19,7 +18,6 @@ try:
     from marshmallow_objects.models import Model as MarshmallowModel, ModelMeta
 except ImportError:
     _logger.debug("Cannot import 'marshmallow_objects'.")
-
 
 # The Cache size represents the number of items, so the number
 # of datamodels (include abstract datamodels) we will keep in the LRU
@@ -53,7 +51,7 @@ def _get_nested_schemas(schema):
 
 
 class DatamodelDatabases(dict):
-    """ Holds a registry of datamodels for each database """
+    """Holds a registry of datamodels for each database"""
 
 
 class DatamodelRegistry(object):
@@ -208,12 +206,11 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
     _inherit = None
 
     def __init__(self, context=None, partial=None, env=None, **kwargs):
-        self._env = env
+        self._env = env or type(self)._env
         super().__init__(context=context, partial=partial, **kwargs)
 
     @property
     def env(self):
-        """ Current datamodels registry"""
         return self._env
 
     @classmethod
@@ -408,10 +405,7 @@ class DataModelFactory(object):
 
     def __getitem__(self, key):
         model = self.registry[key]
-        if hasattr(model, "__datamodel_init_patched"):
-            return model
-
-        model.__init__ = functools.partialmethod(model.__init__, env=self.env)
+        model._env = self.env
 
         @classmethod
         def __get_schema_class__(cls, **kwargs):
@@ -420,7 +414,6 @@ class DataModelFactory(object):
             return cls
 
         model.__get_schema_class__ = __get_schema_class__
-        setattr(model, "__datamodel_init_patched", True)  # noqa: B010
         return model
 
 
