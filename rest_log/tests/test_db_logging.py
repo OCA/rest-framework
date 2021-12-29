@@ -8,22 +8,26 @@ import mock
 from odoo import exceptions
 from odoo.tools import mute_logger
 
-from odoo.addons.base_rest.tests.common import (
-    SavepointRestServiceRegistryCase,
-    TransactionRestServiceRegistryCase,
-)
+from odoo.addons.base_rest.tests.common import TransactionRestServiceRegistryCase
 from odoo.addons.component.tests.common import new_rollbacked_env
 from odoo.addons.rest_log import exceptions as log_exceptions  # pylint: disable=W7950
 
 from .common import TestDBLoggingMixin
 
 
-class TestDBLogging(SavepointRestServiceRegistryCase, TestDBLoggingMixin):
+class TestDBLogging(TransactionRestServiceRegistryCase, TestDBLoggingMixin):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls._setup_registry(cls)
         cls.service = cls._get_service(cls)
         cls.log_model = cls.env["rest.log"].sudo()
+
+    @classmethod
+    def tearDownClass(cls):
+        # pylint: disable=W8110
+        cls._teardown_registry(cls)
+        super().tearDownClass()
 
     def test_log_enabled_conf_parsing(self):
         key1 = "coll1.service1.endpoint"
@@ -229,9 +233,17 @@ class TestDBLogging(SavepointRestServiceRegistryCase, TestDBLoggingMixin):
 class TestDBLoggingExceptionBase(
     TransactionRestServiceRegistryCase, TestDBLoggingMixin
 ):
-    def setUp(self):
-        super().setUp()
-        self.service = self._get_service(self)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls._setup_registry(cls)
+        cls.service = cls._get_service(cls)
+
+    @classmethod
+    def tearDownClass(cls):
+        # pylint: disable=W8110
+        cls._teardown_registry(cls)
+        super().tearDownClass()
 
     def _test_exception(self, test_type, wrapping_exc, exc_name, severity):
         log_model = self.env["rest.log"].sudo()
