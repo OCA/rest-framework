@@ -17,9 +17,9 @@ class DirectoryAuth(models.Model):
     )
     forget_password_template_id = fields.Many2one(
         "mail.template",
-        "Mail Template",
+        "Mail Template Forget Password",
     )
     invite_set_password_template_id = fields.Many2one(
         "mail.template",
-        "Mail Template",
+        "Mail Template New Password",
     )
