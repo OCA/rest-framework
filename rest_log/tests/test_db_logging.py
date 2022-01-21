@@ -8,29 +8,65 @@ import mock
 from odoo import exceptions
 from odoo.tools import mute_logger
 
-from .common import TestDBLoggingBase
+from odoo.addons.base_rest.tests.common import (
+    SavepointRestServiceRegistryCase,
+    TransactionRestServiceRegistryCase,
+)
+from odoo.addons.component.tests.common import new_rollbacked_env
+from odoo.addons.rest_log import exceptions as log_exceptions  # pylint: disable=W7950
+
+from .common import TestDBLoggingMixin
 
 
-class DBLoggingCase(TestDBLoggingBase):
+class TestDBLogging(SavepointRestServiceRegistryCase, TestDBLoggingMixin):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.service = cls._get_service(cls)
+        cls.log_model = cls.env["rest.log"].sudo()
+
+    def test_log_enabled_conf_parsing(self):
+        key1 = "coll1.service1.endpoint"
+        key2 = "coll1.service2.endpoint:failed"
+        key3 = "coll2.service1.endpoint:success"
+        self.env["ir.config_parameter"].sudo().set_param(
+            "rest.log.active", ",".join((key1, key2, key3))
+        )
+        expected = {
+            # fmt:off
+            "coll1.service1.endpoint": ("success", "failed"),
+            "coll1.service2.endpoint": ("failed", ),
+            "coll2.service1.endpoint": ("success", ),
+            # fmt: on
+        }
+        self.assertEqual(self.env["rest.log"]._get_log_active_conf(), expected)
+
     def test_log_enabled(self):
         self.service._log_calls_in_db = False
         with self._get_mocked_request():
             # no conf no flag
-            self.assertFalse(self.service._db_logging_active())
+            self.assertFalse(self.service._db_logging_active("avg_endpoint"))
             # by conf for collection
             self.env["ir.config_parameter"].sudo().set_param(
                 "rest.log.active", self.service._collection
             )
-            self.assertTrue(self.service._db_logging_active())
+            self.assertTrue(self.service._db_logging_active("avg_endpoint"))
             # by conf for usage
             self.env["ir.config_parameter"].sudo().set_param(
-                "rest.log.active", self.service._usage
+                "rest.log.active", self.service._collection + "." + self.service._usage
             )
-            self.assertTrue(self.service._db_logging_active())
+            self.assertTrue(self.service._db_logging_active("avg_endpoint"))
+            # by conf for usage and endpoint
+            self.env["ir.config_parameter"].sudo().set_param(
+                "rest.log.active",
+                self.service._collection + "." + self.service._usage + ".avg_endpoint",
+            )
+            self.assertTrue(self.service._db_logging_active("avg_endpoint"))
+            self.assertFalse(self.service._db_logging_active("not_so_avg_endpoint"))
             # no conf, service class flag
             self.env["ir.config_parameter"].sudo().set_param("rest.log.active", "")
             self.service._log_calls_in_db = True
-            self.assertTrue(self.service._db_logging_active())
+            self.assertTrue(self.service._db_logging_active("avg_endpoint"))
 
     def test_no_log_entry(self):
         self.service._log_calls_in_db = False
@@ -47,26 +83,6 @@ class DBLoggingCase(TestDBLoggingBase):
         self.assertIn("log_entry_url", resp)
         self.assertTrue(self.log_model.search_count([]) > log_entry_count)
 
-    # # TODO: this is very tricky because when the exception is raised
-    # # the transaction is explicitly rolled back and then our test env is gone
-    # # and everything right after is broken.
-    # # To fully test this we need a different test class setup and advanced mocking
-    # # and/or rewrite code so that we can it properly.
-    # # def test_log_exception(self):
-    # #     mock_path = \
-    # #         "odoo.addons.REST.services.checkout.Checkout.scan_document"
-    # #     log_entry_count = self.log_model.search_count([])
-    # #     with self._get_mocked_request():
-    # #         with mock.patch(mock_path, autospec=True) as mocked:
-    # #             exc = exceptions.UserError("Sorry, you broke it!")
-    # #             mocked.side_effect = exc
-    # #             resp = self.service.dispatch(
-    # #                 "scan_document", params={"barcode": self.picking.name})
-    # #     self.assertIn("log_entry_url", resp)
-    # #     self.assertTrue(self.log_model.search_count([]) > log_entry_count)
-    # #     log_entry_data = urlparse(resp["log_entry_url"])
-    # #     pass
-
     def test_log_entry_values_success(self):
         params = {"some": "value"}
         kw = {"result": {"data": "worked!"}}
@@ -79,9 +95,10 @@ class DBLoggingCase(TestDBLoggingBase):
             httprequest=httprequest, extra_headers=extra_headers
         ) as mocked_request:
             entry = self.service._log_call_in_db(
-                self.env, mocked_request, params=params, **kw
+                self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
+            "collection": self.service._collection,
             "request_url": httprequest.url,
             "request_method": httprequest.method,
             "state": "success",
@@ -108,9 +125,10 @@ class DBLoggingCase(TestDBLoggingBase):
         kw = {"result": {}}
         with self._get_mocked_request() as mocked_request:
             entry = self.service._log_call_in_db(
-                self.env, mocked_request, params=params, **kw
+                self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
+            "collection": self.service._collection,
             "state": "failed",
             "result": "{}",
             "error": False,
@@ -131,9 +149,10 @@ class DBLoggingCase(TestDBLoggingBase):
         kw = {"result": {}, "traceback": fake_tb, "orig_exception": orig_exception}
         with self._get_mocked_request() as mocked_request:
             entry = self.service._log_call_in_db(
-                self.env, mocked_request, params=params, **kw
+                self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
+            "collection": self.service._collection,
             "state": "failed",
             "result": "{}",
             "error": fake_tb,
@@ -158,9 +177,10 @@ class DBLoggingCase(TestDBLoggingBase):
         kw = {"result": {}, "traceback": fake_tb, "orig_exception": orig_exception}
         with self._get_mocked_request() as mocked_request:
             entry = self.service._log_call_in_db(
-                self.env, mocked_request, params=params, **kw
+                self.env, mocked_request, "avg_method", params=params, **kw
             )
         expected = {
+            "collection": self.service._collection,
             "state": "failed",
             "result": "{}",
             "error": fake_tb,
@@ -204,3 +224,94 @@ class DBLoggingCase(TestDBLoggingBase):
         expected = self.log_model.EXCEPTION_SEVERITY_MAPPING.copy()
         expected["ValueError"] = "warning"
         self.assertEqual(mapping, expected)
+
+
+class TestDBLoggingExceptionBase(
+    TransactionRestServiceRegistryCase, TestDBLoggingMixin
+):
+    def setUp(self):
+        super().setUp()
+        self.service = self._get_service(self)
+
+    def _test_exception(self, test_type, wrapping_exc, exc_name, severity):
+        log_model = self.env["rest.log"].sudo()
+        initial_entries = log_model.search([])
+        entry_url_from_exc = None
+        with self._get_mocked_request():
+            try:
+                self.service.dispatch("fail", test_type)
+            except Exception as err:
+                # Not using `assertRaises` to inspect the exception directly
+                self.assertTrue(isinstance(err, wrapping_exc))
+                self.assertEqual(
+                    self.service._get_exception_message(err), "Failed as you wanted!"
+                )
+                entry_url_from_exc = err.rest_json_info["log_entry_url"]
+
+        with new_rollbacked_env() as env:
+            log_model = env["rest.log"].sudo()
+            entry = log_model.search([]) - initial_entries
+            expected = {
+                "collection": self.service._collection,
+                "state": "failed",
+                "result": "null",
+                "exception_name": exc_name,
+                "exception_message": "Failed as you wanted!",
+                "severity": severity,
+            }
+            self.assertRecordValues(entry, [expected])
+            self.assertEqual(entry_url_from_exc, self.service._get_log_entry_url(entry))
+
+
+class TestDBLoggingExceptionUserError(TestDBLoggingExceptionBase):
+    @staticmethod
+    def _get_test_controller(class_or_instance, root_path=None):
+        # Override to avoid registering twice the same controller route.
+        # Disclaimer: to run these tests w/ need TransactionCase
+        # because the handling of the exception will do a savepoint rollback
+        # which causes SavepointCase to fail.
+        # When using the transaction case the rest_registry is initliazed
+        # at every test, same for the test controller.
+        # This leads to the error
+        # "Only one REST controller
+        # can be safely declared for root path /test_controller/"
+        return super()._get_test_controller(
+            class_or_instance, root_path="/test_log_exception_user/"
+        )
+
+    def test_log_exception_user(self):
+        self._test_exception(
+            "user",
+            log_exceptions.RESTServiceUserErrorException,
+            "odoo.exceptions.UserError",
+            "functional",
+        )
+
+
+class TestDBLoggingExceptionValidationError(TestDBLoggingExceptionBase):
+    @staticmethod
+    def _get_test_controller(class_or_instance, root_path=None):
+        return super()._get_test_controller(
+            class_or_instance, root_path="/test_log_exception_validation/"
+        )
+
+    def test_log_exception_validation(self):
+        self._test_exception(
+            "validation",
+            log_exceptions.RESTServiceValidationErrorException,
+            "odoo.exceptions.ValidationError",
+            "functional",
+        )
+
+
+class TestDBLoggingExceptionValueError(TestDBLoggingExceptionBase):
+    @staticmethod
+    def _get_test_controller(class_or_instance, root_path=None):
+        return super()._get_test_controller(
+            class_or_instance, root_path="/test_log_exception_value/"
+        )
+
+    def test_log_exception_value(self):
+        self._test_exception(
+            "value", log_exceptions.RESTServiceDispatchException, "ValueError", "severe"
+        )

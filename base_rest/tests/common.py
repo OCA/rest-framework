@@ -105,8 +105,19 @@ class RestServiceRegistryCase(ComponentRegistryCase):
         # registered outside tests
         class_or_instance._collection_name = "base.rest.test"
 
+        BaseTestController = class_or_instance._get_test_controller(class_or_instance)
+
+        class_or_instance._BaseTestController = BaseTestController
+        class_or_instance._controller_route_method_names = {
+            "my_controller_route_without",
+            "my_controller_route_with",
+            "my_controller_route_without_auth_2",
+        }
+
+    @staticmethod
+    def _get_test_controller(class_or_instance, root_path="/test_controller/"):
         class BaseTestController(RestController):
-            _root_path = "/test_controller/"
+            _root_path = root_path
             _collection_name = class_or_instance._collection_name
             _default_auth = "public"
 
@@ -128,12 +139,7 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             def my_controller_route_without_auth_2(self):
                 return {}
 
-        class_or_instance._BaseTestController = BaseTestController
-        class_or_instance._controller_route_method_names = {
-            "my_controller_route_without",
-            "my_controller_route_with",
-            "my_controller_route_without_auth_2",
-        }
+        return BaseTestController
 
     @staticmethod
     def _teardown_registry(class_or_instance):
