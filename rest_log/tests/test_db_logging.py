@@ -5,13 +5,14 @@ import json
 
 import mock
 
-from odoo import exceptions, registry
+from odoo import exceptions
 from odoo.tools import mute_logger
 
 from odoo.addons.base_rest.tests.common import (
     SavepointRestServiceRegistryCase,
     TransactionRestServiceRegistryCase,
 )
+from odoo.addons.component.tests.common import new_rollbacked_env
 from odoo.addons.rest_log import exceptions as log_exceptions  # pylint: disable=W7950
 
 from .common import TestDBLoggingMixin
@@ -225,7 +226,9 @@ class TestDBLogging(SavepointRestServiceRegistryCase, TestDBLoggingMixin):
         self.assertEqual(mapping, expected)
 
 
-class TestDBLoggingException(TransactionRestServiceRegistryCase, TestDBLoggingMixin):
+class TestDBLoggingExceptionBase(
+    TransactionRestServiceRegistryCase, TestDBLoggingMixin
+):
     def setUp(self):
         super().setUp()
         self.service = self._get_service(self)
@@ -234,7 +237,6 @@ class TestDBLoggingException(TransactionRestServiceRegistryCase, TestDBLoggingMi
         log_model = self.env["rest.log"].sudo()
         initial_entries = log_model.search([])
         entry_url_from_exc = None
-        # with mock.patch.object(type(self.env.cr), "rollback"):
         with self._get_mocked_request():
             try:
                 self.service.dispatch("fail", test_type)
@@ -245,8 +247,8 @@ class TestDBLoggingException(TransactionRestServiceRegistryCase, TestDBLoggingMi
                     self.service._get_exception_message(err), "Failed as you wanted!"
                 )
                 entry_url_from_exc = err.rest_json_info["log_entry_url"]
-        with registry(self.env.cr.dbname).cursor() as cr:
-            env = self.env(cr=cr)
+
+        with new_rollbacked_env() as env:
             log_model = env["rest.log"].sudo()
             entry = log_model.search([]) - initial_entries
             expected = {
@@ -260,6 +262,23 @@ class TestDBLoggingException(TransactionRestServiceRegistryCase, TestDBLoggingMi
             self.assertRecordValues(entry, [expected])
             self.assertEqual(entry_url_from_exc, self.service._get_log_entry_url(entry))
 
+
+class TestDBLoggingExceptionUserError(TestDBLoggingExceptionBase):
+    @staticmethod
+    def _get_test_controller(class_or_instance, root_path=None):
+        # Override to avoid registering twice the same controller route.
+        # Disclaimer: to run these tests w/ need TransactionCase
+        # because the handling of the exception will do a savepoint rollback
+        # which causes SavepointCase to fail.
+        # When using the transaction case the rest_registry is initliazed
+        # at every test, same for the test controller.
+        # This leads to the error
+        # "Only one REST controller
+        # can be safely declared for root path /test_controller/"
+        return super()._get_test_controller(
+            class_or_instance, root_path="/test_log_exception_user/"
+        )
+
     def test_log_exception_user(self):
         self._test_exception(
             "user",
@@ -268,12 +287,28 @@ class TestDBLoggingException(TransactionRestServiceRegistryCase, TestDBLoggingMi
             "functional",
         )
 
+
+class TestDBLoggingExceptionValidationError(TestDBLoggingExceptionBase):
+    @staticmethod
+    def _get_test_controller(class_or_instance, root_path=None):
+        return super()._get_test_controller(
+            class_or_instance, root_path="/test_log_exception_validation/"
+        )
+
     def test_log_exception_validation(self):
         self._test_exception(
             "validation",
             log_exceptions.RESTServiceValidationErrorException,
             "odoo.exceptions.ValidationError",
             "functional",
+        )
+
+
+class TestDBLoggingExceptionValueError(TestDBLoggingExceptionBase):
+    @staticmethod
+    def _get_test_controller(class_or_instance, root_path=None):
+        return super()._get_test_controller(
+            class_or_instance, root_path="/test_log_exception_value/"
         )
 
     def test_log_exception_value(self):
