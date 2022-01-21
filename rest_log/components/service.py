@@ -41,18 +41,18 @@ class BaseRESTService(AbstractComponent):
         # https://github.com/OCA/rest-framework/pull/106#pullrequestreview-582099258
         try:
             result = super().dispatch(method_name, *args, params=params)
-        except exceptions.UserError as orig_exception:
-            self._dispatch_exception(
-                method_name,
-                RESTServiceUserErrorException,
-                orig_exception,
-                *args,
-                params=params,
-            )
         except exceptions.ValidationError as orig_exception:
             self._dispatch_exception(
                 method_name,
                 RESTServiceValidationErrorException,
+                orig_exception,
+                *args,
+                params=params,
+            )
+        except exceptions.UserError as orig_exception:
+            self._dispatch_exception(
+                method_name,
+                RESTServiceUserErrorException,
                 orig_exception,
                 *args,
                 params=params,
