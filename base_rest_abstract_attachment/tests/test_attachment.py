@@ -4,69 +4,55 @@
 
 import json
 import pathlib
+import unittest
 
 from werkzeug.datastructures import FileStorage
 
-from odoo.http import request
-
-from odoo.addons.base_rest.controllers.main import _PseudoCollection
-from odoo.addons.component.core import WorkContext
-from odoo.addons.component.tests.common import TransactionComponentCase
+from odoo.addons.base_rest.tests.common import TransactionRestServiceRegistryCase
+from odoo.addons.component.core import Component
 from odoo.addons.datamodel.tests.common import TransactionDatamodelCase
 
+from ..services.abstract_attachable import AbstractAttachableService
 
-class AttachmentCommonCase(TransactionComponentCase, TransactionDatamodelCase):
-    def setUp(self, collection_name="attachment.rest.services"):
-        super().setUp()
-        collection = _PseudoCollection(collection_name, self.env)
-        self.services_env = WorkContext(
-            model_name="rest.service.registration",
-            collection=collection,
-            request=request,
-        )
-        provider = self.services_env.component(usage="component_context_provider")
-        provider._get_component_context()
-        self.attachment_service = self.services_env.component(usage="attachment")
 
-    def create_attachment(self, params=None):
-        attrs = {"params": "{}"}
+class AttachmentCommonCase(unittest.TestCase):
+    def create_attachment(self, record_id, params=None):
+        attrs = {"_object_id": record_id, "params": "{}"}
+        res = None
         if params:
             attrs["params"] = json.dumps(params)
         with open(pathlib.Path(__file__).resolve()) as fp:
             attrs["file"] = FileStorage(fp)
-            self.attachment_res = self.attachment_service.dispatch(
-                "create", params=attrs
-            )
-        return self.attachment_res
+            res = self.service.dispatch("attachment_create", params=attrs)
+        return res
 
 
-class AttachmentCase(AttachmentCommonCase):
-    def test_create_attachment_one_step(self):
-        res = self.create_attachment(
-            params={
-                "res_model": "res.partner",
-                "res_id": self.ref("base.res_partner_1"),
-            }
+class AttachmentCase(
+    AttachmentCommonCase, TransactionRestServiceRegistryCase, TransactionDatamodelCase
+):
+    def setUp(self):
+        super().setUp()
+        self._build_services(self, AbstractAttachableService)
+
+        # pylint: disable=R7980
+        class PartnerService(Component):
+            _inherit = "abstract.attachable.service"
+            _name = "test.partner.service"
+            _usage = "partner"
+            _collection = self._collection_name
+            _expose_model = "res.partner"
+
+        self._build_services(self, PartnerService)
+        self.service = self._get_service_component(self, "partner")
+
+    def test_create_attachment(self):
+        partner_id = self.ref("base.res_partner_1")
+        res_upload = self.create_attachment(partner_id)
+        self.assertEqual(res_upload["name"], "test_attachment.py")
+
+    def test_create_attachment_custom_name(self):
+        partner_id = self.ref("base.res_partner_1")
+        res_upload = self.create_attachment(
+            partner_id, params={"name": "CUSTOM_NAME.pdf"}
         )
-        self.assertEqual(res["res_name"], "Wood Corner")
-        self.assertEqual(res["res_model"], "res.partner")
-        self.assertEqual(res["res_id"], self.ref("base.res_partner_1"))
-        self.assertEqual(res["name"], "test_attachment.py")
-
-    def test_create_attachment_two_step(self):
-        res = self.create_attachment()
-        self.assertEqual(res["res_name"], None)
-        self.assertEqual(res["res_model"], None)
-        self.assertEqual(res["res_id"], 0)
-        self.assertEqual(res["name"], "test_attachment.py")
-        res = self.attachment_service.dispatch(
-            "update",
-            res["id"],
-            params={
-                "res_id": self.ref("base.res_partner_1"),
-                "res_model": "res.partner",
-            },
-        )
-        self.assertEqual(res["res_model"], "res.partner")
-        self.assertEqual(res["res_id"], self.ref("base.res_partner_1"))
-        self.assertEqual(res["name"], "test_attachment.py")
+        self.assertEqual(res_upload["name"], "CUSTOM_NAME.pdf")

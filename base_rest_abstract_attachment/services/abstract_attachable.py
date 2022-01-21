@@ -3,10 +3,35 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 
+import os.path
+
+from odoo import _
+from odoo.exceptions import MissingError
+from odoo.http import content_disposition, request
+
+from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest.components.service import to_int
 from odoo.addons.component.core import AbstractComponent
 from odoo.addons.datamodel import fields
 from odoo.addons.datamodel.core import Datamodel
+
+
+class AttachmentBase(Datamodel):
+    _name = "ir.attachment.base"
+
+    name = fields.String(required=False, allow_none=True)
+
+
+class AttachmentInput(Datamodel):
+    _name = "ir.attachment.input"
+    _inherit = "ir.attachment.base"
+
+
+class AttachmentOutput(Datamodel):
+    _name = "ir.attachment.output"
+    _inherit = "ir.attachment.base"
+
+    id = fields.Integer(required=True, allow_none=False)
 
 
 class AttachableOutput(Datamodel):
@@ -36,3 +61,73 @@ class AbstractAttachableService(AbstractComponent):
                 "schema": {"id": {"coerce": to_int}},
             },
         }
+
+    @restapi.method(
+        routes=[(["/<int:_object_id>/attachments/<int:_attachment_id>"], "GET")],
+        output_param=restapi.BinaryData(required=True),
+    )
+    def attachment_download(self, _object_id, _attachment_id):
+        record = self._get(_object_id)
+        self._check_attachment_access(record)
+        attachment = self._get_attachment_for_record(record, _attachment_id)
+        content = attachment.raw
+        headers = [
+            ("Content-Type", attachment.mimetype),
+            ("X-Content-Type-Options", "nosniff"),
+            ("Content-Disposition", content_disposition(attachment.name)),
+            ("Content-Length", len(content)),
+        ]
+        response = request.make_response(content, headers)
+        response.status_code = 200
+        return response
+
+    @restapi.method(
+        routes=[(["/<int:_object_id>/attachments"], "POST")],
+        input_param=restapi.MultipartFormData(
+            {
+                "file": restapi.BinaryData(required=True),
+                "params": restapi.Datamodel("ir.attachment.input"),
+            }
+        ),
+        output_param=restapi.Datamodel("ir.attachment.output"),
+    )
+    def attachment_create(self, _object_id, file, params):
+        record = self._get(_object_id)
+        self._check_attachment_access(record)
+        vals = self._prepare_attachment_params(record, file, params.dump())
+        attachment = self.env["ir.attachment"].create(vals)
+        return self.env.datamodels["ir.attachment.output"].load(
+            attachment.jsonify(["id", "name"])[0]
+        )
+
+    def _prepare_attachment_params(self, record, uploaded_file, params):
+        params["res_id"] = record.id
+        params["res_model"] = record._name
+        params["raw"] = uploaded_file.read()
+        if "name" not in params:
+            params["name"] = os.path.basename(uploaded_file.filename)
+        return params
+
+    def _get(self, _id):
+        record = self.env[self._expose_model].browse(_id)
+        if not record:
+            raise MissingError(_("The record does not exist: {}".format(_id)))
+        else:
+            return record
+
+    def _get_attachment_for_record(self, record, _attachment_id):
+        attachment = self.env["ir.attachment"].search(
+            [
+                ("id", "=", _attachment_id),
+                ("res_id", "=", record.id),
+                ("res_model", "=", record._name),
+            ]
+        )
+        if not attachment:
+            raise MissingError(_("The attachment %s does not exist") % (_attachment_id))
+        else:
+            return attachment
+
+    def _check_attachment_access(self, record):
+        # To help handling security when not using ir.rules
+        pass
