@@ -2,6 +2,7 @@
 apispec
 apispec>=4.0.0
 cerberus
+extendable
 graphene
 graphql_server
 jsondiff
