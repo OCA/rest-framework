@@ -1,0 +1,42 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* extendable
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: extendable
+#: model:ir.model.fields,field_description:extendable.field_extendable_registry_loader__display_name
+#: model:ir.model.fields,field_description:extendable.field_ir_http__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: extendable
+#: model:ir.model,name:extendable.model_extendable_registry_loader
+msgid "Extendable Registry Loader"
+msgstr ""
+
+#. module: extendable
+#: model:ir.model,name:extendable.model_ir_http
+msgid "HTTP Routing"
+msgstr ""
+
+#. module: extendable
+#: model:ir.model.fields,field_description:extendable.field_extendable_registry_loader__id
+#: model:ir.model.fields,field_description:extendable.field_ir_http__id
+msgid "ID"
+msgstr ""
+
+#. module: extendable
+#: model:ir.model.fields,field_description:extendable.field_extendable_registry_loader____last_update
+#: model:ir.model.fields,field_description:extendable.field_ir_http____last_update
+msgid "Last Modified on"
+msgstr ""
