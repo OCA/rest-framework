@@ -4,6 +4,9 @@
 
 
 import os.path
+from io import BytesIO
+
+import requests
 
 from odoo import _
 from odoo.exceptions import MissingError
@@ -63,20 +66,42 @@ class AbstractAttachableService(AbstractComponent):
         }
 
     @restapi.method(
-        routes=[(["/<int:_object_id>/attachments/<int:_attachment_id>"], "GET")],
+        routes=[(["/<int:_object_id>/attachments/<int:attachment_id>"], "GET")],
         output_param=restapi.BinaryData(required=True),
     )
-    def attachment_download(self, _object_id, _attachment_id):
+    def attachment_download(self, _object_id, attachment_id):
         record = self._get(_object_id)
         self._check_attachment_access(record)
-        attachment = self._get_attachment_for_record(record, _attachment_id)
-        content = attachment.raw
-        headers = [
-            ("Content-Type", attachment.mimetype),
-            ("X-Content-Type-Options", "nosniff"),
-            ("Content-Disposition", content_disposition(attachment.name)),
-            ("Content-Length", len(content)),
-        ]
+        attachment = self._get_attachment_for_record(record, attachment_id)
+        content = None
+        headers = [("X-Content-Type-Options", "nosniff")]
+        if attachment.type == "url":
+            r = requests.get(attachment.url)
+            headers.extend(
+                [
+                    (
+                        "Content-Type",
+                        r.headers.get("Content-Type", attachment.mimetype),
+                    ),
+                    (
+                        "Content-disposition",
+                        r.headers.get(
+                            "Content-Disposition", content_disposition(attachment.name)
+                        ),
+                    ),
+                    ("Content-Length", r.headers.get("Content-Length", 0)),
+                ]
+            )
+            content = BytesIO(r.content)
+        else:
+            headers.extend(
+                [
+                    ("Content-Type", attachment.mimetype),
+                    ("Content-Disposition", content_disposition(attachment.name)),
+                    ("Content-Length", len(attachment.raw)),
+                ]
+            )
+            content = attachment.raw
         response = request.make_response(content, headers)
         response.status_code = 200
         return response
