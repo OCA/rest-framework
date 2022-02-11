@@ -20,6 +20,6 @@
     ],
     "demo": [],
     "external_dependencies": {
-        "python": ["cerberus", "pyquerystring", "accept_language", "apispec"]
+        "python": ["cerberus", "pyquerystring", "parse-accept-language", "apispec"]
     },
 }
