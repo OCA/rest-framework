@@ -30,7 +30,7 @@ addon | version | maintainers | summary
 [graphql_base](graphql_base/) | 14.0.1.0.0 | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 14.0.1.0.0 | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | GraphQL Demo
 [model_serializer](model_serializer/) | 14.0.1.0.0 |  | Automatically translate Odoo models into Datamodels for (de)serialization
-[rest_log](rest_log/) | 14.0.1.1.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | Track REST API calls into DB
+[rest_log](rest_log/) | 14.0.1.1.1 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | Track REST API calls into DB
 
 [//]: # (end addons)
 
