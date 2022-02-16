@@ -26,6 +26,7 @@ class RESTLog(models.Model):
     }
 
     collection = fields.Char(index=True)
+    collection_id = fields.Integer(index=True, string="Collection ID")
     request_url = fields.Char(readonly=True, string="Request URL")
     request_method = fields.Char(readonly=True)
     params = fields.Text(readonly=True)
@@ -177,3 +178,19 @@ class RESTLog(models.Model):
         for candidate in candidates:
             if conf.get(candidate):
                 return conf.get(candidate)
+
+    def action_view_collection(self):
+        """Open collection if we have a real record.
+
+        NOTE: use an action instead of a `Reference` field with computed method
+        because it would force use to have glue modules to provide a selection
+        for every model we want to support.
+        """
+        # TODO: on the next round, compute the collection name
+        # to be used for the button label.
+        # No ID or no real model
+        if self.collection not in self.env or not self.collection_id:
+            return
+        action = self.env[self.collection].get_formview_action()
+        action["res_id"] = self.collection_id
+        return action
