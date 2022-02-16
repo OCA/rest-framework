@@ -132,8 +132,10 @@ class BaseRESTService(AbstractComponent):
             if hasattr(orig_exception, "__module__"):
                 exception_name = orig_exception.__module__ + "." + exception_name
             exception_message = self._get_exception_message(orig_exception)
+        collection = self.work.collection
         return {
-            "collection": self._collection,
+            "collection": collection._name,
+            "collection_id": collection.id,
             "request_url": httprequest.url,
             "request_method": httprequest.method,
             "params": json_dump(params),
