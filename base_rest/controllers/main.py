@@ -17,11 +17,12 @@ _logger = logging.getLogger(__name__)
 
 
 class _PseudoCollection(object):
-    __slots__ = "_name", "env"
+    __slots__ = "_name", "env", "id"
 
     def __init__(self, name, env):
         self._name = name
         self.env = env
+        self.id = None
 
 
 class RestControllerType(ControllerType):
