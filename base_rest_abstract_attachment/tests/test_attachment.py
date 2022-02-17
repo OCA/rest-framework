@@ -23,7 +23,7 @@ class AttachmentCommonCase(unittest.TestCase):
             attrs["params"] = json.dumps(params)
         with open(pathlib.Path(__file__).resolve()) as fp:
             attrs["file"] = FileStorage(fp)
-            res = self.service.dispatch("attachment_create", params=attrs)
+            res = self.service.dispatch("create_attachment", params=attrs)
         return res
 
 

@@ -66,11 +66,11 @@ class AbstractAttachableService(AbstractComponent):
         }
 
     @restapi.method(
-        routes=[(["/<int:_object_id>/attachments/<int:attachment_id>"], "GET")],
+        routes=[(["/<int:object_id>/attachments/<int:attachment_id>"], "GET")],
         output_param=restapi.BinaryData(required=True),
     )
-    def attachment_download(self, _object_id, attachment_id):
-        record = self._get(_object_id)
+    def download_attachment(self, object_id=None, attachment_id=None):
+        record = self._get(object_id)
         self._check_attachment_access(record)
         attachment = self._get_attachment_for_record(record, attachment_id)
         content = None
@@ -107,7 +107,7 @@ class AbstractAttachableService(AbstractComponent):
         return response
 
     @restapi.method(
-        routes=[(["/<int:_object_id>/attachments"], "POST")],
+        routes=[(["/<int:object_id>/attachments"], "POST")],
         input_param=restapi.MultipartFormData(
             {
                 "file": restapi.BinaryData(required=True),
@@ -116,8 +116,8 @@ class AbstractAttachableService(AbstractComponent):
         ),
         output_param=restapi.Datamodel("ir.attachment.output"),
     )
-    def attachment_create(self, _object_id, file, params):
-        record = self._get(_object_id)
+    def create_attachment(self, object_id=None, file=None, params=None):
+        record = self._get(object_id)
         self._check_attachment_access(record)
         vals = self._prepare_attachment_params(record, file, params.dump())
         attachment = self.env["ir.attachment"].create(vals)
