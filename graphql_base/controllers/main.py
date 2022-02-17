@@ -48,9 +48,13 @@ class GraphQLControllerMixin(object):
             return http.request.params
         return {}
 
+    def _make_context(self, schema, data):
+        return {"env": http.request.env}
+
     def _process_request(self, schema, data):
         try:
             request = http.request.httprequest
+            context = self._make_context(schema, data)
             execution_results, all_params = run_http_query(
                 schema,
                 request.method.lower(),
@@ -58,7 +62,7 @@ class GraphQLControllerMixin(object):
                 query_data=request.args,
                 batch_enabled=False,
                 catch=False,
-                context={"env": http.request.env},
+                context=context,
             )
             result, status_code = encode_execution_results(
                 execution_results,
