@@ -7,6 +7,7 @@ import json
 import traceback
 
 from werkzeug.urls import url_encode, url_join
+from werkzeug.wrappers import Response
 
 from odoo import exceptions, registry
 from odoo.http import request
@@ -125,6 +126,10 @@ class BaseRESTService(AbstractComponent):
         params = self._log_call_sanitize_params(params)
 
         result = kw.get("result")
+        if isinstance(result, Response):
+            result = {"content": "Binary response"}
+        else:
+            result = json_dump(result)
         error = kw.get("traceback")
         orig_exception = kw.get("orig_exception")
         exception_name = None
@@ -142,7 +147,7 @@ class BaseRESTService(AbstractComponent):
             "request_method": httprequest.method,
             "params": json_dump(params),
             "headers": json_dump(headers),
-            "result": json_dump(result),
+            "result": result,
             "error": error,
             "exception_name": exception_name,
             "exception_message": exception_message,
