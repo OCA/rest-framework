@@ -192,7 +192,7 @@ class DatamodelRegistryCase(
 
 
 class TransactionDatamodelRegistryCase(common.TransactionCase, DatamodelRegistryCase):
-    """ Adds Odoo Transaction in the base Datamodel TestCase """
+    """Adds Odoo Transaction in the base Datamodel TestCase"""
 
     # pylint: disable=W8106
     def setUp(self):
@@ -208,7 +208,7 @@ class TransactionDatamodelRegistryCase(common.TransactionCase, DatamodelRegistry
 
 
 class SavepointDatamodelRegistryCase(common.SavepointCase, DatamodelRegistryCase):
-    """ Adds Odoo Transaction with Savepoint in the base Datamodel TestCase """
+    """Adds Odoo Transaction with Savepoint in the base Datamodel TestCase"""
 
     # pylint: disable=W8106
     def setUp(self):
