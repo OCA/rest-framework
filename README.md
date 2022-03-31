@@ -1,5 +1,7 @@
-[![Runbot Status](https://runbot.odoo-community.org/runbot/badge/flat/271/15.0.svg)](https://runbot.odoo-community.org/runbot/repo/github-com-oca-rest-framework-271)
-[![Build Status](https://travis-ci.com/OCA/rest-framework.svg?branch=15.0)](https://travis-ci.com/OCA/rest-framework)
+
+[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=15.0)
+[![Pre-commit Status](https://github.com/OCA/rest-framework/actions/workflows/pre-commit.yml/badge.svg?branch=15.0)](https://github.com/OCA/rest-framework/actions/workflows/pre-commit.yml?query=branch%3A15.0)
+[![Build Status](https://github.com/OCA/rest-framework/actions/workflows/test.yml/badge.svg?branch=15.0)](https://github.com/OCA/rest-framework/actions/workflows/test.yml?query=branch%3A15.0)
 [![codecov](https://codecov.io/gh/OCA/rest-framework/branch/15.0/graph/badge.svg)](https://codecov.io/gh/OCA/rest-framework)
 [![Translation Status](https://translation.odoo-community.org/widgets/rest-framework-15-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/rest-framework-15-0/?utm_source=widget)
 
@@ -45,12 +47,11 @@ addon | version | maintainers | summary
 
 This repository is licensed under [AGPL-3.0](LICENSE).
 
-However, each module can have a totally different license, as long as they adhere to OCA
+However, each module can have a totally different license, as long as they adhere to Odoo Community Association (OCA)
 policy. Consult each module's `__manifest__.py` file, which contains a `license` key
 that explains its license.
 
 ----
-
 OCA, or the [Odoo Community Association](http://odoo-community.org/), is a nonprofit
 organization whose mission is to support the collaborative development of Odoo features
 and promote its widespread use.
