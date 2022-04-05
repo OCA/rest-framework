@@ -411,7 +411,7 @@ class RestApiServiceControllerGenerator(object):
                         method_name=method_name,
                         service_name=self._service_name,
                         service_method_name=name,
-                        args=", ".join(rule.arguments),
+                        args=", ".join([c[1] for c in rule._trace if c[0]]),
                     )
                 else:
                     method = METHOD_TMPL.format(
