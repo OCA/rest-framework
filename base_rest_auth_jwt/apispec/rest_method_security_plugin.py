@@ -17,8 +17,6 @@ class RestMethodSecurityPlugin(BasePlugin):
             "type": "http",
             "scheme": "bearer",
             "bearerFormat": "JWT",
-            "name": "jwt",
-            "description": "Enter JWT Bearer Token ** only **",
         }
         spec.components.security_scheme("jwt", jwt_scheme)
 

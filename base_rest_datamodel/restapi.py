@@ -70,6 +70,7 @@ class Datamodel(restapi.RestMethodParam):
     def to_openapi_responses(self, service):
         return {
             "200": {
+                "description": "OK",
                 "content": {
                     "application/json": {
                         "schema": self.to_json_schema(service, "output")
