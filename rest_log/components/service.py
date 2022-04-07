@@ -4,6 +4,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
 import json
+import logging
 import traceback
 
 from werkzeug.urls import url_encode, url_join
@@ -20,6 +21,8 @@ from ..exceptions import (
     RESTServiceUserErrorException,
     RESTServiceValidationErrorException,
 )
+
+_logger = logging.getLogger(__name__)
 
 
 def json_dump(data):
@@ -38,10 +41,9 @@ class BaseRESTService(AbstractComponent):
         return self._dispatch_with_db_logging(method_name, *args, params=params)
 
     def _dispatch_with_db_logging(self, method_name, *args, params=None):
-        # TODO: consider refactoring thi using a savepoint as described here
-        # https://github.com/OCA/rest-framework/pull/106#pullrequestreview-582099258
         try:
-            result = super().dispatch(method_name, *args, params=params)
+            with self.env.cr.savepoint():
+                result = super().dispatch(method_name, *args, params=params)
         except exceptions.ValidationError as orig_exception:
             self._dispatch_exception(
                 method_name,
@@ -66,34 +68,41 @@ class BaseRESTService(AbstractComponent):
                 *args,
                 params=params,
             )
-        log_entry = self._log_call_in_db(
-            self.env, request, method_name, *args, params=params, result=result
-        )
-        if log_entry and isinstance(result, dict):
-            log_entry_url = self._get_log_entry_url(log_entry)
-            result["log_entry_url"] = log_entry_url
+        self._log_dispatch_success(method_name, result, *args, params)
         return result
+
+    def _log_dispatch_success(self, method_name, result, *args, params=None):
+        try:
+            with self.env.cr.savepoint():
+                log_entry = self._log_call_in_db(
+                    self.env, request, method_name, *args, params
+                )
+                if log_entry and not isinstance(result, Response):
+                    log_entry_url = self._get_log_entry_url(log_entry)
+                    result["log_entry_url"] = log_entry_url
+        except Exception as e:
+            _logger.exception("Rest Log Error Creation: %s", e)
 
     def _dispatch_exception(
         self, method_name, exception_klass, orig_exception, *args, params=None
     ):
-        tb = traceback.format_exc()
-        # TODO: how to test this? Cannot rollback nor use another cursor
-        self.env.cr.rollback()
-        with registry(self.env.cr.dbname).cursor() as cr:
-            env = self.env(cr=cr)
-            log_entry = self._log_call_in_db(
-                env,
-                request,
-                method_name,
-                *args,
-                params=params,
-                traceback=tb,
-                orig_exception=orig_exception,
-            )
-            log_entry_url = self._get_log_entry_url(log_entry)
-        # UserError and alike have `name` attribute to store the msg
-        exc_msg = self._get_exception_message(orig_exception)
+        exc_msg, log_entry_url = None, None  # in case it fails below
+        try:
+            exc_msg = self._get_exception_message(orig_exception)
+            tb = traceback.format_exc()
+            with registry(self.env.cr.dbname).cursor() as cr:
+                log_entry = self._log_call_in_db(
+                    self.env(cr=cr),
+                    request,
+                    method_name,
+                    *args,
+                    params=params,
+                    traceback=tb,
+                    orig_exception=orig_exception,
+                )
+                log_entry_url = self._get_log_entry_url(log_entry)
+        except Exception as e:
+            _logger.exception("Rest Log Error Creation: %s", e)
         raise exception_klass(exc_msg, log_entry_url) from orig_exception
 
     def _get_exception_message(self, exception):
