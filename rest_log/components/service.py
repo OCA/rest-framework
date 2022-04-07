@@ -27,7 +27,7 @@ _logger = logging.getLogger(__name__)
 
 def json_dump(data):
     """Encode data to JSON as we like."""
-    return json.dumps(data, cls=JSONEncoder, indent=4, sort_keys=True)
+    return json.dumps(data, cls=JSONEncoder, indent=4, sort_keys=True, default=str)
 
 
 class BaseRESTService(AbstractComponent):
