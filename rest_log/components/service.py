@@ -137,7 +137,7 @@ class BaseRESTService(AbstractComponent):
         result = kw.get("result")
         if isinstance(result, Response):
             result = {"content": "Binary response"}
-        else:
+        elif result:
             result = json_dump(result)
         error = kw.get("traceback")
         orig_exception = kw.get("orig_exception")
