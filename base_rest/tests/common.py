@@ -189,8 +189,8 @@ class RestServiceRegistryCase(ComponentRegistryCase):
         return methods
 
     @staticmethod
-    def _get_service_component(class_or_instance, usage):
-        collection = _PseudoCollection(
+    def _get_service_component(class_or_instance, usage, collection=None):
+        collection = collection or _PseudoCollection(
             class_or_instance._collection_name, class_or_instance.env
         )
         work = WorkContext(
