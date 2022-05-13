@@ -13,7 +13,7 @@ from odoo.addons.website.tools import MockRequest
 
 class TestDBLoggingMixin(object):
     @staticmethod
-    def _get_service(class_or_instance):
+    def _get_service(class_or_instance, collection=None):
         # pylint: disable=R7980
         class LoggedService(Component):
             _inherit = "base.rest.service"
@@ -49,11 +49,13 @@ class TestDBLoggingMixin(object):
         # class_or_instance._build_services(class_or_instance, LoggedService)
         # TODO: WTH _build_services does not load the component?
         LoggedService._build_component(class_or_instance.comp_registry)
-        return class_or_instance._get_service_component(class_or_instance, "logmycalls")
+        return class_or_instance._get_service_component(
+            class_or_instance, "logmycalls", collection=collection
+        )
 
     @contextlib.contextmanager
-    def _get_mocked_request(self, httprequest=None, extra_headers=None):
-        with MockRequest(self.env) as mocked_request:
+    def _get_mocked_request(self, env=None, httprequest=None, extra_headers=None):
+        with MockRequest(env or self.env) as mocked_request:
             mocked_request.httprequest = httprequest or mocked_request.httprequest
             headers = {"Cookie": "IaMaCookie!", "Api-Key": "I_MUST_STAY_SECRET"}
             headers.update(extra_headers or {})
