@@ -7,9 +7,9 @@ REST Log
    !! changes will be overwritten.                   !!
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-.. |badge1| image:: https://img.shields.io/badge/maturity-Alpha-red.png
+.. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
-    :alt: Alpha
+    :alt: Beta
 .. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
@@ -32,12 +32,8 @@ This module add DB logging for REST requests.
 It also inject in the response the URL of the log entry created.
 
 NOTE: this feature was implemented initially inside shopfloor app.
-If shopfloor is installed, log records will be copied from its table.
-
-.. IMPORTANT::
-   This is an alpha version, the data model and design can change at any time without warning.
-   Only for development or testing purpose, do not use in production.
-   `More details on development status <https://odoo-community.org/page/development-status>`_
+Up to version 13.0.1.2.1 of this module,
+if shopfloor is installed, log records will be copied from its table.
 
 **Table of contents**
 
@@ -62,6 +58,24 @@ You can change the duration of the retention by changing the System Parameter
 If the value is set to 0, the logs are not stored at all.
 
 Logged data is: request URL and method, parameters, headers, result or error.
+
+
+Logs activation
+~~~~~~~~~~~~~~~
+
+You have 2 ways to activate logging:
+
+* on the service component set `_log_calls_in_db = True`
+* via configuration
+
+In the 1st case, calls will be always be logged.
+
+In the 2nd case you can set ``rest.log.active`` param as::
+
+    `collection_name`  # enable for all endpoints of the collection
+    `collection_name.usage`  # enable for specific endpoints
+    `collection_name.usage.endpoint`  # enable for specific endpoints
+    `collection_name*:state`  # enable only for specific state (success, failed)
 
 Changelog
 =========
