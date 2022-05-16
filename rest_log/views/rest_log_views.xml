@@ -5,6 +5,8 @@
         <field name="model">rest.log</field>
         <field name="arch" type="xml">
             <tree decoration-danger="state == 'failed'">
+                <field name="collection" optional="hide" />
+                <field name="collection_id" optional="hide" />
                 <field name="create_uid" />
                 <field name="create_date" />
                 <field name="request_method" />
@@ -21,12 +23,28 @@
         <field name="model">rest.log</field>
         <field name="arch" type="xml">
             <form>
+                <field name="collection_id" invisible="1" />
                 <header>
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
+                    <div
+                        class="oe_button_box"
+                        name="button_box"
+                        attrs="{'invisible': ['|', ('id','=',False), ('collection_id', '=', False)]}"
+                    >
+                        <button
+                            type="object"
+                            name="action_view_collection"
+                            icon="fa-eye"
+                            attrs="{'invisible': [('collection_id', '=', False)]}"
+                        >
+                            View collection
+                        </button>
+                    </div>
                     <group>
                         <group>
+                            <field name="collection" />
                             <field name="request_url" />
                             <field name="request_method" />
                         </group>
@@ -76,6 +94,8 @@
         <field name="model">rest.log</field>
         <field name="arch" type="xml">
             <search>
+                <field name="collection" />
+                <field name="collection_id" />
                 <field name="state" />
                 <field name="request_url" />
                 <field name="request_method" />
@@ -111,6 +131,12 @@
                     domain="[('severity', '=', 'functional')]"
                 />
                 <group expand="0" string="Group By">
+                    <filter
+                        string="Collection"
+                        name="by_collection"
+                        domain="[]"
+                        context="{'group_by': 'collection'}"
+                    />
                     <filter
                         string="User"
                         name="by_user"

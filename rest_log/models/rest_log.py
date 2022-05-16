@@ -25,6 +25,8 @@ class RESTLog(models.Model):
         "UnboundLocalError": "severe",
     }
 
+    collection = fields.Char(index=True)
+    collection_id = fields.Integer(index=True, string="Collection ID")
     request_url = fields.Char(readonly=True, string="Request URL")
     request_method = fields.Char(readonly=True)
     params = fields.Text(readonly=True)
@@ -128,3 +130,67 @@ class RESTLog(models.Model):
         if logs:
             logs.unlink()
         return True
+
+    def _get_log_active_param(self):
+        param = self.env["ir.config_parameter"].sudo().get_param("rest.log.active")
+        return param.strip() if param else ""
+
+    @tools.ormcache("self._get_log_active_param()")
+    def _get_log_active_conf(self):
+        """Compute log active configuration.
+
+        Possible configuration contains a CSV like this:
+
+            `collection_name` -> enable for all endpoints of the collection
+            `collection_name.usage` -> enable for specific endpoints
+            `collection_name.usage.endpoint` -> enable for specific endpoints
+            `collection_name*:state` -> enable only for specific state (success, failed)
+
+        By default matching keys are enabled for all states.
+
+        :return: mapping by matching key / enabled states
+        """
+        param = self._get_log_active_param()
+        conf = {}
+        lines = [x.strip() for x in param.split(",") if x.strip()]
+        for line in lines:
+            bits = [x.strip() for x in line.split(":") if x.strip()]
+            if len(bits) > 1:
+                match_key = bits[0]
+                # fmt: off
+                states = (bits[1], )
+                # fmt: on
+            else:
+                match_key = line
+                states = ("success", "failed")
+            conf[match_key] = states
+        return conf
+
+    @api.model
+    def _get_matching_active_conf(self, collection, usage, method_name):
+        """Retrieve conf matching current service and method."""
+        conf = self._get_log_active_conf()
+        candidates = (
+            collection + "." + usage + "." + method_name,
+            collection + "." + usage,
+            collection,
+        )
+        for candidate in candidates:
+            if conf.get(candidate):
+                return conf.get(candidate)
+
+    def action_view_collection(self):
+        """Open collection if we have a real record.
+
+        NOTE: use an action instead of a `Reference` field with computed method
+        because it would force use to have glue modules to provide a selection
+        for every model we want to support.
+        """
+        # TODO: on the next round, compute the collection name
+        # to be used for the button label.
+        # No ID or no real model
+        if self.collection not in self.env or not self.collection_id:
+            return
+        action = self.env[self.collection].get_formview_action()
+        action["res_id"] = self.collection_id
+        return action
