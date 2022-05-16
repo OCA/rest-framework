@@ -21,6 +21,17 @@ msgid "Auto-vacuum REST Logs"
 msgstr ""
 
 #. module: rest_log
+#: model:ir.model.fields,field_description:rest_log.field_rest_log__collection
+#: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
+msgid "Collection"
+msgstr ""
+
+#. module: rest_log
+#: model:ir.model.fields,field_description:rest_log.field_rest_log__collection_id
+msgid "Collection ID"
+msgstr ""
+
+#. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__create_uid
 msgid "Created by"
 msgstr ""
@@ -199,6 +210,11 @@ msgstr ""
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "User"
+msgstr ""
+
+#. module: rest_log
+#: model_terms:ir.ui.view,arch_db:rest_log.rest_log_form_view
+msgid "View collection"
 msgstr ""
 
 #. module: rest_log
