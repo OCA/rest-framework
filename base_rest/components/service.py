@@ -56,6 +56,14 @@ class BaseRestService(AbstractComponent):
     _description = None  # description included into the openapi doc
     _is_rest_service_component = True  # marker to retrieve REST components
 
+    def __init__(self, work_context):
+        super().__init__(work_context)
+        self._auto_decorate_endpoints()
+
+    def _auto_decorate_endpoints(self):
+        """Automatically decorate non decorated public methods."""
+        self.env["rest.service.registration"]._prepare_non_decorated_endpoints(self)
+
     def _prepare_extra_log(self, func, params, secure_params, res):
         httprequest = request.httprequest
         headers = dict(httprequest.headers)

@@ -73,7 +73,6 @@ class RestServiceRegistration(models.AbstractModel):
     def _build_controllers_routes(self, services_registry):
         for controller_def in services_registry.values():
             for service in self._get_services(controller_def["collection_name"]):
-                self._prepare_non_decorated_endpoints(service)
                 self._build_controller(service, controller_def)
 
     def _prepare_non_decorated_endpoints(self, service):
