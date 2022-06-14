@@ -4,14 +4,14 @@ from typing import List
 
 import mock
 
-from odoo.tests.common import SavepointCase
+from odoo.tests.common import TransactionCase
 
 from pydantic import BaseModel
 
 from .. import restapi
 
 
-class TestPydantic(SavepointCase):
+class TestPydantic(TransactionCase):
     def _to_response(self, instance: BaseModel):
         restapi_pydantic = restapi.PydanticModel(instance.__class__)
         mock_service = mock.Mock()

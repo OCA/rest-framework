@@ -5,14 +5,14 @@ from typing import Type
 import mock
 
 from odoo.exceptions import UserError
-from odoo.tests.common import SavepointCase
+from odoo.tests.common import TransactionCase
 
 from pydantic import BaseModel
 
 from .. import restapi
 
 
-class TestPydantic(SavepointCase):
+class TestPydantic(TransactionCase):
     def setUp(self):
         super(TestPydantic, self).setUp()
 

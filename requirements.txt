@@ -3,8 +3,7 @@ apispec>=4.0.0
 cerberus
 contextvars;python_version<"3.7"
 extendable
-graphene
-graphql_server
+extendable-pydantic
 jsondiff
 marshmallow
 marshmallow-objects>=2.0.0
