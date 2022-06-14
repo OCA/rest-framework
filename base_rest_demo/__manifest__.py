@@ -11,9 +11,17 @@
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
     "website": "https://github.com/OCA/rest-framework",
-    "depends": ["base_rest", "base_rest_datamodel", "component"],
+    "depends": [
+        "base_rest",
+        "base_rest_datamodel",
+        "base_rest_pydantic",
+        "component",
+        "extendable",
+    ],
     "data": [],
     "demo": [],
-    "external_dependencies": {"python": ["jsondiff"]},
+    "external_dependencies": {
+        "python": ["jsondiff", "extendable-pydantic", "pydantic"]
+    },
     "installable": True,
 }

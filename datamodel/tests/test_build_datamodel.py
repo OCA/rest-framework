@@ -5,6 +5,8 @@
 import mock
 from marshmallow_objects.models import Model as MarshmallowModel
 
+from odoo import SUPERUSER_ID, api
+
 from .. import fields
 from ..core import Datamodel
 from .common import DatamodelRegistryCase, TransactionDatamodelCase
@@ -299,7 +301,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
                 Datamodel2bis,
                 Datamodel2,
                 self.env.datamodels["datamodel1"],
-                self.env.datamodels["base"],
+                self.env.datamodels.registry.get("base"),
             ),
             self.env.datamodels["datamodel2"].__bases__,
         )
@@ -471,6 +473,9 @@ class TestBuildDatamodel(DatamodelRegistryCase):
         self.assertEqual(instance.items[0].env, self.env)
         schema = instance.items[0].get_schema()
         self.assertEqual(schema._env, self.env)
+        another_env = api.Environment(self.env.registry.cursor(), SUPERUSER_ID, {})
+        new_p = another_env.datamodels["parent"]()
+        self.assertEqual(new_p.env, another_env)
 
 
 class TestRegistryAccess(TransactionDatamodelCase):
