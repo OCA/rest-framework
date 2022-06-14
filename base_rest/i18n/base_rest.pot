@@ -22,19 +22,19 @@ msgstr ""
 #. module: base_rest
 #: code:addons/base_rest/restapi.py:0
 #, python-format
-msgid "BadRequest item %s :%s"
+msgid "BadRequest item %(idx)s :%(errors)s"
 msgstr ""
 
 #. module: base_rest
 #: code:addons/base_rest/restapi.py:0
 #, python-format
-msgid "BadRequest: Not enough items in the list (%s < %s)"
+msgid "BadRequest: Not enough items in the list (%(current)s < %(expected)s)"
 msgstr ""
 
 #. module: base_rest
 #: code:addons/base_rest/restapi.py:0
 #, python-format
-msgid "BadRequest: Too many items in the list (%s > %s)"
+msgid "BadRequest: Too many items in the list (%(current)s > %(expected)s)"
 msgstr ""
 
 #. module: base_rest
