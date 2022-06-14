@@ -40,7 +40,7 @@ class PydanticModel(restapi.RestMethodParam):
         try:
             return self._model_cls(**params)
         except ValidationError as ve:
-            raise UserError(_("BadRequest %s") % ve.json(indent=0))
+            raise UserError(_("BadRequest %s") % ve.json(indent=0)) from ve
 
     def to_response(self, service, result):
         # do we really need to validate the instance????
@@ -154,15 +154,17 @@ class PydanticModelList(PydanticModel):
         if self._min_items is not None and len(values) < self._min_items:
             raise ExceptionClass(
                 _(
-                    "BadRequest: Not enough items in the list (%s < %s)"
-                    % (len(values), self._min_items)
+                    "BadRequest: Not enough items in the list (%(current)s < %(expected)s)",
+                    current=len(values),
+                    expected=self._min_items,
                 )
             )
         if self._max_items is not None and len(values) > self._max_items:
             raise ExceptionClass(
                 _(
-                    "BadRequest: Too many items in the list (%s > %s)"
-                    % (len(values), self._max_items)
+                    "BadRequest: Too many items in the list (%(current)s > %(expected)s)",
+                    current=len(values),
+                    expected=self._max_items,
                 )
             )
 

@@ -304,21 +304,27 @@ class CerberusListValidator(CerberusValidator):
         for idx, p in enumerate(data):
             if not validator.validate(p):
                 raise ExceptionClass(
-                    _("BadRequest item %s :%s") % (idx, validator.errors)
+                    _(
+                        "BadRequest item %(idx)s :%(errors)s",
+                        idx=idx,
+                        errors=validator.errors,
+                    )
                 )
             values.append(validator.document)
         if self._min_items is not None and len(values) < self._min_items:
             raise ExceptionClass(
                 _(
-                    "BadRequest: Not enough items in the list (%s < %s)"
-                    % (len(values), self._min_items)
+                    "BadRequest: Not enough items in the list (%(current)s < %(expected)s)",
+                    current=len(values),
+                    expected=self._min_items,
                 )
             )
         if self._max_items is not None and len(values) > self._max_items:
             raise ExceptionClass(
                 _(
-                    "BadRequest: Too many items in the list (%s > %s)"
-                    % (len(values), self._max_items)
+                    "BadRequest: Too many items in the list (%(current)s > %(expected)s)",
+                    current=len(values),
+                    expected=self._max_items,
                 )
             )
         return values
