@@ -52,7 +52,7 @@ class Datamodel(restapi.RestMethodParam):
             raise SystemError(_("Invalid Response %s") % errors)
         return json
 
-    def to_openapi_query_parameters(self, service):
+    def to_openapi_query_parameters(self, service, spec):
         converter = self._get_converter()
         schema = self._get_schema(service)
         return converter.schema2parameters(schema, location="query")
@@ -60,14 +60,14 @@ class Datamodel(restapi.RestMethodParam):
     # TODO, we should probably get the spec as parameters. That should
     # allows to add the definition of a schema only once into the specs
     # and use a reference to the schema into the parameters
-    def to_openapi_requestbody(self, service):
+    def to_openapi_requestbody(self, service, spec):
         return {
             "content": {
                 "application/json": {"schema": self.to_json_schema(service, "input")}
             }
         }
 
-    def to_openapi_responses(self, service):
+    def to_openapi_responses(self, service, spec):
         return {
             "200": {
                 "content": {

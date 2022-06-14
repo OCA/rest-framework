@@ -1,8 +1,14 @@
 # generated from manifests external_dependencies
 apispec>=4.0.0
 cerberus
+contextvars;python_version<"3.7"
+extendable
+graphene
+graphql_server
 jsondiff
 marshmallow
 marshmallow-objects>=2.0.0
 parse-accept-language
+pydantic
 pyquerystring
+typing-extensions

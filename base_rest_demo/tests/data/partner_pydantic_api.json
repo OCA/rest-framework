@@ -1,0 +1,332 @@
+{
+  "info": {
+    "description": "\nPartner New API Services\nServices developed with the new api provided by base_rest and pydantic\n",
+    "title": "partner_pydantic REST services",
+    "version": ""
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8069/base_rest_demo_api/new_api/partner_pydantic"
+    }
+  ],
+  "paths": {
+    "/{id}/get": {
+      "get": {
+        "summary": "\nGet partner's information\n",
+        "responses": {
+          "400": {
+            "description": "One of the given parameter is not valid"
+          },
+          "401": {
+            "description": "The user is not authorized. Authentication is required"
+          },
+          "404": {
+            "description": "Requested resource not found"
+          },
+          "403": {
+            "description": "You don't have the permission to access the requested resource."
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ]
+    },
+    "/{id}": {
+      "get": {
+        "summary": "\nGet partner's information\n",
+        "responses": {
+          "400": {
+            "description": "One of the given parameter is not valid"
+          },
+          "401": {
+            "description": "The user is not authorized. Authentication is required"
+          },
+          "404": {
+            "description": "Requested resource not found"
+          },
+          "403": {
+            "description": "You don't have the permission to access the requested resource."
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ]
+    },
+    "/": {
+      "get": {
+        "summary": "\nSearch for partners\n:param partner_search_param: An instance of partner.search.param\n:return: List of partner.short.info\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "allowEmptyValue": false,
+            "default": null,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "allowEmptyValue": false,
+            "default": null,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "One of the given parameter is not valid"
+          },
+          "401": {
+            "description": "The user is not authorized. Authentication is required"
+          },
+          "404": {
+            "description": "Requested resource not found"
+          },
+          "403": {
+            "description": "You don't have the permission to access the requested resource."
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PartnerShortInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "summary": "\nSearch for partners\n:param partner_search_param: An instance of partner.search.param\n:return: List of partner.short.info\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "allowEmptyValue": false,
+            "default": null,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "allowEmptyValue": false,
+            "default": null,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "One of the given parameter is not valid"
+          },
+          "401": {
+            "description": "The user is not authorized. Authentication is required"
+          },
+          "404": {
+            "description": "Requested resource not found"
+          },
+          "403": {
+            "description": "You don't have the permission to access the requested resource."
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PartnerShortInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "openapi": "3.0.0",
+  "components": {
+    "schemas": {
+      "StateInfo": {
+        "title": "StateInfo",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "CountryInfo": {
+        "title": "CountryInfo",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "PartnerInfo": {
+        "title": "PartnerInfo",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "street": {
+            "title": "Street",
+            "type": "string"
+          },
+          "street2": {
+            "title": "Street2",
+            "type": "string"
+          },
+          "zip": {
+            "title": "Zip",
+            "type": "string"
+          },
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "state_id": {
+            "$ref": "#/components/schemas/StateInfo"
+          },
+          "country_id": {
+            "$ref": "#/components/schemas/CountryInfo"
+          },
+          "is_company": {
+            "title": "Is Company",
+            "type": "boolean"
+          }
+        },
+        "required": ["id", "name", "street", "zip", "city", "state_id", "country_id"],
+        "definitions": {
+          "StateInfo": {
+            "title": "StateInfo",
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "integer"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              }
+            },
+            "required": ["id", "name"]
+          },
+          "CountryInfo": {
+            "title": "CountryInfo",
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Id",
+                "type": "integer"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              }
+            },
+            "required": ["id", "name"]
+          }
+        }
+      },
+      "PartnerShortInfo": {
+        "title": "PartnerShortInfo",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"]
+      }
+    },
+    "securitySchemes": {
+      "user": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session_id"
+      }
+    }
+  }
+}
