@@ -51,7 +51,7 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
         )
 
     def test_to_openapi_responses(self):
-        res = self.simple_schema_cerberus_validator.to_openapi_responses(None)
+        res = self.simple_schema_cerberus_validator.to_openapi_responses(None, None)
         self.assertDictEqual(
             res,
             {
@@ -80,7 +80,7 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
                 }
             },
         )
-        res = self.nested_schema_cerberus_validator.to_openapi_responses(None)
+        res = self.nested_schema_cerberus_validator.to_openapi_responses(None, None)
         self.assertDictEqual(
             res,
             {
@@ -113,7 +113,7 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
         )
 
     def test_to_openapi_requestbody(self):
-        res = self.simple_schema_cerberus_validator.to_openapi_requestbody(None)
+        res = self.simple_schema_cerberus_validator.to_openapi_requestbody(None, None)
         self.assertEqual(
             res,
             {
@@ -140,7 +140,7 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
                 }
             },
         )
-        res = self.nested_schema_cerberus_validator.to_openapi_requestbody(None)
+        res = self.nested_schema_cerberus_validator.to_openapi_requestbody(None, None)
         self.assertDictEqual(
             res,
             {
@@ -168,7 +168,9 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
         )
 
     def test_to_openapi_query_parameters(self):
-        res = self.simple_schema_cerberus_validator.to_openapi_query_parameters(None)
+        res = self.simple_schema_cerberus_validator.to_openapi_query_parameters(
+            None, None
+        )
         self.assertListEqual(
             res,
             [
@@ -206,7 +208,9 @@ class TestCerberusValidator(TreeCase, MetaCase("DummyCase", (object,), {})):
                 },
             ],
         )
-        res = self.nested_schema_cerberus_validator.to_openapi_query_parameters(None)
+        res = self.nested_schema_cerberus_validator.to_openapi_query_parameters(
+            None, None
+        )
         self.assertListEqual(
             res,
             [

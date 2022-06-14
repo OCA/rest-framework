@@ -131,13 +131,13 @@ class RestMethodParam(object):
         :return: http.Response or JSON dict
         """
 
-    def to_openapi_query_parameters(self, service):
+    def to_openapi_query_parameters(self, service, spec):
         return {}
 
-    def to_openapi_requestbody(self, service):
+    def to_openapi_requestbody(self, service, spec):
         return {}
 
-    def to_openapi_responses(self, service):
+    def to_openapi_responses(self, service, spec):
         return {}
 
 
@@ -161,10 +161,10 @@ class BinaryData(RestMethodParam):
             for mediatype in self._mediatypes
         }
 
-    def to_openapi_requestbody(self, service):
+    def to_openapi_requestbody(self, services, spec):
         return {"content": self._binary_content_schema}
 
-    def to_openapi_responses(self, service):
+    def to_openapi_responses(self, service, spec):
         return {"200": {"content": self._binary_content_schema}}
 
     def to_response(self, service, result):
@@ -209,7 +209,7 @@ class CerberusValidator(RestMethodParam):
             return validator.document
         raise SystemError(_("Invalid Response %s") % validator.errors)
 
-    def to_openapi_query_parameters(self, service):
+    def to_openapi_query_parameters(self, service, spec):
         json_schema = self.to_json_schema(service, "input")
         parameters = []
         for prop, spec in list(json_schema["properties"].items()):
@@ -238,11 +238,11 @@ class CerberusValidator(RestMethodParam):
 
         return parameters
 
-    def to_openapi_requestbody(self, service):
+    def to_openapi_requestbody(self, service, spec):
         json_schema = self.to_json_schema(service, "input")
         return {"content": {"application/json": {"schema": json_schema}}}
 
-    def to_openapi_responses(self, service):
+    def to_openapi_responses(self, service, spec):
         json_schema = self.to_json_schema(service, "output")
         return {"200": {"content": {"application/json": {"schema": json_schema}}}}
 
@@ -293,7 +293,7 @@ class CerberusListValidator(CerberusValidator):
     def to_response(self, service, result):
         return self._do_validate(service, data=result, direction="output")
 
-    def to_openapi_query_parameters(self, service):
+    def to_openapi_query_parameters(self, service, spec):
         raise NotImplementedError("List are not (?yet?) supported as query paramters")
 
     def _do_validate(self, service, data, direction):

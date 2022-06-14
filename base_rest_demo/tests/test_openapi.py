@@ -26,26 +26,25 @@ class TestOpenAPI(CommonCase):
         for key in unknow_keys:
             del security_components[key]
 
-    def test_partner_api(self):
-        partner_service = self.private_services_env.component(usage="partner")
-        openapi_def = partner_service.to_openapi(default_auth="user")
+    def assertOpenApiDef(self, service, canocincal_json_file, default_auth):
+        openapi_def = service.to_openapi(default_auth=default_auth)
         self._fix_openapi_components(openapi_def)
-        canonical_def = get_canonical_json("partner_api.json")
+        canonical_def = get_canonical_json(canocincal_json_file)
         self._fix_server_url(canonical_def)
         self.assertFalse(jsondiff.diff(openapi_def, canonical_def))
+
+    def test_partner_api(self):
+        service = self.private_services_env.component(usage="partner")
+        self.assertOpenApiDef(service, "partner_api.json", "user")
 
     def test_ping_api(self):
-        ping_service = self.public_services_env.component(usage="ping")
-        openapi_def = ping_service.to_openapi(default_auth="public")
-        self._fix_openapi_components(openapi_def)
-        canonical_def = get_canonical_json("ping_api.json")
-        self._fix_server_url(canonical_def)
-        self.assertFalse(jsondiff.diff(openapi_def, canonical_def))
+        service = self.public_services_env.component(usage="ping")
+        self.assertOpenApiDef(service, "ping_api.json", "public")
 
     def test_partner_image_api(self):
-        partner_service = self.private_services_env.component(usage="partner_image")
-        openapi_def = partner_service.to_openapi(default_auth="user")
-        self._fix_openapi_components(openapi_def)
-        canonical_def = get_canonical_json("partner_image_api.json")
-        self._fix_server_url(canonical_def)
-        self.assertFalse(jsondiff.diff(openapi_def, canonical_def))
+        service = self.private_services_env.component(usage="partner_image")
+        self.assertOpenApiDef(service, "partner_image_api.json", "user")
+
+    def test_partner_pydantic_api(self):
+        service = self.new_api_services_env.component(usage="partner_pydantic")
+        self.assertOpenApiDef(service, "partner_pydantic_api.json", "public")
