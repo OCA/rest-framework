@@ -292,6 +292,41 @@ class RestApiMethodTransformer(object):
             routes=routes, input_param=input_param, output_param=output_param
         )(getattr(self._service.__class__, method_name))
         setattr(self._service.__class__, method_name, decorated_method)
+        # flake8: noqa: B950
+        deprecated_message = (
+            'Deprecated REST API implicit method "%s" '
+            'in service "%s". The support for'
+            " implicit rest method will be removed in 16.0. "
+            "For full details on how to adapt your code, please "
+            "enable DEBUG level"
+        )
+        _logger.warning(deprecated_message, method_name, self._service._name)
+        deprecated_message_details = """Add the following decorator to fix this issue:
+@restapi.method(
+    {params}
+)
+def {method_name}(...):
+        """
+        params = [str(routes)]
+        if input_param:
+            params.append(
+                "input_param=restapi.CerberusValidator(schema='{schema}')".format(
+                    schema=input_param._schema
+                )
+            )
+        if output_param:
+            params.append(
+                "output_param=restapi.CerberusValidator(schema='{schema}')".format(
+                    schema=output_param._schema
+                )
+            )
+        _logger.debug(
+            deprecated_message_details.format(
+                method_name=method_name,
+                service_name=self._service._name,
+                params=",\n    ".join(params),
+            )
+        )
 
     def _method_to_routes(self, method):
         """
