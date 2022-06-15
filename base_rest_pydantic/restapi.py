@@ -86,16 +86,26 @@ class PydanticModel(restapi.RestMethodParam):
     # allows to add the definition of a schema only once into the specs
     # and use a reference to the schema into the parameters
     def to_openapi_requestbody(self, service, spec):
-        return {"content": {"application/json": {"schema": self.to_json_schema(spec)}}}
+        return {
+            "content": {
+                "application/json": {
+                    "schema": self.to_json_schema(service, spec, "input")
+                }
+            }
+        }
 
     def to_openapi_responses(self, service, spec):
         return {
             "200": {
-                "content": {"application/json": {"schema": self.to_json_schema(spec)}}
+                "content": {
+                    "application/json": {
+                        "schema": self.to_json_schema(service, spec, "output")
+                    }
+                }
             }
         }
 
-    def to_json_schema(self, spec):
+    def to_json_schema(self, service, spec, direction):
         schema = self._model_cls.schema()
         schema_name = schema["title"]
         if schema_name not in spec.components.schemas:
@@ -170,17 +180,27 @@ class PydanticModelList(PydanticModel):
     # allows to add the definition of a schema only once into the specs
     # and use a reference to the schema into the parameters
     def to_openapi_requestbody(self, service, spec):
-        return {"content": {"application/json": {"schema": self.to_json_schema(spec)}}}
+        return {
+            "content": {
+                "application/json": {
+                    "schema": self.to_json_schema(service, spec, "input")
+                }
+            }
+        }
 
     def to_openapi_responses(self, service, spec):
         return {
             "200": {
-                "content": {"application/json": {"schema": self.to_json_schema(spec)}}
+                "content": {
+                    "application/json": {
+                        "schema": self.to_json_schema(service, spec, "output")
+                    }
+                }
             }
         }
 
-    def to_json_schema(self, spec):
-        json_schema = super().to_json_schema(spec)
+    def to_json_schema(self, service, spec, direction):
+        json_schema = super().to_json_schema(service, spec, direction)
         json_schema = {"type": "array", "items": json_schema}
         if self._min_items is not None:
             json_schema["minItems"] = self._min_items
