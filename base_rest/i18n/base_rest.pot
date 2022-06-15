@@ -87,3 +87,15 @@ msgstr ""
 #, python-format
 msgid "Unable to get cerberus schema from %s"
 msgstr ""
+
+#. module: base_rest
+#: code:addons/base_rest/restapi.py:0
+#, python-format
+msgid "You must provide a dict of RestMethodParam"
+msgstr ""
+
+#. module: base_rest
+#: code:addons/base_rest/restapi.py:0
+#, python-format
+msgid "{}'s JSON content is malformed: {}"
+msgstr ""
