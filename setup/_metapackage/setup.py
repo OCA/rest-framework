@@ -13,6 +13,7 @@ setuptools.setup(
         'odoo13-addon-base_rest_datamodel',
         'odoo13-addon-base_rest_demo',
         'odoo13-addon-datamodel',
+        'odoo13-addon-extendable',
         'odoo13-addon-graphql_base',
         'odoo13-addon-graphql_demo',
         'odoo13-addon-model_serializer',
