@@ -16,6 +16,12 @@ msgstr ""
 #. module: base_rest
 #: code:addons/base_rest/restapi.py:0
 #, python-format
+msgid "%(key)'s JSON content is malformed: %(error)s"
+msgstr ""
+
+#. module: base_rest
+#: code:addons/base_rest/restapi.py:0
+#, python-format
 msgid "BadRequest %s"
 msgstr ""
 
@@ -74,10 +80,4 @@ msgstr ""
 #: code:addons/base_rest/restapi.py:0
 #, python-format
 msgid "You must provide a dict of RestMethodParam"
-msgstr ""
-
-#. module: base_rest
-#: code:addons/base_rest/restapi.py:0
-#, python-format
-msgid "{}'s JSON content is malformed: {}"
 msgstr ""
