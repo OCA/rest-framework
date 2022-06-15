@@ -63,7 +63,9 @@ class Datamodel(restapi.RestMethodParam):
     def to_openapi_requestbody(self, service, spec):
         return {
             "content": {
-                "application/json": {"schema": self.to_json_schema(service, "input")}
+                "application/json": {
+                    "schema": self.to_json_schema(service, spec, "input")
+                }
             }
         }
 
@@ -72,13 +74,13 @@ class Datamodel(restapi.RestMethodParam):
             "200": {
                 "content": {
                     "application/json": {
-                        "schema": self.to_json_schema(service, "output")
+                        "schema": self.to_json_schema(service, spec, "output")
                     }
                 }
             }
         }
 
-    def to_json_schema(self, service, direction):
+    def to_json_schema(self, service, spec, direction):
         converter = self._get_converter()
         schema = self._get_schema(service)
         return converter.resolve_nested_schema(schema)

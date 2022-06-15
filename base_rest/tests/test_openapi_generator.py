@@ -210,3 +210,129 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
         self.assertListEqual(parameters, default_params)
         responses = path["post"].get("responses", [])
         self.assertIn("999", responses)
+
+    def test_04(self):
+        """Binary and Multipart form-data test case"""
+
+        # pylint: disable=R7980
+        class AttachmentService(Component):
+            _inherit = "base.rest.service"
+            _name = "test.attachment.service"
+            _usage = "attachment"
+            _collection = self._collection_name
+            _description = "Sercice description"
+
+            @restapi.method(
+                routes=[(["/<int:id>/download"], "GET")],
+                output_param=restapi.BinaryData(required=True),
+            )
+            def download(self, _id):
+                """download the attachment"""
+
+            @restapi.method(
+                routes=[(["/create"], "POST")],
+                input_param=restapi.MultipartFormData(
+                    {
+                        "file": restapi.BinaryData(
+                            mediatypes=["image/png", "image/jpeg"]
+                        ),
+                        "params": restapi.CerberusValidator("_get_attachment_schema"),
+                    }
+                ),
+                output_param=restapi.CerberusValidator("_get_attachment_schema"),
+            )
+            # pylint: disable=W8106
+            def create(self, file, params):
+                """create the attachment"""
+
+            def _get_attachment_schema(self):
+                return {"name": {"type": "string", "required": True}}
+
+        self._build_services(self, AttachmentService)
+        service = self._get_service_component(self, "attachment")
+        openapi = service.to_openapi()
+        paths = openapi["paths"]
+        # The paths must contains 2 entries (1 by routes)
+        self.assertSetEqual({"/{id}/download", "/create"}, set(openapi["paths"]))
+        path_download = paths["/{id}/download"]
+        resp_download = None
+        for item in path_download["get"]["responses"].items():
+            if item[0] == "200":
+                resp_download = item[1]
+        self.assertTrue(resp_download)
+        self.assertDictEqual(
+            resp_download,
+            {
+                "content": {
+                    "*/*": {
+                        "schema": {
+                            "type": "string",
+                            "format": "binary",
+                            "required": True,
+                        }
+                    }
+                }
+            },
+        )
+        # The path contains parameters
+        self.assertDictEqual(
+            path_download.get("parameters", [{}])[0],
+            {
+                "in": "path",
+                "name": "id",
+                "required": True,
+                "schema": {"type": "integer", "format": "int32"},
+            },
+        )
+        path_create = paths["/create"]
+        resp_create = None
+        for item in path_create["post"]["responses"].items():
+            if item[0] == "200":
+                resp_create = item[1]
+        self.assertTrue(resp_create)
+        self.assertDictEqual(
+            resp_create,
+            {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {"name": {"type": "string"}},
+                            "required": ["name"],
+                            "type": "object",
+                        }
+                    }
+                }
+            },
+        )
+        request_create = path_create["post"]["requestBody"]
+        self.assertDictEqual(
+            request_create,
+            {
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "file": {
+                                    "type": "string",
+                                    "format": "binary",
+                                    "required": False,
+                                },
+                                "params": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                        },
+                                    },
+                                    "required": ["name"],
+                                },
+                            },
+                            "encoding": {
+                                "file": {"contentType": "image/png, image/jpeg"}
+                            },
+                        }
+                    }
+                }
+            },
+        )
