@@ -26,8 +26,8 @@ class TestOpenAPI(CommonCase):
         for key in unknow_keys:
             del security_components[key]
 
-    def assertOpenApiDef(self, service, canocincal_json_file, default_auth):
-        openapi_def = service.to_openapi(default_auth=default_auth)
+    def assertOpenApiDef(self, service, canocincal_json_file):
+        openapi_def = service.to_openapi()
         self._fix_openapi_components(openapi_def)
         canonical_def = get_canonical_json(canocincal_json_file)
         self._fix_server_url(canonical_def)
@@ -35,16 +35,16 @@ class TestOpenAPI(CommonCase):
 
     def test_partner_api(self):
         service = self.private_services_env.component(usage="partner")
-        self.assertOpenApiDef(service, "partner_api.json", "user")
+        self.assertOpenApiDef(service, "partner_api.json")
 
     def test_ping_api(self):
         service = self.public_services_env.component(usage="ping")
-        self.assertOpenApiDef(service, "ping_api.json", "public")
+        self.assertOpenApiDef(service, "ping_api.json")
 
     def test_partner_image_api(self):
         service = self.private_services_env.component(usage="partner_image")
-        self.assertOpenApiDef(service, "partner_image_api.json", "user")
+        self.assertOpenApiDef(service, "partner_image_api.json")
 
     def test_partner_pydantic_api(self):
         service = self.new_api_services_env.component(usage="partner_pydantic")
-        self.assertOpenApiDef(service, "partner_pydantic_api.json", "public")
+        self.assertOpenApiDef(service, "partner_pydantic_api.json")

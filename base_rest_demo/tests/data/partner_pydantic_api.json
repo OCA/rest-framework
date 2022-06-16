@@ -320,13 +320,6 @@
         },
         "required": ["id", "name"]
       }
-    },
-    "securitySchemes": {
-      "user": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "session_id"
-      }
     }
   }
 }

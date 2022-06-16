@@ -5,7 +5,7 @@
     "name": "Pydantic",
     "summary": """
         Utility addon to ease mapping between Pydantic and Odoo models""",
-    "version": "14.0.1.0.0",
+    "version": "13.0.1.0.0",
     "development_status": "Beta",
     "license": "LGPL-3",
     "maintainers": ["lmignon"],
