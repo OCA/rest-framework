@@ -177,7 +177,8 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
                         res.append((1, rec_id, dic))
                     else:
                         res.append((4, rec_id))
-                res.append((0, 0, dic))
+                else:
+                    res.append((0, 0, dic))
             return res
 
         model_name = model or self._model
