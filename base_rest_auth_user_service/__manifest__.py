@@ -10,6 +10,14 @@
     "license": "LGPL-3",
     "website": "https://github.com/OCA/rest-framework",
     "author": "Wakari, Odoo Community Association (OCA)",
-    "depends": ["base_rest"],
+    "depends": [
+        "base_rest",
+        "base_rest_datamodel",
+    ],
+    "external_dependencies": {
+        "python": [
+            "marshmallow",
+        ],
+    },
     "data": [],
 }
