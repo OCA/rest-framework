@@ -16,4 +16,3 @@ repo_slug: rest-framework
 repo_website: https://github.com/OCA/rest-framework
 travis_apt_packages: []
 travis_apt_sources: []
-
