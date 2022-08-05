@@ -14,5 +14,10 @@
     "depends": ["base_rest", "base_rest_datamodel", "component"],
     "data": [],
     "demo": [],
-    "external_dependencies": {"python": ["jsondiff"]},
+    "external_dependencies": {
+        "python": [
+            "jsondiff",
+            "marshmallow",
+        ],
+    },
 }

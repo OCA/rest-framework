@@ -1,9 +1,12 @@
+# generated from manifests external_dependencies
+apispec
+apispec>=4.0.0
 cerberus
-pyquerystring
-parse-accept-language
-jsondiff
 graphene
+graphene<3
 graphql-server-core
+jsondiff
 marshmallow
 marshmallow-objects>=2.0.0
-apispec
+parse-accept-language
+pyquerystring

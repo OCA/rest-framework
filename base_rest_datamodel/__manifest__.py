@@ -12,5 +12,10 @@
     "depends": ["base_rest", "datamodel"],
     "data": [],
     "demo": [],
-    "external_dependencies": {"python": ["apispec"]},
+    "external_dependencies": {
+        "python": [
+            "apispec",
+            "marshmallow",
+        ],
+    },
 }
