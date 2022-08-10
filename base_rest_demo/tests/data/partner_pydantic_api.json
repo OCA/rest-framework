@@ -248,7 +248,7 @@
             "title": "Street2",
             "type": "string"
           },
-          "zip": {
+          "zip_code": {
             "title": "Zip",
             "type": "string"
           },
@@ -260,10 +260,10 @@
             "title": "Phone",
             "type": "string"
           },
-          "state_id": {
+          "state": {
             "$ref": "#/components/schemas/StateInfo"
           },
-          "country_id": {
+          "country": {
             "$ref": "#/components/schemas/CountryInfo"
           },
           "is_company": {
@@ -271,7 +271,7 @@
             "type": "boolean"
           }
         },
-        "required": ["id", "name", "street", "zip", "city", "state_id", "country_id"],
+        "required": ["id", "name", "street", "zip_code", "city", "state", "country"],
         "definitions": {
           "StateInfo": {
             "title": "StateInfo",
