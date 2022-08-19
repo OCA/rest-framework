@@ -6,30 +6,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2022-08-19 19:07+0000\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>\n"
 "Language-Team: none\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #. module: datamodel
 #: model:ir.model,name:datamodel.model_datamodel_builder
 msgid "Datamodel Builder"
-msgstr ""
+msgstr "Generador de modelos de datos"
 
 #. module: datamodel
 #: model:ir.model.fields,field_description:datamodel.field_datamodel_builder__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nombre mostrado"
 
 #. module: datamodel
 #: model:ir.model.fields,field_description:datamodel.field_datamodel_builder__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: datamodel
 #: model:ir.model.fields,field_description:datamodel.field_datamodel_builder____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Última modificación el"
