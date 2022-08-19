@@ -6,214 +6,216 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2022-08-19 19:07+0000\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>\n"
 "Language-Team: none\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #. module: rest_log
 #: model:ir.actions.server,name:rest_log.ir_cron_autovacuum_rest_log_ir_actions_server
 #: model:ir.cron,cron_name:rest_log.ir_cron_autovacuum_rest_log
 #: model:ir.cron,name:rest_log.ir_cron_autovacuum_rest_log
 msgid "Auto-vacuum REST Logs"
-msgstr ""
+msgstr "Registros REST de vacío automático"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__collection
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Collection"
-msgstr ""
+msgstr "Colección"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creado el"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creado el"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Date"
-msgstr ""
+msgstr "Fecha"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nombre mostrado"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__error
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_form_view
 msgid "Error"
-msgstr ""
+msgstr "Error"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__exception_name
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Exception"
-msgstr ""
+msgstr "Excepción"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__exception_message
 msgid "Exception Message"
-msgstr ""
+msgstr "Mensaje de Excepción"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Exception message"
-msgstr ""
+msgstr "Mensaje de excepción"
 
 #. module: rest_log
 #: model:ir.model.fields.selection,name:rest_log.selection__rest_log__state__failed
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Failed"
-msgstr ""
+msgstr "Fallido"
 
 #. module: rest_log
 #: model:ir.model.fields.selection,name:rest_log.selection__rest_log__severity__functional
 msgid "Functional"
-msgstr ""
+msgstr "Funcional"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Functional errors"
-msgstr ""
+msgstr "Errores funcionales"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Group By"
-msgstr ""
+msgstr "Agrupar por"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__headers
 msgid "Headers"
-msgstr ""
+msgstr "Cabeceras"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Última modificación el"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Última actualización por"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Última Actualización el"
 
 #. module: rest_log
 #: model:ir.ui.menu,name:rest_log.menu_rest_api_log
 msgid "Logs"
-msgstr ""
+msgstr "Registros"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Logs generated today"
-msgstr ""
+msgstr "Registros generados hoy"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_form_view
 msgid "Parameters"
-msgstr ""
+msgstr "Parámetros"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__params
 msgid "Params"
-msgstr ""
+msgstr "Parámetros"
 
 #. module: rest_log
 #: model:ir.model,name:rest_log.model_rest_log
 msgid "REST API Logging"
-msgstr ""
+msgstr "Registro de API REST"
 
 #. module: rest_log
 #: model:res.groups,name:rest_log.group_rest_log_manager
 msgid "REST Log Manager"
-msgstr ""
+msgstr "Administrador de registros REST"
 
 #. module: rest_log
 #: model:ir.actions.act_window,name:rest_log.action_rest_log
 msgid "REST Logs"
-msgstr ""
+msgstr "Registros de REST"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__request_method
 msgid "Request Method"
-msgstr ""
+msgstr "Método de solicitud"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__request_url
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Request URL"
-msgstr ""
+msgstr "Solicitud de dirección URL"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__result
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_form_view
 msgid "Result"
-msgstr ""
+msgstr "Resultado"
 
 #. module: rest_log
 #: model:ir.model.fields.selection,name:rest_log.selection__rest_log__severity__severe
 msgid "Severe"
-msgstr ""
+msgstr "Grave"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Severe errors"
-msgstr ""
+msgstr "Errores graves"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__severity
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Severity"
-msgstr ""
+msgstr "Gravedad"
 
 #. module: rest_log
 #: model:ir.model.fields,field_description:rest_log.field_rest_log__state
 msgid "State"
-msgstr ""
+msgstr "Estado"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #. module: rest_log
 #: model:ir.model.fields.selection,name:rest_log.selection__rest_log__state__success
 msgid "Success"
-msgstr ""
+msgstr "Aceptada"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Today"
-msgstr ""
+msgstr "Hoy"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "User"
-msgstr ""
+msgstr "Usuario"
 
 #. module: rest_log
 #: model:ir.model.fields.selection,name:rest_log.selection__rest_log__severity__warning
 msgid "Warning"
-msgstr ""
+msgstr "Alerta"
 
 #. module: rest_log
 #: model_terms:ir.ui.view,arch_db:rest_log.rest_log_search_view
 msgid "Warning errors"
-msgstr ""
+msgstr "Errores de advertencia"
