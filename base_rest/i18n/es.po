@@ -6,59 +6,61 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2022-08-19 19:07+0000\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>\n"
 "Language-Team: none\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #. module: base_rest
 #: code:addons/base_rest/restapi.py:0
 #, python-format
 msgid "BadRequest %s"
-msgstr ""
+msgstr "Solicitud incorrecta %s"
 
 #. module: base_rest
 #: model:ir.model.fields,field_description:base_rest.field_rest_service_registration__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nombre mostrado"
 
 #. module: base_rest
 #: model:ir.ui.menu,name:base_rest.menu_rest_api_docs
 msgid "Docs"
-msgstr ""
+msgstr "Documentos"
 
 #. module: base_rest
 #: model:ir.model.fields,field_description:base_rest.field_rest_service_registration__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: base_rest
 #: code:addons/base_rest/restapi.py:0
 #, python-format
 msgid "Invalid Response %s"
-msgstr ""
+msgstr "Respuesta invalida %s"
 
 #. module: base_rest
 #: model:ir.model.fields,field_description:base_rest.field_rest_service_registration____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Última modificación el"
 
 #. module: base_rest
 #: model:ir.actions.act_url,name:base_rest.action_rest_api_docs
 #: model:ir.ui.menu,name:base_rest.menu_rest_api_root
 msgid "REST API"
-msgstr ""
+msgstr "API Rest"
 
 #. module: base_rest
 #: model:ir.model,name:base_rest.model_rest_service_registration
 msgid "REST Services Registration Model"
-msgstr ""
+msgstr "Modelo de registro de servicios REST"
 
 #. module: base_rest
 #: code:addons/base_rest/restapi.py:0
 #, python-format
 msgid "Unable to get cerberus schema from %s"
-msgstr ""
+msgstr "No se puede obtener el esquema de cerberus de %s"
