@@ -23,7 +23,12 @@ class TestPydantic(SavepointCase):
         self.Model1: BaseModel = Model1
 
     def _from_params(self, pydantic_cls: Type[BaseModel], params: dict, **kwargs):
-        restapi_pydantic = restapi.PydanticModel(pydantic_cls, **kwargs)
+        restapi_pydantic_cls = (
+            restapi.PydanticModelList
+            if isinstance(params, list)
+            else restapi.PydanticModel
+        )
+        restapi_pydantic = restapi_pydantic_cls(pydantic_cls, **kwargs)
         mock_service = mock.Mock()
         mock_service.env = self.env
         return restapi_pydantic.from_params(mock_service, params)
@@ -44,3 +49,13 @@ class TestPydantic(SavepointCase):
         msg = r"value_error.missing"
         with self.assertRaisesRegex(UserError, msg):
             self._from_params(self.Model1, {"description": "Instance Description"})
+
+    def test_from_params_pydantic_model_list(self):
+        params = [
+            {"name": "Instance Name", "description": "Instance Description"},
+            {"name": "Instance Name 2", "description": "Instance Description 2"},
+        ]
+        instances = self._from_params(self.Model1, params)
+        self.assertEqual(len(instances), 2)
+        self.assertEqual(instances[0].name, params[0]["name"])
+        self.assertEqual(instances[0].description, params[0]["description"])
