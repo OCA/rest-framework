@@ -6,24 +6,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2022-08-19 19:07+0000\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>\n"
 "Language-Team: none\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #. module: model_serializer
 #: code:addons/model_serializer/core.py:0
 #, python-format
 msgid "'{}' datamodel does not exist"
-msgstr ""
+msgstr "modelo de datos '{}' no existe"
 
 #. module: model_serializer
 #: model:ir.model,name:model_serializer.model_datamodel_builder
 msgid "Datamodel Builder"
-msgstr ""
+msgstr "Generador de modelos de datos"
 
 #. module: model_serializer
 #: code:addons/model_serializer/core.py:0
@@ -32,6 +34,8 @@ msgid ""
 "Error in {}: Model Serializers cannot inherit from a class having a "
 "different '_model' attribute"
 msgstr ""
+"Error en {}: los serializadores de modelos no pueden heredar de una clase "
+"que tenga un atributo '_model' diferente"
 
 #. module: model_serializer
 #: code:addons/model_serializer/core.py:0
@@ -40,3 +44,5 @@ msgid ""
 "Error in {}: Model Serializers require '_model' and '_model_fields' "
 "attributes to be defined"
 msgstr ""
+"Error en {}: los serializadores de modelos requieren que se definan los "
+"atributos '_model' y '_model_fields'"
