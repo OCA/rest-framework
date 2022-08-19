@@ -6,35 +6,37 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2022-08-19 19:07+0000\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>\n"
 "Language-Team: none\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #. module: extendable
 #: model:ir.model.fields,field_description:extendable.field_extendable_registry_loader__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nombre mostrado"
 
 #. module: extendable
 #: model:ir.model,name:extendable.model_extendable_registry_loader
 msgid "Extendable Registry Loader"
-msgstr ""
+msgstr "Cargador de registro extensible"
 
 #. module: extendable
 #: model:ir.model,name:extendable.model_ir_http
 msgid "HTTP Routing"
-msgstr ""
+msgstr "Ruta HTTP"
 
 #. module: extendable
 #: model:ir.model.fields,field_description:extendable.field_extendable_registry_loader__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: extendable
 #: model:ir.model.fields,field_description:extendable.field_extendable_registry_loader____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Última modificación el"
