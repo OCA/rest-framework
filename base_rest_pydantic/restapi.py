@@ -147,7 +147,10 @@ class PydanticModelList(PydanticModel):
 
     def from_params(self, service, params):
         self._do_validate(params, "input")
-        return [super(PydanticModelList, self).from_params(param) for param in params]
+        return [
+            super(PydanticModelList, self).from_params(service, param)
+            for param in params
+        ]
 
     def to_response(self, service, result):
         self._do_validate(result, "output")
