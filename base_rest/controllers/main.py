@@ -7,8 +7,13 @@ from contextlib import contextmanager
 from werkzeug.exceptions import BadRequest
 
 from odoo import models
-from odoo.http import Controller, ControllerType, Response, request, \
-    controllers_per_module
+from odoo.http import (
+    Controller,
+    ControllerType,
+    Response,
+    controllers_per_module,
+    request,
+)
 
 from odoo.addons.component.core import WorkContext, _get_addon_name
 
@@ -41,8 +46,8 @@ class RestControllerType(ControllerType):
         super(RestControllerType, cls).__init__(name, bases, attrs)
         # The generic controller should not be registered as a controller
         # even if it inherits from Controller
-        base_rest_controllers = controllers_per_module['base_rest']
-        name_class = ("%s.%s" % (cls.__module__, 'RestController'), cls)
+        base_rest_controllers = controllers_per_module["base_rest"]
+        name_class = ("%s.%s" % (cls.__module__, "RestController"), cls)
         if name_class in base_rest_controllers:
             base_rest_controllers.remove(name_class)
 
