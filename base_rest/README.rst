@@ -49,6 +49,12 @@ at `https://my_odoo_server/api-docs`.
 Configuration
 =============
 
+Load this module at Odoo startup including in your server config file:
+
+.. code-block:: cfg
+
+    server_wide_modules=base,web,base_rest
+
 If an error occurs when calling a method of a service (ie missing parameter,
 ..) the system returns only a general description of the problem without
 details. This is done on purpose to ensure maximum opacity on implementation
