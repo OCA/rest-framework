@@ -1,3 +1,5 @@
+from marshmallow import fields
+
 from .core import ModelSerializer
 
 
@@ -15,6 +17,9 @@ class GenericAbstractSerializer(ModelSerializer):
 class GenericMinimalSerializer(GenericAbstractSerializer):
     _name = "generic.minimal.serializer"
     _model_fields = ["id", "display_name"]
+
+    id = fields.Integer(dump_only=True)
+    display_name = fields.String(dump_only=True)
 
     def to_recordset(self):
         return self.get_odoo_record()

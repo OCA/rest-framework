@@ -33,6 +33,13 @@ class TestModelSerializer(DatamodelRegistryCase):
         new_cls._build_datamodel(self.datamodel_registry)
         return self.env.datamodels[model_serializer_cls._name]
 
+    def _datamodel_instance(self, serializer_cls, values):
+        datamodel_cls = self._full_build_model_serializer(serializer_cls)
+        instance = datamodel_cls(partial=True)
+        for key in values:
+            setattr(instance, key, values[key])
+        return instance
+
     def test_01_required_attrs(self):
         """Ensure that ModelSerializer has mandatory attributes"""
         msg = ".*require '_model' and '_model_fields' attributes.*"
@@ -227,10 +234,46 @@ class TestModelSerializer(DatamodelRegistryCase):
             _model_fields = ["id", "name"]
 
         self.partner = self.env["res.partner"].create({"name": "Test Partner"})
-        datamodel_cls = self._full_build_model_serializer(PartnerSerializer)
-        datamodel = datamodel_cls(partial=True)
-        datamodel.id = self.partner.id
-        datamodel.name = self.partner.name + "New"
+        datamodel = self._datamodel_instance(
+            PartnerSerializer,
+            {"id": self.partner.id, "name": self.partner.name + "New"},
+        )
         new_partner = datamodel.to_recordset()
         self.assertEqual(new_partner, self.partner)
         self.assertEqual(new_partner.name, datamodel.name)
+
+    def test_09_to_recordset_relational_write(self):
+        """Test `to_recordset` method with relational fields, existing partner"""
+
+        class PartnerSerializer(ModelSerializer):
+            _name = "partner_serializer"
+            _model = "res.partner"
+            _model_fields = ["id", "name", "child_ids"]
+
+        self.partner = self.env["res.partner"].create({"name": "Test Partner"})
+        self.child_partner = self.env["res.partner"].create(
+            {"name": "Test Child Partner"}
+        )
+        datamodel_child = self._datamodel_instance(
+            PartnerSerializer,
+            {"id": self.child_partner.id, "name": self.child_partner.name + "New"},
+        )
+        datamodel_child2 = self._datamodel_instance(
+            PartnerSerializer,
+            {"name": "Newly Created Partner"},
+        )
+        datamodel = self._datamodel_instance(
+            PartnerSerializer,
+            {
+                "id": self.partner.id,
+                "name": self.partner.name + "New",
+                "child_ids": [datamodel_child, datamodel_child2],
+            },
+        )
+        new_partner = datamodel.to_recordset()
+        new_partner_child = new_partner.child_ids.filtered(
+            lambda p: p.id == self.child_partner.id
+        )
+        self.assertTrue(bool(new_partner_child))
+        self.assertEqual(new_partner_child.name, datamodel_child.name)
+        self.assertTrue("Newly Created Partner" in new_partner.child_ids.mapped("name"))

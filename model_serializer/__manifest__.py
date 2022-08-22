@@ -5,12 +5,18 @@
     "name": "Model Serializer",
     "summary": "Automatically translate Odoo models into Datamodels "
     "for (de)serialization",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1.0.0",
     "development_status": "Alpha",
     "license": "LGPL-3",
     "website": "https://github.com/OCA/rest-framework",
     "author": "Wakari, Odoo Community Association (OCA)",
+    "maintainers": ["fdegrave"],
     "depends": ["datamodel"],
+    "external_dependencies": {
+        "python": [
+            "marshmallow",
+        ]
+    },
     "data": [],
-    "installable": False,
+    "installable": True,
 }

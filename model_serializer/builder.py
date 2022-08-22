@@ -9,12 +9,13 @@ class DatamodelBuilder(models.AbstractModel):
     _inherit = "datamodel.builder"
 
     def load_datamodels(self, module, datamodels_registry=None):
-        super().load_datamodels(module, datamodels_registry=datamodels_registry)
+        res = super().load_datamodels(module, datamodels_registry=datamodels_registry)
         datamodels_registry = (
             datamodels_registry or _datamodel_databases[self.env.cr.dbname]
         )
         for datamodel_class in MetaDatamodel._modules_datamodels[module]:
             self._extend_model_serializer(datamodel_class, datamodels_registry)
+        return res
 
     def _extend_model_serializer(self, datamodel_class, registry):
         """Extend the datamodel_class with the fields declared in `_model_fields`"""
