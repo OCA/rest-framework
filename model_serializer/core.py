@@ -154,7 +154,9 @@ class ModelSerializer(Datamodel, metaclass=MetaModelSerializer):
     def _get_partial_fields(self):
         """Return the list of fields actually used to instantiate `self`"""
         res = []
-        received_keys = self.dump(many=False).keys()
+        received_keys = set(self.__schema__._declared_fields) - set(
+            self.__missing_fields__
+        )
         actual_field_names = {
             field.data_key: name
             for name, field in self.__schema__._declared_fields.items()
