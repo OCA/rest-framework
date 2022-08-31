@@ -7,3 +7,8 @@ graphql-server-core
 marshmallow
 marshmallow-objects>=2.0.0
 apispec
+contextvars;python_version<"3.7"
+extendable
+extendable-pydantic
+pydantic
+typing-extensions

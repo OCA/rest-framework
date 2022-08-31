@@ -92,13 +92,13 @@ class RestMethodParam(object):
         """
         pass
 
-    def to_openapi_query_parameters(self, service):
+    def to_openapi_query_parameters(self, service, spec):
         return {}
 
-    def to_openapi_requestbody(self, service):
+    def to_openapi_requestbody(self, service, spec):
         return {}
 
-    def to_openapi_responses(self, service):
+    def to_openapi_responses(self, service, spec):
         return {}
 
 
@@ -128,7 +128,7 @@ class CerberusValidator(RestMethodParam):
             return validator.document
         raise SystemError(_("Invalid Response %s") % validator.errors)
 
-    def to_openapi_query_parameters(self, service):
+    def to_openapi_query_parameters(self, service, spec):
         json_schema = self.to_json_schema(service, "input")
         parameters = []
         for prop, spec in list(json_schema["properties"].items()):
@@ -157,14 +157,14 @@ class CerberusValidator(RestMethodParam):
 
         return parameters
 
-    def to_openapi_requestbody(self, service):
+    def to_openapi_requestbody(self, service, spec):
         return {
             "content": {
                 "application/json": {"schema": self.to_json_schema(service, "input")}
             }
         }
 
-    def to_openapi_responses(self, service):
+    def to_openapi_responses(self, service, spec):
         json_schema = self.to_json_schema(service, "output")
         return {"200": {"content": {"application/json": {"schema": json_schema}}}}
 
