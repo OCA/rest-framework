@@ -6,7 +6,7 @@
     "summary": """
         This addon allows you to define simple data models supporting
         serialization/deserialization""",
-    "version": "13.0.3.0.3",
+    "version": "13.0.3.0.4",
     "license": "AGPL-3",
     "development_status": "Beta",
     "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
