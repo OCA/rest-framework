@@ -14,9 +14,5 @@
     "maintainers": ["lmignon"],
     "installable": True,
     "auto_install": True,
-    "external_dependencies": {
-        "python": [
-            "apispec>=4.0.0",
-        ]
-    },
+    "external_dependencies": {"python": ["apispec>=4.0.0"]},
 }

@@ -13,9 +13,5 @@
     "data": [],
     "demo": [],
     "installable": True,
-    "external_dependencies": {
-        "python": [
-            "pydantic",
-        ]
-    },
+    "external_dependencies": {"python": ["pydantic"]},
 }
