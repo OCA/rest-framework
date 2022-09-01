@@ -9,8 +9,9 @@
     "installable": True,
     "depends": [
         "base_rest",
-        "base_jsonify",
-        "base_rest_datamodel",
+        "base_rest_pydantic",
+        "extendable",
     ],
+    "external_dependencies": {"python": ["pydantic", "extendable_pydantic"]},
     "data": [],
 }

@@ -10,14 +10,14 @@ from werkzeug.datastructures import FileStorage
 
 from odoo.addons.base_rest.tests.common import TransactionRestServiceRegistryCase
 from odoo.addons.component.core import Component
-from odoo.addons.datamodel.tests.common import TransactionDatamodelCase
+from odoo.addons.extendable.tests.common import ExtendableMixin
 
 from ..services.abstract_attachable import AbstractAttachableService
 
 
 class AttachmentCommonCase(unittest.TestCase):
     def create_attachment(self, record_id, params=None):
-        attrs = {"_object_id": record_id, "params": "{}"}
+        attrs = {"object_id": record_id, "params": "{}"}
         res = None
         if params:
             attrs["params"] = json.dumps(params)
@@ -28,13 +28,14 @@ class AttachmentCommonCase(unittest.TestCase):
 
 
 class AttachmentCase(
-    AttachmentCommonCase, TransactionRestServiceRegistryCase, TransactionDatamodelCase
+    AttachmentCommonCase, TransactionRestServiceRegistryCase, ExtendableMixin
 ):
     def setUp(self):
+        ExtendableMixin.setUp(self)
         super().setUp()
         self._build_services(self, AbstractAttachableService)
-
         # pylint: disable=R7980
+
         class PartnerService(Component):
             _inherit = "abstract.attachable.service"
             _name = "test.partner.service"
@@ -44,6 +45,7 @@ class AttachmentCase(
 
         self._build_services(self, PartnerService)
         self.service = self._get_service_component(self, "partner")
+        # cls.setUpExtendable()
 
     def test_create_attachment(self):
         partner_id = self.ref("base.res_partner_1")

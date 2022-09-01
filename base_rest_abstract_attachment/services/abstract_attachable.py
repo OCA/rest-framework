@@ -13,34 +13,10 @@ from odoo.exceptions import MissingError
 from odoo.http import content_disposition, request
 
 from odoo.addons.base_rest import restapi
-from odoo.addons.base_rest.components.service import to_int
+from odoo.addons.base_rest_pydantic.restapi import PydanticModel
 from odoo.addons.component.core import AbstractComponent
-from odoo.addons.datamodel import fields
-from odoo.addons.datamodel.core import Datamodel
 
-
-class AttachmentBase(Datamodel):
-    _name = "ir.attachment.base"
-
-    name = fields.String(required=False, allow_none=True)
-
-
-class AttachmentInput(Datamodel):
-    _name = "ir.attachment.input"
-    _inherit = "ir.attachment.base"
-
-
-class AttachmentOutput(Datamodel):
-    _name = "ir.attachment.output"
-    _inherit = "ir.attachment.base"
-
-    id = fields.Integer(required=True, allow_none=False)
-
-
-class AttachableOutput(Datamodel):
-    _name = "attachable.output"
-
-    attachments = fields.NestedModel("ir.attachment.output", required=False, many=True)
+from ..pydantic_models.attachment import AttachmentInfo, AttachmentRequest
 
 
 class AbstractAttachableService(AbstractComponent):
@@ -49,21 +25,6 @@ class AbstractAttachableService(AbstractComponent):
     _name = "abstract.attachable.service"
     _inherit = "base.rest.service"
     _description = __doc__
-
-    def _json_parser_attachments(self):
-        res = [
-            ("attachment_ids:attachments", ["id", "name"]),
-        ]
-        return res
-
-    def _subvalidator_attachments(self):
-        return {
-            "type": "list",
-            "schema": {
-                "type": "dict",
-                "schema": {"id": {"coerce": to_int}},
-            },
-        }
 
     @restapi.method(
         routes=[(["/<int:object_id>/attachments/<int:attachment_id>"], "GET")],
@@ -111,27 +72,22 @@ class AbstractAttachableService(AbstractComponent):
         input_param=restapi.MultipartFormData(
             {
                 "file": restapi.BinaryData(required=True),
-                "params": restapi.Datamodel("ir.attachment.input"),
+                "params": PydanticModel(AttachmentRequest),
             }
         ),
-        output_param=restapi.Datamodel("ir.attachment.output"),
+        output_param=PydanticModel(AttachmentInfo),
     )
     def create_attachment(self, object_id=None, file=None, params=None):
         record = self._get(object_id)
         self._check_attachment_access(record)
-        vals = self._prepare_attachment_params(record, file, params.dump())
+        vals = params.dict()
+        vals["res_id"] = record.id
+        vals["res_model"] = record._name
+        vals["raw"] = file.read()
+        if not vals.get("name"):
+            vals["name"] = os.path.basename(file.filename)
         attachment = self.env["ir.attachment"].create(vals)
-        return self.env.datamodels["ir.attachment.output"].load(
-            attachment.jsonify(["id", "name"])[0]
-        )
-
-    def _prepare_attachment_params(self, record, uploaded_file, params):
-        params["res_id"] = record.id
-        params["res_model"] = record._name
-        params["raw"] = uploaded_file.read()
-        if "name" not in params:
-            params["name"] = os.path.basename(uploaded_file.filename)
-        return params
+        return AttachmentInfo.from_orm(attachment)
 
     def _get(self, _id):
         record = self.env[self._expose_model].browse(_id)

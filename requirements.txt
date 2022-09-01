@@ -5,6 +5,7 @@ cerberus
 contextvars;python_version<"3.7"
 extendable
 extendable-pydantic
+extendable_pydantic
 graphene
 graphql_server
 jsondiff
