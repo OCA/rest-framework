@@ -14,7 +14,7 @@
     "demo": [],
     "external_dependencies": {
         "python": [
-            "apispec",
+            "apispec>=4.0.0",
             "marshmallow",
         ],
     },
