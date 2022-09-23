@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+
+    <record model="ir.ui.view" id="fastapi_app_form_view">
+        <field name="name">fastapi.app.form (in fastapi)</field>
+        <field name="model">fastapi.app</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1><field name="name" /></h1>
+                    </div>
+                    <group>
+                        <field name="active" invisible="1" />
+                        <field name="app" />
+                        <field name="root_path" />
+                        <field name="description" />
+                    </group>
+                    <group name="resoures">
+                        <field name="docs_url" widget="url" />
+                        <field name="redoc_url" widget="url" />
+                        <field name="openapi_url" widget="url" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="fastapi_app_search_view">
+        <field name="name">fastapi.app.search (in fastapi)</field>
+        <field name="model">fastapi.app</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="app" />
+                <filter
+                    string="Archived"
+                    name="inactive"
+                    domain="[('active','=',False)]"
+                />
+                <group expand='0' string='Group by...'>
+                        <filter
+                        string='App'
+                        name="groupby_app"
+                        context="{'group_by': 'app'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="fastapi_app_tree_view">
+        <field name="name">fastapi.app.tree (in fastapi)</field>
+        <field name="model">fastapi.app</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="app" />
+                <field name="root_path" />
+                <field name="docs_url" widget="url" />
+                <field name="redoc_url" widget="url" />
+                <field name="openapi_url" widget="url" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="fastapi_app_act_window">
+        <field name="name">Fastapi App</field>
+        <field name="res_model">fastapi.app</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record model="ir.ui.menu" id="fastapi_app_menu">
+        <field name="name">Fastapi Endpoint</field>
+        <field name="parent_id" ref="menu_fastapi_root" />
+        <field name="action" ref="fastapi_app_act_window" />
+        <field name="sequence" eval="16" />
+    </record>
+
+</odoo>
