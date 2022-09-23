@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+  <record model="fastapi.app" id="fastapi_app_demo">
+    <field name="name">Fastapi Demo App</field>
+    <field
+            name="description"
+        ><![CDATA[
+# A Dummy FastApi Demo
+
+## HOWTO
+
+This demo app has been created by inhering from "fastapi.app", registering
+a new app into the app selection field and implementing the `_get_fastapi_routers`
+methods.
+
+```python
+from typing import List
+
+from fastapi import APIRouter
+
+from odoo import fields, models
+
+
+class FastapiEndpoint(models.Model):
+
+    _inherit = "fastapi.app"
+
+    app: str = fields.Selection(
+        selection_add=[("demo", "Demo App")], ondelete={"demo": "cascade"}
+    )
+
+    def _get_fastapi_routers(self) -> List[APIRouter]:
+        if self.app == "demo":
+            return [demo_api_router]
+        return super()._get_fastapi_routers()
+
+
+demo_api_router = APIRouter()
+
+
+@demo_api_router.get("/")
+async def read_root():
+    return {"Hello": "World"}
+
+```
+
+]]></field>
+    <field name="app">demo</field>
+    <field name="root_path">/fastapi_demo</field>
+  </record>
+</odoo>

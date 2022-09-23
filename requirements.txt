@@ -1,10 +1,12 @@
 # generated from manifests external_dependencies
+a2wsgi
 apispec
 apispec>=4.0.0
 cerberus
 contextvars
 extendable
 extendable-pydantic
+fastapi
 graphene
 graphql_server
 jsondiff
@@ -13,4 +15,6 @@ marshmallow-objects>=2.0.0
 parse-accept-language
 pydantic
 pyquerystring
+python-multipart
 typing-extensions
+ujson
