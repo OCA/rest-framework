@@ -13,4 +13,5 @@
     "website": "https://github.com/OCA/rest-framework",
     "depends": [],
     "external_dependencies": {"python": ["extendable"]},
+    "installable": False,
 }

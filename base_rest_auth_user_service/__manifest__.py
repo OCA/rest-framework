@@ -11,5 +11,5 @@
     "author": "Wakari, Odoo Community Association (OCA)",
     "depends": ["base_rest"],
     "data": [],
-    "installable": True,
+    "installable": False,
 }

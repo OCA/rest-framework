@@ -1,17 +1,24 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.5.2
-_src_path: gh:oca/oca-addons-repo-template
+_commit: v1.9.0-2-g3169ba3
+_src_path: ../../../oca-addons-repo-template/
 ci: GitHub
 dependency_installation_mode: PIP
 generate_requirements_txt: true
+github_check_license: true
+github_enable_codecov: true
+github_enable_makepot: true
+github_enable_stale_action: true
+github_enforce_dev_status_compatibility: true
 include_wkhtmltopdf: false
-odoo_version: 15.0
+odoo_version: 16.0
 org_name: Odoo Community Association (OCA)
 org_slug: OCA
 rebel_module_groups: []
-repo_description: 'TODO: add repo description.'
+repo_description: This repository has nice modules to interact with Odoo using JSON
+    an HTTP requests.
 repo_name: rest-framework
 repo_slug: rest-framework
 repo_website: https://github.com/OCA/rest-framework
 travis_apt_packages: []
 travis_apt_sources: []
+

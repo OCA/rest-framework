@@ -13,5 +13,5 @@
     "data": [],
     "demo": [],
     "external_dependencies": {"python": ["apispec>=4.0.0", "marshmallow"]},
-    "installable": True,
+    "installable": False,
 }

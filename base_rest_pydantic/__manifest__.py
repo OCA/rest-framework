@@ -12,7 +12,7 @@
     "depends": ["base_rest"],
     "data": [],
     "demo": [],
-    "installable": True,
+    "installable": False,
     "external_dependencies": {
         "python": [
             "pydantic",
