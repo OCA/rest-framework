@@ -17,8 +17,8 @@ _logger = logging.getLogger(__name__)
 
 class FastapiEndpoint(models.Model):
 
-    _name = "fastapi.app"
-    _description = "Fastapi Application"
+    _name = "fastapi.endpoint"
+    _description = "FastAPI Endpoint"
 
     name: str = fields.Char(required=True, help="The title of the API.")
     description: str = fields.Text(
@@ -170,12 +170,12 @@ class FastapiEndpoint(models.Model):
         return ASGIMiddleware(record._get_app())
 
     def _get_app(self) -> ASGIMiddleware:
-        app = FastAPI(**self._prepare_fastapi_app_params())
+        app = FastAPI(**self._prepare_fastapi_endpoint_params())
         for router in self._get_fastapi_routers():
             app.include_router(prefix=self.root_path, router=router)
         return app
 
-    def _prepare_fastapi_app_params(self) -> Dict[str, Any]:
+    def _prepare_fastapi_endpoint_params(self) -> Dict[str, Any]:
         return {
             "title": self.name,
             "description": self.description,

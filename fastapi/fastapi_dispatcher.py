@@ -20,7 +20,7 @@ class FastApiDispatcher(Dispatcher):
         root_path = "/" + environ["PATH_INFO"].split("/")[1]
         # TODO store the env into contextvar to be used by the odoo_env
         # depends method
-        app = request.env["fastapi.app"].sudo().get_app(root_path)
+        app = request.env["fastapi.endpoint"].sudo().get_app(root_path)
         data = BytesIO()
         with self._manage_odoo_env():
             for r in app(environ, self._make_response):

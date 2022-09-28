@@ -1,1 +1,2 @@
-from . import fastapi_app, fastapi_app_demo
+from . import fastapi_endpoint
+from . import fastapi_endpoint_demo
