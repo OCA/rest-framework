@@ -13,10 +13,10 @@ from ..depends import odoo_env
 
 class FastapiEndpoint(models.Model):
 
-    _inherit = "fastapi.app"
+    _inherit = "fastapi.endpoint"
 
     app: str = fields.Selection(
-        selection_add=[("demo", "Demo App")], ondelete={"demo": "cascade"}
+        selection_add=[("demo", "Demo Endpoint")], ondelete={"demo": "cascade"}
     )
 
     def _get_fastapi_routers(self) -> List[APIRouter]:

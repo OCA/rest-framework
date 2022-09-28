@@ -14,7 +14,7 @@ from odoo.tests.common import HttpCase
 class FastAPIHttpCase(HttpCase):
     def setUp(self):
         super().setUp()
-        self.fastapi_demo_app = self.env.ref("fastapi.fastapi_app_demo")
+        self.fastapi_demo_app = self.env.ref("fastapi.fastapi_endpoint_demo")
 
     def test_call(self):
         route = "/fastapi_demo/"

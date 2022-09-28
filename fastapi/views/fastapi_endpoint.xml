@@ -3,9 +3,9 @@
      License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
 <odoo>
 
-    <record model="ir.ui.view" id="fastapi_app_form_view">
-        <field name="name">fastapi.app.form (in fastapi)</field>
-        <field name="model">fastapi.app</field>
+    <record model="ir.ui.view" id="fastapi_endpoint_form_view">
+        <field name="name">fastapi.endpoint.form (in fastapi)</field>
+        <field name="model">fastapi.endpoint</field>
         <field name="arch" type="xml">
             <form>
                 <header>
@@ -37,9 +37,9 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="fastapi_app_search_view">
-        <field name="name">fastapi.app.search (in fastapi)</field>
-        <field name="model">fastapi.app</field>
+    <record model="ir.ui.view" id="fastapi_endpoint_search_view">
+        <field name="name">fastapi.endpoint.search (in fastapi)</field>
+        <field name="model">fastapi.endpoint</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name" />
@@ -60,9 +60,9 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="fastapi_app_tree_view">
-        <field name="name">fastapi.app.tree (in fastapi)</field>
-        <field name="model">fastapi.app</field>
+    <record model="ir.ui.view" id="fastapi_endpoint_tree_view">
+        <field name="name">fastapi.endpoint.tree (in fastapi)</field>
+        <field name="model">fastapi.endpoint</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
@@ -75,18 +75,18 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="fastapi_app_act_window">
-        <field name="name">Fastapi App</field>
-        <field name="res_model">fastapi.app</field>
+    <record model="ir.actions.act_window" id="fastapi_endpoint_act_window">
+        <field name="name">FastAPI Endpoint</field>
+        <field name="res_model">fastapi.endpoint</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
 
-    <record model="ir.ui.menu" id="fastapi_app_menu">
-        <field name="name">Fastapi Endpoint</field>
+    <record model="ir.ui.menu" id="fastapi_endpoint_menu">
+        <field name="name">FastAPI Endpoint</field>
         <field name="parent_id" ref="menu_fastapi_root" />
-        <field name="action" ref="fastapi_app_act_window" />
+        <field name="action" ref="fastapi_endpoint_act_window" />
         <field name="sequence" eval="16" />
     </record>
 
