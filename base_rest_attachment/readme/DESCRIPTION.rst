@@ -1,3 +1,3 @@
-This module is a technical module aiming to be used in other modules.
+Technical module to be used as a base for other modules.
 
 It allows to create and expose attachments associated to a specific model.

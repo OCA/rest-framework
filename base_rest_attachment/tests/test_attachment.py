@@ -8,11 +8,11 @@ import unittest
 
 from werkzeug.datastructures import FileStorage
 
-from odoo.addons.base_rest.tests.common import TransactionRestServiceRegistryCase
+from odoo.addons.base_rest.tests.common import SavepointRestServiceRegistryCase
 from odoo.addons.component.core import Component
 from odoo.addons.extendable.tests.common import ExtendableMixin
 
-from ..services.abstract_attachable import AbstractAttachableService
+from ..services.abstract_attachable import RestAttachmentServiceMixin
 
 
 class AttachmentCommonCase(unittest.TestCase):
@@ -28,24 +28,25 @@ class AttachmentCommonCase(unittest.TestCase):
 
 
 class AttachmentCase(
-    AttachmentCommonCase, TransactionRestServiceRegistryCase, ExtendableMixin
+    AttachmentCommonCase, SavepointRestServiceRegistryCase, ExtendableMixin
 ):
-    def setUp(self):
-        ExtendableMixin.setUp(self)
-        super().setUp()
-        self._build_services(self, AbstractAttachableService)
+
+    # pylint: disable=W8106
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls._build_services(cls, RestAttachmentServiceMixin)
         # pylint: disable=R7980
 
         class PartnerService(Component):
-            _inherit = "abstract.attachable.service"
+            _inherit = "rest.attachment.service.mixin"
             _name = "test.partner.service"
             _usage = "partner"
-            _collection = self._collection_name
+            _collection = cls._collection_name
             _expose_model = "res.partner"
 
-        self._build_services(self, PartnerService)
-        self.service = self._get_service_component(self, "partner")
-        # cls.setUpExtendable()
+        cls._build_services(cls, PartnerService)
+        cls.service = cls._get_service_component(cls, "partner")
 
     def test_create_attachment(self):
         partner_id = self.ref("base.res_partner_1")

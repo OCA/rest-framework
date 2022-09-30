@@ -19,10 +19,10 @@ from odoo.addons.component.core import AbstractComponent
 from ..pydantic_models.attachment import AttachmentInfo, AttachmentRequest
 
 
-class AbstractAttachableService(AbstractComponent):
+class RestAttachmentServiceMixin(AbstractComponent):
     """Abstract service to allow to use attachments on a service."""
 
-    _name = "abstract.attachable.service"
+    _name = "rest.attachment.service.mixin"
     _inherit = "base.rest.service"
     _description = __doc__
 
@@ -32,8 +32,13 @@ class AbstractAttachableService(AbstractComponent):
     )
     def download_attachment(self, object_id=None, attachment_id=None):
         record = self._get(object_id)
-        self._check_attachment_access(record)
         attachment = self._get_attachment_for_record(record, attachment_id)
+        content, headers = self._get_attachment_response_data(attachment)
+        response = request.make_response(content, headers)
+        response.status_code = 200
+        return response
+
+    def _get_attachment_response_data(self, attachment):
         content = None
         headers = [("X-Content-Type-Options", "nosniff")]
         if attachment.type == "url":
@@ -63,9 +68,7 @@ class AbstractAttachableService(AbstractComponent):
                 ]
             )
             content = attachment.raw
-        response = request.make_response(content, headers)
-        response.status_code = 200
-        return response
+        return content, headers
 
     @restapi.method(
         routes=[(["/<int:object_id>/attachments"], "POST")],
@@ -79,7 +82,6 @@ class AbstractAttachableService(AbstractComponent):
     )
     def create_attachment(self, object_id=None, file=None, params=None):
         record = self._get(object_id)
-        self._check_attachment_access(record)
         vals = params.dict()
         vals["res_id"] = record.id
         vals["res_model"] = record._name
@@ -94,6 +96,7 @@ class AbstractAttachableService(AbstractComponent):
         if not record:
             raise MissingError(_("The record does not exist: {}".format(_id)))
         else:
+            self._check_attachment_access(record)
             return record
 
     def _get_attachment_for_record(self, record, _attachment_id):
