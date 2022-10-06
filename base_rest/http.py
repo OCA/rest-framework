@@ -55,6 +55,9 @@ class JSONEncoder(json.JSONEncoder):
         return super(JSONEncoder, self).default(obj)
 
 
+BLACKLISTED_LOG_PARAMS = ("password",)
+
+
 def wrapJsonException(exception, include_description=False, extra_info=None):
     """Wrap exceptions to be rendered as JSON.
 
@@ -95,12 +98,16 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
             "RESTFULL call to url %s with method %s and params %s "
             "raise the following error %s"
         )
-        args = (httprequest.url, httprequest.method, request.params, exception)
+        params = request.params.copy()
+        for k in params.keys():
+            if k in BLACKLISTED_LOG_PARAMS:
+                params[k] = "<redacted>"
+        args = (httprequest.url, httprequest.method, params, exception)
         extra = {
             "application": "REST Services",
             "url": httprequest.url,
             "method": httprequest.method,
-            "params": request.params,
+            "params": params,
             "headers": headers,
             "status": exception.code,
             "exception_body": exception.get_body(),
