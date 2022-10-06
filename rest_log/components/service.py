@@ -122,6 +122,8 @@ class BaseRESTService(AbstractComponent):
         if args:
             params = dict(params or {}, args=args)
 
+        params = self._log_call_sanitize_params(params)
+
         result = kw.get("result")
         error = kw.get("traceback")
         orig_exception = kw.get("orig_exception")
@@ -151,6 +153,11 @@ class BaseRESTService(AbstractComponent):
         if not values or enabled_states and values["state"] not in enabled_states:
             return
         return env["rest.log"].sudo().create(values)
+
+    def _log_call_sanitize_params(self, params):
+        if "password" in params:
+            params["password"] = "<redacted>"
+        return params
 
     def _db_logging_active(self, method_name):
         enabled = self._log_calls_in_db
