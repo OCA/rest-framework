@@ -1,6 +1,3 @@
-# Copyright 2021 Camptocamp SA
-# @author: Simone Orsi <simone.orsi@camptocamp.com>
-# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
@@ -34,11 +31,3 @@ class FastAPIHttpCase(HttpCase):
         self.assertEqual(response.status_code, 404)
         response = self.url_open("/new_root/")
         self.assertEqual(response.status_code, 200)
-
-    def test_odoo_env_depends(self):
-        route = "/fastapi_demo/contacts"
-        response = self.url_open(route)
-        self.assertEqual(response.status_code, 200)
-        count = self.env["res.partner"].sudo().search_count([])
-        expected = b'{"count":%d}' % count
-        self.assertEqual(response.content, expected)
