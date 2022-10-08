@@ -3,12 +3,22 @@
 
 from typing import List
 
-from odoo import fields, models
+from odoo import _, api, fields, models
 from odoo.api import Environment
+from odoo.exceptions import ValidationError
 
-from fastapi import APIRouter, Depends
+from odoo.addons.base.models.res_partner import Partner
 
-from ..depends import odoo_env
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import APIKeyHeader
+from pydantic import BaseModel
+
+from ..depends import (
+    authenticated_partner,
+    authenticated_partner_from_basic_auth_user,
+    authenticated_partner_impl,
+    odoo_env,
+)
 
 
 class FastapiEndpoint(models.Model):
@@ -18,11 +28,55 @@ class FastapiEndpoint(models.Model):
     app: str = fields.Selection(
         selection_add=[("demo", "Demo Endpoint")], ondelete={"demo": "cascade"}
     )
+    demo_auth_method = fields.Selection(
+        selection=[("api_key", "Api Key"), ("http_basic", "HTTP Bacic")],
+        string="Authenciation method",
+    )
 
     def _get_fastapi_routers(self) -> List[APIRouter]:
         if self.app == "demo":
             return [demo_api_router]
         return super()._get_fastapi_routers()
+
+    @api.constrains("app", "demo_auth_method")
+    def _valdiate_demo_auth_method(self):
+        for rec in self:
+            if rec.app == "demo" and not rec.demo_auth_method:
+                raise ValidationError(
+                    _(
+                        "The authentication method is required for app %(app)s",
+                        app=rec.app,
+                    )
+                )
+
+    @api.model
+    def _routing_fields(self):
+        fields = super()._routing_fields()
+        fields.append("demo_auth_method")
+        return fields
+
+    def _get_app(self):
+        app = super()._get_app()
+        if self.app == "demo":
+            # Here we add the overrides to the authenticated_partner_impl method
+            # according to the authentication method configured on the demo app
+            if self.demo_auth_method == "http_basic":
+                authenticated_partner_impl_override = (
+                    authenticated_partner_from_basic_auth_user
+                )
+            else:
+                authenticated_partner_impl_override = (
+                    api_key_based_authenticated_partner_impl
+                )
+        app.dependency_overrides[
+            authenticated_partner_impl
+        ] = authenticated_partner_impl_override
+        return app
+
+
+class UserInfo(BaseModel):
+    name: str
+    display_name: str
 
 
 demo_api_router = APIRouter()
@@ -34,8 +88,30 @@ async def hello_word():
     return {"Hello": "World"}
 
 
-@demo_api_router.get("/contacts")
-async def count_partners(env: Environment = Depends(odoo_env)):  # noqa: B008
-    """Returns the number of contacts into the database"""
-    count = env["res.partner"].sudo().search_count([])
-    return {"count": count}
+@demo_api_router.get("/who_ami", response_model=UserInfo)
+async def who_ami(partner=Depends(authenticated_partner)) -> UserInfo:  # noqa: B008
+    """Who am I?
+
+    Returns the authenticated partner
+    """
+    return UserInfo(name=partner.name, display_name=partner.display_name)
+
+
+def api_key_based_authenticated_partner_impl(
+    api_key: str = Depends(  # noqa: B008
+        APIKeyHeader(
+            name="api-key",
+            description="In this demo, you can use a user's login as api key.",
+        )
+    ),
+    env: Environment = Depends(odoo_env),  # noqa: B008
+) -> Partner:
+    """A dummy implementation that look for a user with the same login
+    as the provided api key
+    """
+    partner = env["res.users"].search([("login", "=", api_key)], limit=1).partner_id
+    if not partner:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect API Key"
+        )
+    return partner

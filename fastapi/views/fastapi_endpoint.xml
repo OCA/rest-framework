@@ -32,6 +32,7 @@
                         <field name="redoc_url" widget="url" />
                         <field name="openapi_url" widget="url" />
                     </group>
+                    <span name="configuration" />
                 </sheet>
             </form>
         </field>

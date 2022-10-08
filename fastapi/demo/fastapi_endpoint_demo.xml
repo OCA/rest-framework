@@ -49,5 +49,6 @@ async def read_root():
 ]]></field>
     <field name="app">demo</field>
     <field name="root_path">/fastapi_demo</field>
+    <field name="demo_auth_method">http_basic</field>
   </record>
 </odoo>
