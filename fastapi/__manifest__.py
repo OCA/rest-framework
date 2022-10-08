@@ -16,6 +16,7 @@
         "security/fastapi_endpoint.xml",
         "views/fastapi_menu.xml",
         "views/fastapi_endpoint.xml",
+        "views/fastapi_endpoint_demo.xml",
     ],
     "demo": ["demo/fastapi_endpoint_demo.xml"],
     "external_dependencies": {

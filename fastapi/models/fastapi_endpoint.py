@@ -97,14 +97,16 @@ class FastapiEndpoint(models.Model):
             return True
         if any([x in vals for x in self._routing_fields()]):
             self._register_endpoints()
-            return True
+            self._reset_app()
         return False
 
     def unlink(self):
         self._unregister_endpoints()
         return super().unlink()
 
+    @api.model
     def _routing_fields(self):
+        """The list of fields requiring to rebuild the app if modified"""
         return ["root_path"]
 
     @property
@@ -159,17 +161,22 @@ class FastapiEndpoint(models.Model):
                 key = rec._endpoint_registry_route_unique_key(route)
                 rec._endpoint_registry.drop_rule(key)
 
+    def _reset_app(self):
+        self.get_app.clear_cache(self)
+
     @api.model
     @tools.ormcache("root_path")
     # TODO cache on thread local by db to enable to get 1 middelware by
-    # thread when odoo runs in multi threads mode
+    # thread when odoo runs in multi threads mode and to allows invalidate
+    # specific entries in place og the overall cache as we have to do into
+    # the _rest_app method
     def get_app(self, root_path):
         record = self.search([("root_path", "=", root_path)])
         if not record:
             return None
         return ASGIMiddleware(record._get_app())
 
-    def _get_app(self) -> ASGIMiddleware:
+    def _get_app(self) -> FastAPI:
         app = FastAPI(**self._prepare_fastapi_endpoint_params())
         for router in self._get_fastapi_routers():
             app.include_router(prefix=self.root_path, router=router)
