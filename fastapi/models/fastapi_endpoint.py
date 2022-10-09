@@ -2,6 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
 import logging
+from functools import partial
 from typing import Any, Dict, List
 
 from a2wsgi import ASGIMiddleware
@@ -11,6 +12,8 @@ from odoo import _, api, exceptions, fields, models, tools
 from odoo.addons.endpoint_route_handler.registry import EndpointRegistry
 
 from fastapi import APIRouter, FastAPI
+
+from .. import depends
 
 _logger = logging.getLogger(__name__)
 
@@ -180,6 +183,9 @@ class FastapiEndpoint(models.Model):
         app = FastAPI(**self._prepare_fastapi_endpoint_params())
         for router in self._get_fastapi_routers():
             app.include_router(prefix=self.root_path, router=router)
+        app.dependency_overrides[depends.fastapi_endpoint_id] = partial(
+            lambda a: a, self.id
+        )
         return app
 
     def _prepare_fastapi_endpoint_params(self) -> Dict[str, Any]:

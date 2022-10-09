@@ -1,6 +1,8 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
+from typing import TYPE_CHECKING
+
 from odoo.api import Environment
 from odoo.exceptions import AccessDenied
 
@@ -11,6 +13,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from .context import odoo_env_ctx
+
+if TYPE_CHECKING:
+    from .models.fastapi_endpoint import FastapiEndpoint
 
 
 def odoo_env() -> Environment:
@@ -62,3 +67,24 @@ def authenticated_partner_from_basic_auth_user(
     user: Users = Depends(basic_auth_user),  # noqa: B008
 ) -> Partner:
     return user.partner_id
+
+
+def fastapi_endpoint_id() -> int:
+    """This method is overriden by default to make the fastapi.endpoint record
+    available for your endpoint method. To get the fastapi.enpoint record
+    in your method, you just need to add a dependecy on the fastapi_endpoint method
+    defined below
+    """
+
+
+def fastapi_endpoint(
+    _id: int = Depends(fastapi_endpoint_id),  # noqa: B008
+    env: Environment = Depends(odoo_env),  # noqa: B008
+) -> "FastapiEndpoint":
+    """Return the fastapi.endpoint record
+
+    Be carefull, the information are returned as sudo
+    """
+    # TODO we should declare a technical user with read access only on the
+    # fastapi.endpoint model
+    return env["fastapi.endpoint"].sudo().browse(_id)
