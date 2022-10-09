@@ -11,12 +11,13 @@ from odoo.addons.base.models.res_partner import Partner
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..depends import (
     authenticated_partner,
     authenticated_partner_from_basic_auth_user,
     authenticated_partner_impl,
+    fastapi_endpoint,
     odoo_env,
 )
 
@@ -79,6 +80,17 @@ class UserInfo(BaseModel):
     display_name: str
 
 
+class EndpointAppInfo(BaseModel):
+    id: str
+    name: str
+    app: str
+    auth_method: str = Field(alias="demo_auth_method")
+    root_path: str
+
+    class Config:
+        orm_mode = True
+
+
 demo_api_router = APIRouter()
 
 
@@ -94,7 +106,24 @@ async def who_ami(partner=Depends(authenticated_partner)) -> UserInfo:  # noqa: 
 
     Returns the authenticated partner
     """
+    # This method show you how you can rget the authenticated partner without
+    # depending on a specific implementation.
     return UserInfo(name=partner.name, display_name=partner.display_name)
+
+
+@demo_api_router.get(
+    "/endpoint_app_info",
+    response_model=EndpointAppInfo,
+    dependencies=[Depends(authenticated_partner)],
+)
+async def endpoint_app_info(
+    endpoint: FastapiEndpoint = Depends(fastapi_endpoint),  # noqa: B008
+) -> EndpointAppInfo:
+    """Returns the current enpoint configuration"""
+    # This method show you how to get access to current endpoint configuration
+    # It also show you how you can specify a dependecy to force the security
+    # even if the method doesn't require the authenticated partner as parameter
+    return EndpointAppInfo.from_orm(endpoint)
 
 
 def api_key_based_authenticated_partner_impl(

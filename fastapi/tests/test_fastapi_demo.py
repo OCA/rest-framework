@@ -7,10 +7,11 @@ from requests import Response
 
 from odoo.tests.common import TransactionCase
 
-from odoo.addons.fastapi import depends
-
 from fastapi import status
 from fastapi.testclient import TestClient
+
+from .. import depends
+from ..models.fastapi_endpoint_demo import EndpointAppInfo
 
 
 class FastAPIDemoCase(TransactionCase):
@@ -52,5 +53,17 @@ class FastAPIDemoCase(TransactionCase):
         response: Response = self.client.get(self._get_path("/who_ami"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(
-            response.json(), {"name": "FastAPI Demo", "display_name": "FastAPI Demo"}
+            response.json(),
+            {
+                "name": self.test_partner.name,
+                "display_name": self.test_partner.display_name,
+            },
+        )
+
+    def test_endpoint_info(self) -> None:
+        response: Response = self.client.get(self._get_path("/endpoint_app_info"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(
+            response.json(),
+            EndpointAppInfo.from_orm(self.fastapi_demo_app).dict(by_alias=True),
         )
