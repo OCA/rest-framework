@@ -125,10 +125,7 @@ class BaseRESTService(AbstractComponent):
 
     def _log_call_in_db_values(self, _request, *args, params=None, **kw):
         httprequest = _request.httprequest
-        headers = dict(httprequest.headers)
-        for header_key in self._log_call_header_strip:
-            if header_key in headers:
-                headers[header_key] = "<redacted>"
+        headers = self._log_call_sanitize_headers(dict(httprequest.headers or []))
         params = dict(params or {})
         if args:
             params.update(args=args)
@@ -175,6 +172,12 @@ class BaseRESTService(AbstractComponent):
         if "password" in params:
             params["password"] = "<redacted>"
         return params
+
+    def _log_call_sanitize_headers(self, headers: dict) -> dict:
+        for header_key in self._log_call_header_strip:
+            if header_key in headers:
+                headers[header_key] = "<redacted>"
+        return headers
 
     def _db_logging_active(self, method_name):
         enabled = self._log_calls_in_db
