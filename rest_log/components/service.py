@@ -119,8 +119,9 @@ class BaseRESTService(AbstractComponent):
         for header_key in self._log_call_header_strip:
             if header_key in headers:
                 headers[header_key] = "<redacted>"
+        params = dict(params or {})
         if args:
-            params = dict(params or {}, args=args)
+            params.update(args=args)
 
         params = self._log_call_sanitize_params(params)
 
@@ -156,7 +157,7 @@ class BaseRESTService(AbstractComponent):
             return
         return env["rest.log"].sudo().create(values)
 
-    def _log_call_sanitize_params(self, params):
+    def _log_call_sanitize_params(self, params: dict) -> dict:
         if "password" in params:
             params["password"] = "<redacted>"
         return params
