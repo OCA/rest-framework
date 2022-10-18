@@ -122,19 +122,7 @@ class BaseRESTService(AbstractComponent):
 
         params = self._log_call_sanitize_params(params)
 
-        result = kw.get("result")
-        # NB: ``result`` might be an object of class ``odoo.http.Response``,
-        # for example when you try to download a file. In this case, we need to
-        # handle it properly, without the assumption that ``result`` is a dict.
-        if isinstance(result, Response):
-            status_code = result.status_code
-            result = {
-                "status": status_code,
-                "headers": self._log_call_sanitize_headers(dict(result.headers or [])),
-            }
-            state = "success" if status_code in range(200, 300) else "failed"
-        else:
-            state = "success" if result else "failed"
+        result, state = self._log_call_prepare_result(kw.get("result"))
         error = kw.get("traceback")
         orig_exception = kw.get("orig_exception")
         exception_name = None
@@ -158,6 +146,21 @@ class BaseRESTService(AbstractComponent):
             "exception_message": exception_message,
             "state": state,
         }
+
+    def _log_call_prepare_result(self, result):
+        # NB: ``result`` might be an object of class ``odoo.http.Response``,
+        # for example when you try to download a file. In this case, we need to
+        # handle it properly, without the assumption that ``result`` is a dict.
+        if isinstance(result, Response):
+            status_code = result.status_code
+            result = {
+                "status": status_code,
+                "headers": self._log_call_sanitize_headers(dict(result.headers or [])),
+            }
+            state = "success" if status_code in range(200, 300) else "failed"
+        else:
+            state = "success" if result else "failed"
+        return result, state
 
     def _log_call_in_db(self, env, _request, method_name, *args, params=None, **kw):
         values = self._log_call_in_db_values(_request, *args, params=params, **kw)
