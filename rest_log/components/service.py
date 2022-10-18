@@ -119,19 +119,9 @@ class BaseRESTService(AbstractComponent):
         params = dict(params or {})
         if args:
             params.update(args=args)
-
         params = self._log_call_sanitize_params(params)
-
+        error, exception_name, exception_message = self._log_call_prepare_error(**kw)
         result, state = self._log_call_prepare_result(kw.get("result"))
-        error = kw.get("traceback")
-        orig_exception = kw.get("orig_exception")
-        exception_name = None
-        exception_message = None
-        if orig_exception:
-            exception_name = orig_exception.__class__.__name__
-            if hasattr(orig_exception, "__module__"):
-                exception_name = orig_exception.__module__ + "." + exception_name
-            exception_message = self._get_exception_message(orig_exception)
         collection = self.work.collection
         return {
             "collection": collection._name,
@@ -161,6 +151,16 @@ class BaseRESTService(AbstractComponent):
         else:
             state = "success" if result else "failed"
         return result, state
+
+    def _log_call_prepare_error(self, traceback=None, orig_exception=None, **kw):
+        exception_name = None
+        exception_message = None
+        if orig_exception:
+            exception_name = orig_exception.__class__.__name__
+            if hasattr(orig_exception, "__module__"):
+                exception_name = orig_exception.__module__ + "." + exception_name
+            exception_message = self._get_exception_message(orig_exception)
+        return traceback, exception_name, exception_message
 
     def _log_call_in_db(self, env, _request, method_name, *args, params=None, **kw):
         values = self._log_call_in_db_values(_request, *args, params=params, **kw)
