@@ -137,8 +137,8 @@ class BaseRESTService(AbstractComponent):
             "collection_id": collection.id,
             "request_url": httprequest.url,
             "request_method": httprequest.method,
-            "params": json_dump(params),
-            "headers": json_dump(headers),
+            "params": params,
+            "headers": headers,
             "result": result,
             "error": error,
             "exception_name": exception_name,
@@ -171,8 +171,12 @@ class BaseRESTService(AbstractComponent):
             exception_message = self._get_exception_message(orig_exception)
         return traceback, exception_name, exception_message
 
+    _log_call_in_db_keys_to_serialize = ("params", "headers", "result")
+
     def _log_call_in_db(self, env, _request, method_name, *args, params=None, **kw):
         values = self._log_call_in_db_values(_request, *args, params=params, **kw)
+        for k in self._log_call_in_db_keys_to_serialize:
+            values[k] = json_dump(values[k])
         enabled_states = self._get_matching_active_conf(method_name)
         if not values or enabled_states and values["state"] not in enabled_states:
             return
