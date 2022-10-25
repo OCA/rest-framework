@@ -6,7 +6,9 @@ from odoo.exceptions import UserError
 
 from odoo.addons.base_rest import restapi
 
-from pydantic import BaseModel, ValidationError, validate_model
+from pydantic import BaseModel, ValidationError
+
+from .pydantic_models.list_metadata import ListMetadata
 
 
 def replace_ref_in_schema(item, original_schema):
@@ -43,15 +45,15 @@ class PydanticModel(restapi.RestMethodParam):
             raise UserError(_("BadRequest %s") % ve.json(indent=0))
 
     def to_response(self, service, result):
-        # do we really need to validate the instance????
-        json_dict = result.dict()
-        to_validate = (
-            json_dict if not result.__config__.orm_mode else result.dict(by_alias=True)
+        # No need to validate as it is already done, just check the schema
+        # isinstance is not used because there is a problem with double imports:
+        # https://python-notes.curiousefficiency.org/en/latest/python_concepts/import_traps.html
+        assert (
+            result.schema_json() == self._model_cls.schema_json()
+        ), "metadata is not of the right instance\n{}\n{}".format(
+            result.__class__, ListMetadata
         )
-        *_, validation_error = validate_model(self._model_cls, to_validate)
-        if validation_error:
-            raise SystemError(_("Invalid Response %s") % validation_error)
-        return json_dict
+        return result.dict()
 
     def to_openapi_query_parameters(self, servic, spec):
         json_schema = self._model_cls.schema()
@@ -107,6 +109,9 @@ class PydanticModel(restapi.RestMethodParam):
 
     def to_json_schema(self, service, spec, direction):
         schema = self._model_cls.schema(by_alias=False)
+        return self._to_json_schema(schema, spec)
+
+    def _to_json_schema(self, schema, spec):
         schema_name = schema["title"]
         if schema_name not in spec.components.schemas:
             definitions = schema.get("definitions", {})
@@ -154,10 +159,23 @@ class PydanticModelList(PydanticModel):
 
     def to_response(self, service, result):
         self._do_validate(result, "output")
-        return [
+        json_res = {}
+        json_res["metadata"] = self.to_metadata_response(service, result["metadata"])
+        json_res["data"] = [
             super(PydanticModelList, self).to_response(service=service, result=r)
-            for r in result
+            for r in result["data"]
         ]
+        return json_res
+
+    def to_metadata_response(self, service, result):
+        # No need to validate as it is already done, just check the schema
+        # To make sure this is the same class
+        assert (
+            result.schema_json() == ListMetadata.schema_json()
+        ), "metadata is not of the right instance\n{}\n{}".format(
+            result.__class__, ListMetadata
+        )
+        return result.dict()
 
     def to_openapi_query_parameters(self, service, spec):
         raise NotImplementedError("List are not (?yet?) supported as query paramters")
@@ -203,6 +221,7 @@ class PydanticModelList(PydanticModel):
         }
 
     def to_json_schema(self, service, spec, direction):
+        metadata_json_schema = super()._to_json_schema(ListMetadata.schema(), spec)
         json_schema = super().to_json_schema(service, spec, direction)
         json_schema = {"type": "array", "items": json_schema}
         if self._min_items is not None:
@@ -211,7 +230,11 @@ class PydanticModelList(PydanticModel):
             json_schema["maxItems"] = self._max_items
         if self._unique_items is not None:
             json_schema["uniqueItems"] = self._unique_items
-        return json_schema
+        return {
+            "type": "object",
+            "required": ["data"],
+            "properties": {"data": json_schema, "metadata": metadata_json_schema},
+        }
 
 
 restapi.PydanticModel = PydanticModel
