@@ -130,18 +130,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": ["data"],
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/PartnerShortInfo"
-                      }
-                    },
-                    "metadata": {
-                      "$ref": "#/components/schemas/ListMetadata"
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PartnerShortInfo"
                   }
                 }
               }
@@ -192,18 +183,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": ["data"],
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/PartnerShortInfo"
-                      }
-                    },
-                    "metadata": {
-                      "$ref": "#/components/schemas/ListMetadata"
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PartnerShortInfo"
                   }
                 }
               }
@@ -320,16 +302,6 @@
               }
             },
             "required": ["id", "name"]
-          }
-        }
-      },
-      "ListMetadata": {
-        "title": "ListMetadata",
-        "type": "object",
-        "properties": {
-          "size": {
-            "title": "Size",
-            "type": "integer"
           }
         }
       },
