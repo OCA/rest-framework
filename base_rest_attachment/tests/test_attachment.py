@@ -12,7 +12,7 @@ from odoo.addons.base_rest.tests.common import SavepointRestServiceRegistryCase
 from odoo.addons.component.core import Component
 from odoo.addons.extendable.tests.common import ExtendableMixin
 
-from ..services.abstract_attachable import RestAttachmentServiceMixin
+from ..services.attachment_mixin import RestAttachmentServiceMixin
 
 
 class AttachmentCommonCase(unittest.TestCase):
