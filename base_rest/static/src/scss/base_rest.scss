@@ -1,11 +1,27 @@
-.swg-odoo-web-btn {
-    font-family: fontAwesome !important;
-    display: block;
-    float: left;
-    padding-top: 8px;
-    padding-right: 0px;
-    padding-bottom: 8px;
-    padding-left: 8px;
+body {
+    margin: 0;
+}
+
+.swagger-ui .topbar {
+    height: 46px;
+    padding: 0;
+
+    & a.swg-odoo-web-btn {
+        display: block;
+        float: left;
+        padding: 0 10px;
+        font-size: 13px;
+        height: 46px;
+        line-height: 46px;
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    & .topbar-wrapper img {
+        height: 36px;
+        padding: 5px;
+    }
 }
 
 .col {
