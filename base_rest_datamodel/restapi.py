@@ -4,6 +4,7 @@
 import marshmallow
 from apispec.ext.marshmallow.openapi import OpenAPIConverter
 from marshmallow.exceptions import ValidationError
+from packaging.version import Version
 
 from odoo import _
 from odoo.exceptions import UserError
@@ -89,7 +90,7 @@ class Datamodel(restapi.RestMethodParam):
         return service.env.datamodels[self._name].get_schema(many=self._is_list)
 
     def _get_converter(self):
-        return OpenAPIConverter("3.0", self._schema_name_resolver, None)
+        return OpenAPIConverter(Version("3.0"), self._schema_name_resolver, None)
 
     def _schema_name_resolver(self, schema):
         # name resolver used by the OpenapiConverter. always return None
