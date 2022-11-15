@@ -98,6 +98,7 @@ enable=anomalous-backslash-in-string,
     xml-attribute-translatable,
     xml-deprecated-qweb-directive,
     xml-deprecated-tree-attribute,
+    external-request-timeout,
     # messages that do not cause the lint step to fail
     consider-merging-classes-inherited,
     create-user-wo-reset-password,
