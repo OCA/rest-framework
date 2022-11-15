@@ -38,7 +38,7 @@ odoo.define("base_rest.swagger_ui", function (require) {
                 onComplete: function () {
                     if (this.web_btn === undefined) {
                         this.web_btn = $(
-                            "<a class='fa fa-th swg-odoo-web-btn' href='/web' accesskey='h'></a>"
+                            "<a class='swg-odoo-web-btn' href='/web' accesskey='h'><i class='fa fa-th-large'></i></a>"
                         );
                         $(".topbar").prepend(this.web_btn);
                     }
