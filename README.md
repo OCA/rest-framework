@@ -7,9 +7,9 @@
 
 <!-- /!\ do not modify above this line -->
 
-# rest-framework
+# Rest Frameworks
 
-This repository has nice modules to interact with Odoo using JSON an HTTP requests. 
+This repository has nice modules to interact with Odoo using JSON and HTTP requests.
 
 <!-- /!\ do not modify below this line -->
 
