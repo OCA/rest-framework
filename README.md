@@ -31,7 +31,7 @@ addon | version | maintainers | summary
 [extendable](extendable/) | 15.0.1.0.1 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Extendable classes registry loader for Odoo
 [model_serializer](model_serializer/) | 15.0.1.2.0 | [![fdegrave](https://github.com/fdegrave.png?size=30px)](https://github.com/fdegrave) | Automatically translate Odoo models into Datamodels for (de)serialization
 [pydantic](pydantic/) | 15.0.1.1.1 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Utility addon to ease mapping between Pydantic and Odoo models
-[rest_log](rest_log/) | 15.0.1.0.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | Track REST API calls into DB
+[rest_log](rest_log/) | 15.0.1.0.1 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | Track REST API calls into DB
 
 
 Unported addons
