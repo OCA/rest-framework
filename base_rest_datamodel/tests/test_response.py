@@ -1,7 +1,8 @@
 # Copyright 2021 Wakari SRL
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
+from unittest import mock
+
 import marshmallow
-import mock
 
 from odoo.addons.base_rest_datamodel import restapi
 from odoo.addons.datamodel import fields

@@ -104,7 +104,7 @@ def method(routes, input_param=None, output_param=None, **kw):
             response = f(*args, **kw)
             return response
 
-        response_wrap.routing = routing
+        response_wrap.original_routing = routing
         response_wrap.original_func = f
         return response_wrap
 

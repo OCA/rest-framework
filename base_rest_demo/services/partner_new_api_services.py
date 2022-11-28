@@ -44,6 +44,36 @@ class PartnerNewApiService(Component):
         return partner_info
 
     @restapi.method(
+        [(["/<string:name>/get", "/<string:name>"], "GET")],
+        output_param=Datamodel("partner.info"),
+        auth="public",
+    )
+    def get_by_name(self, name):
+        """
+        Get partner's information by name.
+        """
+        partner = self.env["res.partner"].search([("name", "=", name)], limit=1)
+        if not partner:
+            raise FileNotFoundError
+        PartnerInfo = self.env.datamodels["partner.info"]
+        partner_info = PartnerInfo(partial=True)
+        partner_info.id = partner.id
+        partner_info.name = partner.name
+        partner_info.street = partner.street
+        partner_info.street2 = partner.street2
+        partner_info.zip_code = partner.zip
+        partner_info.city = partner.city
+        partner_info.phone = partner.phone
+        partner_info.country = self.env.datamodels["country.info"](
+            id=partner.country_id.id, name=partner.country_id.name
+        )
+        partner_info.state = self.env.datamodels["state.info"](
+            id=partner.state_id.id, name=partner.state_id.name
+        )
+        partner_info.is_company = partner.is_company
+        return partner_info
+
+    @restapi.method(
         [(["/", "/search"], "GET")],
         input_param=Datamodel("partner.search.param"),
         output_param=Datamodel("partner.short.info", is_list=True),

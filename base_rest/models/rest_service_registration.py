@@ -32,7 +32,7 @@ from ..core import (
 from ..tools import _inspect_methods
 
 # Decorator attribute added on a route function (cfr Odoo's route)
-ROUTING_DECORATOR_ATTR = "routing"
+ROUTING_DECORATOR_ATTR = "original_routing"
 
 
 _logger = logging.getLogger(__name__)
@@ -61,11 +61,11 @@ class RestServiceRegistration(models.AbstractModel):
         self.build_registry(services_registry)
         # we also have to remove the RestController from the
         # controller_per_module registry since it's an abstract controller
-        controllers = http.controllers_per_module["base_rest"]
+        controllers = http.Controller.children_classes["base_rest"]
         controllers = [
-            (name, cls) for name, cls in controllers if "RestController" not in name
+            cls for cls in controllers if "RestController" not in cls.__name__
         ]
-        http.controllers_per_module["base_rest"] = controllers
+        http.Controller.children_classes["base_rest"] = controllers
         # create the final controller providing the http routes for
         # the services available into the current database
         self._build_controllers_routes(services_registry)
@@ -100,11 +100,23 @@ class RestServiceRegistration(models.AbstractModel):
 
         # instruct the registry that our fake addon is part of the loaded
         # modules
+        # TODO: causes
+        # Traceback (most recent call last):
+        #   File "/home/odoo/odoo/service/server.py", line 1310, in preload_registries
+        #     post_install_suite = loader.make_suite(module_names, 'post_install')
+        #   File "/home/odoo/odoo/tests/loader.py", line 58, in make_suite
+        #     return OdooSuite(sorted(tests, key=lambda t: t.test_sequence))
+        #   File "/home/odoo/odoo/tests/loader.py", line 54, in <genexpr>
+        #     for m in get_test_modules(module_name)
+        #   File "/home/odoo/odoo/tests/loader.py", line 22, in get_test_modules
+        #     results = _get_tests_modules(importlib.util.find_spec(f'odoo.addons.{module}'))
+        #   File "/home/odoo/odoo/tests/loader.py", line 31, in _get_tests_modules
+        #     spec = importlib.util.find_spec('.tests', mod.name)
+        # AttributeError: 'NoneType' object has no attribute 'name'
         self.env.registry._init_modules.add(addon_name)
 
         # register our conroller into the list of available controllers
-        name_class = ("{}.{}".format(ctrl_cls.__module__, ctrl_cls.__name__), ctrl_cls)
-        http.controllers_per_module[addon_name].append(name_class)
+        http.Controller.children_classes[addon_name].append(ctrl_cls)
         self._apply_defaults_to_controller_routes(controller_class=ctrl_cls)
 
     def _apply_defaults_to_controller_routes(self, controller_class):
@@ -398,9 +410,9 @@ class RestApiServiceControllerGenerator(object):
             path_sep = "/"
         root_path = "{}{}{}".format(root_path, path_sep, self._service._usage)
         for name, method in _inspect_methods(self._service.__class__):
-            if not hasattr(method, "routing"):
+            if not hasattr(method, "original_routing"):
                 continue
-            routing = method.routing
+            routing = method.original_routing
             for routes, http_method in routing["routes"]:
                 method_name = "{}_{}".format(http_method.lower(), name)
                 default_route = routes[0]
@@ -424,6 +436,7 @@ class RestApiServiceControllerGenerator(object):
                 route_params = dict(
                     route=["{}{}".format(root_path, r) for r in routes],
                     methods=[http_method],
+                    type="restapi",
                 )
                 for attr in {"auth", "cors", "csrf", "save_session"}:
                     if attr in routing:

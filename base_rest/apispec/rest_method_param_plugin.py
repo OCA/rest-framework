@@ -25,7 +25,7 @@ class RestMethodParamPlugin(BasePlugin):
         self.openapi_version = spec.openapi_version
 
     def operation_helper(self, path=None, operations=None, **kwargs):
-        routing = kwargs.get("routing")
+        routing = kwargs.get("original_routing")
         if not routing:
             super(RestMethodParamPlugin, self).operation_helper(
                 path, operations, **kwargs
@@ -33,14 +33,14 @@ class RestMethodParamPlugin(BasePlugin):
         if not operations:
             return
         for method, params in operations.items():
-            parameters = self._generate_pamareters(routing, method, params)
+            parameters = self._generate_parameters(routing, method, params)
             if parameters:
                 params["parameters"] = parameters
             responses = self._generate_responses(routing, method, params)
             if responses:
                 params["responses"] = responses
 
-    def _generate_pamareters(self, routing, method, params):
+    def _generate_parameters(self, routing, method, params):
         parameters = params.get("parameters", [])
         # add default paramters provided by the sevice
         parameters.extend(self._default_parameters)

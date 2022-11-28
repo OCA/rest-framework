@@ -57,15 +57,15 @@ class RestServiceRegistryCase(ComponentRegistryCase):
     # pylint: disable=W8106
     @staticmethod
     def _setup_registry(class_or_instance):
+        class_or_instance._registry_init_modules = set(
+            class_or_instance.env.registry._init_modules
+        )
         ComponentRegistryCase._setup_registry(class_or_instance)
 
         class_or_instance._service_registry = RestServicesRegistry()
         # take a copy of registered controllers
-        controllers = http.controllers_per_module
-        http.controllers_per_module = controllers
-
-        class_or_instance._controllers_per_module = copy.deepcopy(
-            http.controllers_per_module
+        class_or_instance._controller_children_classes = copy.deepcopy(
+            http.Controller.children_classes
         )
         class_or_instance._original_addon_rest_controllers_per_module = copy.deepcopy(
             _rest_controllers_per_module[_get_addon_name(class_or_instance.__module__)]
@@ -143,8 +143,13 @@ class RestServiceRegistryCase(ComponentRegistryCase):
 
     @staticmethod
     def _teardown_registry(class_or_instance):
+        class_or_instance.env.registry._init_modules = (
+            class_or_instance._registry_init_modules
+        )
         ComponentRegistryCase._teardown_registry(class_or_instance)
-        http.controllers_per_module = class_or_instance._controllers_per_module
+        http.Controller.children_classes = (
+            class_or_instance._controller_children_classes
+        )
         db_name = get_db_name()
         _component_databases[db_name] = class_or_instance._original_components
         _rest_services_databases[
@@ -175,16 +180,16 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             service._collection.replace(".", "_"),
             service._usage.replace(".", "_"),
         )
-        controllers = http.controllers_per_module.get(addon_name, [])
+        controllers = http.Controller.children_classes.get(addon_name, [])
         if not controllers:
             return
-        return controllers[0][1]
+        return controllers[0]
 
     @staticmethod
     def _get_controller_route_methods(controller):
         methods = {}
         for name, method in _inspect_methods(controller):
-            if hasattr(method, "routing"):
+            if hasattr(method, "original_routing"):
                 methods[name] = method
         return methods
 

@@ -62,18 +62,18 @@ class BaseRestServiceAPISpec(APISpec):
 
     def _add_method_path(self, method):
         description = textwrap.dedent(method.__doc__ or "")
-        routing = method.routing
+        routing = method.original_routing
         for paths, method in routing["routes"]:
             for path in paths:
                 self.path(
                     path,
                     operations={method.lower(): {"summary": description}},
-                    routing=routing,
+                    original_routing=routing,
                 )
 
     def generate_paths(self):
         for _name, method in inspect.getmembers(self._service, inspect.ismethod):
-            routing = getattr(method, "routing", None)
+            routing = getattr(method, "original_routing", None)
             if not routing:
                 continue
             self._add_method_path(method)

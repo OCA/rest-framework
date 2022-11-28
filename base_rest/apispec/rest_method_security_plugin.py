@@ -23,7 +23,7 @@ class RestMethodSecurityPlugin(BasePlugin):
         spec.components.security_scheme("user", user_scheme)
 
     def operation_helper(self, path=None, operations=None, **kwargs):
-        routing = kwargs.get("routing")
+        routing = kwargs.get("original_routing")
         if not routing:
             super(RestMethodSecurityPlugin, self).operation_helper(
                 path, operations, **kwargs
