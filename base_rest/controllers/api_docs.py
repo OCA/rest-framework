@@ -42,9 +42,7 @@ class ApiDocsController(Controller):
             service,
             controller_class,
         ):
-            openapi_doc = service.to_openapi(
-                default_auth=controller_class._default_auth
-            )
+            openapi_doc = service.to_openapi(default_auth=controller_class)
             return self.make_json_response(openapi_doc)
 
     def _get_api_urls(self):

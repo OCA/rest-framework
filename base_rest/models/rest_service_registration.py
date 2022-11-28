@@ -61,11 +61,14 @@ class RestServiceRegistration(models.AbstractModel):
         self.build_registry(services_registry)
         # we also have to remove the RestController from the
         # controller_per_module registry since it's an abstract controller
-        controllers = http.controllers_per_module["base_rest"]
+        controllers = http.Controller.children_classes["base_rest"]
+        # controllers = [
+        #     (name, cls) for name, cls in controllers if "RestController" not in name
+        #  ]
         controllers = [
-            (name, cls) for name, cls in controllers if "RestController" not in name
+            (name) for name in controllers if "RestController" not in name.__name__
         ]
-        http.controllers_per_module["base_rest"] = controllers
+        http.Controller.children_classes["base_rest"] = controllers
         # create the final controller providing the http routes for
         # the services available into the current database
         self._build_controllers_routes(services_registry)
@@ -104,7 +107,8 @@ class RestServiceRegistration(models.AbstractModel):
 
         # register our conroller into the list of available controllers
         name_class = ("{}.{}".format(ctrl_cls.__module__, ctrl_cls.__name__), ctrl_cls)
-        http.controllers_per_module[addon_name].append(name_class)
+        http.Controller.children_classes[addon_name] = name_class
+        # http.controllers_per_module[addon_name].append(name_class)
         self._apply_defaults_to_controller_routes(controller_class=ctrl_cls)
 
     def _apply_defaults_to_controller_routes(self, controller_class):

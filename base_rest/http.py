@@ -21,7 +21,6 @@ from werkzeug.exceptions import (
 )
 from werkzeug.utils import escape
 
-import odoo
 from odoo.exceptions import (
     AccessDenied,
     AccessError,
@@ -29,11 +28,15 @@ from odoo.exceptions import (
     UserError,
     ValidationError,
 )
-from odoo.http import HttpRequest, Root, SessionExpiredException, request
+
+# from odoo.http import HttpRequest, Root, SessionExpiredException, request
+from odoo.http import Request, SessionExpiredException, request
 from odoo.tools import ustr
 from odoo.tools.config import config
 
-from .core import _rest_services_routes
+# import odoo
+# from .core import _rest_services_routes
+
 
 _logger = logging.getLogger(__name__)
 
@@ -116,7 +119,7 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
     return exception
 
 
-class HttpRestRequest(HttpRequest):
+class HttpRestRequest(Request):
     """Http request that always return json, usefull for rest api"""
 
     def __init__(self, httprequest):
@@ -216,22 +219,22 @@ class HttpRestRequest(HttpRequest):
         return self.make_response(data, headers=headers, cookies=cookies)
 
 
-ori_get_request = Root.get_request
-
-
-def get_request(self, httprequest):
-    db = httprequest.session.db
-    if db and odoo.service.db.exp_db_exist(db):
-        # on the very first request processed by a worker,
-        # registry is not loaded yet
-        # so we enforce its loading here to make sure that
-        # _rest_services_databases is not empty
-        odoo.registry(db)
-        rest_routes = _rest_services_routes.get(db, [])
-        for root_path in rest_routes:
-            if httprequest.path.startswith(root_path):
-                return HttpRestRequest(httprequest)
-    return ori_get_request(self, httprequest)
-
-
-Root.get_request = get_request
+# ori_get_request = Application.get_request
+#
+#
+# def get_request(self, httprequest):
+#     db = httprequest.session.db
+#     if db and odoo.service.db.exp_db_exist(db):
+#         # on the very first request processed by a worker,
+#         # registry is not loaded yet
+#         # so we enforce its loading here to make sure that
+#         # _rest_services_databases is not empty
+#         odoo.registry(db)
+#         rest_routes = _rest_services_routes.get(db, [])
+#         for root_path in rest_routes:
+#             if httprequest.path.startswith(root_path):
+#                 return HttpRestRequest(httprequest)
+#     return ori_get_request(self, httprequest)
+#
+#
+# Application.get_request = get_request
