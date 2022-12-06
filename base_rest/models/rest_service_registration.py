@@ -90,29 +90,16 @@ class RestServiceRegistration(models.AbstractModel):
 
         # generate an addon name used to register our new controller for
         # the current database
-        addon_name = "{}_{}_{}".format(
+        addon_name = base_controller_cls._module
+        identifier = "{}_{}_{}".format(
             self.env.cr.dbname,
             service._collection.replace(".", "_"),
             service._usage.replace(".", "_"),
         )
+        base_controller_cls._identifier = identifier
         # put our new controller into the new addon module
         ctrl_cls.__module__ = "odoo.addons.{}".format(addon_name)
 
-        # instruct the registry that our fake addon is part of the loaded
-        # modules
-        # TODO: causes
-        # Traceback (most recent call last):
-        #   File "/home/odoo/odoo/service/server.py", line 1310, in preload_registries
-        #     post_install_suite = loader.make_suite(module_names, 'post_install')
-        #   File "/home/odoo/odoo/tests/loader.py", line 58, in make_suite
-        #     return OdooSuite(sorted(tests, key=lambda t: t.test_sequence))
-        #   File "/home/odoo/odoo/tests/loader.py", line 54, in <genexpr>
-        #     for m in get_test_modules(module_name)
-        #   File "/home/odoo/odoo/tests/loader.py", line 22, in get_test_modules
-        #     results = _get_tests_modules(importlib.util.find_spec(f'odoo.addons.{module}'))
-        #   File "/home/odoo/odoo/tests/loader.py", line 31, in _get_tests_modules
-        #     spec = importlib.util.find_spec('.tests', mod.name)
-        # AttributeError: 'NoneType' object has no attribute 'name'
         self.env.registry._init_modules.add(addon_name)
 
         # register our conroller into the list of available controllers

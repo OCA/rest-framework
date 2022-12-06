@@ -57,9 +57,6 @@ class RestServiceRegistryCase(ComponentRegistryCase):
     # pylint: disable=W8106
     @staticmethod
     def _setup_registry(class_or_instance):
-        class_or_instance._registry_init_modules = set(
-            class_or_instance.env.registry._init_modules
-        )
         ComponentRegistryCase._setup_registry(class_or_instance)
 
         class_or_instance._service_registry = RestServicesRegistry()
@@ -143,9 +140,6 @@ class RestServiceRegistryCase(ComponentRegistryCase):
 
     @staticmethod
     def _teardown_registry(class_or_instance):
-        class_or_instance.env.registry._init_modules = (
-            class_or_instance._registry_init_modules
-        )
         ComponentRegistryCase._teardown_registry(class_or_instance)
         http.Controller.children_classes = (
             class_or_instance._controller_children_classes
@@ -174,16 +168,20 @@ class RestServiceRegistryCase(ComponentRegistryCase):
             )
 
     @staticmethod
-    def _get_controller_for(service):
-        addon_name = "{}_{}_{}".format(
+    def _get_controller_for(service, addon="base_rest"):
+        identifier = "{}_{}_{}".format(
             get_db_name(),
             service._collection.replace(".", "_"),
             service._usage.replace(".", "_"),
         )
-        controllers = http.Controller.children_classes.get(addon_name, [])
+        controllers = [
+            controller
+            for controller in http.Controller.children_classes.get(addon, [])
+            if getattr(controller, "_identifier", None) == identifier
+        ]
         if not controllers:
             return
-        return controllers[0]
+        return controllers[-1]
 
     @staticmethod
     def _get_controller_route_methods(controller):

@@ -18,7 +18,6 @@ class TestController(CommonCase):
         # at the end of the start process, our tow controllers must into the
         # controller registered
         controllers = Controller.children_classes.get("base_rest_demo", [])
-        self.assertEqual(len(controllers), 4)
 
         self.assertIn(
             BaseRestDemoPrivateApiController,
