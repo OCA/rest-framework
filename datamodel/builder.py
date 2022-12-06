@@ -41,6 +41,7 @@ class DatamodelBuilder(models.AbstractModel):
     _datamodels_registry_cache_size = DEFAULT_CACHE_SIZE
 
     def _register_hook(self):
+
         # This method is called by Odoo when the registry is built,
         # so in case the registry is rebuilt (cache invalidation, ...),
         # we have to rebuild the datamodels. We use a new
