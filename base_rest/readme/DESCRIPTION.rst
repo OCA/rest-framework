@@ -1,3 +1,7 @@
+This addon is deprecated and not fully supported anymore on Odoo 16.
+Please migrate to the FastAPI migration module.
+See https://github.com/OCA/rest-framework/pull/291.
+
 This addon provides the basis to develop high level REST APIs for Odoo.
 
 As Odoo becomes one of the central pieces of enterprise IT systems, it often
