@@ -1,11 +1,11 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
-
+from enum import Enum
 from typing import List
 
 from odoo import _, api, fields, models
 from odoo.api import Environment
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
 
 from odoo.addons.base.models.res_partner import Partner
 
@@ -98,6 +98,37 @@ demo_api_router = APIRouter()
 async def hello_word():
     """Hello World!"""
     return {"Hello": "World"}
+
+
+class ExceptionType(str, Enum):
+    user_error = "UserError"
+    validation_error = "ValidationError"
+    access_error = "AccessError"
+    missing_error = "MissingError"
+    http_exception = "HTTPException"
+    bare_exception = "BareException"
+
+
+@demo_api_router.get("/exception")
+async def exception(exception_type: ExceptionType, error_message: str):
+    """Raise an exception
+
+    This method is called into the test suite to check that any exception
+    is correctly handled by the fastapi endpoint and that the transaction
+    is roll backed.
+    """
+    exception_classes = {
+        ExceptionType.user_error: UserError,
+        ExceptionType.validation_error: ValidationError,
+        ExceptionType.access_error: AccessError,
+        ExceptionType.missing_error: MissingError,
+        ExceptionType.http_exception: HTTPException,
+        ExceptionType.bare_exception: NotImplementedError,  # any exception child of Exception
+    }
+    exception_cls = exception_classes[exception_type]
+    if exception_cls is HTTPException:
+        raise exception_cls(status_code=status.HTTP_409_CONFLICT, detail=error_message)
+    raise exception_classes[exception_type](error_message)
 
 
 @demo_api_router.get("/who_ami", response_model=UserInfo)
