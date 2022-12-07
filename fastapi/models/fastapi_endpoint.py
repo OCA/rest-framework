@@ -3,17 +3,18 @@
 
 import logging
 from functools import partial
-from typing import Any, Dict, List
+from typing import Any, Awaitable, Callable, Dict, List, Type, Union
 
 from a2wsgi import ASGIMiddleware
 
+import odoo
 from odoo import _, api, exceptions, fields, models, tools
 
 from odoo.addons.endpoint_route_handler.registry import EndpointRegistry
 
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, HTTPException, Request, Response
 
-from .. import depends
+from .. import depends, error_handlers
 
 _logger = logging.getLogger(__name__)
 
@@ -186,9 +187,44 @@ class FastapiEndpoint(models.Model):
         app.dependency_overrides[depends.fastapi_endpoint_id] = partial(
             lambda a: a, self.id
         )
+        for exception, handler in self._get_app_exception_handlers().items():
+            app.add_exception_handler(exception, handler)
         return app
 
+    def _get_app_exception_handlers(
+        self,
+    ) -> Dict[
+        int | Type[Exception],
+        Callable[[Request, Exception], Union[Response, Awaitable[Response]]],
+    ]:
+        """Return a dict of exception handlers to register on the app
+
+        The key is the exception class or status code to handle.
+        The value is the handler function.
+
+        If you need to register your own handler, you can do it by overriding
+        this method and calling super(). Changes done in this way will be applied
+        to all the endpoints. If you need to register a handler only for a specific
+        endpoint, you can do it by overriding the _get_app_exception_handlers method
+        and conditionally returning your specific handlers only for the endpoint
+        you want according to the self.app value.
+
+        Be careful to not forget to roll back the transaction when you implement
+        your own error handler. If you don't, the transaction will be committed
+        and the changes will be applied to the database.
+        """
+        self.ensure_one()
+        return {
+            Exception: error_handlers._odoo_exception_handler,
+            HTTPException: error_handlers._odoo_http_exception_handler,
+            odoo.exceptions.UserError: error_handlers._odoo_user_error_handler,
+            odoo.exceptions.AccessError: error_handlers._odoo_access_error_handler,
+            odoo.exceptions.MissingError: error_handlers._odoo_missing_error_handler,
+            odoo.exceptions.ValidationError: error_handlers._odoo_validation_error_handler,
+        }
+
     def _prepare_fastapi_endpoint_params(self) -> Dict[str, Any]:
+        """Return the params to pass to the Fast API app constructor"""
         return {
             "title": self.name,
             "description": self.description,
