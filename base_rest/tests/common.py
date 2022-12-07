@@ -26,7 +26,7 @@ from ..core import (
     _rest_controllers_per_module,
     _rest_services_databases,
 )
-from ..tools import _inspect_methods
+from ..tools import ROUTING_DECORATOR_ATTR, _inspect_methods
 
 
 class RegistryMixin(object):
@@ -187,7 +187,7 @@ class RestServiceRegistryCase(ComponentRegistryCase):
     def _get_controller_route_methods(controller):
         methods = {}
         for name, method in _inspect_methods(controller):
-            if hasattr(method, "original_routing"):
+            if hasattr(method, ROUTING_DECORATOR_ATTR):
                 methods[name] = method
         return methods
 

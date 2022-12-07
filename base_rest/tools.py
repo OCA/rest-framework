@@ -6,6 +6,8 @@ from collections import OrderedDict
 
 _logger = logging.getLogger(__name__)
 
+# Decorator attribute added on a route function (cfr Odoo's route)
+ROUTING_DECORATOR_ATTR = "original_routing"
 SUPPORTED_META = ["title", "description", "example", "examples"]
 
 

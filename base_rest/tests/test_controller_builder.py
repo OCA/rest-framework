@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from odoo.addons.component.core import Component
 
 from .. import restapi
+from ..tools import ROUTING_DECORATOR_ATTR
 from .common import TransactionRestServiceRegistryCase
 
 
@@ -107,7 +108,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
         # the generated method_name is always the {http_method}_{method_name}
         method = routes["get_get"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["GET"],
                 "auth": "public",
@@ -124,7 +125,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["get_search"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["GET"],
                 "auth": "public",
@@ -138,7 +139,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["post_update"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["POST"],
                 "auth": "public",
@@ -155,7 +156,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["put_update"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["PUT"],
                 "auth": "public",
@@ -169,7 +170,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["post_create"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["POST"],
                 "auth": "public",
@@ -183,7 +184,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["post_delete"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["POST"],
                 "auth": "public",
@@ -197,7 +198,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["delete_delete"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["DELETE"],
                 "auth": "public",
@@ -211,7 +212,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["post_my_method"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["POST"],
                 "auth": "public",
@@ -225,7 +226,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["post_my_instance_method"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["POST"],
                 "auth": "public",
@@ -293,7 +294,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["get_get"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["GET"],
                 "auth": "public",
@@ -310,7 +311,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["get_get_name"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["GET"],
                 "auth": "public",
@@ -324,7 +325,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["post_update_name"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["POST"],
                 "auth": "user",
@@ -390,7 +391,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["get_get"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["GET"],
                 "auth": "public",
@@ -407,7 +408,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["get_get_name"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["GET"],
                 "auth": "public",
@@ -421,7 +422,7 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
 
         method = routes["post_update_name"]
         self.assertDictEqual(
-            method.original_routing,
+            getattr(method, ROUTING_DECORATOR_ATTR),
             {
                 "methods": ["POST"],
                 "auth": "user",
@@ -508,26 +509,33 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
             ("save_session", default_save_session),
         ]:
             self.assertEqual(
-                routes["get_new_api_method_without"].original_routing[attr],
+                getattr(routes["get_new_api_method_without"], ROUTING_DECORATOR_ATTR)[
+                    attr
+                ],
                 default,
                 "wrong %s" % attr,
             )
         self.assertEqual(
-            routes["get_new_api_method_with"].original_routing["auth"], "public"
+            getattr(routes["get_new_api_method_with"], ROUTING_DECORATOR_ATTR)["auth"],
+            "public",
         )
         self.assertEqual(
-            routes["get_new_api_method_with"].original_routing["cors"], "http://my_site"
+            getattr(routes["get_new_api_method_with"], ROUTING_DECORATOR_ATTR)["cors"],
+            "http://my_site",
         )
         self.assertEqual(
-            routes["get_new_api_method_with"].original_routing["csrf"], not default_csrf
+            getattr(routes["get_new_api_method_with"], ROUTING_DECORATOR_ATTR)["csrf"],
+            not default_csrf,
         )
         self.assertEqual(
-            routes["get_new_api_method_with"].original_routing["save_session"],
+            getattr(routes["get_new_api_method_with"], ROUTING_DECORATOR_ATTR)[
+                "save_session"
+            ],
             not default_save_session,
         )
 
         self.assertEqual(
-            routes["get_get"].original_routing["auth"],
+            getattr(routes["get_get"], ROUTING_DECORATOR_ATTR)["auth"],
             default_auth,
             "wrong auth for get_get",
         )
@@ -539,12 +547,14 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
             ("save_session", default_save_session),
         ]:
             self.assertEqual(
-                routes["my_controller_route_without"].original_routing[attr],
+                getattr(routes["my_controller_route_without"], ROUTING_DECORATOR_ATTR)[
+                    attr
+                ],
                 default,
                 "wrong %s" % attr,
             )
 
-        routing = routes["my_controller_route_with"].original_routing
+        routing = getattr(routes["my_controller_route_with"], ROUTING_DECORATOR_ATTR)
         for attr, value in [
             ("auth", "public"),
             ("cors", "http://with_cors"),
@@ -558,7 +568,9 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
                 "wrong %s" % attr,
             )
         self.assertEqual(
-            routes["my_controller_route_without_auth_2"].original_routing["auth"],
+            getattr(
+                routes["my_controller_route_without_auth_2"], ROUTING_DECORATOR_ATTR
+            )["auth"],
             None,
             "wrong auth for my_controller_route_without_auth_2",
         )
@@ -603,7 +615,9 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
         routes = self._get_controller_route_methods(controller)
 
         self.assertEqual(
-            routes["get_new_api_method_with_public_or"].original_routing["auth"],
+            getattr(
+                routes["get_new_api_method_with_public_or"], ROUTING_DECORATOR_ATTR
+            )["auth"],
             "public_or_my_default_auth",
         )
 
@@ -641,7 +655,9 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
         routes = self._get_controller_route_methods(controller)
 
         self.assertEqual(
-            routes["get_new_api_method_with_public_or"].original_routing["auth"],
+            getattr(
+                routes["get_new_api_method_with_public_or"], ROUTING_DECORATOR_ATTR
+            )["auth"],
             "my_default_auth",
         )
 

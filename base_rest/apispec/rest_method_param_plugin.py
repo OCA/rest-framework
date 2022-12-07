@@ -4,6 +4,7 @@
 from apispec import BasePlugin
 
 from ..restapi import RestMethodParam
+from ..tools import ROUTING_DECORATOR_ATTR
 
 
 class RestMethodParamPlugin(BasePlugin):
@@ -25,7 +26,7 @@ class RestMethodParamPlugin(BasePlugin):
         self.openapi_version = spec.openapi_version
 
     def operation_helper(self, path=None, operations=None, **kwargs):
-        routing = kwargs.get("original_routing")
+        routing = kwargs.get(ROUTING_DECORATOR_ATTR)
         if not routing:
             super(RestMethodParamPlugin, self).operation_helper(
                 path, operations, **kwargs

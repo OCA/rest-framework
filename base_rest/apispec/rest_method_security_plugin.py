@@ -3,6 +3,8 @@
 
 from apispec import BasePlugin
 
+from ..tools import ROUTING_DECORATOR_ATTR
+
 
 class RestMethodSecurityPlugin(BasePlugin):
     """
@@ -23,7 +25,7 @@ class RestMethodSecurityPlugin(BasePlugin):
         spec.components.security_scheme("user", user_scheme)
 
     def operation_helper(self, path=None, operations=None, **kwargs):
-        routing = kwargs.get("original_routing")
+        routing = kwargs.get(ROUTING_DECORATOR_ATTR)
         if not routing:
             super(RestMethodSecurityPlugin, self).operation_helper(
                 path, operations, **kwargs

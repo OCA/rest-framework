@@ -29,11 +29,7 @@ from ..core import (
     _rest_services_databases,
     _rest_services_routes,
 )
-from ..tools import _inspect_methods
-
-# Decorator attribute added on a route function (cfr Odoo's route)
-ROUTING_DECORATOR_ATTR = "original_routing"
-
+from ..tools import ROUTING_DECORATOR_ATTR, _inspect_methods
 
 _logger = logging.getLogger(__name__)
 
@@ -397,9 +393,9 @@ class RestApiServiceControllerGenerator(object):
             path_sep = "/"
         root_path = "{}{}{}".format(root_path, path_sep, self._service._usage)
         for name, method in _inspect_methods(self._service.__class__):
-            if not hasattr(method, "original_routing"):
+            routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
+            if routing is None:
                 continue
-            routing = method.original_routing
             for routes, http_method in routing["routes"]:
                 method_name = "{}_{}".format(http_method.lower(), name)
                 default_route = routes[0]

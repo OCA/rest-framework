@@ -7,6 +7,7 @@ import textwrap
 from apispec import APISpec
 
 from ..core import _rest_services_databases
+from ..tools import ROUTING_DECORATOR_ATTR
 from .rest_method_param_plugin import RestMethodParamPlugin
 from .rest_method_security_plugin import RestMethodSecurityPlugin
 from .restapi_method_route_plugin import RestApiMethodRoutePlugin
@@ -62,18 +63,18 @@ class BaseRestServiceAPISpec(APISpec):
 
     def _add_method_path(self, method):
         description = textwrap.dedent(method.__doc__ or "")
-        routing = method.original_routing
+        routing = getattr(method, ROUTING_DECORATOR_ATTR)
         for paths, method in routing["routes"]:
             for path in paths:
                 self.path(
                     path,
                     operations={method.lower(): {"summary": description}},
-                    original_routing=routing,
+                    **{ROUTING_DECORATOR_ATTR: routing},
                 )
 
     def generate_paths(self):
         for _name, method in inspect.getmembers(self._service, inspect.ismethod):
-            routing = getattr(method, "original_routing", None)
+            routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
             if not routing:
                 continue
             self._add_method_path(method)
