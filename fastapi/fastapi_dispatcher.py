@@ -23,9 +23,11 @@ class FastApiDispatcher(Dispatcher):
         root_path = "/" + environ["PATH_INFO"].split("/")[1]
         # TODO store the env into contextvar to be used by the odoo_env
         # depends method
-        app = request.env["fastapi.endpoint"].sudo().get_app(root_path)
+        fastapi_endpoint = self.request.env["fastapi.endpoint"].sudo()
+        app = fastapi_endpoint.get_app(root_path)
+        uid = fastapi_endpoint.get_uid(root_path)
         data = BytesIO()
-        with self._manage_odoo_env():
+        with self._manage_odoo_env(uid):
             for r in app(environ, self._make_response):
                 data.write(r)
             return self.request.make_response(
@@ -45,8 +47,11 @@ class FastApiDispatcher(Dispatcher):
         return environ
 
     @contextmanager
-    def _manage_odoo_env(self):
-        token = odoo_env_ctx.set(request.env)
+    def _manage_odoo_env(self, uid=None):
+        env = request.env
+        if uid:
+            env = env(user=uid)
+        token = odoo_env_ctx.set(env)
         try:
             yield
         finally:

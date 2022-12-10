@@ -51,8 +51,8 @@ class FastapiEndpoint(models.Model):
                 )
 
     @api.model
-    def _routing_fields(self):
-        fields = super()._routing_fields()
+    def _fastapi_app_fields(self) -> List[str]:
+        fields = super()._fastapi_app_fields()
         fields.append("demo_auth_method")
         return fields
 
@@ -169,7 +169,9 @@ def api_key_based_authenticated_partner_impl(
     """A dummy implementation that look for a user with the same login
     as the provided api key
     """
-    partner = env["res.users"].search([("login", "=", api_key)], limit=1).partner_id
+    partner = (
+        env["res.users"].sudo().search([("login", "=", api_key)], limit=1).partner_id
+    )
     if not partner:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect API Key"
