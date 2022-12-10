@@ -1,1 +1,2 @@
+httpx
 odoo-addon-endpoint-route-handler @ git+https://github.com/acsone/web-api.git@16.0-mig-endpoint_route_handler#subdirectory=setup/endpoint_route_handler
