@@ -9,10 +9,11 @@ from odoo.exceptions import AccessDenied
 from odoo.addons.base.models.res_partner import Partner
 from odoo.addons.base.models.res_users import Users
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Query, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from .context import odoo_env_ctx
+from .schemas import Paging
 
 if TYPE_CHECKING:
     from .models.fastapi_endpoint import FastapiEndpoint
@@ -53,6 +54,11 @@ def authenticated_partner_env(
     return partner.env
 
 
+def paging(
+    page: int = Query(1, gte=1), page_size: int = Query(80, gte=1)  # noqa: B008
+) -> Paging:
+    """Return a Paging object from the page and page_size parameters"""
+    return Paging(limit=page_size, offset=(page - 1) * page_size)
 
 
 def basic_auth_user(
