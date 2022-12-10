@@ -37,11 +37,22 @@ def authenticated_partner(
     enpoint, you can add a dependency into the endpoint definition on this
     method.
     This method is a safe way to declare a dependency without requiring a
-    specific implementation. It depends on `authenticated_partner_id`. The
-    concrete implementation of authenticated_partner_id has to be provide
+    specific implementation. It depends on `authenticated_partner_impl`. The
+    concrete implementation of authenticated_partner_impl has to be provided
     when the FastAPI app is created.
+    This method is also responsible to put the authenticated partner id
+    into the context of the current environment.
     """
-    return partner
+    return partner.with_context(authenticated_partner_id=partner.id)
+
+
+def authenticated_partner_env(
+    partner: Partner = Depends(authenticated_partner),  # noqa: B008
+) -> Environment:
+    """Return an environment the authenticated partner id into the context"""
+    return partner.env
+
+
 
 
 def basic_auth_user(
