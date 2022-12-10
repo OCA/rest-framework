@@ -50,7 +50,7 @@ def authenticated_partner(
 def authenticated_partner_env(
     partner: Partner = Depends(authenticated_partner),  # noqa: B008
 ) -> Environment:
-    """Return an environment the authenticated partner id into the context"""
+    """Return an environment with the authenticated partner id in the context"""
     return partner.env
 
 
@@ -87,7 +87,7 @@ def authenticated_partner_from_basic_auth_user(
 
 
 def fastapi_endpoint_id() -> int:
-    """This method is overriden by default to make the fastapi.endpoint record
+    """This method is overriden by the FastAPI app to make the fastapi.endpoint record
     available for your endpoint method. To get the fastapi.endpoint record
     in your method, you just need to add a dependency on the fastapi_endpoint method
     defined below
@@ -100,7 +100,7 @@ def fastapi_endpoint(
 ) -> "FastapiEndpoint":
     """Return the fastapi.endpoint record
 
-    Be careful, the information are returned as sudo
+    Be careful, the returned FastapiEndpoint record is a sudoed record.
     """
     # TODO we should declare a technical user with read access only on the
     # fastapi.endpoint model

@@ -145,7 +145,7 @@ class FastapiEndpoint(models.Model):
                 rec._endpoint_registry.add_or_update_rule(rule, init=init)
 
     def _make_routing_rule(self):
-        """Generator of rule for every route ino the routing info"""
+        """Generator of rule for every route into the routing info"""
         self.ensure_one()
         routing = self._get_routing_info()
         for route in routing["routes"]:
@@ -261,7 +261,7 @@ class FastapiEndpoint(models.Model):
         }
 
     def _get_fastapi_routers(self) -> List[APIRouter]:
-        """Return the api routers to use for the innstance.
+        """Return the api routers to use for the instance.
 
         This methoud must be implemented when registering a new api type.
         """
