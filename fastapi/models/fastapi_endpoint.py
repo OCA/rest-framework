@@ -38,6 +38,12 @@ class FastapiEndpoint(models.Model):
         copy=False,
     )
     app: str = fields.Selection(selection=[], required=True)
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="User",
+        help="The user to use to execute the API calls.",
+        default=lambda self: self.env.ref("base.public_user"),
+    )
     docs_url: str = fields.Char(compute="_compute_urls")
     redoc_url: str = fields.Char(compute="_compute_urls")
     openapi_url: str = fields.Char(compute="_compute_urls")
@@ -99,9 +105,16 @@ class FastapiEndpoint(models.Model):
             else:
                 self._unregister_endpoints()
             return True
-        if any([x in vals for x in self._routing_fields()]):
+        refresh_endpoints = any([x in vals for x in self._routing_fields()])
+        refresh_fastapi_app = (
+            any([x in vals for x in self._fastapi_app_fields()]) or refresh_endpoints
+        )
+        if refresh_endpoints:
             self._register_endpoints()
+        if refresh_fastapi_app:
             self._reset_app()
+        if "user_id" in vals:
+            self.get_uid.clear_cache(self)
         return False
 
     def unlink(self):
@@ -109,9 +122,15 @@ class FastapiEndpoint(models.Model):
         return super().unlink()
 
     @api.model
-    def _routing_fields(self):
-        """The list of fields requiring to rebuild the app if modified"""
+    def _routing_fields(self) -> List[str]:
+        """The list of fields requiring to refresh the mount point of the pp
+        into odoo if modified"""
         return ["root_path"]
+
+    @api.model
+    def _fastapi_app_fields(self) -> List[str]:
+        """The list of fields requiring to refresh the fastapi app if modified"""
+        return []
 
     @property
     def _endpoint_registry(self) -> EndpointRegistry:
@@ -179,6 +198,14 @@ class FastapiEndpoint(models.Model):
         if not record:
             return None
         return ASGIMiddleware(record._get_app())
+
+    @api.model
+    @tools.ormcache("root_path")
+    def get_uid(self, root_path):
+        record = self.search([("root_path", "=", root_path)])
+        if not record:
+            return None
+        return record.user_id.id
 
     def _get_app(self) -> FastAPI:
         app = FastAPI(**self._prepare_fastapi_endpoint_params())

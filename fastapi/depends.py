@@ -54,7 +54,7 @@ def basic_auth_user(
         uid = env["res.users"].authenticate(
             db=env.cr.dbname, login=username, password=password, user_agent_env=None
         )
-        return env["res.users"].browse(uid)
+        return env["res.users"].sudo().browse(uid)
     except AccessDenied as ad:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
