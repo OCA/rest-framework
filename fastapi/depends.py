@@ -28,14 +28,14 @@ def authenticated_partner_impl() -> Partner:
     to declare the way your partner will be provided. In some case, this
     partner will come from the authentication mechanism (ex jwt token) in other cases
     it could comme from a lookup on an email received into an HTTP header ...
-    See the fastapi_endpoint_demo for an exemple"""
+    See the fastapi_endpoint_demo for an example"""
 
 
 def authenticated_partner(
     partner: Partner = Depends(authenticated_partner_impl),  # noqa: B008
 ) -> Partner:
     """If you need to get access to the authenticated partner into your
-    enpoint, you can add a dependency into the endpoint definition on this
+    endpoint, you can add a dependency into the endpoint definition on this
     method.
     This method is a safe way to declare a dependency without requiring a
     specific implementation. It depends on `authenticated_partner_impl`. The
@@ -88,8 +88,8 @@ def authenticated_partner_from_basic_auth_user(
 
 def fastapi_endpoint_id() -> int:
     """This method is overriden by default to make the fastapi.endpoint record
-    available for your endpoint method. To get the fastapi.enpoint record
-    in your method, you just need to add a dependecy on the fastapi_endpoint method
+    available for your endpoint method. To get the fastapi.endpoint record
+    in your method, you just need to add a dependency on the fastapi_endpoint method
     defined below
     """
 
@@ -100,7 +100,7 @@ def fastapi_endpoint(
 ) -> "FastapiEndpoint":
     """Return the fastapi.endpoint record
 
-    Be carefull, the information are returned as sudo
+    Be careful, the information are returned as sudo
     """
     # TODO we should declare a technical user with read access only on the
     # fastapi.endpoint model
