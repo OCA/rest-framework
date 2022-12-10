@@ -150,9 +150,9 @@ async def who_ami(partner=Depends(authenticated_partner)) -> UserInfo:  # noqa: 
 async def endpoint_app_info(
     endpoint: FastapiEndpoint = Depends(fastapi_endpoint),  # noqa: B008
 ) -> EndpointAppInfo:
-    """Returns the current enpoint configuration"""
+    """Returns the current endpoint configuration"""
     # This method show you how to get access to current endpoint configuration
-    # It also show you how you can specify a dependecy to force the security
+    # It also show you how you can specify a dependency to force the security
     # even if the method doesn't require the authenticated partner as parameter
     return EndpointAppInfo.from_orm(endpoint)
 

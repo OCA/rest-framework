@@ -368,31 +368,1096 @@ ul.auto-toc {
 !! changes will be overwritten.                   !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external" href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img alt="License: LGPL-3" src="https://img.shields.io/badge/licence-LGPL--3-blue.png" /></a> <a class="reference external" href="https://github.com/OCA/rest-framework/tree/16.0/fastapi"><img alt="OCA/rest-framework" src="https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github" /></a> <a class="reference external" href="https://translation.odoo-community.org/projects/rest-framework-16-0/rest-framework-16-0-fastapi"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external" href="https://runbot.odoo-community.org/runbot/271/16.0"><img alt="Try me on Runbot" src="https://img.shields.io/badge/runbot-Try%20me-875A7B.png" /></a></p>
-<p>This addon provides the basis smoothly integrate the <a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a>
+<p>This addon provides the basis to smoothly integrate the <a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a>
 framework into Odoo.</p>
-<p>This integration allows you to use all the goodies from <cite>FastAPI</cite> to build custom
+<p>This integration allows you to use all the goodies from <a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a> to build custom
 APIs for your Odoo server based on standard Python type hints.</p>
+<div class="section" id="what-is-building-an-api">
+<h1>What is building an API?</h1>
+<p>An API is a set of functions that can be called from the outside world. The
+goal of an API is to provide a way to interact with your application from the
+outside world without having to know how it works internally. A common mistake
+when you are building an API is to expose all the internal functions of your
+application and therefore create a tight coupling between the outside world and
+your internal datamodel and business logic. This is not a good idea because it
+makes it very hard to change your internal datamodel and business logic without
+breaking the outside world.</p>
+<p>When you are building an API, you define a contract between the outside world
+and your application. This contract is defined by the functions that you expose
+and the parameters that you accept. This contract is the API. When you change
+your internal datamodel and business logic, you can still keep the same API
+contract and therefore you don’t break the outside world. Even if you change
+your implementation, as long as you keep the same API contract, the outside
+world will still work. This is the beauty of an API and this is why it is so
+important to design a good API.</p>
+<p>A good API is designed to be stable and to be easy to use. It’s designed to
+provide high-level functions related to a specific use case. It’s designed to
+be easy to use by hiding the complexity of the internal datamodel and business
+logic. A common mistake when you are building an API is to expose all the internal
+functions of your application and let the oustide world deal with the complexity
+of your internal datamodel and business logic. Don’t forget that on a transactional
+point of view, each call to an API function is a transaction. This means that
+if a specific use case requires multiple calls to your API, you should provide
+a single function that does all the work in a single transaction. This why APIs
+methods are called high-level and atomic functions.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#known-issues-roadmap" id="id1">Known issues / Roadmap</a></li>
-<li><a class="reference internal" href="#bug-tracker" id="id2">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="id3">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="id4">Authors</a></li>
-<li><a class="reference internal" href="#contributors" id="id5">Contributors</a></li>
-<li><a class="reference internal" href="#maintainers" id="id6">Maintainers</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#usage" id="id1">Usage</a></li>
 </ul>
 </div>
+<div class="section" id="usage">
+<h2><a class="toc-backref" href="#id1">Usage</a></h2>
+</div>
+</div>
+<div class="section" id="what-s-building-an-api-with-fastapi">
+<h1>What’s building an API with fastapi?</h1>
+<p>FastAPI is a modern, fast (high-performance), web framework for building APIs
+with Python 3.6+ based on standard Python type hints. This addons let’s you
+keep advantage of the fastapi framework and use it with Odoo.</p>
+<p>Before you start, we must define some terms:</p>
+<ul class="simple">
+<li><strong>App</strong>: A FastAPI app is a collection of routes, dependencies, and other
+components that can be used to build a web application.</li>
+<li><strong>Router</strong>: A router is a collection of routes that can be mounted in an
+app.</li>
+<li><strong>Route</strong>: A route is a mapping between an HTTP method and a path, and
+defines what should happen when the user requests that path.</li>
+<li><strong>Dependency</strong>: A dependency is a callable that can be used to get some
+information from the user request, or to perform some actions before the
+request handler is called.</li>
+<li><strong>Request</strong>: A request is an object that contains all the information
+sent by the user’s browser as part of an HTTP request.</li>
+<li><strong>Response</strong>: A response is an object that contains all the information
+that the user’s browser needs to build the result page.</li>
+<li><strong>Handler</strong>: A handler is a function that takes a request and returns a
+response.</li>
+<li><strong>Middleware</strong>: A middleware is a function that takes a request and a
+handler, and returns a response.</li>
+</ul>
+<p>The FastAPI framework is based on the following principles:</p>
+<ul class="simple">
+<li><strong>Fast</strong>: Very high performance, on par with NodeJS and Go (thanks to Starlette
+and Pydantic). [One of the fastest Python frameworks available]</li>
+<li><strong>Fast to code</strong>: Increase the speed to develop features by about 200% to 300%.</li>
+<li><strong>Fewer bugs</strong>: Reduce about 40% of human (developer) induced errors.</li>
+<li><strong>Intuitive</strong>: Great editor support. Completion everywhere. Less time
+debugging.</li>
+<li><strong>Easy</strong>: Designed to be easy to use and learn. Less time reading docs.</li>
+<li><strong>Short</strong>: Minimize code duplication. Multiple features from each parameter
+declaration. Fewer bugs.</li>
+<li><strong>Robust</strong>: Get production-ready code. With automatic interactive documentation.</li>
+<li><strong>Standards-based</strong>: Based on (and fully compatible with) the open standards
+for APIs: OpenAPI (previously known as Swagger) and JSON Schema.</li>
+<li><strong>Open Source</strong>: FastAPI is fully open-source, under the MIT license.</li>
+</ul>
+<p>The first step is to install the fastapi addon. You can do it with the
+following command:</p>
+<blockquote>
+$ pip install odoo-fastapi</blockquote>
+<p>Once the addon is installed, you can start building your API. The first thing
+you need to do is to create a new addon that depends on ‘fastapi’. For example,
+let’s create an addon called <em>my_demo_api</em>.</p>
+<p>Then, you need to declare your app by defining a model that inherits from
+‘fastapi.endpoint’ and add your app name into the app field. For example:</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">odoo</span> <span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="n">app</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+        <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+</pre>
+<p>The <strong>‘fastapi.endpoint’</strong> model is the base model for all the endpoints. An endpoint
+instance is the mount point for a fastapi app into Odoo. When you create a new
+endpoint, you can define the app that you want to mount in the <strong>‘app’</strong> field
+and the path where you want to mount it in the <strong>‘path’</strong> field.</p>
+<p>figure:: static/description/endpoint.png</p>
+<blockquote>
+FastAPI Endpoint</blockquote>
+<p>Thanks to the <strong>‘fastapi.endpoint’</strong> model, you can create as many endpoints as
+you wand and mount as many apps as you want in each endpoint. The endpoint is
+also the place where you can define configuration parameters for your app. A
+typical example is the authentication method that you want to use for your app
+when accessed at the endpoint path.</p>
+<p>Now, you can create your first router. For that, you need to define a global
+variable into your fastapi_endpoint module called for example ‘demo_api_router’</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
+<span class="kn">from</span> <span class="nn">odoo</span> <span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="n">app</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+        <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+<span class="c1"># create a router</span>
+<span class="n">demo_api_router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+</pre>
+<p>To make your router available to your app, you need to add it to the list of routers
+returned by the <strong>get_fastapi_routers</strong> method of your fastapi_endpoint model.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
+<span class="kn">from</span> <span class="nn">odoo</span> <span class="kn">import</span> <span class="n">api</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="n">app</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+        <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="nd">&#64;api</span><span class="o">.</span><span class="n">model</span>
+    <span class="k">def</span> <span class="nf">get_fastapi_routers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">==</span> <span class="s2">&quot;demo&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">demo_api_router</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_fastapi_routers</span><span class="p">()</span>
+
+<span class="c1"># create a router</span>
+<span class="n">demo_api_router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+</pre>
+<p>Now, you can start adding routes to your router. For example, let’s add a route
+that returns a list of partners.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">odoo</span> <span class="kn">import</span> <span class="n">api</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">..depends</span> <span class="kn">import</span> <span class="n">odoo_env</span>
+
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="n">app</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+        <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="nd">&#64;api</span><span class="o">.</span><span class="n">model</span>
+    <span class="k">def</span> <span class="nf">get_fastapi_routers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">==</span> <span class="s2">&quot;demo&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">demo_api_router</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_fastapi_routers</span><span class="p">()</span>
+
+<span class="c1"># create a router</span>
+<span class="n">demo_api_router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">PartnerInfo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/partners&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_partners</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">PartnerInfo</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">partner</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">partner</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">partner</span> <span class="ow">in</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.partner&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">([])</span>
+    <span class="p">]</span>
+</pre>
+<p>Now, you can start your Odoo server, install your addon and create a new endpoint
+instance for your app. Once it’s done click on the docs url to access the
+interactive documentation of your app.</p>
+</div>
+<div class="section" id="dealing-with-the-odoo-environment">
+<h1>Dealing with the odoo environment</h1>
+<p>The <strong>‘odoo.addons.fastapi.depends’</strong> module provides a set of functions that you can use
+to inject reusable dependencies into your routes. For example, the <strong>‘odoo_env’</strong>
+function returns the current odoo environment. You can use it to access the
+odoo models and the database from your route handlers.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">..depends</span> <span class="kn">import</span> <span class="n">odoo_env</span>
+
+<span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/partners&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_partners</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">PartnerInfo</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">partner</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">partner</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">partner</span> <span class="ow">in</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.partner&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">([])</span>
+    <span class="p">]</span>
+</pre>
+<p>As you can see, you can use the <strong>‘Depends’</strong> function to inject the dependency
+into your route handler. The <strong>‘Depends’</strong> function is provided by the
+<strong>‘fastapi’</strong> module. You can use it to inject any dependency into your route
+handler. As your handler is a python function, the only way to get access to
+the odoo environment is to inject it as a dependency. The fastapi addon provides
+a set of function that can be used as dependencies:</p>
+<ul class="simple">
+<li><strong>‘odoo_env’</strong>: Returns the current odoo environment.</li>
+<li><strong>‘fastapi_endpoint’</strong>: Returns the current fastapi endpoint model instance.</li>
+<li><strong>‘authenticated_partner’</strong>: Returns the authenticated partner.</li>
+</ul>
+<p>By default, the <strong>‘odoo_env’</strong> and <strong>‘fastapi_endpoint’</strong> dependencies are
+available without extra work.</p>
+</div>
+<div class="section" id="the-dependency-injection-mechanism">
+<h1>The dependency injection mechanism</h1>
+<p>The <strong>‘odoo_env’</strong> dependency relies on a simple implementation that retrieves
+the current odoo environment from ContextVar variable initialized at the start
+of the request processing by the specific request dispatcher processing the
+fastapi requests.</p>
+<p>The <strong>‘fastapi_endpoint’</strong> dependency relies on the ‘dependency_overrides’ mechanism
+provided by the <strong>‘fastapi’</strong> module. (see the fastapi documentation for more
+details about the dependency_overrides mechanism). If you take a look at the
+current implementation of the <strong>‘fastapi_endpoint’</strong> dependency, you will see
+that the method depends of two parameters: <strong>‘endpoint_id’</strong> and <strong>‘env’</strong>. Each
+of these parameters are dependencies themselves.</p>
+<pre class="code python literal-block">
+<span class="k">def</span> <span class="nf">fastapi_endpoint_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;This method is overriden by default to make the fastapi.endpoint record
+    available for your endpoint method. To get the fastapi.endpoint record
+    in your method, you just need to add a dependency on the fastapi_endpoint method
+    defined below
+    &quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">fastapi_endpoint</span><span class="p">(</span>
+    <span class="n">_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">fastapi_endpoint_id</span><span class="p">),</span>  <span class="c1"># noqa: B008</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">),</span>  <span class="c1"># noqa: B008</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FastapiEndpoint&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the fastapi.endpoint record
+
+    Be careful, the information are returned as sudo
+    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO we should declare a technical user with read access only on the</span>
+    <span class="c1"># fastapi.endpoint model</span>
+    <span class="k">return</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;fastapi.endpoint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sudo</span><span class="p">()</span><span class="o">.</span><span class="n">browse</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
+</pre>
+<p>As you can see, one of these dependencies is the <strong>‘fastapi_endpoint_id’</strong>
+dependency and has no concrete implementation. This method is used as a contract
+that must be implemented/provided at the time the fastapi app is created.
+Here comes the power of the dependency_overrides mechanism.
+If you take a look at the <strong>‘_get_app’</strong> method of the <strong>‘FastapiEndpoint’</strong> model,
+you will see that the <strong>‘fastapi_endpoint_id’</strong> dependency is overriden by
+registering a specific method that returns the id of the current fastapi endpoint
+model instance for the original method.</p>
+<pre class="code python literal-block">
+<span class="k">def</span> <span class="nf">_get_app</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FastAPI</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_prepare_fastapi_endpoint_params</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">router</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fastapi_routers</span><span class="p">():</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="n">router</span><span class="o">=</span><span class="n">router</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="p">[</span><span class="n">depends</span><span class="o">.</span><span class="n">fastapi_endpoint_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">)</span>
+</pre>
+<p>This kind of mechanism is very powerful and allows you to inject any dependency
+into your route handlers and moreover, define an abstract dependency that can be
+used by any other addon and for which the implementation could depend on the
+endpoint configuration.</p>
+</div>
+<div class="section" id="the-authentication-mechanism">
+<h1>The authentication mechanism</h1>
+<p>To make our app not tightly coupled with a specific authentication mechanism,
+we will use the <strong>‘authenticated_partner’</strong> dependency. As for the
+<strong>‘fastapi_endpoint’</strong> this dependency depends on an abstract dependency.</p>
+<p>When you define a route handler, you can inject the <strong>‘authenticated_partner’</strong>
+dependency as a parameter of your route handler.</p>
+<pre class="code python literal-block">
+<span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/partners&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_partners</span><span class="p">(</span>
+    <span class="n">env</span><span class="o">=</span><span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">),</span> <span class="n">partner</span><span class="o">=</span><span class="n">Depends</span><span class="p">(</span><span class="n">authenticated_partner</span><span class="p">)</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">PartnerInfo</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">partner</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">partner</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">partner</span> <span class="ow">in</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.partner&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">([])</span>
+    <span class="p">]</span>
+</pre>
+<p>At this stage, your handler is not tied to a specific authentication mechanism
+but only expects to get a partner as a dependency. Depending on your needs, you
+can implement different authentication mechanism available for your app.
+The fastapi addon provides a default authentication mechanism using the
+‘BasiAuth’ method. This authentication mechanism is implemented in the
+<strong>‘odoo.addons.fastapi.depends’</strong> module and relies on functionalities provided
+by the <strong>‘fastapi.security’</strong> module.</p>
+<pre class="code python literal-block">
+<span class="k">def</span> <span class="nf">authenticated_partner</span><span class="p">(</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">),</span>
+    <span class="n">security</span><span class="p">:</span> <span class="n">HTTPBasicCredentials</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">HTTPBasic</span><span class="p">()),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;res.partner&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the authenticated partner&quot;&quot;&quot;</span>
+    <span class="n">partner</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.partner&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">security</span><span class="o">.</span><span class="n">username</span><span class="p">)],</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">partner</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+            <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_401_UNAUTHORIZED</span><span class="p">,</span>
+            <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid authentication credentials&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">:</span> <span class="s2">&quot;Basic&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">partner</span><span class="o">.</span><span class="n">check_password</span><span class="p">(</span><span class="n">security</span><span class="o">.</span><span class="n">password</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+            <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_401_UNAUTHORIZED</span><span class="p">,</span>
+            <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid authentication credentials&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">:</span> <span class="s2">&quot;Basic&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">partner</span>
+</pre>
+<p>As you can see, the <strong>‘authenticated_partner’</strong> dependency relies on the
+<strong>‘HTTPBasic’</strong> dependency provided by the <strong>‘fastapi.security’</strong> module.
+In this dummy implementation, we just check that the provided credentials
+can be used to authenticate a user in odoo. If the authentication is successful,
+we return the partner record linked to the authenticated user.</p>
+<p>In some cas you could want to implement a more complex authentication mechanism
+that could rely on a token or a session. In this case, you can override the
+<strong>‘authenticated_partner’</strong> dependency by registering a specific method that
+returns the authenticated partner. Moreover, you can make it configurable on
+the fastapi endpoint model instance.</p>
+<p>To do it, you just need to implement a specific method for each of your
+authentication mechanism and allows the user to select one of these methods
+when he creates a new fastapi endpoint. Let’s say that we want to allow the
+authentication by using an api key or via basic auth. Since basic auth is already
+implemented, we will only implement the api key authentication mechanism.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">fastapi.security</span> <span class="kn">import</span> <span class="n">APIKeyHeader</span>
+
+<span class="k">def</span> <span class="nf">api_key_based_authenticated_partner_impl</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span>  <span class="c1"># noqa: B008</span>
+        <span class="n">APIKeyHeader</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;api-key&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;In this demo, you can use a user's login as api key.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">),</span>  <span class="c1"># noqa: B008</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Partner</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A dummy implementation that look for a user with the same login
+    as the provided api key
+    &quot;&quot;&quot;</span>
+    <span class="n">partner</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.users&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">([(</span><span class="s2">&quot;login&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)],</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">partner_id</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">partner</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+            <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_401_UNAUTHORIZED</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Incorrect API Key&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">partner</span>
+</pre>
+<p>As for the ‘BaseAuth’ authentication mechanism, we also rely one of the native
+security dependency provided by the <strong>‘fastapi.security’</strong> module.</p>
+<p>Now that we have an implementation for our two authentication mechanism, we
+can allows the user to select one of these authentication mechanism by adding
+a selection field on the fastapi endpoint model.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">odoo</span> <span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="n">app</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+      <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">demo_auth_method</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+        <span class="n">selection</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span> <span class="s2">&quot;Api Key&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;http_basic&quot;</span><span class="p">,</span> <span class="s2">&quot;HTTP Bacic&quot;</span><span class="p">)],</span>
+        <span class="n">string</span><span class="o">=</span><span class="s2">&quot;Authenciation method&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A good practice is to prefix specific configuration fields of your app with
+the name of your app. This will avoid conflicts with other app when the
+‘fastapi.endpoint’ model is extended for other ‘app’.</p>
+</div>
+<p>Now that we have a selection field that allows the user to select the
+authentication method, we can use the dependency override mechanism to
+provide the right implementation of the <strong>‘authenticated_partner’</strong> dependency
+when the app is instantiated.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi</span> <span class="kn">import</span> <span class="n">depends</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.depends</span> <span class="kn">import</span> <span class="n">authenticated_partner</span>
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="n">app</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+      <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">demo_auth_method</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+        <span class="n">selection</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span> <span class="s2">&quot;Api Key&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;http_basic&quot;</span><span class="p">,</span> <span class="s2">&quot;HTTP Bacic&quot;</span><span class="p">)],</span>
+        <span class="n">string</span><span class="o">=</span><span class="s2">&quot;Authenciation method&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">_get_app</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FastAPI</span><span class="p">:</span>
+      <span class="n">app</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_app</span><span class="p">()</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">==</span> <span class="s2">&quot;demo&quot;</span><span class="p">:</span>
+          <span class="c1"># Here we add the overrides to the authenticated_partner_impl method</span>
+          <span class="c1"># according to the authentication method configured on the demo app</span>
+          <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_auth_method</span> <span class="o">==</span> <span class="s2">&quot;http_basic&quot;</span><span class="p">:</span>
+              <span class="n">authenticated_partner_impl_override</span> <span class="o">=</span> <span class="p">(</span>
+                  <span class="n">authenticated_partner_from_basic_auth_user</span>
+              <span class="p">)</span>
+          <span class="k">else</span><span class="p">:</span>
+              <span class="n">authenticated_partner_impl_override</span> <span class="o">=</span> <span class="p">(</span>
+                  <span class="n">api_key_based_authenticated_partner_impl</span>
+              <span class="p">)</span>
+      <span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="p">[</span>
+          <span class="n">authenticated_partner_impl</span>
+      <span class="p">]</span> <span class="o">=</span> <span class="n">authenticated_partner_impl_override</span>
+      <span class="k">return</span> <span class="n">app</span>
+</pre>
+<p>To see how the dependency override mechanism works, you can take a look at the
+demo app provided by the fastapi addon. If you choose the app ‘demo’ in the
+fastapi endpoint form view, you will see that the authentication method
+is configurable. You can also see that depending on the authentication method
+configured on your fastapi endpoint, the documentation will change.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A time of writing, the dependency override mechanism is not supported by
+the fastapi documentation generator. A fix has been proposed and is waiting
+to be merged. You can follow the progress of the fix on <a class="reference external" href="https://github.com/tiangolo/fastapi/pull/5452">github</a></p>
+</div>
+</div>
+<div class="section" id="managing-configuration-parameters-for-your-app">
+<h1>Managing configuration parameters for your app</h1>
+<p>As we have seen in the previous section, you can add configuration fields
+on the fastapi endpoint model to allow the user to configure your app (as for
+any odoo model you extend). When you need to access these configuration fields
+in your route handlers, you can use the <strong>‘odoo.addons.fastapi.depends.fastapi_endpoint’</strong>
+dependency method to retrieve the ‘fastapi.endpoint’ record associated to the
+current request.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.depends</span> <span class="kn">import</span> <span class="n">fastapi_endpoint</span>
+
+<span class="k">class</span> <span class="nc">EndpointAppInfo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+  <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">app</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">auth_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;demo_auth_method&quot;</span><span class="p">)</span>
+  <span class="n">root_path</span><span class="p">:</span> <span class="nb">str</span>
+
+  <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+      <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span>
+
+  <span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+      <span class="s2">&quot;/endpoint_app_info&quot;</span><span class="p">,</span>
+      <span class="n">response_model</span><span class="o">=</span><span class="n">EndpointAppInfo</span><span class="p">,</span>
+      <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">authenticated_partner</span><span class="p">)],</span>
+  <span class="p">)</span>
+  <span class="k">async</span> <span class="k">def</span> <span class="nf">endpoint_app_info</span><span class="p">(</span>
+      <span class="n">endpoint</span><span class="p">:</span> <span class="n">FastapiEndpoint</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">fastapi_endpoint</span><span class="p">),</span>  <span class="c1"># noqa: B008</span>
+  <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EndpointAppInfo</span><span class="p">:</span>
+      <span class="sd">&quot;&quot;&quot;Returns the current endpoint configuration&quot;&quot;&quot;</span>
+      <span class="c1"># This method show you how to get access to current endpoint configuration</span>
+      <span class="c1"># It also show you how you can specify a dependency to force the security</span>
+      <span class="c1"># even if the method doesn't require the authenticated partner as parameter</span>
+      <span class="k">return</span> <span class="n">EndpointAppInfo</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+</pre>
+<p>Some of the configuration fields of the fastapi endpoint could impact the way
+the app is instantiated. For example, in the previous section, we have seen
+that the authentication method configured on the ‘fastapi.endpoint’ record is
+used in order to provide the right implementation of the <strong>‘authenticated_partner’</strong>
+when the app is instantiated. To ensure that the app is re-instantiated when
+an element of the configuration used in the instantiation of the app is
+modified, you must override the <strong>‘_fastapi_app_fields’</strong> method to add the
+name of the fields that impact the instantiation of the app into the returned
+list.</p>
+<pre class="code python literal-block">
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="n">app</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+      <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">demo_auth_method</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">Selection</span><span class="p">(</span>
+        <span class="n">selection</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;api_key&quot;</span><span class="p">,</span> <span class="s2">&quot;Api Key&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;http_basic&quot;</span><span class="p">,</span> <span class="s2">&quot;HTTP Bacic&quot;</span><span class="p">)],</span>
+        <span class="n">string</span><span class="o">=</span><span class="s2">&quot;Authenciation method&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">&#64;api</span><span class="o">.</span><span class="n">model</span>
+    <span class="k">def</span> <span class="nf">_fastapi_app_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_fastapi_app_fields</span><span class="p">()</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;demo_auth_method&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fields</span>
+</pre>
+</div>
+<div class="section" id="how-to-extend-an-existing-app">
+<h1>How to extend an existing app</h1>
+<p>When you develop a fastapi app, in a native python app it’s not possible
+to extend and existing one. This limitation doesn’t apply to the fastapi addon
+because the fastapi endpoint model is designed to be extended. However, the
+way to extend an existing app is not the same as the way to extend an odoo model.</p>
+<p>First of all, it’s important to keep in mind that when you define a route, you
+are actually defining a contract between the client and the server. This
+contract is defined by the route path, the method (GET, POST, PUT, DELETE,
+etc.), the parameters and the response. If you want to extend an existing app,
+you must ensure that the contract is not broken. Any change to the contract
+will respect the <a class="reference external" href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Liskov substitution principle</a>. This means
+that the client should not be impacted by the change.</p>
+<p>What does it mean in practice? It means that you can’t change the route path
+or the method of an existing route. You can’t change the name of a parameter
+or the type of a response. You can’t add a new parameter or a new response.
+You can’t remove a parameter or a response. If you want to change the contract,
+you must create a new route.</p>
+<p>What can you change?</p>
+<ul class="simple">
+<li>You can change the implementation of the route handler.</li>
+<li>You can override the dependencies of the route handler.</li>
+<li>You can add a new route handler.</li>
+<li>You can extend the model used as parameter or as response of the route handler.</li>
+</ul>
+<p>Let’s see how to do that.</p>
+<div class="section" id="changing-the-implementation-of-the-route-handler">
+<h2>Changing the implementation of the route handler</h2>
+<p>Let’s say that you want to change the implementation of the route handler
+<strong>‘/demo/echo’</strong>. Since a route handler is just a python method, it could seems
+a tedious task since we are not into a model method and therefore we can’t
+take advantage of the Odoo inheritance mechanism.</p>
+<p>However, the fastapi addon provides a way to do that. Thanks to the <strong>‘odoo_env’</strong>
+dependency method, you can access the current odoo environment. With this
+environment, you can access the registry and therefore the model you want to
+delegate the implementation to. If you want to change the implementation of
+the route handler <strong>‘/demo/echo’</strong>, the only thing you have to do is to
+inherit from the model where the implementation is defined and override the
+method <strong>‘echo’</strong>.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">APIRouter</span>
+<span class="kn">from</span> <span class="nn">odoo</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.depends</span> <span class="kn">import</span> <span class="n">odoo_env</span>
+
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_fastapi_routers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">APIRouter</span><span class="p">]:</span>
+        <span class="n">routers</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_fastapi_routers</span><span class="p">()</span>
+        <span class="n">routers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">demo_api_router</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">routers</span>
+
+<span class="n">demo_api_router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+
+<span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="s2">&quot;/echo&quot;</span><span class="p">,</span>
+    <span class="n">response_model</span><span class="o">=</span><span class="n">EchoResponse</span><span class="p">,</span>
+    <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">odoo_env</span><span class="p">:</span> <span class="n">OdooEnv</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EchoResponse</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Echo the message&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">EchoResponse</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">odoo_env</span><span class="p">[</span><span class="s2">&quot;demo.fastapi.endpoint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">EchoResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">class</span> <span class="nc">DemoEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">AbstractModel</span><span class="p">):</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;demo.fastapi.endpoint&quot;</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="s2">&quot;Demo Endpoint&quot;</span>
+
+    <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">message</span>
+
+<span class="k">class</span> <span class="nc">DemoEndpointInherit</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">AbstractModel</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;demo.fastapi.endpoint&quot;</span>
+
+    <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Hello </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre>
+<p>..note:</p>
+<pre class="literal-block">
+It's a good programming practice to implement the business logic outside
+the route handler. This way, you can easily test your business logic without
+having to test the route handler. In the example above, the business logic
+is implemented in the method **'echo'** of the model **'demo.fastapi.endpoint'**.
+The route handler just delegate the implementation to this method.
+</pre>
+</div>
+<div class="section" id="overriding-the-dependencies-of-the-route-handler">
+<h2>Overriding the dependencies of the route handler</h2>
+<p>As you’ve previously seen, the dependency injection mechanism of fastapi is
+very powerful. By designing your route handler to rely on dependencies with
+a specific functional scope, you can easily change the implementation of the
+dependency without having to change the route handler. With such a design, you
+can even define abstract dependencies that must be implemented by the concrete
+application. This is the case of the <strong>‘authenticated_partner’</strong> dependency in our
+previous example. (you can find the implementation of this dependency in the
+file <strong>‘odoo/addons/fastapi/depends.py’</strong> and it’s usage in the file
+<strong>‘odoo/addons/fastapi/models/fastapi_endpoint_demo.py’</strong>)</p>
+</div>
+<div class="section" id="adding-a-new-route-handler">
+<h2>Adding a new route handler</h2>
+<p>Let’s say that you want to add a new route handler <strong>‘/demo/echo2’</strong>.
+You could be tempted to add this new route handler in your new addons by
+importing the router of the existing app and adding the new route handler to
+it.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.models.fastapi_endpoint_demo</span> <span class="kn">import</span> <span class="n">demo_api_router</span>
+
+<span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="s2">&quot;/echo2&quot;</span><span class="p">,</span>
+    <span class="n">response_model</span><span class="o">=</span><span class="n">EchoResponse</span><span class="p">,</span>
+    <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">echo2</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">odoo_env</span><span class="p">:</span> <span class="n">OdooEnv</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EchoResponse</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Echo the message&quot;&quot;&quot;</span>
+    <span class="n">echo</span> <span class="o">=</span> <span class="n">odoo_env</span><span class="p">[</span><span class="s2">&quot;demo.fastapi.endpoint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">echo2</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">EchoResponse</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Echo2: </span><span class="si">{</span><span class="n">echo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre>
+<p>The problem with this approach is that you unconditionally add the new route
+handler to the existing app even if the app is called for a different database
+where your new addon is not installed.</p>
+<p>The solution is to define a new router and to add it to the list of routers
+returned by the method <strong>‘_get_fastapi_routers’</strong> of the model
+<strong>‘fastapi.endpoint’</strong> you are inheriting from into your new addon.</p>
+<pre class="code python literal-block">
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_fastapi_routers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">APIRouter</span><span class="p">]:</span>
+        <span class="n">routers</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_fastapi_routers</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">==</span> <span class="s2">&quot;demo&quot;</span><span class="p">:</span>
+            <span class="n">routers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">additional_demo_api_router</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">routers</span>
+
+<span class="n">additional_demo_api_router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+
+<span class="nd">&#64;additional_demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="s2">&quot;/echo2&quot;</span><span class="p">,</span>
+    <span class="n">response_model</span><span class="o">=</span><span class="n">EchoResponse</span><span class="p">,</span>
+    <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">echo2</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">odoo_env</span><span class="p">:</span> <span class="n">OdooEnv</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EchoResponse</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Echo the message&quot;&quot;&quot;</span>
+    <span class="n">echo</span> <span class="o">=</span> <span class="n">odoo_env</span><span class="p">[</span><span class="s2">&quot;demo.fastapi.endpoint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">echo2</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">EchoResponse</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Echo2: </span><span class="si">{</span><span class="n">echo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre>
+<p>In this way, the new router is added to the list of routers of your app only if
+the app is called for a database where your new addon is installed.</p>
+</div>
+<div class="section" id="extending-the-model-used-as-parameter-or-as-response-of-the-route-handler">
+<h2>Extending the model used as parameter or as response of the route handler</h2>
+<p>The fastapi python library uses the pydantic library to define the models. By
+default, once a model is defined, it’s not possible to extend it. However, a
+companion python library called
+<a class="reference external" href="https://pypi.org/project/extendable_pydantic/">extendable_pydantic</a> provides
+a way to use inheritance with pydantic models to extend an existing model. If
+used alone, it’s your responsibility to instruct this library the list of
+extensions to apply to a model and the order to apply them. This is not very
+convenient. Fortunately, an dedicated odoo addon exists to make this process
+complete transparent. This addon is called
+<a class="reference external" href="https://pypi.org/project/odoo-addon-extendable/">odoo-addon-extendable</a>.</p>
+<p>When you want to allow other addons to extend a pydantic model, you must
+first define the model as an extendable model by using a dedicated metaclass</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">extendable_pydantic</span> <span class="kn">import</span> <span class="n">ExtendableModelMeta</span>
+
+<span class="k">class</span> <span class="nc">Partner</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ExtendableModelMeta</span><span class="p">):</span>
+  <span class="n">name</span> <span class="o">=</span> <span class="mf">0.1</span>
+</pre>
+<p>As any other pydantic model, you can now use this model as parameter or as response
+of a route handler. You can also use all the features of models defined with
+pydantic.</p>
+<pre class="code python literal-block">
+<span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="s2">&quot;/partner&quot;</span><span class="p">,</span>
+    <span class="n">response_model</span><span class="o">=</span><span class="n">Location</span><span class="p">,</span>
+    <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">authenticated_partner</span><span class="p">)],</span>
+<span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">partner</span><span class="p">(</span>
+    <span class="n">partner</span><span class="p">:</span> <span class="n">ResPartner</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">authenticated_partner</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Partner</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the location&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Partner</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">partner</span><span class="p">)</span>
+</pre>
+<p>If you need to add a new field into the model <strong>‘Partner’</strong>, you can extend it
+in your new addon by defining a new model that inherits from the model <strong>‘Partner’</strong>.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.models.fastapi_endpoint_demo</span> <span class="kn">import</span> <span class="n">Partner</span>
+
+<span class="k">class</span> <span class="nc">PartnerExtended</span><span class="p">(</span><span class="n">Partner</span><span class="p">,</span> <span class="n">extends</span><span class="o">=</span><span class="n">Partner</span><span class="p">):</span>
+    <span class="n">email</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</pre>
+<p>If your new addon is installed in a database, a call to the route handler
+<strong>‘/demo/partner’</strong> will return a response with the new field <strong>‘email’</strong> if a
+value is provided by the odoo record.</p>
+<pre class="code python literal-block">
+<span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John Doe&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;jhon.doe&#64;acsone.eu&quot;</span>
+<span class="p">}</span>
+</pre>
+<p>If your new addon is not installed in a database, a call to the route handler
+<strong>‘/demo/partner’</strong> will only return the name of the partner.</p>
+<pre class="code python literal-block">
+<span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John Doe&quot;</span>
+<span class="p">}</span>
+</pre>
+<p>..note:</p>
+<pre class="literal-block">
+The liskov substitution principle has also to be respected. That means that
+if you extend a model, you must add new required fields or you must provide
+default values for the new optional fields.
+</pre>
+</div>
+</div>
+<div class="section" id="managing-security-into-the-route-handlers">
+<h1>Managing security into the route handlers</h1>
+<p>By default the route handlers are processed the user configured on the
+<strong>‘fastapi.endpoint’</strong> model instance. (default is the Public user).
+You have seen previously how to define a dependency that will be used to enforce
+the authentication of a partner. When a method depends on this dependency, the
+‘authenticated_partner_id’ key is added to the context of the partner environment.
+(If you don’t need the partner as dependency but need to get an environment
+with the authenticated user, you can use the dependency ‘authenticated_partner_env’ instead of
+‘authenticated_partner’.)</p>
+<p>The fastapi addon extends the ‘ir.rule’ model to add into the evaluation context
+of the security rules the key ‘authenticated_partner_id’ that contains the id
+of the authenticated partner.</p>
+<p>A goog practice when you develop a fastapi app and you want to protect your data
+in an efficient and traceable way is to:</p>
+<ul class="simple">
+<li>create a new user specific to the app but with any access rights.</li>
+<li>create a security group specific to the app and add the user to this group.</li>
+<li>for each model you want to protect:<ul>
+<li>add a ‘ir.model.access’ record for the model to allow read access to your model
+and add the group to the record.</li>
+<li>create a new ‘ir.rule’ record for the model that restricts the access to the
+records of the model to the authenticated partner by using the key
+‘authenticated_partner_id’ in domain of the rule.</li>
+</ul>
+</li>
+<li>add a dependency on the ‘authenticated_partner’ to your handlers when you need
+to access the authenticated partner or ensure that the service is called by an
+authenticated partner.</li>
+</ul>
+<pre class="code xml literal-block">
+<span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;demo_app_user&quot;</span> <span class="na">model=</span><span class="s">&quot;res.users&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo App User<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;login&quot;</span><span class="nt">&gt;</span>demo_app_user<span class="nt">&lt;/field&gt;</span>
+<span class="nt">&lt;/record&gt;</span>
+
+<span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;demo_app_group&quot;</span> <span class="na">model=</span><span class="s">&quot;res.groups&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo App<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;users&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('demo_app_user'))]&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/record&gt;</span>
+
+<span class="cm">&lt;!-- acl for the model 'sale.order' --&gt;</span>
+<span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;sale_order_demo_app_access&quot;</span> <span class="na">model=</span><span class="s">&quot;ir.model.access&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo App: access to sale.order<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;model_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;model_sale_order&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;group_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;demo_app_group&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_read&quot;</span> <span class="na">eval=</span><span class="s">&quot;True&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_write&quot;</span> <span class="na">eval=</span><span class="s">&quot;False&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_create&quot;</span> <span class="na">eval=</span><span class="s">&quot;False&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_unlink&quot;</span> <span class="na">eval=</span><span class="s">&quot;False&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/record&gt;</span>
+
+<span class="cm">&lt;!-- a record rule to allows the authenticated partner to access only its sale orders --&gt;</span>
+<span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;demo_app_sale_order_rule&quot;</span> <span class="na">model=</span><span class="s">&quot;ir.rule&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>Sale Order Rule<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;model_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;model_sale_order&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;domain_force&quot;</span><span class="nt">&gt;</span>[('partner_id', '=', authenticated_partner_id)]<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;groups&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('demo_app_group'))]&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/record&gt;</span>
+</pre>
+</div>
+<div class="section" id="how-to-test-your-fastapi-app">
+<h1>How to test your fastapi app</h1>
+<p>Thanks to the starlette test client, it’s possible to test your fastapi app
+in a very simple way. With the test client, you can call your route handlers
+as if they were real http endpoints. The test client is available in the
+<strong>‘fastapi.testclient’</strong> module.</p>
+<p>Once again the dependency injection mechanism comes to the rescue by allowing
+you to inject into the test client specific implementations of the dependencies
+normally provided by the normal processing of the request by the fastapi app.
+(for example, you can inject a mock of the dependency ‘authenticated_partner’
+to test the behavior of your route handlers when the partner is not authenticated,
+you can also inject a mock for the odoo_env etc…)</p>
+<p>With all these features, writing a test for the ‘Hello world’ route handler
+defined into the demo app is as simple as</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span>
+
+<span class="kn">from</span> <span class="nn">odoo.tests.common</span> <span class="kn">import</span> <span class="n">TransactionCase</span>
+
+<span class="kn">from</span> <span class="nn">fastapi.testclient</span> <span class="kn">import</span> <span class="n">TestClient</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">depends</span>
+<span class="kn">from</span> <span class="nn">..context</span> <span class="kn">import</span> <span class="n">odoo_env_ctx</span>
+
+
+<span class="k">class</span> <span class="nc">FastAPIDemoCase</span><span class="p">(</span><span class="n">TransactionCase</span><span class="p">):</span>
+
+    <span class="nd">&#64;classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">test_partner</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s2">&quot;res.partner&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">create</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;FastAPI Demo&quot;</span><span class="p">})</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">fastapi_demo_app</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="s2">&quot;fastapi.fastapi_endpoint_demo&quot;</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">fastapi_demo_app</span><span class="o">.</span><span class="n">_get_app</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="p">[</span><span class="n">depends</span><span class="o">.</span><span class="n">authenticated_partner_impl</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">test_partner</span>
+        <span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">TestClient</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_ctx_token</span> <span class="o">=</span> <span class="n">odoo_env_ctx</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">env</span><span class="p">)</span>
+
+    <span class="nd">&#64;classmethod</span>
+    <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">odoo_env_ctx</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_ctx_token</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">fastapi_demo_app</span><span class="o">.</span><span class="n">_reset_app</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fastapi_demo_app</span><span class="o">.</span><span class="n">root_path</span> <span class="o">+</span> <span class="n">path</span>
+
+    <span class="k">def</span> <span class="nf">test_hello_world</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> <span class="p">{</span><span class="s2">&quot;Hello&quot;</span><span class="p">:</span> <span class="s2">&quot;World&quot;</span><span class="p">})</span>
+</pre>
+</div>
+<div class="section" id="overall-considerations-when-you-develop-an-fastapi-app">
+<h1>Overall considerations when you develop an fastapi app</h1>
+<p>Developing a fastapi app requires to follow some good practices to ensure that
+the app is robust and easy to maintain. Here are some of them:</p>
+<ul class="simple">
+<li>A route handler must be as simple as possible. It must not contain any
+business logic. The business logic must be implemented into the service
+layer. The route handler must only call the service layer and return the
+result of the service layer. To ease extension on your business logic, your
+service layer can be implemented as an odoo abstract model that can be
+inherited by other addons.</li>
+<li>A route handler should not expose the internal data structure and api of Odoo.
+It should provide the api that is needed by the client. More widely, an app
+provides a set of services that address a set of use cases specific to
+a well defined functional domain. You must always keep in mind that your api
+will remain the same for a long time even if you upgrade your odoo version
+of modify your business logic.</li>
+<li>A route handler is a transactional unit of work. When you design your api
+you must ensure that the completeness of a use case is guaranteed by a single
+transaction. If you need to perform several transactions to complete a use
+case, you introduce a risk of inconsistency in your data or extra complexity
+in your client code.</li>
+<li>Properly handle the errors. The route handler must return a proper error
+response when an error occurs. The error response must be consistent with
+the rest of the api. The error response must be documented in the api
+documentation. By default, the <strong>‘odoo-addon-fastapi’</strong> module handles
+the common exception types defined in the <strong>‘odoo.exceptions’</strong> module
+and returns a proper error response with the corresponding http status code.
+An error in the route handler must always return an error response with a
+http status code different from 200. The error response must contain a
+human readable message that can be displayed to the user. The error response
+can also contain a machine readable code that can be used by the client to
+handle the error in a specific way.</li>
+<li>When you design your json document through the pydantic models, you must
+use the appropriate data types. For example, you must use the data type
+<strong>‘datetime.date’</strong> to represent a date and not a string. You must also
+properly define the constraints on the fields. For example, if a field
+is optional, you must use the data type <strong>‘typing.Optional’</strong>.
+<a class="reference external" href="https://docs.pydantic.dev/">pydantic</a> provides everything you need to
+properly define your json document.</li>
+<li>Always use an appropriate pydantic model as request and/or response for
+your route handler. Constraints on the fields of the pydantic model must
+apply to the specific use case. For example, il you route handler is used
+to create a sale order, the pydantic model must not contain the field
+‘id’ because the id of the sale order will be generated by the route handler.
+But if the id is required afterwords, the pydantic model for the response
+must contain the field ‘id’ as required.</li>
+<li>Uses descriptive property names in your json documents. For example, avoid the
+use of documents providing a flat list of key value pairs.</li>
+<li>Be consistent in the naming of your fields into your json documents. For example,
+if you use ‘id’ to represent the id of a sale order, you must use ‘id’ to represent
+the id of all the other objects.</li>
+<li>Be consistent in the naming style of your fields. Always prefer underscore
+to camel case.</li>
+<li>Always use plural for the name of the fields that contain a list of items.
+For example, if you have a field ‘lines’ that contains a list of sale order
+lines, you must use ‘lines’ and not ‘line’.</li>
+<li>You can’t expect that a client will provide you the identifier of a specific
+record in odoo (for example the id of a carrier) if you don’t provide a
+specific route handler to retrieve the list of available records. Sometimes,
+the client must share with odoo the identity of a specific record to be
+able to perform an appropriate action specific to this record (for example,
+the processing of a payment is different for each payment acquirer). In this
+case, you must provide a specific attribute that allows both the client and
+odoo to identify the record. The field ‘provider’ on a payment acquirer allows
+you to identify a specific record in odoo. This kind of approach
+allows both the client and odoo to identify the record without having to rely
+on the id of the record. (This will ensure that the client will not break
+if the id of the record is changed in odoo for example when tests are run
+on an other database).</li>
+<li>Always use the same name for the same kind of object. For example, if you
+have a field ‘lines’ that contains a list of sale order lines, you must
+use the same name for the same kind of object in all the other json documents.</li>
+<li>Manage relations between objects in your json documents the same way.
+By default, you should return the id of the related object in the json document.
+But this is not always possible or convenient, so you can also return the
+related object in the json document. The main advantage of returning the id
+of the related object is that it allows you to avoid the <a class="reference external" href="https://restfulapi.net/rest-api-n-1-problem/">n+1 problem</a> . The
+main advantage of returning the related object in the json document is that
+it allows you to avoid an extra call to retrieve the related object.
+By keeping in mind the pros and cons of each approach, you can choose the
+best one for your use case. Once it’s done, you must be consistent in the
+way you manage the relations of the same object.</li>
+<li>It’s not always a good idea to name your fields into your json documents
+with the same name as the fields of the corresponding odoo model. For example,
+in your document representing a sale order, you must not use the name ‘order_line’
+for the field that contains the list of sale order lines. The name ‘order_line’
+in addition to being confusing and not consistent with the best practices, is
+not auto-descriptive. The name ‘lines’ is much better.</li>
+<li>Keep a defensive programming approach. If you provide a route handler that
+returns a list of records, you must ensure that the computation of the list
+is not too long or will not drain your server resources. For example,
+for search route handlers, you must ensure that the search is limited to
+a reasonable number of records by default.</li>
+<li>As a corollary of the previous point, a search handler must always use the
+pagination mechanism with a reasonable default page size. The result list
+must be enclosed in a json document that contains the total number of records
+and the list of records.</li>
+<li>Use plural for the name of a service. For example, if you provide a service
+that allows you to manage the sale orders, you must use the name ‘sale_orders’
+and not ‘sale_order’.</li>
+<li>… and many more.</li>
+</ul>
+<p>We could write a book about the best practices to follow when you design your api
+but we will stop here. This list is the result of our experience at <a class="reference external" href="https://acsone.eu">ACSONE SA/NV</a> and it evolve over time. It’s a kind of rescue kit that we
+would provide to a new developer that starts to design an api. This kit must
+be accompanied with the reading of some useful resources link like the <a class="reference external" href="https://www.belgif.be/specification/rest/api-guide/">REST Guidelines</a>. On a technical level,
+the <a class="reference external" href="https://fastapi.tiangolo.com/">fastapi  documentation</a> provides a lot of
+useful information as well, with a lot of examples. Last but not least, the
+<a class="reference external" href="https://docs.pydantic.dev/">pydantic</a> documentation is also very useful.</p>
+</div>
+<div class="section" id="miscellaneous">
+<h1>Miscellaneous</h1>
+<div class="section" id="development-of-a-search-route-handler">
+<h2>Development of a search route handler</h2>
+<p>The <strong>‘odoo-addon-fastapi’</strong> module provides 2 useful piece of code to help
+you be consistent when writing a route handler for a search route.</p>
+<ol class="arabic simple">
+<li>A dependency method to use to specify the pagination parameters in the same
+way for all the search route handlers: <strong>‘odoo.addons.fastapi.paging’</strong>.</li>
+<li>A PagedCollection pydantic model to use to return the result of a search route
+handler enclosed in a json document that contains the total number of records.</li>
+</ol>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="kn">from</span> <span class="nn">odoo.api</span> <span class="kn">import</span> <span class="n">Environment</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.depends</span> <span class="kn">import</span> <span class="n">paging</span><span class="p">,</span> <span class="n">authenticated_partner_env</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.schemas</span> <span class="kn">import</span> <span class="n">PagedCollection</span><span class="p">,</span> <span class="n">Paging</span>
+
+<span class="k">class</span> <span class="nc">SaleOrder</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">&#64;router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="s2">&quot;/sale_orders&quot;</span><span class="p">,</span>
+    <span class="n">response_model</span><span class="o">=</span><span class="n">PagedCollection</span><span class="p">[</span><span class="n">SaleOrder</span><span class="p">],</span>
+    <span class="n">response_model_exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_sale_orders</span><span class="p">(</span>
+    <span class="n">paging</span><span class="p">:</span> <span class="n">Paging</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">paging</span><span class="p">),</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">authenticated_partner_env</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PagedCollection</span><span class="p">[</span><span class="n">SaleOrder</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Get the list of sale orders.&quot;&quot;&quot;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;sale.order&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search_count</span><span class="p">([])</span>
+    <span class="n">orders</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;sale.order&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">([],</span> <span class="n">limit</span><span class="o">=</span><span class="n">paging</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">paging</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PagedCollection</span><span class="p">[</span><span class="n">SaleOrder</span><span class="p">](</span>
+        <span class="n">total</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
+        <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="n">SaleOrder</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">],</span>
+    <span class="p">)</span>
+</pre>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <strong>‘odoo.addons.fastapi.schemas.Paging’</strong> and <strong>‘odoo.addons.fastapi.schemas.PagedCollection’</strong>
+pydantic models are not designed to be extended to not introduce a
+dependency between the <strong>‘odoo-addon-fastapi’</strong> module and the <strong>‘odoo-addon-extendable’</strong>
+Moreover, at the time of writing, the <strong>‘extendable-pydantic’</strong> library does not
+support Generic models. Nevertheless, a pull request has been submitted to
+add this feature to the library. (see <a class="reference external" href="https://github.com/lmignon/extendable-pydantic/pull/1">PR 1</a>)</p>
+</div>
+</div>
+<div class="section" id="customization-of-the-error-handling">
+<h2>Customization of the error handling</h2>
+<p>The error handling a very important topic in the design of the fastapi integration
+with odoo. It must ensure that the error messages are properly return to the client
+and that the transaction is properly roll backed. The <strong>‘fastapi’</strong> module provides
+a way to register custom error handlers. The <strong>‘odoo.addons.fastapi.error_handlers’</strong>
+module provides the default error handlers that are registered by default when
+a new instance of the <strong>‘FastAPI’</strong> class is created. When an app is initialized in
+‘fastapi.endpoint’ model, the method <cite>_get_app_exception_handlers</cite> is called to
+get a dictionary of error handlers. This method is designed to be overridden
+in a custom module to provide custom error handlers. You can override the handler
+for a specific exception class or you can add a new handler for a new exception
+or even replace all the handlers by your own handlers. Whatever you do, you must
+ensure that the transaction is properly roll backed.</p>
+<p>Some could argue that the error handling can’t be extended since the error handlers
+are global method not defined in an odoo model. Since the method providing the
+the error handlers definitions is defined on the ‘fastapi.endpoint’ model, it’s
+not a problem at all, you just need to think another way to do it that by inheritance.</p>
+<p>A solution could be to develop you own error handler to be able to process the
+error and chain the call to the default error handler.</p>
+<pre class="code python literal-block">
+<span class="k">class</span> <span class="nc">MyCustomErrorHandler</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_handler</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_handler</span> <span class="o">=</span> <span class="n">next_handler</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+        <span class="c1"># do something with the error</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+        <span class="c1"># do something with the response</span>
+        <span class="k">return</span> <span class="n">response</span>
+</pre>
+<p>With this solution, you can now register your custom error handler by overriding
+the method <cite>_get_app_exception_handlers</cite> in your custom module.</p>
+<pre class="code python literal-block">
+<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_app_exception_handlers</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span>
+    <span class="nb">int</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">],</span>
+    <span class="n">Callable</span><span class="p">[[</span><span class="n">Request</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">Response</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Response</span><span class="p">]]],</span>
+<span class="p">]:</span>
+        <span class="n">handlers</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_app_exception_handlers</span><span class="p">()</span>
+        <span class="n">access_error_handler</span> <span class="o">=</span> <span class="n">handlers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">odoo</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">AccessError</span><span class="p">)</span>
+        <span class="n">handlers</span><span class="p">[</span><span class="n">odoo</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">AccessError</span><span class="p">]</span> <span class="o">=</span> <span class="n">MyCustomErrorHandler</span><span class="p">(</span><span class="n">access_error_handler</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">handlers</span>
+</pre>
+<p>In the previous example, we extend the error handler for the ‘AccessError’ exception
+for all the endpoints. You can do the same for a specific app by checking the
+‘app’ field of the ‘fastapi.endpoint’ record before registering your custom error
+handler.</p>
+</div>
+</div>
+<div class="section" id="what-s-next">
+<h1>What’s next?</h1>
+<p>The <strong>‘odoo-addon-fastapi’</strong> module is still in its early stage of development.
+It will evolve over time to integrate your feedback and to provide the missing
+features. It’s now up to you to try it and to provide your feedback.</p>
 <div class="section" id="known-issues-roadmap">
-<h1><a class="toc-backref" href="#id1">Known issues / Roadmap</a></h1>
+<h2>Known issues / Roadmap</h2>
 <p>The <a class="reference external" href="https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement+label%3Afastapi">roadmap</a>
 and <a class="reference external" href="https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Abug+label%3Afastapi">known issues</a> can
 be found on GitHub.</p>
+<p>The <strong>FastAPI</strong> module provides an easy way to use WebSockets. Unfortunately, this
+support is not ‘yet’ available in the <strong>Odoo</strong> framework. The challenge is high
+because the integration of the fastapi is based on the use of a specific middleware
+that convert the WSGI request consumed by odoo to a ASGI request. The question
+is to know if it is also possible to develop the same kind of bridge for the
+WebSockets.</p>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#id2">Bug Tracker</a></h1>
+<h2>Bug Tracker</h2>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/rest-framework/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed
@@ -400,21 +1465,21 @@ If you spotted it first, help us smashing it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#id3">Credits</a></h1>
+<h2>Credits</h2>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#id4">Authors</a></h2>
+<h3>Authors</h3>
 <ul class="simple">
 <li>ACSONE SA/NV</li>
 </ul>
 </div>
 <div class="section" id="contributors">
-<h2><a class="toc-backref" href="#id5">Contributors</a></h2>
+<h3>Contributors</h3>
 <ul class="simple">
 <li>Laurent Mignon &lt;<a class="reference external" href="mailto:laurent.mignon&#64;acsone.eu">laurent.mignon&#64;acsone.eu</a>&gt;</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#id6">Maintainers</a></h2>
+<h3>Maintainers</h3>
 <p>This module is maintained by the OCA.</p>
 <a class="reference external image-reference" href="https://odoo-community.org"><img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" /></a>
 <p>OCA, or the Odoo Community Association, is a nonprofit organization whose
@@ -424,6 +1489,7 @@ promote its widespread use.</p>
 <p><a class="reference external" href="https://github.com/lmignon"><img alt="lmignon" src="https://github.com/lmignon.png?size=40px" /></a></p>
 <p>This module is part of the <a class="reference external" href="https://github.com/OCA/rest-framework/tree/16.0/fastapi">OCA/rest-framework</a> project on GitHub.</p>
 <p>You are welcome to contribute. To learn how please visit <a class="reference external" href="https://odoo-community.org/page/Contribute">https://odoo-community.org/page/Contribute</a>.</p>
+</div>
 </div>
 </div>
 </div>
