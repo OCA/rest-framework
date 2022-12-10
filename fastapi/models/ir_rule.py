@@ -16,7 +16,7 @@ class IrRule(models.Model):
 
     @api.model
     def _eval_context(self):
-        ctx = super(IrRule, self)._eval_context()
+        ctx = super()._eval_context()
         if "authenticated_partner_id" in self.env.context:
             ctx["authenticated_partner_id"] = self.env.context[
                 "authenticated_partner_id"
@@ -25,4 +25,4 @@ class IrRule(models.Model):
 
     def _compute_domain_keys(self):
         """Return the list of context keys to use for caching ``_compute_domain``."""
-        return super(IrRule, self)._compute_domain_keys() + ["authenticated_partner_id"]
+        return super()._compute_domain_keys() + ["authenticated_partner_id"]
