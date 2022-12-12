@@ -413,7 +413,7 @@ methods are called high-level and atomic functions.</p>
 <div class="section" id="what-s-building-an-api-with-fastapi">
 <h1>What’s building an API with fastapi?</h1>
 <p>FastAPI is a modern, fast (high-performance), web framework for building APIs
-with Python 3.6+ based on standard Python type hints. This addons let’s you
+with Python 3.7+ based on standard Python type hints. This addons let’s you
 keep advantage of the fastapi framework and use it with Odoo.</p>
 <p>Before you start, we must define some terms:</p>
 <ul class="simple">
@@ -454,7 +454,7 @@ for APIs: OpenAPI (previously known as Swagger) and JSON Schema.</li>
 <p>The first step is to install the fastapi addon. You can do it with the
 following command:</p>
 <blockquote>
-$ pip install odoo-fastapi</blockquote>
+$ pip install odoo-addon-fastapi</blockquote>
 <p>Once the addon is installed, you can start building your API. The first thing
 you need to do is to create a new addon that depends on ‘fastapi’. For example,
 let’s create an addon called <em>my_demo_api</em>.</p>
@@ -581,7 +581,7 @@ odoo models and the database from your route handlers.</p>
 </pre>
 <p>As you can see, you can use the <strong>‘Depends’</strong> function to inject the dependency
 into your route handler. The <strong>‘Depends’</strong> function is provided by the
-<strong>‘fastapi’</strong> module. You can use it to inject any dependency into your route
+<strong>‘fastapi’</strong> framework. You can use it to inject any dependency into your route
 handler. As your handler is a python function, the only way to get access to
 the odoo environment is to inject it as a dependency. The fastapi addon provides
 a set of function that can be used as dependencies:</p>
@@ -669,7 +669,7 @@ dependency as a parameter of your route handler.</p>
 but only expects to get a partner as a dependency. Depending on your needs, you
 can implement different authentication mechanism available for your app.
 The fastapi addon provides a default authentication mechanism using the
-‘BasiAuth’ method. This authentication mechanism is implemented in the
+‘BasicAuth’ method. This authentication mechanism is implemented in the
 <strong>‘odoo.addons.fastapi.depends’</strong> module and relies on functionalities provided
 by the <strong>‘fastapi.security’</strong> module.</p>
 <pre class="code python literal-block">
@@ -732,7 +732,7 @@ implemented, we will only implement the api key authentication mechanism.</p>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">partner</span>
 </pre>
-<p>As for the ‘BaseAuth’ authentication mechanism, we also rely one of the native
+<p>As for the ‘BasicAuth’ authentication mechanism, we also rely one of the native
 security dependency provided by the <strong>‘fastapi.security’</strong> module.</p>
 <p>Now that we have an implementation for our two authentication mechanism, we
 can allows the user to select one of these authentication mechanism by adding
@@ -958,14 +958,14 @@ method <strong>‘echo’</strong>.</p>
     <span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Hello </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre>
-<p>..note:</p>
-<pre class="literal-block">
-It's a good programming practice to implement the business logic outside
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It’s a good programming practice to implement the business logic outside
 the route handler. This way, you can easily test your business logic without
 having to test the route handler. In the example above, the business logic
-is implemented in the method **'echo'** of the model **'demo.fastapi.endpoint'**.
-The route handler just delegate the implementation to this method.
-</pre>
+is implemented in the method <strong>‘echo’</strong> of the model <strong>‘demo.fastapi.endpoint’</strong>.
+The route handler just delegate the implementation to this method.</p>
+</div>
 </div>
 <div class="section" id="overriding-the-dependencies-of-the-route-handler">
 <h2>Overriding the dependencies of the route handler</h2>
@@ -1097,17 +1097,17 @@ value is provided by the odoo record.</p>
   <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John Doe&quot;</span>
 <span class="p">}</span>
 </pre>
-<p>..note:</p>
-<pre class="literal-block">
-The liskov substitution principle has also to be respected. That means that
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The liskov substitution principle has also to be respected. That means that
 if you extend a model, you must add new required fields or you must provide
-default values for the new optional fields.
-</pre>
+default values for the new optional fields.</p>
+</div>
 </div>
 </div>
 <div class="section" id="managing-security-into-the-route-handlers">
 <h1>Managing security into the route handlers</h1>
-<p>By default the route handlers are processed the user configured on the
+<p>By default the route handlers are processed using the user configured on the
 <strong>‘fastapi.endpoint’</strong> model instance. (default is the Public user).
 You have seen previously how to define a dependency that will be used to enforce
 the authentication of a partner. When a method depends on this dependency, the
@@ -1118,7 +1118,7 @@ with the authenticated user, you can use the dependency ‘authenticated_partner
 <p>The fastapi addon extends the ‘ir.rule’ model to add into the evaluation context
 of the security rules the key ‘authenticated_partner_id’ that contains the id
 of the authenticated partner.</p>
-<p>A goog practice when you develop a fastapi app and you want to protect your data
+<p>A good practice when you develop a fastapi app and you want to protect your data
 in an efficient and traceable way is to:</p>
 <ul class="simple">
 <li>create a new user specific to the app but with any access rights.</li>
@@ -1265,7 +1265,7 @@ is optional, you must use the data type <strong>‘typing.Optional’</strong>.
 properly define your json document.</li>
 <li>Always use an appropriate pydantic model as request and/or response for
 your route handler. Constraints on the fields of the pydantic model must
-apply to the specific use case. For example, il you route handler is used
+apply to the specific use case. For example, if your route handler is used
 to create a sale order, the pydantic model must not contain the field
 ‘id’ because the id of the sale order will be generated by the route handler.
 But if the id is required afterwords, the pydantic model for the response
