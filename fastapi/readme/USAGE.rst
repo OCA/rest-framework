@@ -604,7 +604,7 @@ method **'echo'**.
           return f"Hello {message}"
 
 
-..note::
+.. note::
 
   It's a good programming practice to implement the business logic outside
   the route handler. This way, you can easily test your business logic without
@@ -764,7 +764,7 @@ If your new addon is not installed in a database, a call to the route handler
     "name": "John Doe"
   }
 
-..note::
+.. note::
 
   The liskov substitution principle has also to be respected. That means that
   if you extend a model, you must add new required fields or you must provide
