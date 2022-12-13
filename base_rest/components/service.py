@@ -211,3 +211,16 @@ class BaseRestService(AbstractComponent):
     @property
     def controller(self):
         return self.work.controller
+
+    @property
+    def env(self):
+        env = self.work.env
+        return env
+
+    @property
+    def authenticated_partner(self):
+        partner = self.env["res.partner"].browse()
+        partner_id = self.work.authenticated_partner_id
+        if partner_id:
+            partner = partner.browse(partner_id)
+        return partner
