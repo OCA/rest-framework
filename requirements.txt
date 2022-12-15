@@ -4,6 +4,8 @@ cerberus
 contextvars;python_version<"3.7"
 extendable
 extendable-pydantic
+graphene
+graphql_server
 jsondiff
 marshmallow
 marshmallow-objects>=2.0.0
