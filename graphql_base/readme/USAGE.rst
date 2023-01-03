@@ -54,12 +54,6 @@ endpoints.
         def graphiql(self, **kwargs):
             return self._handle_graphiql_request(schema)
 
-        # Optional monkey patch, needed to accept application/json GraphQL
-        # requests. If you only need to accept GET requests or POST
-        # with application/x-www-form-urlencoded content,
-        # this is not necessary.
-        GraphQLControllerMixin.patch_for_json("^/graphql/demo/?$")
-
         # The graphql route, for applications.
         # Note csrf=False: you may want to apply extra security
         # (such as origin restrictions) to this route.
