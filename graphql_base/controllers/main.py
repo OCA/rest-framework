@@ -61,7 +61,7 @@ class GraphQLControllerMixin(object):
             return response
         except HttpQueryError as e:
             result = json_encode({"errors": [{"message": str(e)}]})
-            headers = dict()
+            headers = dict(e.headers or {})
             headers["Content-Type"] = "application/json"
             response = http.request.make_response(result, headers=headers)
             response.status_code = e.status_code

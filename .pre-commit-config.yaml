@@ -10,7 +10,6 @@ exclude: |
   ^base_rest_pydantic/|
   ^datamodel/|
   ^extendable/|
-  ^graphql_demo/|
   ^model_serializer/|
   ^pydantic/|
   ^rest_log/|
