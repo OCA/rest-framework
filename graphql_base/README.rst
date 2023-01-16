@@ -23,7 +23,7 @@ Graphql Base
     :target: https://runbot.odoo-community.org/runbot/271/14.0
     :alt: Try me on Runbot
 
-|badge1| |badge2| |badge3| |badge4| |badge5| 
+|badge1| |badge2| |badge3| |badge4| |badge5|
 
 This modules enables the creation of `GraphQL <https://graphql.org/>`__ endpoints.
 In itself, it does nothing and must be used by a developer to
@@ -96,12 +96,6 @@ endpoints.
         def graphiql(self, **kwargs):
             return self._handle_graphiql_request(schema)
 
-        # Optional monkey patch, needed to accept application/json GraphQL
-        # requests. If you only need to accept GET requests or POST
-        # with application/x-www-form-urlencoded content,
-        # this is not necessary.
-        GraphQLControllerMixin.patch_for_json("^/graphql/demo/?$")
-
         # The graphql route, for applications.
         # Note csrf=False: you may want to apply extra security
         # (such as origin restrictions) to this route.
@@ -146,7 +140,7 @@ promote its widespread use.
 
 Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
-|maintainer-sbidoul| 
+|maintainer-sbidoul|
 
 This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/14.0/graphql_base>`_ project on GitHub.
 

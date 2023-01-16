@@ -1,7 +1,6 @@
 # Copyright 2018 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-import re
 from functools import partial
 
 from graphql_server import (
@@ -17,21 +16,6 @@ from odoo import http
 
 
 class GraphQLControllerMixin(object):
-    @staticmethod
-    def patch_for_json(path_re):
-        # this is to avoid Odoo, which assumes json always means json+rpc,
-        # complaining about "function declared as capable of handling request
-        # of type 'http' but called with a request of type 'json'"
-        path_re = re.compile(path_re)
-        orig_get_request = http.Root.get_request
-
-        def get_request(self, httprequest):
-            if path_re.match(httprequest.path):
-                return http.HttpRequest(httprequest)
-            return orig_get_request(self, httprequest)
-
-        http.Root.get_request = get_request
-
     def _parse_body(self):
         req = http.request.httprequest
         # We use mimetype here since we don't need the other
@@ -77,7 +61,7 @@ class GraphQLControllerMixin(object):
             return response
         except HttpQueryError as e:
             result = json_encode({"errors": [{"message": str(e)}]})
-            headers = dict(e.headers)
+            headers = dict(e.headers or {})
             headers["Content-Type"] = "application/json"
             response = http.request.make_response(result, headers=headers)
             response.status_code = e.status_code
