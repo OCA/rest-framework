@@ -17,6 +17,7 @@
         "base_rest_pydantic",
         "component",
         "extendable",
+        "pydantic",
     ],
     "external_dependencies": {
         "python": ["jsondiff", "extendable-pydantic", "marshmallow", "pydantic"]
