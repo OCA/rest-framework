@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,30 +14,35 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: base_rest_demo
+#. odoo-python
 #: code:addons/base_rest_demo/services/exception_services.py:0
 #, python-format
 msgid "Access error message"
 msgstr ""
 
 #. module: base_rest_demo
+#. odoo-python
 #: code:addons/base_rest_demo/services/exception_services.py:0
 #, python-format
 msgid "Missing message"
 msgstr ""
 
 #. module: base_rest_demo
+#. odoo-python
 #: code:addons/base_rest_demo/services/partner_image_services.py:0
 #, python-format
 msgid "No image found for partner %s"
 msgstr ""
 
 #. module: base_rest_demo
+#. odoo-python
 #: code:addons/base_rest_demo/services/exception_services.py:0
 #, python-format
 msgid "UserError message"
 msgstr ""
 
 #. module: base_rest_demo
+#. odoo-python
 #: code:addons/base_rest_demo/services/exception_services.py:0
 #, python-format
 msgid "ValidationError message"
