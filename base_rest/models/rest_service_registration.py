@@ -29,11 +29,7 @@ from ..core import (
     _rest_services_databases,
     _rest_services_routes,
 )
-from ..tools import _inspect_methods
-
-# Decorator attribute added on a route function (cfr Odoo's route)
-ROUTING_DECORATOR_ATTR = "routing"
-
+from ..tools import ROUTING_DECORATOR_ATTR, _inspect_methods
 
 _logger = logging.getLogger(__name__)
 
@@ -61,11 +57,11 @@ class RestServiceRegistration(models.AbstractModel):
         self.build_registry(services_registry)
         # we also have to remove the RestController from the
         # controller_per_module registry since it's an abstract controller
-        controllers = http.controllers_per_module["base_rest"]
+        controllers = http.Controller.children_classes["base_rest"]
         controllers = [
-            (name, cls) for name, cls in controllers if "RestController" not in name
+            cls for cls in controllers if "RestController" not in cls.__name__
         ]
-        http.controllers_per_module["base_rest"] = controllers
+        http.Controller.children_classes["base_rest"] = controllers
         # create the final controller providing the http routes for
         # the services available into the current database
         self._build_controllers_routes(services_registry)
@@ -90,21 +86,20 @@ class RestServiceRegistration(models.AbstractModel):
 
         # generate an addon name used to register our new controller for
         # the current database
-        addon_name = "{}_{}_{}".format(
+        addon_name = base_controller_cls._module
+        identifier = "{}_{}_{}".format(
             self.env.cr.dbname,
             service._collection.replace(".", "_"),
             service._usage.replace(".", "_"),
         )
+        base_controller_cls._identifier = identifier
         # put our new controller into the new addon module
         ctrl_cls.__module__ = "odoo.addons.{}".format(addon_name)
 
-        # instruct the registry that our fake addon is part of the loaded
-        # modules
         self.env.registry._init_modules.add(addon_name)
 
         # register our conroller into the list of available controllers
-        name_class = ("{}.{}".format(ctrl_cls.__module__, ctrl_cls.__name__), ctrl_cls)
-        http.controllers_per_module[addon_name].append(name_class)
+        http.Controller.children_classes[addon_name].append(ctrl_cls)
         self._apply_defaults_to_controller_routes(controller_class=ctrl_cls)
 
     def _apply_defaults_to_controller_routes(self, controller_class):
@@ -398,9 +393,9 @@ class RestApiServiceControllerGenerator(object):
             path_sep = "/"
         root_path = "{}{}{}".format(root_path, path_sep, self._service._usage)
         for name, method in _inspect_methods(self._service.__class__):
-            if not hasattr(method, "routing"):
+            routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
+            if routing is None:
                 continue
-            routing = method.routing
             for routes, http_method in routing["routes"]:
                 method_name = "{}_{}".format(http_method.lower(), name)
                 default_route = routes[0]
@@ -424,6 +419,7 @@ class RestApiServiceControllerGenerator(object):
                 route_params = dict(
                     route=["{}{}".format(root_path, r) for r in routes],
                     methods=[http_method],
+                    type="restapi",
                 )
                 for attr in {"auth", "cors", "csrf", "save_session"}:
                     if attr in routing:

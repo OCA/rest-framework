@@ -10,7 +10,7 @@ from cerberus import Validator
 from odoo import _, http
 from odoo.exceptions import UserError, ValidationError
 
-from .tools import cerberus_to_json
+from .tools import ROUTING_DECORATOR_ATTR, cerberus_to_json
 
 
 def method(routes, input_param=None, output_param=None, **kw):
@@ -104,7 +104,7 @@ def method(routes, input_param=None, output_param=None, **kw):
             response = f(*args, **kw)
             return response
 
-        response_wrap.routing = routing
+        setattr(response_wrap, ROUTING_DECORATOR_ATTR, routing)
         response_wrap.original_func = f
         return response_wrap
 

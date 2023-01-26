@@ -15,9 +15,9 @@ class IrHttp(models.AbstractModel):
     _inherit = "ir.http"
 
     @classmethod
-    def _dispatch(cls):
+    def _dispatch(cls, endpoint):
         with cls._extendable_context_registry():
-            return super()._dispatch()
+            return super()._dispatch(endpoint)
 
     @classmethod
     @contextmanager

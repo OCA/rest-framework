@@ -1,8 +1,7 @@
 # Copyright 2021 Wakari SRL
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 from typing import List
-
-import mock
+from unittest import mock
 
 from odoo.tests.common import TransactionCase
 

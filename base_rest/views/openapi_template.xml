@@ -56,17 +56,6 @@
 
         <body>
             <div id="swagger-ui" t-att-data-settings='json.dumps(swagger_settings)' />
-
-            <script>
-                 odoo.define('base_rest.swagger', function (require) {
-                        var SwaggerUi = require('base_rest.swagger_ui');
-                        var swagger_ui = new SwaggerUi('#swagger-ui');
-                        $(function() {
-                            swagger_ui.start();
-                        });
-                        return swagger_ui;
-                    });
-            </script>
         </body>
     </template>
 </odoo>

@@ -11,7 +11,7 @@ class TestOpenAPI(CommonCase):
         # The server url depends of base_url. base_url depends of the odoo
         # config
         url = openapi_def["servers"][0]["url"]
-        url.replace("http://localhost:8069", self.base_url)
+        url = url.replace("http://localhost:8069", self.base_url)
         openapi_def["servers"][0]["url"] = url
 
     def _fix_openapi_components(self, openapi_def):
@@ -26,10 +26,10 @@ class TestOpenAPI(CommonCase):
         for key in unknow_keys:
             del security_components[key]
 
-    def assertOpenApiDef(self, service, canocincal_json_file, default_auth):
+    def assertOpenApiDef(self, service, canonical_json_file, default_auth):
         openapi_def = service.to_openapi(default_auth=default_auth)
         self._fix_openapi_components(openapi_def)
-        canonical_def = get_canonical_json(canocincal_json_file)
+        canonical_def = get_canonical_json(canonical_json_file)
         self._fix_server_url(canonical_def)
         self.assertFalse(jsondiff.diff(openapi_def, canonical_def))
 

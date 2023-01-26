@@ -11,6 +11,7 @@ import sys
 import traceback
 from collections import defaultdict
 
+from markupsafe import escape
 from werkzeug.exceptions import (
     BadRequest,
     Forbidden,
@@ -19,9 +20,7 @@ from werkzeug.exceptions import (
     NotFound,
     Unauthorized,
 )
-from werkzeug.utils import escape
 
-import odoo
 from odoo.exceptions import (
     AccessDenied,
     AccessError,
@@ -29,11 +28,15 @@ from odoo.exceptions import (
     UserError,
     ValidationError,
 )
-from odoo.http import HttpRequest, Root, SessionExpiredException, request
+from odoo.http import (
+    CSRF_FREE_METHODS,
+    MISSING_CSRF_WARNING,
+    Dispatcher,
+    SessionExpiredException,
+    request,
+)
 from odoo.tools import ustr
 from odoo.tools.config import config
-
-from .core import _rest_services_routes
 
 _logger = logging.getLogger(__name__)
 
@@ -69,7 +72,7 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
     get_original_headers = exception.get_headers
     exception.traceback = "".join(traceback.format_exception(*sys.exc_info()))
 
-    def get_body(environ=None):
+    def get_body(environ=None, scope=None):
         res = {"code": exception.code, "name": escape(exception.name)}
         description = exception.get_description(environ)
         if config.get_misc("base_rest", "dev_mode"):
@@ -80,7 +83,7 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
         res.update(extra_info or {})
         return JSONEncoder().encode(res)
 
-    def get_headers(environ=None):
+    def get_headers(environ=None, scope=None):
         """Get a list of headers."""
         _headers = [("Content-Type", "application/json")]
         for key, value in get_original_headers(environ=environ):
@@ -116,29 +119,60 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
     return exception
 
 
-class HttpRestRequest(HttpRequest):
-    """Http request that always return json, usefull for rest api"""
+class RestApiDispatcher(Dispatcher):
+    """Dispatcher for requests at routes for restapi types"""
 
-    def __init__(self, httprequest):
-        super(HttpRestRequest, self).__init__(httprequest)
-        if self.httprequest.mimetype == "application/json":
-            data = self.httprequest.get_data().decode(self.httprequest.charset)
-            try:
-                self.params = json.loads(data)
-            except ValueError as e:
-                msg = "Invalid JSON data: %s" % str(e)
-                _logger.info("%s: %s", self.httprequest.path, msg)
-                raise BadRequest(msg) from e
-        elif self.httprequest.mimetype == "multipart/form-data":
+    routing_type = "restapi"
+
+    def pre_dispatch(self, rule, args):
+        res = super().pre_dispatch(rule, args)
+        httprequest = self.request.httprequest
+        self.request.params = args
+        if httprequest.mimetype == "application/json":
+            data = httprequest.get_data().decode(httprequest.charset)
+            if data:
+                try:
+                    self.request.params.update(json.loads(data))
+                except (ValueError, json.decoder.JSONDecodeError) as e:
+                    msg = "Invalid JSON data: %s" % str(e)
+                    _logger.info("%s: %s", self.request.httprequest.path, msg)
+                    raise BadRequest(msg) from e
+        elif httprequest.mimetype == "multipart/form-data":
             # Do not reassign self.params
             pass
         else:
             # We reparse the query_string in order to handle data structure
             # more information on https://github.com/aventurella/pyquerystring
-            self.params = pyquerystring.parse(
-                self.httprequest.query_string.decode("utf-8")
+            self.request.params.update(
+                pyquerystring.parse(httprequest.query_string.decode("utf-8"))
             )
         self._determine_context_lang()
+        return res
+
+    def dispatch(self, endpoint, args):
+        """Same as odoo.http.HttpDispatcher, except for the early db check"""
+        params = dict(self.request.get_http_params(), **args)
+
+        # Check for CSRF token for relevant requests
+        if (
+            self.request.httprequest.method not in CSRF_FREE_METHODS
+            and endpoint.routing.get("csrf", True)
+        ):
+            token = params.pop("csrf_token", None)
+            if not self.request.validate_csrf(token):
+                if token is not None:
+                    _logger.warning(
+                        "CSRF validation failed on path '%s'",
+                        self.request.httprequest.path,
+                    )
+                else:
+                    _logger.warning(MISSING_CSRF_WARNING, request.httprequest.path)
+                raise BadRequest("Session expired (invalid CSRF token)")
+
+        if self.request.db:
+            return self.request.registry["ir.http"]._dispatch(endpoint)
+        else:
+            return endpoint(**self.request.params)
 
     def _determine_context_lang(self):
         """
@@ -147,13 +181,13 @@ class HttpRestRequest(HttpRequest):
         according to the priority of languages into the headers and those
         available into Odoo.
         """
-        accepted_langs = self.httprequest.headers.get("Accept-language")
+        accepted_langs = self.request.httprequest.headers.get("Accept-language")
         if not accepted_langs:
             return
         parsed_accepted_langs = parse_accept_language(accepted_langs)
         installed_locale_langs = set()
         installed_locale_by_lang = defaultdict(list)
-        for lang_code, _name in self.env["res.lang"].get_installed():
+        for lang_code, _name in self.request.env["res.lang"].get_installed():
             installed_locale_langs.add(lang_code)
             installed_locale_by_lang[lang_code.split("_")[0]].append(lang_code)
 
@@ -173,14 +207,14 @@ class HttpRestRequest(HttpRequest):
                     locale = locales[0]
             if locale:
                 # reset the context to put our new lang.
-                context = dict(self._context)
-                context["lang"] = locale
-                # the setter defiend in odoo.http.WebRequest reset the env
-                # when setting a new context
-                self.context = context
+                self.request.update_context(lang=locale)
                 break
 
-    def _handle_exception(self, exception):
+    @classmethod
+    def is_compatible_with(cls, request):
+        return True
+
+    def handle_error(self, exception):
         """Called within an except block to allow converting exceptions
         to abitrary responses. Anything returned (except None) will
         be used as response."""
@@ -188,25 +222,23 @@ class HttpRestRequest(HttpRequest):
             # we don't want to return the login form as plain html page
             # we want to raise a proper exception
             return wrapJsonException(Unauthorized(ustr(exception)))
-        try:
-            return super(HttpRestRequest, self)._handle_exception(exception)
-        except MissingError as e:
-            extra_info = getattr(e, "rest_json_info", None)
-            return wrapJsonException(NotFound(ustr(e)), extra_info=extra_info)
-        except (AccessError, AccessDenied) as e:
-            extra_info = getattr(e, "rest_json_info", None)
-            return wrapJsonException(Forbidden(ustr(e)), extra_info=extra_info)
-        except (UserError, ValidationError) as e:
-            extra_info = getattr(e, "rest_json_info", None)
+        if isinstance(exception, MissingError):
+            extra_info = getattr(exception, "rest_json_info", None)
+            return wrapJsonException(NotFound(ustr(exception)), extra_info=extra_info)
+        if isinstance(exception, (AccessError, AccessDenied)):
+            extra_info = getattr(exception, "rest_json_info", None)
+            return wrapJsonException(Forbidden(ustr(exception)), extra_info=extra_info)
+        if isinstance(exception, (UserError, ValidationError)):
+            extra_info = getattr(exception, "rest_json_info", None)
             return wrapJsonException(
-                BadRequest(e.args[0]), include_description=True, extra_info=extra_info
+                BadRequest(exception.args[0]),
+                include_description=True,
+                extra_info=extra_info,
             )
-        except HTTPException as e:
-            extra_info = getattr(e, "rest_json_info", None)
-            return wrapJsonException(e, extra_info=extra_info)
-        except Exception as e:  # flake8: noqa: E722
-            extra_info = getattr(e, "rest_json_info", None)
-            return wrapJsonException(InternalServerError(e), extra_info=extra_info)
+        if isinstance(exception, HTTPException):
+            return exception
+        extra_info = getattr(exception, "rest_json_info", None)
+        return wrapJsonException(InternalServerError(exception), extra_info=extra_info)
 
     def make_json_response(self, data, headers=None, cookies=None):
         data = JSONEncoder().encode(data)
@@ -214,24 +246,3 @@ class HttpRestRequest(HttpRequest):
             headers = {}
         headers["Content-Type"] = "application/json"
         return self.make_response(data, headers=headers, cookies=cookies)
-
-
-ori_get_request = Root.get_request
-
-
-def get_request(self, httprequest):
-    db = httprequest.session.db
-    if db and odoo.service.db.exp_db_exist(db):
-        # on the very first request processed by a worker,
-        # registry is not loaded yet
-        # so we enforce its loading here to make sure that
-        # _rest_services_databases is not empty
-        odoo.registry(db)
-        rest_routes = _rest_services_routes.get(db, [])
-        for root_path in rest_routes:
-            if httprequest.path.startswith(root_path):
-                return HttpRestRequest(httprequest)
-    return ori_get_request(self, httprequest)
-
-
-Root.get_request = get_request

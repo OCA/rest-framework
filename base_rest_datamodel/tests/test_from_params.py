@@ -1,6 +1,6 @@
 # Copyright 2021 Wakari SRL
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
-import mock
+from unittest import mock
 
 from odoo.exceptions import UserError
 

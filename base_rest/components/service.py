@@ -11,6 +11,7 @@ from odoo.http import request
 from odoo.addons.component.core import AbstractComponent
 
 from ..apispec.base_rest_service_apispec import BaseRestServiceAPISpec
+from ..tools import ROUTING_DECORATOR_ATTR
 
 _logger = logging.getLogger(__name__)
 
@@ -93,7 +94,7 @@ class BaseRestService(AbstractComponent):
         method_name = method.__name__
         if hasattr(method, "skip_secure_params"):
             return params
-        routing = getattr(method, "routing", None)
+        routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
         if not routing:
             _logger.warning(
                 "Method %s is not a public method of service %s",
@@ -122,7 +123,7 @@ class BaseRestService(AbstractComponent):
             method_name = method.__name__
         if hasattr(method, "skip_secure_response"):
             return result
-        routing = getattr(method, "routing", None)
+        routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
         output_param = routing["output_param"]
         if not output_param:
             _logger.warning(

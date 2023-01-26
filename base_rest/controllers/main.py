@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from werkzeug.exceptions import BadRequest
 
 from odoo import models
-from odoo.http import Controller, ControllerType, Response, request
+from odoo.http import Controller, Response, request
 
 from odoo.addons.component.core import WorkContext, _get_addon_name
 
@@ -25,43 +25,7 @@ class _PseudoCollection(object):
         self.id = None
 
 
-class RestControllerType(ControllerType):
-
-    # pylint: disable=E0213
-    def __init__(cls, name, bases, attrs):  # noqa: B902
-        if (
-            "RestController" in globals()
-            and RestController in bases
-            and Controller not in bases
-        ):
-            # to be registered as a controller into the ControllerType,
-            # our RestConrtroller must be a direct child of Controller
-            bases += (Controller,)
-        super(RestControllerType, cls).__init__(name, bases, attrs)
-        if "RestController" not in globals() or not any(
-            issubclass(b, RestController) for b in bases
-        ):
-            return
-        # register the rest controller into the rest controllers registry
-        root_path = getattr(cls, "_root_path", None)
-        collection_name = getattr(cls, "_collection_name", None)
-        if root_path and collection_name:
-            cls._module = _get_addon_name(cls.__module__)
-            _rest_controllers_per_module[cls._module].append(
-                {
-                    "root_path": root_path,
-                    "collection_name": collection_name,
-                    "controller_class": cls,
-                }
-            )
-            _logger.debug(
-                "Added rest controller %s for module %s",
-                _rest_controllers_per_module[cls._module][-1],
-                cls._module,
-            )
-
-
-class RestController(Controller, metaclass=RestControllerType):
+class RestController(Controller):
     """Generic REST Controller
 
     This controller is the base controller used by as base controller for all the REST
@@ -129,6 +93,38 @@ class RestController(Controller, metaclass=RestControllerType):
     _default_save_session = True
 
     _component_context_provider = "component_context_provider"
+
+    @classmethod
+    def __init_subclass__(cls):
+        if (
+            "RestController" in globals()
+            and RestController in cls.__bases__
+            and Controller not in cls.__bases__
+        ):
+            # Ensure that Controller's __init_subclass__ kicks in.
+            cls.__bases__ += (Controller,)
+        super().__init_subclass__()
+        if "RestController" not in globals() or not any(
+            issubclass(b, RestController) for b in cls.__bases__
+        ):
+            return
+        # register the rest controller into the rest controllers registry
+        root_path = getattr(cls, "_root_path", None)
+        collection_name = getattr(cls, "_collection_name", None)
+        if root_path and collection_name:
+            cls._module = _get_addon_name(cls.__module__)
+            _rest_controllers_per_module[cls._module].append(
+                {
+                    "root_path": root_path,
+                    "collection_name": collection_name,
+                    "controller_class": cls,
+                }
+            )
+            _logger.debug(
+                "Added rest controller %s for module %s",
+                _rest_controllers_per_module[cls._module][-1],
+                cls._module,
+            )
 
     def _get_component_context(self, collection=None):
         """
