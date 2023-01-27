@@ -31,8 +31,16 @@ def authenticated_partner_impl() -> Partner:
     See the fastapi_endpoint_demo for an example"""
 
 
+def authenticated_partner_env(
+    partner: Partner = Depends(authenticated_partner_impl),  # noqa: B008
+) -> Environment:
+    """Return an environment with the authenticated partner id in the context"""
+    return partner.with_context(authenticated_partner_id=partner.id).env
+
+
 def authenticated_partner(
     partner: Partner = Depends(authenticated_partner_impl),  # noqa: B008
+    partner_env: Environment = Depends(authenticated_partner_env),  # noqa: B008
 ) -> Partner:
     """If you need to get access to the authenticated partner into your
     endpoint, you can add a dependency into the endpoint definition on this
@@ -41,17 +49,9 @@ def authenticated_partner(
     specific implementation. It depends on `authenticated_partner_impl`. The
     concrete implementation of authenticated_partner_impl has to be provided
     when the FastAPI app is created.
-    This method is also responsible to put the authenticated partner id
-    into the context of the current environment.
+    This method return a partner into the authenticated_partner_env
     """
-    return partner.with_context(authenticated_partner_id=partner.id)
-
-
-def authenticated_partner_env(
-    partner: Partner = Depends(authenticated_partner),  # noqa: B008
-) -> Environment:
-    """Return an environment with the authenticated partner id in the context"""
-    return partner.env
+    return partner_env["res.partner"].browse(partner.id)
 
 
 def paging(
@@ -82,8 +82,9 @@ def basic_auth_user(
 
 def authenticated_partner_from_basic_auth_user(
     user: Users = Depends(basic_auth_user),  # noqa: B008
+    env: Environment = Depends(odoo_env),  # noqa: B008
 ) -> Partner:
-    return user.partner_id
+    return env["res.partner"].browse(user.partner_id.id)
 
 
 def fastapi_endpoint_id() -> int:
