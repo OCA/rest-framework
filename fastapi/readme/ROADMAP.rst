@@ -7,4 +7,4 @@ support is not 'yet' available in the **Odoo** framework. The challenge is high
 because the integration of the fastapi is based on the use of a specific middleware
 that convert the WSGI request consumed by odoo to a ASGI request. The question
 is to know if it is also possible to develop the same kind of bridge for the
-WebSockets.
+WebSockets and to stream large responses.

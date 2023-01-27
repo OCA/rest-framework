@@ -196,9 +196,23 @@ a set of function that can be used as dependencies:
 * **'odoo_env'**: Returns the current odoo environment.
 * **'fastapi_endpoint'**: Returns the current fastapi endpoint model instance.
 * **'authenticated_partner'**: Returns the authenticated partner.
+* **'authenticated_partner_env'**: Returns the current odoo environment with the
+  authenticated_partner_id into the context.
 
 By default, the **'odoo_env'** and **'fastapi_endpoint'** dependencies are
 available without extra work.
+
+.. note::
+  Even if 'odoo_env' and 'authenticated_partner_env' returns the current odoo
+  environment, they are not the same. The 'odoo_env' dependency returns the
+  environment without any modification while the 'authenticated_partner_env'
+  adds the authenticated partner id into the context of the environment. As it will
+  be explained in the section `Managing security into the route handlers`_ dedicated
+  to the security, the presence of the authenticated partner id into the context
+  is the key information that will allow you to enforce the security of your endpoint
+  methods. As consequence, you should always use the 'authenticated_partner_env'
+  dependency instead of the 'odoo_env' dependency for all the methods that are
+  not public.
 
 The dependency injection mechanism
 **********************************
