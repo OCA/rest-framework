@@ -8,17 +8,13 @@ import traceback
 
 from werkzeug.urls import url_encode, url_join
 
-from odoo import exceptions, registry
+from odoo import registry
 from odoo.http import Response, request
 
 from odoo.addons.base_rest.http import JSONEncoder
 from odoo.addons.component.core import AbstractComponent
 
-from ..exceptions import (
-    RESTServiceDispatchException,
-    RESTServiceUserErrorException,
-    RESTServiceValidationErrorException,
-)
+from ..exceptions import EXCEPTION_MAP, RESTServiceDispatchException
 
 
 def json_dump(data):
@@ -41,29 +37,12 @@ class BaseRESTService(AbstractComponent):
         # https://github.com/OCA/rest-framework/pull/106#pullrequestreview-582099258
         try:
             result = super().dispatch(method_name, *args, params=params)
-        except exceptions.UserError as orig_exception:
-            self._dispatch_exception(
-                method_name,
-                RESTServiceUserErrorException,
-                orig_exception,
-                *args,
-                params=params,
-            )
-        except exceptions.ValidationError as orig_exception:
-            self._dispatch_exception(
-                method_name,
-                RESTServiceValidationErrorException,
-                orig_exception,
-                *args,
-                params=params,
-            )
         except Exception as orig_exception:
-            self._dispatch_exception(
-                method_name,
-                RESTServiceDispatchException,
-                orig_exception,
-                *args,
-                params=params,
+            exc = self._get_dispatch_with_db_logging_exception(
+                method_name, orig_exception, *args, params=params
+            )
+            return self._dispatch_exception(
+                method_name, exc, orig_exception, *args, params=params
             )
         log_entry = self._log_call_in_db(
             self.env, request, method_name, *args, params=params, result=result
@@ -72,6 +51,21 @@ class BaseRESTService(AbstractComponent):
             log_entry_url = self._get_log_entry_url(log_entry)
             result["log_entry_url"] = log_entry_url
         return result
+
+    def _get_dispatch_with_db_logging_exception(
+        self, method_name, orig_exception, *args, params=None
+    ):
+        # Hook method: to be overridden to allow retrieving custom exceptions
+        exc_map = self._get_dispatch_with_db_logging_exception_map(
+            method_name, *args, params=params
+        )
+        return exc_map.get(type(orig_exception)) or RESTServiceDispatchException
+
+    def _get_dispatch_with_db_logging_exception_map(
+        self, method_name, *args, params=None
+    ):
+        # Hook method: to be overridden to allow custom mappings
+        return EXCEPTION_MAP
 
     def _dispatch_exception(
         self, method_name, exception_klass, orig_exception, *args, params=None
@@ -93,10 +87,17 @@ class BaseRESTService(AbstractComponent):
             log_entry_url = self._get_log_entry_url(log_entry)
         # UserError and alike have `name` attribute to store the msg
         exc_msg = self._get_exception_message(orig_exception)
-        raise exception_klass(exc_msg, log_entry_url) from orig_exception
+        json_info = {"log_entry_url": log_entry_url}
+        # Retrieve REST JSON info from original exception (if existing)
+        json_info.update(self._get_rest_json_info(orig_exception))
+        exc = exception_klass(exc_msg, **json_info)
+        raise exc from orig_exception
 
     def _get_exception_message(self, exception):
         return getattr(exception, "name", str(exception))
+
+    def _get_rest_json_info(self, exception):
+        return getattr(exception, "rest_json_info", {})
 
     def _get_log_entry_url(self, entry):
         base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
