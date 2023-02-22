@@ -17,6 +17,7 @@
         "base_rest_pydantic",
         "component",
         "extendable",
+        "pydantic",
     ],
     "data": [],
     "demo": [],
