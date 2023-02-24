@@ -7,6 +7,7 @@ from itertools import chain
 from typing import Any, Awaitable, Callable, Dict, List, Tuple, Type, Union
 
 from a2wsgi import ASGIMiddleware
+from starlette.middleware import Middleware
 
 import odoo
 from odoo import _, api, exceptions, fields, models, tools
@@ -195,7 +196,7 @@ class FastapiEndpoint(models.Model):
         return record.user_id.id
 
     def _get_app(self) -> FastAPI:
-        app = FastAPI(**self._prepare_fastapi_endpoint_params())
+        app = FastAPI(**self._prepare_fastapi_app_params())
         for router in self._get_fastapi_routers():
             app.include_router(prefix=self.root_path, router=router)
         app.dependency_overrides[depends.fastapi_endpoint_id] = partial(
@@ -237,7 +238,7 @@ class FastapiEndpoint(models.Model):
             odoo.exceptions.ValidationError: error_handlers._odoo_validation_error_handler,
         }
 
-    def _prepare_fastapi_endpoint_params(self) -> Dict[str, Any]:
+    def _prepare_fastapi_app_params(self) -> Dict[str, Any]:
         """Return the params to pass to the Fast API app constructor"""
         return {
             "title": self.name,
@@ -245,11 +246,16 @@ class FastapiEndpoint(models.Model):
             "openapi_url": self.openapi_url,
             "docs_url": self.docs_url,
             "redoc_url": self.redoc_url,
+            "middleware": self._get_fastapi_app_middlewares(),
         }
 
     def _get_fastapi_routers(self) -> List[APIRouter]:
         """Return the api routers to use for the instance.
 
-        This methoud must be implemented when registering a new api type.
+        This method must be implemented when registering a new api type.
         """
+        return []
+
+    def _get_fastapi_app_middlewares(self) -> List[Middleware]:
+        """Return the middlewares to use for the fastapi app."""
         return []
