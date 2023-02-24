@@ -27,6 +27,7 @@
                         <field name="root_path" />
                         <field name="user_id" />
                         <field name="description" />
+                        <field name="registry_sync" />
                     </group>
                     <group name="resoures">
                         <field name="docs_url" widget="url" />

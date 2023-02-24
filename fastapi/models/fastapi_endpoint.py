@@ -3,14 +3,13 @@
 
 import logging
 from functools import partial
-from typing import Any, Awaitable, Callable, Dict, List, Type, Union
+from itertools import chain
+from typing import Any, Awaitable, Callable, Dict, List, Tuple, Type, Union
 
 from a2wsgi import ASGIMiddleware
 
 import odoo
 from odoo import _, api, exceptions, fields, models, tools
-
-from odoo.addons.endpoint_route_handler.registry import EndpointRegistry
 
 from fastapi import APIRouter, FastAPI, HTTPException, Request, Response
 
@@ -22,6 +21,7 @@ _logger = logging.getLogger(__name__)
 class FastapiEndpoint(models.Model):
 
     _name = "fastapi.endpoint"
+    _inherit = "endpoint.route.sync.mixin"
     _description = "FastAPI Endpoint"
 
     name: str = fields.Char(required=True, help="The title of the API.")
@@ -47,8 +47,6 @@ class FastapiEndpoint(models.Model):
     docs_url: str = fields.Char(compute="_compute_urls")
     redoc_url: str = fields.Char(compute="_compute_urls")
     openapi_url: str = fields.Char(compute="_compute_urls")
-
-    active: bool = fields.Boolean(default=True)
 
     @api.depends("root_path")
     def _compute_root_path(self):
@@ -86,12 +84,29 @@ class FastapiEndpoint(models.Model):
             rec.redoc_url = f"{rec.root_path}/redoc"
             rec.openapi_url = f"{rec.root_path}/openapi.json"
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        rec = super().create(vals_list)
-        if rec.active:
-            rec._register_endpoints()
-        return rec
+    #
+    # endpoint.route.sync.mixin methods implementation
+    #
+    def _prepare_endpoint_rules(self, options=None):
+        return list(chain(*[rec._make_routing_rule(options=options) for rec in self]))
+
+    def _registered_endpoint_rule_keys(self):
+        res = []
+        for rec in self:
+            routing = self._get_routing_info()
+            for route in routing:
+                res.append(rec._endpoint_registry_route_unique_key(route))
+        return tuple(res)
+
+    @api.model
+    def _routing_impacting_fields(self) -> Tuple[str]:
+        """The list of fields requiring to refresh the mount point of the pp
+        into odoo if modified"""
+        return ("root_path",)
+
+    #
+    # end of endpoint.route.sync.mixin methods implementation
+    #
 
     def write(self, vals):
         res = super().write(vals)
@@ -99,74 +114,52 @@ class FastapiEndpoint(models.Model):
         return res
 
     def _handle_route_updates(self, vals):
-        if "active" in vals:
-            if vals["active"]:
-                self._register_endpoints()
-            else:
-                self._unregister_endpoints()
-            return True
-        refresh_endpoints = any([x in vals for x in self._routing_fields()])
-        refresh_fastapi_app = (
-            any([x in vals for x in self._fastapi_app_fields()]) or refresh_endpoints
-        )
-        if refresh_endpoints:
-            self._register_endpoints()
+        observed_fields = [self._routing_impacting_fields(), self._fastapi_app_fields()]
+        refresh_fastapi_app = any([x in vals for x in chain(*observed_fields)])
         if refresh_fastapi_app:
             self._reset_app()
         if "user_id" in vals:
             self.get_uid.clear_cache(self)
         return False
 
-    def unlink(self):
-        self._unregister_endpoints()
-        return super().unlink()
-
-    @api.model
-    def _routing_fields(self) -> List[str]:
-        """The list of fields requiring to refresh the mount point of the pp
-        into odoo if modified"""
-        return ["root_path"]
-
     @api.model
     def _fastapi_app_fields(self) -> List[str]:
         """The list of fields requiring to refresh the fastapi app if modified"""
         return []
 
-    @property
-    def _endpoint_registry(self) -> EndpointRegistry:
-        return EndpointRegistry.registry_for(self.env.cr.dbname)
-
-    def _register_hook(self):
-        self.search([("active", "=", True)])._register_endpoints(init=True)
-
-    def _register_endpoints(self, init: bool = False):
-        for rec in self:
-            for rule in rec._make_routing_rule():
-                rec._endpoint_registry.add_or_update_rule(rule, init=init)
-
-    def _make_routing_rule(self):
+    def _make_routing_rule(self, options=None):
         """Generator of rule for every route into the routing info"""
         self.ensure_one()
         routing = self._get_routing_info()
+        options = options or self._default_endpoint_options()
         for route in routing["routes"]:
             key = self._endpoint_registry_route_unique_key(route)
             endpoint_hash = hash(route)
-
-            def endpoint(self):
-                """Dummy method only used to register a route with type='fastapi'"""
-
-            endpoint.routing = routing
             rule = self._endpoint_registry.make_rule(
-                key, route, endpoint, routing, endpoint_hash
+                key, route, options, routing, endpoint_hash
             )
             yield rule
+
+    def _default_endpoint_options(self):
+        options = {"handler": self._default_endpoint_options_handler()}
+        return options
+
+    def _default_endpoint_options_handler(self):
+        # The handler is useless in the context of a fastapi endpoint since the
+        # routing type is "fastapi" and the routing is handled by a dedicated
+        # dispatcher that will forward the request to the fastapi app.
+        base_path = "odoo.addons.endpoint_route_handler.controllers.main"
+        return {
+            "klass_dotted_path": f"{base_path}.EndpointNotFoundController",
+            "method_name": "auto_not_found",
+        }
 
     def _get_routing_info(self):
         self.ensure_one()
         return {
             "type": "fastapi",
             "auth": "public",
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
             "routes": [
                 f"{self.root_path}/",
                 f"{self.root_path}/<path:application_path>",
@@ -177,12 +170,6 @@ class FastapiEndpoint(models.Model):
     def _endpoint_registry_route_unique_key(self, route: str):
         path = route.replace(self.root_path, "")
         return f"{self._name}:{self.id}:{path}"
-
-    def _unregister_endpoints(self):
-        for rec in self:
-            for route in rec._get_routing_info()["routes"]:
-                key = rec._endpoint_registry_route_unique_key(route)
-                rec._endpoint_registry.drop_rule(key)
 
     def _reset_app(self):
         self.get_app.clear_cache(self)
