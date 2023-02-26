@@ -150,7 +150,7 @@ figure:: static/description/endpoint.png
     FastAPI Endpoint
 
 Thanks to the **'fastapi.endpoint'** model, you can create as many endpoints as
-you wand and mount as many apps as you want in each endpoint. The endpoint is
+you want and mount as many apps as you want in each endpoint. The endpoint is
 also the place where you can define configuration parameters for your app. A
 typical example is the authentication method that you want to use for your app
 when accessed at the endpoint path.
@@ -397,7 +397,7 @@ In this dummy implementation, we just check that the provided credentials
 can be used to authenticate a user in odoo. If the authentication is successful,
 we return the partner record linked to the authenticated user.
 
-In some cas you could want to implement a more complex authentication mechanism
+In some case you could want to implement a more complex authentication mechanism
 that could rely on a token or a session. In this case, you can override the
 **'authenticated_partner'** dependency by registering a specific method that
 returns the authenticated partner. Moreover, you can make it configurable on
