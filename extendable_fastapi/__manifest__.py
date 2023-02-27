@@ -13,5 +13,10 @@
     "depends": ["fastapi", "extendable"],
     "data": [],
     "demo": [],
+    "external_dependencies": {
+        "python": [
+            "extendable-pydantic>=0.0.2",
+        ],
+    },
     "installable": True,
 }
