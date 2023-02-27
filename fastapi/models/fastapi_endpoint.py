@@ -89,14 +89,13 @@ class FastapiEndpoint(models.Model):
     # endpoint.route.sync.mixin methods implementation
     #
     def _prepare_endpoint_rules(self, options=None):
-        return list(chain(*[rec._make_routing_rule(options=options) for rec in self]))
+        return [rec._make_routing_rule(options=options) for rec in self]
 
     def _registered_endpoint_rule_keys(self):
         res = []
         for rec in self:
-            routing = self._get_routing_info()
-            for route in routing:
-                res.append(rec._endpoint_registry_route_unique_key(route))
+            routing = rec._get_routing_info()
+            res.append(rec._endpoint_registry_route_unique_key(routing))
         return tuple(res)
 
     @api.model
@@ -129,17 +128,16 @@ class FastapiEndpoint(models.Model):
         return []
 
     def _make_routing_rule(self, options=None):
-        """Generator of rule for every route into the routing info"""
+        """Generator of rule"""
         self.ensure_one()
         routing = self._get_routing_info()
         options = options or self._default_endpoint_options()
-        for route in routing["routes"]:
-            key = self._endpoint_registry_route_unique_key(route)
-            endpoint_hash = hash(route)
-            rule = self._endpoint_registry.make_rule(
-                key, route, options, routing, endpoint_hash
-            )
-            yield rule
+        route = "|".join(routing["routes"])
+        key = self._endpoint_registry_route_unique_key(routing)
+        endpoint_hash = hash(route)
+        return self._endpoint_registry.make_rule(
+            key, route, options, routing, endpoint_hash
+        )
 
     def _default_endpoint_options(self):
         options = {"handler": self._default_endpoint_options_handler()}
@@ -168,7 +166,8 @@ class FastapiEndpoint(models.Model):
             # csrf ?????
         }
 
-    def _endpoint_registry_route_unique_key(self, route: str):
+    def _endpoint_registry_route_unique_key(self, routing: Dict[str, Any]):
+        route = "|".join(routing["routes"])
         path = route.replace(self.root_path, "")
         return f"{self._name}:{self.id}:{path}"
 
