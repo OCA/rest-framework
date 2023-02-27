@@ -12,7 +12,7 @@ from starlette.middleware import Middleware
 import odoo
 from odoo import _, api, exceptions, fields, models, tools
 
-from fastapi import APIRouter, FastAPI, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
 
 from .. import depends, error_handlers
 
@@ -247,6 +247,7 @@ class FastapiEndpoint(models.Model):
             "docs_url": self.docs_url,
             "redoc_url": self.redoc_url,
             "middleware": self._get_fastapi_app_middlewares(),
+            "dependencies": self._get_fastapi_app_dependencies(),
         }
 
     def _get_fastapi_routers(self) -> List[APIRouter]:
@@ -259,3 +260,7 @@ class FastapiEndpoint(models.Model):
     def _get_fastapi_app_middlewares(self) -> List[Middleware]:
         """Return the middlewares to use for the fastapi app."""
         return []
+
+    def _get_fastapi_app_dependencies(self) -> List[Depends]:
+        """Return the dependencies to use for the fastapi app."""
+        return [Depends(depends.accept_language)]

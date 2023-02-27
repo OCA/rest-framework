@@ -49,6 +49,14 @@ class FastApiDispatcher(Dispatcher):
     @contextmanager
     def _manage_odoo_env(self, uid=None):
         env = request.env
+        accept_language = request.httprequest.headers.get("Accept-language")
+        context = env.context
+        if accept_language:
+            lang = (
+                env["res.lang"].sudo()._get_lang_from_accept_language(accept_language)
+            )
+            if lang:
+                env = env(context=dict(context, lang=lang))
         if uid:
             env = env(user=uid)
         token = odoo_env_ctx.set(env)

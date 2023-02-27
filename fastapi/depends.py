@@ -9,7 +9,7 @@ from odoo.exceptions import AccessDenied
 from odoo.addons.base.models.res_partner import Partner
 from odoo.addons.base.models.res_users import Users
 
-from fastapi import Depends, HTTPException, Query, status
+from fastapi import Depends, Header, HTTPException, Query, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from .context import odoo_env_ctx
@@ -106,3 +106,19 @@ def fastapi_endpoint(
     # TODO we should declare a technical user with read access only on the
     # fastapi.endpoint model
     return env["fastapi.endpoint"].sudo().browse(_id)
+
+
+def accept_language(
+    accept_language: str = Header(  # noqa: B008
+        None,
+        alias="Accept-Language",
+        description="The Accept-Language header is used to specify the language "
+        "of the content to be returned. If a language is not available, the "
+        "server will return the content in the default language.",
+    )
+) -> str:
+    """This dependency is used at application level to document the way the language
+    to use for the response is specified. The header is processed outside of the
+    fastapi app to initialize the odoo environment with the right language.
+    """
+    return accept_language
