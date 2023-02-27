@@ -101,7 +101,11 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
             "RESTFULL call to url %s with method %s and params %s "
             "raise the following error %s"
         )
-        params = request.params.copy()
+        params = (
+            request.params.copy()
+            if hasattr(request, "params")
+            else request.get_http_params().copy()
+        )
         for k in params.keys():
             if k in BLACKLISTED_LOG_PARAMS:
                 params[k] = "<redacted>"
