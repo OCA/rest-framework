@@ -589,9 +589,24 @@ a set of function that can be used as dependencies:</p>
 <li><strong>‘odoo_env’</strong>: Returns the current odoo environment.</li>
 <li><strong>‘fastapi_endpoint’</strong>: Returns the current fastapi endpoint model instance.</li>
 <li><strong>‘authenticated_partner’</strong>: Returns the authenticated partner.</li>
+<li><strong>‘authenticated_partner_env’</strong>: Returns the current odoo environment with the
+authenticated_partner_id into the context.</li>
 </ul>
 <p>By default, the <strong>‘odoo_env’</strong> and <strong>‘fastapi_endpoint’</strong> dependencies are
 available without extra work.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Even if ‘odoo_env’ and ‘authenticated_partner_env’ returns the current odoo
+environment, they are not the same. The ‘odoo_env’ dependency returns the
+environment without any modification while the ‘authenticated_partner_env’
+adds the authenticated partner id into the context of the environment. As it will
+be explained in the section <a class="reference internal" href="#managing-security-into-the-route-handlers">Managing security into the route handlers</a> dedicated
+to the security, the presence of the authenticated partner id into the context
+is the key information that will allow you to enforce the security of your endpoint
+methods. As consequence, you should always use the ‘authenticated_partner_env’
+dependency instead of the ‘odoo_env’ dependency for all the methods that are
+not public.</p>
+</div>
 </div>
 <div class="section" id="the-dependency-injection-mechanism">
 <h1>The dependency injection mechanism</h1>
@@ -872,6 +887,18 @@ list.</p>
         <span class="k">return</span> <span class="n">fields</span>
 </pre>
 </div>
+<div class="section" id="dealing-with-languages">
+<h1>Dealing with languages</h1>
+<p>The fastapi addon parses the Accept-Language header of the request to determine
+the language to use. This parsing is done by respecting the <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.5">RFC 7231 specification</a>. That means that
+the language is determined by the first language found in the header that is
+supported by odoo (with care of the priority order). If no language is found in
+the header, the odoo default language is used. This language is then used to
+initialize the Odoo’s environment context used by the route handlers. All this
+makes the management of languages very easy. You don’t have to worry about. This
+feature is also documented by default into the generated openapi documentation
+of your app to instruct the api consumers how to request a specific language.</p>
+</div>
 <div class="section" id="how-to-extend-an-existing-app">
 <h1>How to extend an existing app</h1>
 <p>When you develop a fastapi app, in a native python app it’s not possible
@@ -1047,7 +1074,7 @@ used alone, it’s your responsibility to instruct this library the list of
 extensions to apply to a model and the order to apply them. This is not very
 convenient. Fortunately, an dedicated odoo addon exists to make this process
 complete transparent. This addon is called
-<a class="reference external" href="https://pypi.org/project/odoo-addon-extendable/">odoo-addon-extendable</a>.</p>
+<a class="reference external" href="https://pypi.org/project/odoo-addon-extendable-fastapi/">odoo-addon-extendable-fastapi</a>.</p>
 <p>When you want to allow other addons to extend a pydantic model, you must
 first define the model as an extendable model by using a dedicated metaclass</p>
 <pre class="code python literal-block">
@@ -1454,7 +1481,7 @@ support is not ‘yet’ available in the <strong>Odoo</strong> framework. The c
 because the integration of the fastapi is based on the use of a specific middleware
 that convert the WSGI request consumed by odoo to a ASGI request. The question
 is to know if it is also possible to develop the same kind of bridge for the
-WebSockets.</p>
+WebSockets and to stream large responses.</p>
 </div>
 <div class="section" id="bug-tracker">
 <h2>Bug Tracker</h2>
