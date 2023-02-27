@@ -113,6 +113,9 @@ class FastapiEndpoint(models.Model):
         self._handle_route_updates(vals)
         return res
 
+    def action_sync_registry(self):
+        self.filtered(lambda e: not e.registry_sync).write({"registry_sync": True})
+
     def _handle_route_updates(self, vals):
         observed_fields = [self._routing_impacting_fields(), self._fastapi_app_fields()]
         refresh_fastapi_app = any([x in vals for x in chain(*observed_fields)])
