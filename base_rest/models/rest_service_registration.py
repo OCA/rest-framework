@@ -12,6 +12,7 @@ This code is inspired by ``odoo.addons.component.builder.ComponentBuilder``
 """
 import inspect
 import logging
+import os
 
 from werkzeug.routing import Map, Rule
 
@@ -31,11 +32,25 @@ from ..core import (
 )
 from ..tools import _inspect_methods
 
+_logger = logging.getLogger(__name__)
+
+
 # Decorator attribute added on a route function (cfr Odoo's route)
 ROUTING_DECORATOR_ATTR = "routing"
-
-
-_logger = logging.getLogger(__name__)
+# Disable logging for deprecation.
+# You might have big projects, with tons of services with no specific decorator,
+# that are well tested and very stable and you don't want to touch them.
+# Especially if you plan already to move to v16.
+# Since this logging can bloat your CI and your log collecting tools,
+# here is a way to prevent that and get only a msg at boot.
+DISABLE_DEPRECATE_LOG_KEY = "REST_API_METHOD_FIX_DECORATOR_DEPRECATE_LOG_DISABLE"
+DISABLE_DEPRECATE_LOG = os.getenv(DISABLE_DEPRECATE_LOG_KEY)
+if DISABLE_DEPRECATE_LOG:
+    msg = (
+        f"{DISABLE_DEPRECATE_LOG_KEY} enabled: implicit service methods are deprecated. "
+        f"Disable this env key and enable debug level to have more details."
+    )
+    _logger.warning(msg)
 
 
 class RestServiceRegistration(models.AbstractModel):
@@ -292,6 +307,10 @@ class RestApiMethodTransformer(object):
             routes=routes, input_param=input_param, output_param=output_param
         )(getattr(self._service.__class__, method_name))
         setattr(self._service.__class__, method_name, decorated_method)
+
+        if DISABLE_DEPRECATE_LOG:
+            return
+
         # flake8: noqa: B950
         deprecated_message = (
             'Deprecated REST API implicit method "%s" '
