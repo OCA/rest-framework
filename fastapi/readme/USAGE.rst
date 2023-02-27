@@ -520,6 +520,20 @@ list.
           fields.append("demo_auth_method")
           return fields
 
+Dealing with languages
+**********************
+
+The fastapi addon parses the Accept-Language header of the request to determine
+the language to use. This parsing is done by respecting the `RFC 7231 specification
+<https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.5>`_. That means that
+the language is determined by the first language found in the header that is
+supported by odoo (with care of the priority order). If no language is found in
+the header, the odoo default language is used. This language is then used to
+initialize the Odoo's environment context used by the route handlers. All this
+makes the management of languages very easy. You don't have to worry about. This
+feature is also documented by default into the generated openapi documentation
+of your app to instruct the api consumers how to request a specific language.
+
 
 How to extend an existing app
 ******************************
@@ -716,7 +730,7 @@ used alone, it's your responsibility to instruct this library the list of
 extensions to apply to a model and the order to apply them. This is not very
 convenient. Fortunately, an dedicated odoo addon exists to make this process
 complete transparent. This addon is called
-`odoo-addon-extendable <https://pypi.org/project/odoo-addon-extendable/>`_.
+`odoo-addon-extendable-fastapi <https://pypi.org/project/odoo-addon-extendable-fastapi/>`_.
 
 When you want to allow other addons to extend a pydantic model, you must
 first define the model as an extendable model by using a dedicated metaclass
