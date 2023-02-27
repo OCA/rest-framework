@@ -6,6 +6,7 @@ cerberus
 contextvars
 extendable
 extendable-pydantic
+extendable-pydantic>=0.0.2
 fastapi
 graphene
 graphql_server
