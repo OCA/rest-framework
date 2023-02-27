@@ -150,7 +150,7 @@ figure:: static/description/endpoint.png
     FastAPI Endpoint
 
 Thanks to the **'fastapi.endpoint'** model, you can create as many endpoints as
-you want and mount as many apps as you want in each endpoint. The endpoint is
+you wand and mount as many apps as you want in each endpoint. The endpoint is
 also the place where you can define configuration parameters for your app. A
 typical example is the authentication method that you want to use for your app
 when accessed at the endpoint path.
@@ -271,9 +271,23 @@ a set of function that can be used as dependencies:
 * **'odoo_env'**: Returns the current odoo environment.
 * **'fastapi_endpoint'**: Returns the current fastapi endpoint model instance.
 * **'authenticated_partner'**: Returns the authenticated partner.
+* **'authenticated_partner_env'**: Returns the current odoo environment with the
+  authenticated_partner_id into the context.
 
 By default, the **'odoo_env'** and **'fastapi_endpoint'** dependencies are
 available without extra work.
+
+.. note::
+  Even if 'odoo_env' and 'authenticated_partner_env' returns the current odoo
+  environment, they are not the same. The 'odoo_env' dependency returns the
+  environment without any modification while the 'authenticated_partner_env'
+  adds the authenticated partner id into the context of the environment. As it will
+  be explained in the section `Managing security into the route handlers`_ dedicated
+  to the security, the presence of the authenticated partner id into the context
+  is the key information that will allow you to enforce the security of your endpoint
+  methods. As consequence, you should always use the 'authenticated_partner_env'
+  dependency instead of the 'odoo_env' dependency for all the methods that are
+  not public.
 
 The dependency injection mechanism
 **********************************
@@ -397,7 +411,7 @@ In this dummy implementation, we just check that the provided credentials
 can be used to authenticate a user in odoo. If the authentication is successful,
 we return the partner record linked to the authenticated user.
 
-In some case you could want to implement a more complex authentication mechanism
+In some cas you could want to implement a more complex authentication mechanism
 that could rely on a token or a session. In this case, you can override the
 **'authenticated_partner'** dependency by registering a specific method that
 returns the authenticated partner. Moreover, you can make it configurable on
@@ -580,6 +594,20 @@ list.
           fields = super()._fastapi_app_fields()
           fields.append("demo_auth_method")
           return fields
+
+Dealing with languages
+**********************
+
+The fastapi addon parses the Accept-Language header of the request to determine
+the language to use. This parsing is done by respecting the `RFC 7231 specification
+<https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.5>`_. That means that
+the language is determined by the first language found in the header that is
+supported by odoo (with care of the priority order). If no language is found in
+the header, the odoo default language is used. This language is then used to
+initialize the Odoo's environment context used by the route handlers. All this
+makes the management of languages very easy. You don't have to worry about. This
+feature is also documented by default into the generated openapi documentation
+of your app to instruct the api consumers how to request a specific language.
 
 
 How to extend an existing app
@@ -777,7 +805,7 @@ used alone, it's your responsibility to instruct this library the list of
 extensions to apply to a model and the order to apply them. This is not very
 convenient. Fortunately, an dedicated odoo addon exists to make this process
 complete transparent. This addon is called
-`odoo-addon-extendable <https://pypi.org/project/odoo-addon-extendable/>`_.
+`odoo-addon-extendable-fastapi <https://pypi.org/project/odoo-addon-extendable-fastapi/>`_.
 
 When you want to allow other addons to extend a pydantic model, you must
 first define the model as an extendable model by using a dedicated metaclass
@@ -1243,7 +1271,7 @@ support is not 'yet' available in the **Odoo** framework. The challenge is high
 because the integration of the fastapi is based on the use of a specific middleware
 that convert the WSGI request consumed by odoo to a ASGI request. The question
 is to know if it is also possible to develop the same kind of bridge for the
-WebSockets.
+WebSockets and to stream large responses.
 
 Bug Tracker
 ===========
