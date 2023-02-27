@@ -113,7 +113,7 @@ class ExceptionType(str, Enum):
 async def exception(exception_type: ExceptionType, error_message: str):
     """Raise an exception
 
-    This method is called into the test suite to check that any exception
+    This method is used in the test suite to check that any exception
     is correctly handled by the fastapi endpoint and that the transaction
     is roll backed.
     """
@@ -129,6 +129,17 @@ async def exception(exception_type: ExceptionType, error_message: str):
     if exception_cls is HTTPException:
         raise exception_cls(status_code=status.HTTP_409_CONFLICT, detail=error_message)
     raise exception_classes[exception_type](error_message)
+
+
+@demo_api_router.get("/lang")
+async def get_lang(env: Environment = Depends(odoo_env)):  # noqa: B008
+    """Returns the language according to the available languages in Odoo and the
+    Accept-Language header.
+
+    This method is used in the test suite to check that the language is correctly
+    set in the Odoo environment according to the Accept-Language header
+    """
+    return env.context.get("lang")
 
 
 @demo_api_router.get("/who_ami", response_model=UserInfo)

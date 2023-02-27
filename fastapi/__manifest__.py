@@ -20,6 +20,12 @@
     ],
     "demo": ["demo/fastapi_endpoint_demo.xml"],
     "external_dependencies": {
-        "python": ["fastapi", "python-multipart", "ujson", "a2wsgi"]
+        "python": [
+            "fastapi",
+            "python-multipart",
+            "ujson",
+            "a2wsgi",
+            "parse-accept-language",
+        ]
     },
 }
