@@ -129,7 +129,10 @@ class HttpRestRequest(HttpRequest):
                 msg = "Invalid JSON data: %s" % str(e)
                 _logger.info("%s: %s", self.httprequest.path, msg)
                 raise BadRequest(msg) from e
-        elif self.httprequest.mimetype == "multipart/form-data":
+        elif self.httprequest.mimetype in [
+            "multipart/form-data",
+            "application/x-www-form-urlencoded",
+        ]:
             # Do not reassign self.params
             pass
         else:
