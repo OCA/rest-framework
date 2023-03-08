@@ -28,19 +28,20 @@ class BaseRestServiceAPISpec(APISpec):
                     getattr(self._service, "_description", "") or ""
                 )
             },
-            servers=self._get_servers(),
+            servers=self._get_servers(**params),
             plugins=self._get_plugins(),
         )
         self._params = params
 
-    def _get_servers(self):
+    def _get_servers(self, **params):
         env = self._service.env
         services_registry = _rest_services_databases.get(env.cr.dbname, {})
-        collection_path = ""
-        for path, spec in list(services_registry.items()):
-            if spec["collection_name"] == self._service._collection:
-                collection_path = path
-                break
+        collection_path = params.get("root_path", "")
+        if not collection_path:
+            for path, spec in list(services_registry.items()):
+                if spec["collection_name"] == self._service._collection:
+                    collection_path = path
+                    break
         base_url = env["ir.config_parameter"].sudo().get_param("web.base.url")
         return [
             {
