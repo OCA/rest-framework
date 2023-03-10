@@ -562,6 +562,54 @@ that returns a list of partners.</p>
 <p>Now, you can start your Odoo server, install your addon and create a new endpoint
 instance for your app. Once it’s done click on the docs url to access the
 interactive documentation of your app.</p>
+<p>Before trying to test your app, you need to define on the endpoint instance the
+user that will be used to run the app. You can do it by setting the <strong>‘user_id’</strong>
+field. This information is the most important one because it’s the basis for
+the security of your app. The user that you define in the endpoint instance
+will be used to run the app and to access the database. This means that the
+user will be able to access all the data that he has access to in Odoo. To ensure
+the security of your app, you should create a new user that will be used only
+to run your app and that will have no access to the database.</p>
+<pre class="code xml literal-block">
+<span class="nt">&lt;record</span>
+      <span class="na">id=</span><span class="s">&quot;my_demo_app_user&quot;</span>
+      <span class="na">model=</span><span class="s">&quot;res.users&quot;</span>
+      <span class="na">context=</span><span class="s">&quot;{'no_reset_password': True, 'no_reset_password': True}&quot;</span>
+  <span class="nt">&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo Endpoint User<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;login&quot;</span><span class="nt">&gt;</span>my_demo_app_user<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;groups_id&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(6, 0, [])]&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/record&gt;</span>
+</pre>
+<p>At the same time you should create a new group that will be used to define the
+access rights of the user that will run your app. This group should imply
+the predefined group <strong>‘FastAPI Endpoint Runner’</strong>. This group defines the
+minimum access rights that the user needs to:</p>
+<ul class="simple">
+<li>access the endpoint instance it belongs to</li>
+<li>access to its own user record</li>
+<li>access to the partner record that is linked to its user record</li>
+</ul>
+<pre class="code xml literal-block">
+<span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;my_demo_app_group&quot;</span> <span class="na">model=</span><span class="s">&quot;res.groups&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo Endpoint Group<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;users&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('my_demo_app_user'))]&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;implied_ids&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('fast_api.group_fastapi_endpoint_runner'))]&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/record&gt;</span>
+</pre>
+<p>Now, you can test your app. You can do it by clicking on the ‘Try it out’ button
+of the route that you have defined. The result of the request will be displayed
+in the ‘Response’ section and contains the list of partners.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <strong>‘FastAPI Endpoint Runner’</strong> group ensures that the user can access any
+information others than the 3 ones mentioned above. This means that for every
+information that you want to access from your app, you need to create the
+proper ACLs and record rules. (see <a class="reference internal" href="#managing-security-into-the-route-handlers">Managing security into the route handlers</a>)
+It’s a good practice to use a dedicated user into a specific group from the
+beginning of your project and in your tests. This will force you to define
+the proper security rules for your endoints.</p>
+</div>
 </div>
 <div class="section" id="dealing-with-the-odoo-environment">
 <h1>Dealing with the odoo environment</h1>
@@ -633,19 +681,14 @@ of these parameters are dependencies themselves.</p>
     <span class="n">_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">fastapi_endpoint_id</span><span class="p">),</span>  <span class="c1"># noqa: B008</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">),</span>  <span class="c1"># noqa: B008</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FastapiEndpoint&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the fastapi.endpoint record
-
-    Be careful, the information are returned as sudo
-    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO we should declare a technical user with read access only on the</span>
-    <span class="c1"># fastapi.endpoint model</span>
-    <span class="k">return</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;fastapi.endpoint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sudo</span><span class="p">()</span><span class="o">.</span><span class="n">browse</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Return the fastapi.endpoint record&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;fastapi.endpoint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">browse</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
 </pre>
 <p>As you can see, one of these dependencies is the <strong>‘fastapi_endpoint_id’</strong>
 dependency and has no concrete implementation. This method is used as a contract
 that must be implemented/provided at the time the fastapi app is created.
-Here comes the power of the dependency_overrides mechanism.
-If you take a look at the <strong>‘_get_app’</strong> method of the <strong>‘FastapiEndpoint’</strong> model,
+Here comes the power of the dependency_overrides mechanism.</p>
+<p>If you take a look at the <strong>‘_get_app’</strong> method of the <strong>‘FastapiEndpoint’</strong> model,
 you will see that the <strong>‘fastapi_endpoint_id’</strong> dependency is overriden by
 registering a specific method that returns the id of the current fastapi endpoint
 model instance for the original method.</p>
@@ -1145,17 +1188,20 @@ with the authenticated user, you can use the dependency ‘authenticated_partner
 <p>The fastapi addon extends the ‘ir.rule’ model to add into the evaluation context
 of the security rules the key ‘authenticated_partner_id’ that contains the id
 of the authenticated partner.</p>
-<p>A good practice when you develop a fastapi app and you want to protect your data
-in an efficient and traceable way is to:</p>
+<p>As briefly introduced in a previous section, a good practice when you develop a
+fastapi app and you want to protect your data in an efficient and traceable way is to:</p>
 <ul class="simple">
 <li>create a new user specific to the app but with any access rights.</li>
-<li>create a security group specific to the app and add the user to this group.</li>
+<li>create a security group specific to the app and add the user to this group. (This
+group must implies the group ‘AFastAPI Endpoint Runner’ that give the
+minimal access rights)</li>
 <li>for each model you want to protect:<ul>
 <li>add a ‘ir.model.access’ record for the model to allow read access to your model
 and add the group to the record.</li>
 <li>create a new ‘ir.rule’ record for the model that restricts the access to the
 records of the model to the authenticated partner by using the key
-‘authenticated_partner_id’ in domain of the rule.</li>
+‘authenticated_partner_id’ in domain of the rule. (or to the user defined on
+the ‘fastapi.endpoint’ model instance if the method is public)</li>
 </ul>
 </li>
 <li>add a dependency on the ‘authenticated_partner’ to your handlers when you need
@@ -1163,21 +1209,27 @@ to access the authenticated partner or ensure that the service is called by an
 authenticated partner.</li>
 </ul>
 <pre class="code xml literal-block">
-<span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;demo_app_user&quot;</span> <span class="na">model=</span><span class="s">&quot;res.users&quot;</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo App User<span class="nt">&lt;/field&gt;</span>
-  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;login&quot;</span><span class="nt">&gt;</span>demo_app_user<span class="nt">&lt;/field&gt;</span>
+<span class="nt">&lt;record</span>
+      <span class="na">id=</span><span class="s">&quot;my_demo_app_user&quot;</span>
+      <span class="na">model=</span><span class="s">&quot;res.users&quot;</span>
+      <span class="na">context=</span><span class="s">&quot;{'no_reset_password': True, 'no_reset_password': True}&quot;</span>
+  <span class="nt">&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo Endpoint User<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;login&quot;</span><span class="nt">&gt;</span>my_demo_app_user<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;groups_id&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(6, 0, [])]&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/record&gt;</span>
 
-<span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;demo_app_group&quot;</span> <span class="na">model=</span><span class="s">&quot;res.groups&quot;</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo App<span class="nt">&lt;/field&gt;</span>
-  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;users&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('demo_app_user'))]&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;my_demo_app_group&quot;</span> <span class="na">model=</span><span class="s">&quot;res.groups&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo Endpoint Group<span class="nt">&lt;/field&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;users&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('my_demo_app_user'))]&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;implied_ids&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('group_fastapi_endpoint_runner'))]&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/record&gt;</span>
 
 <span class="cm">&lt;!-- acl for the model 'sale.order' --&gt;</span>
 <span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;sale_order_demo_app_access&quot;</span> <span class="na">model=</span><span class="s">&quot;ir.model.access&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo App: access to sale.order<span class="nt">&lt;/field&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;model_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;model_sale_order&quot;</span><span class="nt">/&gt;</span>
-  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;group_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;demo_app_group&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;group_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;my_demo_app_group&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_read&quot;</span> <span class="na">eval=</span><span class="s">&quot;True&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_write&quot;</span> <span class="na">eval=</span><span class="s">&quot;False&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_create&quot;</span> <span class="na">eval=</span><span class="s">&quot;False&quot;</span><span class="nt">/&gt;</span>
@@ -1189,7 +1241,7 @@ authenticated partner.</li>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>Sale Order Rule<span class="nt">&lt;/field&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;model_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;model_sale_order&quot;</span><span class="nt">/&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;domain_force&quot;</span><span class="nt">&gt;</span>[('partner_id', '=', authenticated_partner_id)]<span class="nt">&lt;/field&gt;</span>
-  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;groups&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('demo_app_group'))]&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;groups&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('my_demo_app_group'))]&quot;</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;/record&gt;</span>
 </pre>
 </div>
