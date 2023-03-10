@@ -40,7 +40,9 @@ class FastAPIDemoCase(TransactionCase):
         # TestClient will let unexpected exception bubble up to the test method
         # to allows you to process the error accordingly
         cls.client = TestClient(cls.app, raise_server_exceptions=False)
-        cls._ctx_token = odoo_env_ctx.set(cls.env)
+        cls._ctx_token = odoo_env_ctx.set(
+            cls.env(user=cls.env.ref("fastapi.my_demo_app_user"))
+        )
 
     @classmethod
     def tearDownClass(cls) -> None:

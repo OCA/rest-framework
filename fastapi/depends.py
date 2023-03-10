@@ -68,10 +68,14 @@ def basic_auth_user(
     username = credential.username
     password = credential.password
     try:
-        uid = env["res.users"].authenticate(
-            db=env.cr.dbname, login=username, password=password, user_agent_env=None
+        uid = (
+            env["res.users"]
+            .sudo()
+            .authenticate(
+                db=env.cr.dbname, login=username, password=password, user_agent_env=None
+            )
         )
-        return env["res.users"].sudo().browse(uid)
+        return env["res.users"].browse(uid)
     except AccessDenied as ad:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -84,7 +88,7 @@ def authenticated_partner_from_basic_auth_user(
     user: Users = Depends(basic_auth_user),  # noqa: B008
     env: Environment = Depends(odoo_env),  # noqa: B008
 ) -> Partner:
-    return env["res.partner"].browse(user.partner_id.id)
+    return env["res.partner"].browse(user.sudo().partner_id.id)
 
 
 def fastapi_endpoint_id() -> int:
@@ -99,13 +103,8 @@ def fastapi_endpoint(
     _id: int = Depends(fastapi_endpoint_id),  # noqa: B008
     env: Environment = Depends(odoo_env),  # noqa: B008
 ) -> "FastapiEndpoint":
-    """Return the fastapi.endpoint record
-
-    Be careful, the returned FastapiEndpoint record is a sudoed record.
-    """
-    # TODO we should declare a technical user with read access only on the
-    # fastapi.endpoint model
-    return env["fastapi.endpoint"].sudo().browse(_id)
+    """Return the fastapi.endpoint record"""
+    return env["fastapi.endpoint"].browse(_id)
 
 
 def accept_language(
