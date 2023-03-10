@@ -23,4 +23,11 @@
             eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
         />
     </record>
+
+    <!-- create a basic group providing the minimal access rights to retrieve
+     the user running the endpoint handlers and performs authentication -->
+    <record id="group_fastapi_endpoint_runner" model="res.groups">
+        <field name="name">FastAPI Endpoint Runner</field>
+        <field name="category_id" ref="module_category_fastapi" />
+    </record>
 </odoo>

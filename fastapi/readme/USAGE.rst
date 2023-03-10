@@ -167,6 +167,58 @@ Now, you can start your Odoo server, install your addon and create a new endpoin
 instance for your app. Once it's done click on the docs url to access the
 interactive documentation of your app.
 
+Before trying to test your app, you need to define on the endpoint instance the
+user that will be used to run the app. You can do it by setting the **'user_id'**
+field. This information is the most important one because it's the basis for
+the security of your app. The user that you define in the endpoint instance
+will be used to run the app and to access the database. This means that the
+user will be able to access all the data that he has access to in Odoo. To ensure
+the security of your app, you should create a new user that will be used only
+to run your app and that will have no access to the database.
+
+.. code-block:: xml
+
+  <record
+        id="my_demo_app_user"
+        model="res.users"
+        context="{'no_reset_password': True, 'no_reset_password': True}"
+    >
+    <field name="name">My Demo Endpoint User</field>
+    <field name="login">my_demo_app_user</field>
+    <field name="groups_id" eval="[(6, 0, [])]" />
+  </record>
+
+At the same time you should create a new group that will be used to define the
+access rights of the user that will run your app. This group should imply
+the predefined group **'FastAPI Endpoint Runner'**. This group defines the
+minimum access rights that the user needs to:
+
+* access the endpoint instance it belongs to
+* access to its own user record
+* access to the partner record that is linked to its user record
+
+.. code-block:: xml
+
+  <record id="my_demo_app_group" model="res.groups">
+    <field name="name">My Demo Endpoint Group</field>
+    <field name="users" eval="[(4, ref('my_demo_app_user'))]" />
+    <field name="implied_ids" eval="[(4, ref('fast_api.group_fastapi_endpoint_runner'))]" />
+  </record>
+
+
+Now, you can test your app. You can do it by clicking on the 'Try it out' button
+of the route that you have defined. The result of the request will be displayed
+in the 'Response' section and contains the list of partners.
+
+.. note::
+  The **'FastAPI Endpoint Runner'** group ensures that the user can access any
+  information others than the 3 ones mentioned above. This means that for every
+  information that you want to access from your app, you need to create the
+  proper ACLs and record rules. (see `Managing security into the route handlers`_)
+  It's a good practice to use a dedicated user into a specific group from the
+  beginning of your project and in your tests. This will force you to define
+  the proper security rules for your endoints.
+
 Dealing with the odoo environment
 *********************************
 
@@ -243,19 +295,15 @@ of these parameters are dependencies themselves.
         _id: int = Depends(fastapi_endpoint_id),  # noqa: B008
         env: Environment = Depends(odoo_env),  # noqa: B008
     ) -> "FastapiEndpoint":
-        """Return the fastapi.endpoint record
-
-        Be careful, the information are returned as sudo
-        """
-        # TODO we should declare a technical user with read access only on the
-        # fastapi.endpoint model
-        return env["fastapi.endpoint"].sudo().browse(_id)
+        """Return the fastapi.endpoint record"""
+        return env["fastapi.endpoint"].browse(_id)
 
 
 As you can see, one of these dependencies is the **'fastapi_endpoint_id'**
 dependency and has no concrete implementation. This method is used as a contract
 that must be implemented/provided at the time the fastapi app is created.
 Here comes the power of the dependency_overrides mechanism.
+
 If you take a look at the **'_get_app'** method of the **'FastapiEndpoint'** model,
 you will see that the **'fastapi_endpoint_id'** dependency is overriden by
 registering a specific method that returns the id of the current fastapi endpoint
@@ -798,8 +846,6 @@ If your new addon is not installed in a database, a call to the route handler
   if you extend a model, you must add new required fields or you must provide
   default values for the new optional fields.
 
-
-
 Managing security into the route handlers
 *****************************************
 
@@ -816,18 +862,21 @@ The fastapi addon extends the 'ir.rule' model to add into the evaluation context
 of the security rules the key 'authenticated_partner_id' that contains the id
 of the authenticated partner.
 
-A good practice when you develop a fastapi app and you want to protect your data
-in an efficient and traceable way is to:
+As briefly introduced in a previous section, a good practice when you develop a
+fastapi app and you want to protect your data in an efficient and traceable way is to:
 
 * create a new user specific to the app but with any access rights.
-* create a security group specific to the app and add the user to this group.
+* create a security group specific to the app and add the user to this group. (This
+  group must implies the group 'AFastAPI Endpoint Runner' that give the
+  minimal access rights)
 * for each model you want to protect:
 
   * add a 'ir.model.access' record for the model to allow read access to your model
     and add the group to the record.
   * create a new 'ir.rule' record for the model that restricts the access to the
     records of the model to the authenticated partner by using the key
-    'authenticated_partner_id' in domain of the rule.
+    'authenticated_partner_id' in domain of the rule. (or to the user defined on
+    the 'fastapi.endpoint' model instance if the method is public)
 
 * add a dependency on the 'authenticated_partner' to your handlers when you need
   to access the authenticated partner or ensure that the service is called by an
@@ -835,21 +884,27 @@ in an efficient and traceable way is to:
 
 .. code-block:: xml
 
-  <record id="demo_app_user" model="res.users">
-    <field name="name">My Demo App User</field>
-    <field name="login">demo_app_user</field>
+  <record
+        id="my_demo_app_user"
+        model="res.users"
+        context="{'no_reset_password': True, 'no_reset_password': True}"
+    >
+    <field name="name">My Demo Endpoint User</field>
+    <field name="login">my_demo_app_user</field>
+    <field name="groups_id" eval="[(6, 0, [])]" />
   </record>
 
-  <record id="demo_app_group" model="res.groups">
-    <field name="name">My Demo App</field>
-    <field name="users" eval="[(4, ref('demo_app_user'))]"/>
+  <record id="my_demo_app_group" model="res.groups">
+    <field name="name">My Demo Endpoint Group</field>
+    <field name="users" eval="[(4, ref('my_demo_app_user'))]" />
+    <field name="implied_ids" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
   </record>
 
   <!-- acl for the model 'sale.order' -->
   <record id="sale_order_demo_app_access" model="ir.model.access">
     <field name="name">My Demo App: access to sale.order</field>
     <field name="model_id" ref="model_sale_order"/>
-    <field name="group_id" ref="demo_app_group"/>
+    <field name="group_id" ref="my_demo_app_group"/>
     <field name="perm_read" eval="True"/>
     <field name="perm_write" eval="False"/>
     <field name="perm_create" eval="False"/>
@@ -861,7 +916,7 @@ in an efficient and traceable way is to:
     <field name="name">Sale Order Rule</field>
     <field name="model_id" ref="model_sale_order"/>
     <field name="domain_force">[('partner_id', '=', authenticated_partner_id)]</field>
-    <field name="groups" eval="[(4, ref('demo_app_group'))]"/>
+    <field name="groups" eval="[(4, ref('my_demo_app_group'))]"/>
   </record>
 
 How to test your fastapi app
