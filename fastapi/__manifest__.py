@@ -29,4 +29,5 @@
             "parse-accept-language",
         ]
     },
+    "development_status": "Beta",
 }
