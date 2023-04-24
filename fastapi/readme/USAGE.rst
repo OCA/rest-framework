@@ -133,7 +133,7 @@ that returns a list of partners.
     from fastapi import APIRouter
     from pydantic import BaseModel
     from odoo import api, fields, models
-    from ..depends import odoo_env
+    from odoo.addons.fastapi.depends import odoo_env
 
     class FastapiEndpoint(models.Model):
 
@@ -202,7 +202,7 @@ minimum access rights that the user needs to:
   <record id="my_demo_app_group" model="res.groups">
     <field name="name">My Demo Endpoint Group</field>
     <field name="users" eval="[(4, ref('my_demo_app_user'))]" />
-    <field name="implied_ids" eval="[(4, ref('fast_api.group_fastapi_endpoint_runner'))]" />
+    <field name="implied_ids" eval="[(4, ref('fastapi.group_fastapi_endpoint_runner'))]" />
   </record>
 
 
@@ -229,7 +229,7 @@ odoo models and the database from your route handlers.
 
 .. code-block:: python
 
-    from ..depends import odoo_env
+    from odoo.addons.fastapi.depends import odoo_env
 
     @demo_api_router.get("/partners", response_model=list[PartnerInfo])
     def get_partners(env=Depends(odoo_env)) -> list[PartnerInfo]:
