@@ -103,7 +103,6 @@ class PartnerAuth(models.Model):
 
         if replacement is not None:
             self.browse(_id).encrypted_password = replacement
-
         if not valid:
             raise AccessDenied()
         return self.browse(_id)
