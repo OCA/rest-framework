@@ -1,5 +1,6 @@
 # Copyright 2020 Akretion
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import _
 from odoo.exceptions import AccessError
 from odoo.http import request
@@ -7,6 +8,8 @@ from odoo.http import request
 from odoo.addons.base_rest import restapi
 from odoo.addons.base_rest_datamodel.restapi import Datamodel
 from odoo.addons.component.core import AbstractComponent
+
+COOKIE_AUTH_NAME = "partner_auth"
 
 
 class BaseAuthenticable(AbstractComponent):
@@ -46,13 +49,20 @@ class BaseAuthenticable(AbstractComponent):
 
     def _successfull_sign_in(self, partner_auth):
         data = self._prepare_sign_in_data(partner_auth)
-        return request.make_json_response(data)
+        response = request.make_json_response(data)
+        cookie_params = partner_auth.directory_id._prepare_cookie(
+            partner_auth.partner_id.id
+        )
+        response.set_cookie(COOKIE_AUTH_NAME, **cookie_params)
+        return response
 
     def _prepare_sign_in_data(self, partner_auth):
         return {"login": partner_auth.login}
 
     def _sign_out(self):
-        return request.make_json_response({})
+        response = request.make_json_response({})
+        response.set_cookie(COOKIE_AUTH_NAME, max_age=0)
+        return response
 
     @restapi.method(
         [(["/sign_out"], "POST")],

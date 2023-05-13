@@ -8,4 +8,6 @@ from odoo import fields, models
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
+    # guest logic should be move in an dependency module
+    guest = fields.Boolean()
     partner_auth_ids = fields.One2many("partner.auth", "partner_id", "Partner Auth")

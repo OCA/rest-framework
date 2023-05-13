@@ -9,10 +9,16 @@
     "license": "AGPL-3",
     "author": "Akretion,Odoo Community Association (OCA)",
     "website": "https://github.com/akretion/rest-authenticable",
-    "depends": ["component", "base_rest_datamodel", "mail"],
+    "depends": ["component", "base_rest_datamodel", "mail", "sale"],
     "data": [
         "security/res_group.xml",
         "security/ir.model.access.csv",
+        "data/email_data.xml",
     ],
-    "demo": [],
+    "demo": [
+        "demo/directory_auth_demo.xml",
+        "demo/res_partner_demo.xml",
+        "demo/partner_auth_demo.xml",
+    ],
+    "external_dependencies": {"python": ["itsdangerous"]},
 }
