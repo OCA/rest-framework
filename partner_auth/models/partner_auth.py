@@ -95,8 +95,27 @@ class PartnerAuth(models.Model):
             ctx = record._crypt_context()
             record.encrypted_password = ctx.encrypt(record.password)
 
+    def _prepare_partner_register(self, params):
+        return {
+            "name": params["name"],
+            "email": params["login"],
+        }
+
+    def _prepare_partner_auth_register(self, params):
+        return {
+            "login": params["login"],
+            "password": params["password"],
+        }
+
+    def register(self, directory, params):
+        vals = self._prepare_partner_register(params)
+        partner = self.env["res.partner"].create(vals)
+        vals = self._prepare_partner_auth_register(params)
+        vals.update({"partner_id": partner.id, "directory_id": directory.id})
+        return self.create(vals)
+
     @api.model
-    def sign_in(self, directory, login, password):
+    def log_in(self, directory, login, password):
         self._check_no_empty(login, password)
         _id, hashed = self._get_hashed_password(directory, login)
         valid, replacement = self._crypt_context().verify_and_update(password, hashed)

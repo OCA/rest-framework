@@ -20,35 +20,40 @@ class BaseAuthenticable(AbstractComponent):
     def _get_directory(self):
         raise NotImplementedError()
 
-    def sign_up(self, payload):
-        return (
-            self.env[payload.backend.backend_name]
-            .browse(payload.backend.backend_id)
-            .sign_up(payload)
-        )
-
     @restapi.method(
-        [(["/sign_in"], "POST")],
-        input_param=Datamodel("authenticable.signin.input"),
+        [(["/register"], "POST")],
+        input_param=Datamodel("authenticable.register.input"),
         auth="public",
     )
-    def sign_in(self, params):
+    def register(self, params):
+        directory = self._get_directory()
+        partner_auth = (
+            self.env["partner.auth"].sudo().register(directory, params.dump())
+        )
+        return self._successfull_login(partner_auth)
+
+    @restapi.method(
+        [(["/login"], "POST")],
+        input_param=Datamodel("authenticable.login.input"),
+        auth="public",
+    )
+    def login(self, params):
         directory = self._get_directory()
         partner_auth = (
             self.env["partner.auth"]
             .sudo()
-            .sign_in(directory, params.login, params.password)
+            .log_in(directory, params.login, params.password)
         )
         if partner_auth:
-            return self._successfull_sign_in(partner_auth)
+            return self._successfull_login(partner_auth)
         else:
-            return self._invalid_sign_in()
+            return self._invalid_login()
 
-    def _invalid_sign_in(self):
+    def _invalid_login(self):
         raise AccessError(_("Invalid Login or Password"))
 
-    def _successfull_sign_in(self, partner_auth):
-        data = self._prepare_sign_in_data(partner_auth)
+    def _successfull_login(self, partner_auth):
+        data = self._prepare_login_data(partner_auth)
         response = request.make_json_response(data)
         cookie_params = partner_auth.directory_id._prepare_cookie(
             partner_auth.partner_id.id
@@ -56,20 +61,20 @@ class BaseAuthenticable(AbstractComponent):
         response.set_cookie(COOKIE_AUTH_NAME, **cookie_params)
         return response
 
-    def _prepare_sign_in_data(self, partner_auth):
+    def _prepare_login_data(self, partner_auth):
         return {"login": partner_auth.login}
 
-    def _sign_out(self):
+    def _logout(self):
         response = request.make_json_response({})
         response.set_cookie(COOKIE_AUTH_NAME, max_age=0)
         return response
 
     @restapi.method(
-        [(["/sign_out"], "POST")],
+        [(["/logout"], "POST")],
         auth="public",
     )
-    def sign_out(self):
-        return self._sign_out()
+    def logout(self):
+        return self._logout()
 
     @restapi.method(
         [(["/set_password"], "POST")],
@@ -83,7 +88,7 @@ class BaseAuthenticable(AbstractComponent):
             .sudo()
             .set_password(directory, params.token_set_password, params.password)
         )
-        return self._successfull_sign_in(partner_auth)
+        return self._successfull_login(partner_auth)
 
     @restapi.method(
         [(["/forgot_password"], "POST")],
