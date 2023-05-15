@@ -4,15 +4,23 @@ from odoo.addons.datamodel import fields
 from odoo.addons.datamodel.core import Datamodel
 
 
-class AuthenticableSigninInput(Datamodel):
-    _name = "authenticable.signin.input"
+class AuthenticableLoginInput(Datamodel):
+    _name = "authenticable.login.input"
 
     login = fields.Str(required=True)
     password = fields.Str(required=True)
 
 
-class AuthenticableSigninOutput(Datamodel):
-    _name = "authenticable.signin.output"
+class AuthenticableRegisterInput(Datamodel):
+    _name = "authenticable.register.input"
+
+    name = fields.Str(required=True)
+    login = fields.Str(required=True)
+    password = fields.Str(required=True)
+
+
+class AuthenticableLoginOutput(Datamodel):
+    _name = "authenticable.login.output"
 
 
 class AuthenticableForgetPasswordInput(Datamodel):

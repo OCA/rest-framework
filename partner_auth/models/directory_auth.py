@@ -39,6 +39,7 @@ class DirectoryAuth(models.Model):
         return {"cookie_secret_key": {}}
 
     def _get_partner_from_request(self):
+        self.ensure_one()
         # Keep in mind that in case of anonymous/guest partner
         # we do not have partner auth but we can have a valid cookie !
         # So we check if the cookie is valid and return a partner or a guest partner
