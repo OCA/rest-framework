@@ -28,6 +28,8 @@ addon | version | maintainers | summary
 [base_rest_pydantic](base_rest_pydantic/) | 16.0.1.0.0 |  | Pydantic binding for base_rest
 [datamodel](datamodel/) | 16.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | This addon allows you to define simple data models supporting serialization/deserialization
 [extendable](extendable/) | 16.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Extendable classes registry loader for Odoo
+[extendable_fastapi](extendable_fastapi/) | 16.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Allows the use of extendable into fastapi apps
+[fastapi](fastapi/) | 16.0.0.0.1 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Odoo FastAPI endpoint
 [graphql_base](graphql_base/) | 16.0.1.0.1 | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 16.0.1.0.1 | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | GraphQL Demo
 [pydantic](pydantic/) | 16.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Utility addon to ease mapping between Pydantic and Odoo models
