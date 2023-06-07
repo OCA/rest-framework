@@ -150,16 +150,15 @@ class FastapiEndpoint(models.Model):
         # The handler is useless in the context of a fastapi endpoint since the
         # routing type is "fastapi" and the routing is handled by a dedicated
         # dispatcher that will forward the request to the fastapi app.
-        base_path = "odoo.addons.endpoint_route_handler.controllers.main"
         return {
-            "klass_dotted_path": f"{base_path}.EndpointNotFoundController",
-            "method_name": "auto_not_found",
+            "klass_dotted_path": "odoo.addons.fastapi.fastapi_dispatcher.FastApiDispatcher",
+            "method_name": "dispatch",
         }
 
     def _get_routing_info(self):
         self.ensure_one()
         return {
-            "type": "fastapi",
+            "type": "http",
             "auth": "public",
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
             "routes": [
