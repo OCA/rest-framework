@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.15.1: http://docutils.sourceforge.net/" />
 <title>Odoo FastAPI</title>
 <style type="text/css">
 
@@ -529,7 +529,7 @@ that returns a list of partners.</p>
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="kn">from</span> <span class="nn">odoo</span> <span class="kn">import</span> <span class="n">api</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">..depends</span> <span class="kn">import</span> <span class="n">odoo_env</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.depends</span> <span class="kn">import</span> <span class="n">odoo_env</span>
 
 <span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
 
@@ -594,7 +594,7 @@ minimum access rights that the user needs to:</p>
 <span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;my_demo_app_group&quot;</span> <span class="na">model=</span><span class="s">&quot;res.groups&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo Endpoint Group<span class="nt">&lt;/field&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;users&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('my_demo_app_user'))]&quot;</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;implied_ids&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('fast_api.group_fastapi_endpoint_runner'))]&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;implied_ids&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('fastapi.group_fastapi_endpoint_runner'))]&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/record&gt;</span>
 </pre>
 <p>Now, you can test your app. You can do it by clicking on the ‘Try it out’ button
@@ -618,7 +618,7 @@ to inject reusable dependencies into your routes. For example, the <strong>‘od
 function returns the current odoo environment. You can use it to access the
 odoo models and the database from your route handlers.</p>
 <pre class="code python literal-block">
-<span class="kn">from</span> <span class="nn">..depends</span> <span class="kn">import</span> <span class="n">odoo_env</span>
+<span class="kn">from</span> <span class="nn">odoo.addons.fastapi.depends</span> <span class="kn">import</span> <span class="n">odoo_env</span>
 
 <span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/partners&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">get_partners</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="n">Depends</span><span class="p">(</span><span class="n">odoo_env</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">]:</span>
@@ -1225,7 +1225,7 @@ authenticated partner.</li>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;implied_ids&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('group_fastapi_endpoint_runner'))]&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/record&gt;</span>
 
-<span class="cm">&lt;!-- acl for the model 'sale.order' --&gt;</span>
+<span class="c">&lt;!-- acl for the model 'sale.order' --&gt;</span>
 <span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;sale_order_demo_app_access&quot;</span> <span class="na">model=</span><span class="s">&quot;ir.model.access&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo App: access to sale.order<span class="nt">&lt;/field&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;model_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;model_sale_order&quot;</span><span class="nt">/&gt;</span>
@@ -1236,7 +1236,7 @@ authenticated partner.</li>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_unlink&quot;</span> <span class="na">eval=</span><span class="s">&quot;False&quot;</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;/record&gt;</span>
 
-<span class="cm">&lt;!-- a record rule to allows the authenticated partner to access only its sale orders --&gt;</span>
+<span class="c">&lt;!-- a record rule to allows the authenticated partner to access only its sale orders --&gt;</span>
 <span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;demo_app_sale_order_rule&quot;</span> <span class="na">model=</span><span class="s">&quot;ir.rule&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>Sale Order Rule<span class="nt">&lt;/field&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;model_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;model_sale_order&quot;</span><span class="nt">/&gt;</span>
