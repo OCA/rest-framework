@@ -943,6 +943,7 @@ defined into the demo app is as simple as
 
   from requests import Response
 
+  import odoo.tests
   from odoo.tests.common import TransactionCase
 
   from fastapi.testclient import TestClient
@@ -951,6 +952,7 @@ defined into the demo app is as simple as
   from ..context import odoo_env_ctx
 
 
+  @odoo.tests.tagged("post_install", "-at_install")
   class FastAPIDemoCase(TransactionCase):
 
       @classmethod
@@ -980,6 +982,13 @@ defined into the demo app is as simple as
           self.assertEqual(response.status_code, status.HTTP_200_OK)
           self.assertDictEqual(response.json(), {"Hello": "World"})
 
+
+.. note::
+
+  To avoid trouble between the threads manipulation when the registry is
+  loading and the running of the tests, your tests must be run once the
+  registry is loaded. That's why your test classes must be tagged with the tags
+  'post_install' and '-at_install'.
 
 Overall considerations when you develop an fastapi app
 *******************************************************

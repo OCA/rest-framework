@@ -6,7 +6,8 @@ from unittest import mock
 
 from requests import Response
 
-from odoo.tests.common import TransactionCase
+import odoo.tests
+from odoo.tests.common import SavepointCase
 from odoo.tools import mute_logger
 
 from fastapi import status
@@ -14,10 +15,12 @@ from fastapi.testclient import TestClient
 
 from .. import depends
 from ..context import odoo_env_ctx
+from ..fastapi_dispatcher import patch_odoo_environment
 from ..models.fastapi_endpoint_demo import EndpointAppInfo, ExceptionType
 
 
-class FastAPIDemoCase(TransactionCase):
+@odoo.tests.tagged("post_install", "-at_install")
+class FastAPIDemoCase(SavepointCase):
     """The fastapi lib comes with a useful testclient that let's you
     easily test your endpoints. Moreover, the dependency overrides functionality
     allows you to provide specific implementation for part of the code to avoid
@@ -35,14 +38,18 @@ class FastAPIDemoCase(TransactionCase):
         cls.app.dependency_overrides[depends.authenticated_partner_impl] = partial(
             lambda a: a, cls.test_partner
         )
-        # we need to disable the raise of unexpected exception into the called
-        # service to test the error handling of the endpoint. By default, the
-        # TestClient will let unexpected exception bubble up to the test method
-        # to allows you to process the error accordingly
-        cls.client = TestClient(cls.app, raise_server_exceptions=False)
         cls._ctx_token = odoo_env_ctx.set(
             cls.env(user=cls.env.ref("fastapi.my_demo_app_user"))
         )
+
+    @property
+    def client(self) -> TestClient:
+        with patch_odoo_environment():
+            # we need to disable the raise of unexpected exception into the called
+            # service to test the error handling of the endpoint. By default, the
+            # TestClient will let unexpected exception bubble up to the test method
+            # to allows you to process the error accordingly
+            return TestClient(self.app, raise_server_exceptions=False)
 
     @classmethod
     def tearDownClass(cls) -> None:

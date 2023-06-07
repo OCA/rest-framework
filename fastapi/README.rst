@@ -14,13 +14,13 @@ Odoo FastAPI
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
-    :target: https://github.com/OCA/rest-framework/tree/16.0/fastapi
+    :target: https://github.com/OCA/rest-framework/tree/14.0/fastapi
     :alt: OCA/rest-framework
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/rest-framework-16-0/rest-framework-16-0-fastapi
+    :target: https://translation.odoo-community.org/projects/rest-framework-14-0/rest-framework-14-0-fastapi
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runbot-Try%20me-875A7B.png
-    :target: https://runbot.odoo-community.org/runbot/271/16.0
+    :target: https://runbot.odoo-community.org/runbot/271/14.0
     :alt: Try me on Runbot
 
 |badge1| |badge2| |badge3| |badge4| |badge5| 
@@ -208,7 +208,7 @@ that returns a list of partners.
     from fastapi import APIRouter
     from pydantic import BaseModel
     from odoo import api, fields, models
-    from ..depends import odoo_env
+    from odoo.addons.fastapi.depends import odoo_env
 
     class FastapiEndpoint(models.Model):
 
@@ -277,7 +277,7 @@ minimum access rights that the user needs to:
   <record id="my_demo_app_group" model="res.groups">
     <field name="name">My Demo Endpoint Group</field>
     <field name="users" eval="[(4, ref('my_demo_app_user'))]" />
-    <field name="implied_ids" eval="[(4, ref('fast_api.group_fastapi_endpoint_runner'))]" />
+    <field name="implied_ids" eval="[(4, ref('fastapi.group_fastapi_endpoint_runner'))]" />
   </record>
 
 
@@ -304,7 +304,7 @@ odoo models and the database from your route handlers.
 
 .. code-block:: python
 
-    from ..depends import odoo_env
+    from odoo.addons.fastapi.depends import odoo_env
 
     @demo_api_router.get("/partners", response_model=list[PartnerInfo])
     def get_partners(env=Depends(odoo_env)) -> list[PartnerInfo]:
@@ -1018,6 +1018,7 @@ defined into the demo app is as simple as
 
   from requests import Response
 
+  import odoo.tests
   from odoo.tests.common import TransactionCase
 
   from fastapi.testclient import TestClient
@@ -1026,6 +1027,7 @@ defined into the demo app is as simple as
   from ..context import odoo_env_ctx
 
 
+  @odoo.tests.tagged("post_install", "-at_install")
   class FastAPIDemoCase(TransactionCase):
 
       @classmethod
@@ -1055,6 +1057,13 @@ defined into the demo app is as simple as
           self.assertEqual(response.status_code, status.HTTP_200_OK)
           self.assertDictEqual(response.json(), {"Hello": "World"})
 
+
+.. note::
+
+  To avoid trouble between the threads manipulation when the registry is
+  loading and the running of the tests, your tests must be run once the
+  registry is loaded. That's why your test classes must be tagged with the tags
+  'post_install' and '-at_install'.
 
 Overall considerations when you develop an fastapi app
 *******************************************************
@@ -1334,7 +1343,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/rest-framework/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20fastapi%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20fastapi%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -1372,6 +1381,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-lmignon| 
 
-This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/16.0/fastapi>`_ project on GitHub.
+This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/14.0/fastapi>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

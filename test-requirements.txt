@@ -1,1 +1,2 @@
 promise # Needed by graphene.test.Client
+httpx

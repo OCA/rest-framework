@@ -4,11 +4,11 @@
 import os
 import unittest
 
-from odoo.tests.common import HttpCase
+from odoo.tests.common import HttpSavepointCase
 
 
 @unittest.skipIf(os.getenv("SKIP_HTTP_CASE"), "EndpointHttpCase skipped")
-class FastAPIHttpCase(HttpCase):
+class FastAPIHttpCase(HttpSavepointCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
