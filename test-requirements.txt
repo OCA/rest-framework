@@ -1,2 +1,1 @@
 httpx
-odoo-addon-endpoint-route-handler @ git+https://github.com/oca/web-api.git@refs/pull/17/head#subdirectory=setup/endpoint_route_handler
