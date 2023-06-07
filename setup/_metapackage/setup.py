@@ -15,6 +15,8 @@ setuptools.setup(
         'odoo-addon-base_rest_pydantic>=16.0dev,<16.1dev',
         'odoo-addon-datamodel>=16.0dev,<16.1dev',
         'odoo-addon-extendable>=16.0dev,<16.1dev',
+        'odoo-addon-extendable_fastapi>=16.0dev,<16.1dev',
+        'odoo-addon-fastapi>=16.0dev,<16.1dev',
         'odoo-addon-graphql_base>=16.0dev,<16.1dev',
         'odoo-addon-graphql_demo>=16.0dev,<16.1dev',
         'odoo-addon-pydantic>=16.0dev,<16.1dev',
