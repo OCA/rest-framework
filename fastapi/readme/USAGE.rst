@@ -101,7 +101,7 @@ variable into your fastapi_endpoint module called for example 'demo_api_router'
 
 
 To make your router available to your app, you need to add it to the list of routers
-returned by the **get_fastapi_routers** method of your fastapi_endpoint model.
+returned by the **_get_fastapi_routers** method of your fastapi_endpoint model.
 
 .. code-block:: python
 
@@ -117,10 +117,10 @@ returned by the **get_fastapi_routers** method of your fastapi_endpoint model.
         )
 
         @api.model
-        def get_fastapi_routers(self):
+        def _get_fastapi_routers(self):
             if self.app == "demo":
                 return [demo_api_router]
-            return super().get_fastapi_routers()
+            return super()._get_fastapi_routers()
 
     # create a router
     demo_api_router = APIRouter()
@@ -144,10 +144,10 @@ that returns a list of partners.
         )
 
         @api.model
-        def get_fastapi_routers(self):
+        def _get_fastapi_routers(self):
             if self.app == "demo":
                 return [demo_api_router]
-            return super().get_fastapi_routers()
+            return super()._get_fastapi_routers()
 
     # create a router
     demo_api_router = APIRouter()
