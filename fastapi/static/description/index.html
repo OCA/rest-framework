@@ -514,7 +514,6 @@ returned by the <strong>_get_fastapi_routers</strong> method of your fastapi_end
         <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
     <span class="p">)</span>
 
-    <span class="nd">&#64;api</span><span class="o">.</span><span class="n">model</span>
     <span class="k">def</span> <span class="nf">_get_fastapi_routers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">==</span> <span class="s2">&quot;demo&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">demo_api_router</span><span class="p">]</span>
@@ -539,7 +538,6 @@ that returns a list of partners.</p>
         <span class="n">selection_add</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="s2">&quot;Demo Endpoint&quot;</span><span class="p">)],</span> <span class="n">ondelete</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;demo&quot;</span><span class="p">:</span> <span class="s2">&quot;cascade&quot;</span><span class="p">}</span>
     <span class="p">)</span>
 
-    <span class="nd">&#64;api</span><span class="o">.</span><span class="n">model</span>
     <span class="k">def</span> <span class="nf">_get_fastapi_routers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">==</span> <span class="s2">&quot;demo&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">demo_api_router</span><span class="p">]</span>
@@ -848,9 +846,9 @@ when the app is instantiated.</p>
               <span class="n">authenticated_partner_impl_override</span> <span class="o">=</span> <span class="p">(</span>
                   <span class="n">api_key_based_authenticated_partner_impl</span>
               <span class="p">)</span>
-      <span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="p">[</span>
-          <span class="n">authenticated_partner_impl</span>
-      <span class="p">]</span> <span class="o">=</span> <span class="n">authenticated_partner_impl_override</span>
+          <span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="p">[</span>
+              <span class="n">authenticated_partner_impl</span>
+          <span class="p">]</span> <span class="o">=</span> <span class="n">authenticated_partner_impl_override</span>
       <span class="k">return</span> <span class="n">app</span>
 </pre>
 <p>To see how the dependency override mechanism works, you can take a look at the
@@ -1502,11 +1500,11 @@ the method <cite>_get_app_exception_handlers</cite> in your custom module.</p>
     <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span>
 
     <span class="k">def</span> <span class="nf">_get_app_exception_handlers</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span>
-    <span class="nb">int</span> <span class="o">|</span> <span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">],</span>
-    <span class="n">Callable</span><span class="p">[[</span><span class="n">Request</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">Response</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Response</span><span class="p">]]],</span>
-<span class="p">]:</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span>
+        <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]],</span>
+        <span class="n">Callable</span><span class="p">[[</span><span class="n">Request</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">Response</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Response</span><span class="p">]]],</span>
+    <span class="p">]:</span>
         <span class="n">handlers</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_app_exception_handlers</span><span class="p">()</span>
         <span class="n">access_error_handler</span> <span class="o">=</span> <span class="n">handlers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">odoo</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">AccessError</span><span class="p">)</span>
         <span class="n">handlers</span><span class="p">[</span><span class="n">odoo</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">AccessError</span><span class="p">]</span> <span class="o">=</span> <span class="n">MyCustomErrorHandler</span><span class="p">(</span><span class="n">access_error_handler</span><span class="p">)</span>

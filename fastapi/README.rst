@@ -191,7 +191,6 @@ returned by the **_get_fastapi_routers** method of your fastapi_endpoint model.
             selection_add=[("demo", "Demo Endpoint")], ondelete={"demo": "cascade"}
         )
 
-        @api.model
         def _get_fastapi_routers(self):
             if self.app == "demo":
                 return [demo_api_router]
@@ -218,7 +217,6 @@ that returns a list of partners.
             selection_add=[("demo", "Demo Endpoint")], ondelete={"demo": "cascade"}
         )
 
-        @api.model
         def _get_fastapi_routers(self):
             if self.app == "demo":
                 return [demo_api_router]
@@ -556,9 +554,9 @@ when the app is instantiated.
                 authenticated_partner_impl_override = (
                     api_key_based_authenticated_partner_impl
                 )
-        app.dependency_overrides[
-            authenticated_partner_impl
-        ] = authenticated_partner_impl_override
+            app.dependency_overrides[
+                authenticated_partner_impl
+            ] = authenticated_partner_impl_override
         return app
 
 
@@ -1290,11 +1288,11 @@ the method `_get_app_exception_handlers` in your custom module.
         _inherit = "fastapi.endpoint"
 
         def _get_app_exception_handlers(
-        self,
-    ) -> Dict[
-        int | Type[Exception],
-        Callable[[Request, Exception], Union[Response, Awaitable[Response]]],
-    ]:
+            self,
+        ) -> Dict[
+            Union[int, Type[Exception]],
+            Callable[[Request, Exception], Union[Response, Awaitable[Response]]],
+        ]:
             handlers = super()._get_app_exception_handlers()
             access_error_handler = handlers.get(odoo.exceptions.AccessError)
             handlers[odoo.exceptions.AccessError] = MyCustomErrorHandler(access_error_handler)
