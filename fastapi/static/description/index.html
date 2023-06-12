@@ -756,7 +756,7 @@ by the <strong>‘fastapi.security’</strong> module.</p>
 In this dummy implementation, we just check that the provided credentials
 can be used to authenticate a user in odoo. If the authentication is successful,
 we return the partner record linked to the authenticated user.</p>
-<p>In some cas you could want to implement a more complex authentication mechanism
+<p>In some cases you could want to implement a more complex authentication mechanism
 that could rely on a token or a session. In this case, you can override the
 <strong>‘authenticated_partner’</strong> dependency by registering a specific method that
 returns the authenticated partner. Moreover, you can make it configurable on
@@ -788,10 +788,10 @@ implemented, we will only implement the api key authentication mechanism.</p>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">partner</span>
 </pre>
-<p>As for the ‘BasicAuth’ authentication mechanism, we also rely one of the native
+<p>As for the ‘BasicAuth’ authentication mechanism, we also rely on one of the native
 security dependency provided by the <strong>‘fastapi.security’</strong> module.</p>
-<p>Now that we have an implementation for our two authentication mechanism, we
-can allows the user to select one of these authentication mechanism by adding
+<p>Now that we have an implementation for our two authentication mechanisms, we
+can allows the user to select one of these authentication mechanisms by adding
 a selection field on the fastapi endpoint model.</p>
 <pre class="code python literal-block">
 <span class="kn">from</span> <span class="nn">odoo</span> <span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">models</span>
@@ -858,7 +858,7 @@ is configurable. You can also see that depending on the authentication method
 configured on your fastapi endpoint, the documentation will change.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">A time of writing, the dependency override mechanism is not supported by
+<p class="last">At time of writing, the dependency override mechanism is not supported by
 the fastapi documentation generator. A fix has been proposed and is waiting
 to be merged. You can follow the progress of the fix on <a class="reference external" href="https://github.com/tiangolo/fastapi/pull/5452">github</a></p>
 </div>
@@ -943,7 +943,7 @@ of your app to instruct the api consumers how to request a specific language.</p
 <div class="section" id="how-to-extend-an-existing-app">
 <h1>How to extend an existing app</h1>
 <p>When you develop a fastapi app, in a native python app it’s not possible
-to extend and existing one. This limitation doesn’t apply to the fastapi addon
+to extend an existing one. This limitation doesn’t apply to the fastapi addon
 because the fastapi endpoint model is designed to be extended. However, the
 way to extend an existing app is not the same as the way to extend an odoo model.</p>
 <p>First of all, it’s important to keep in mind that when you define a route, you
@@ -1404,7 +1404,7 @@ and not ‘sale_order’.</li>
 <li>… and many more.</li>
 </ul>
 <p>We could write a book about the best practices to follow when you design your api
-but we will stop here. This list is the result of our experience at <a class="reference external" href="https://acsone.eu">ACSONE SA/NV</a> and it evolve over time. It’s a kind of rescue kit that we
+but we will stop here. This list is the result of our experience at <a class="reference external" href="https://acsone.eu">ACSONE SA/NV</a> and it evolves over time. It’s a kind of rescue kit that we
 would provide to a new developer that starts to design an api. This kit must
 be accompanied with the reading of some useful resources link like the <a class="reference external" href="https://www.belgif.be/specification/rest/api-guide/">REST Guidelines</a>. On a technical level,
 the <a class="reference external" href="https://fastapi.tiangolo.com/">fastapi  documentation</a> provides a lot of

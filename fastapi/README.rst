@@ -496,7 +496,7 @@ As for the 'BasicAuth' authentication mechanism, we also rely on one of the nati
 security dependency provided by the **'fastapi.security'** module.
 
 Now that we have an implementation for our two authentication mechanisms, we
-can allow the user to select one of these authentication mechanisms by adding
+can allows the user to select one of these authentication mechanisms by adding
 a selection field on the fastapi endpoint model.
 
 .. code-block:: python
@@ -1194,7 +1194,7 @@ Miscellaneous
 Development of a search route handler
 =====================================
 
-The **'odoo-addon-fastapi'** module provides 2 useful pieces of code to help
+The **'odoo-addon-fastapi'** module provides 2 useful piece of code to help
 you be consistent when writing a route handler for a search route.
 
 1. A dependency method to use to specify the pagination parameters in the same
