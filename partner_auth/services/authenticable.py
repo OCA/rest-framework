@@ -20,16 +20,17 @@ class BaseAuthenticable(AbstractComponent):
     def _get_directory(self):
         raise NotImplementedError()
 
+    def _create_partner_auth(self, params):
+        directory = self._get_directory()
+        return self.env["partner.auth"].sudo().register(directory, params)
+
     @restapi.method(
         [(["/register"], "POST")],
         input_param=Datamodel("authenticable.register.input"),
         auth="public",
     )
     def register(self, params):
-        directory = self._get_directory()
-        partner_auth = (
-            self.env["partner.auth"].sudo().register(directory, params.dump())
-        )
+        partner_auth = self._create_partner_auth(params.dump())
         return self._successfull_login(partner_auth)
 
     @restapi.method(
