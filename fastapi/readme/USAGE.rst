@@ -382,7 +382,7 @@ In this dummy implementation, we just check that the provided credentials
 can be used to authenticate a user in odoo. If the authentication is successful,
 we return the partner record linked to the authenticated user.
 
-In some cas you could want to implement a more complex authentication mechanism
+In some cases you could want to implement a more complex authentication mechanism
 that could rely on a token or a session. In this case, you can override the
 **'authenticated_partner'** dependency by registering a specific method that
 returns the authenticated partner. Moreover, you can make it configurable on
@@ -417,11 +417,11 @@ implemented, we will only implement the api key authentication mechanism.
           )
       return partner
 
-As for the 'BasicAuth' authentication mechanism, we also rely one of the native
+As for the 'BasicAuth' authentication mechanism, we also rely on one of the native
 security dependency provided by the **'fastapi.security'** module.
 
-Now that we have an implementation for our two authentication mechanism, we
-can allows the user to select one of these authentication mechanism by adding
+Now that we have an implementation for our two authentication mechanisms, we
+can allows the user to select one of these authentication mechanisms by adding
 a selection field on the fastapi endpoint model.
 
 .. code-block:: python
@@ -492,7 +492,7 @@ is configurable. You can also see that depending on the authentication method
 configured on your fastapi endpoint, the documentation will change.
 
 .. note::
-  A time of writing, the dependency override mechanism is not supported by
+  At time of writing, the dependency override mechanism is not supported by
   the fastapi documentation generator. A fix has been proposed and is waiting
   to be merged. You can follow the progress of the fix on `github
   <https://github.com/tiangolo/fastapi/pull/5452>`_
@@ -585,7 +585,7 @@ How to extend an existing app
 ******************************
 
 When you develop a fastapi app, in a native python app it's not possible
-to extend and existing one. This limitation doesn't apply to the fastapi addon
+to extend an existing one. This limitation doesn't apply to the fastapi addon
 because the fastapi endpoint model is designed to be extended. However, the
 way to extend an existing app is not the same as the way to extend an odoo model.
 
@@ -1105,7 +1105,7 @@ the app is robust and easy to maintain. Here are some of them:
 
 We could write a book about the best practices to follow when you design your api
 but we will stop here. This list is the result of our experience at `ACSONE SA/NV
-<https://acsone.eu>`_ and it evolve over time. It's a kind of rescue kit that we
+<https://acsone.eu>`_ and it evolves over time. It's a kind of rescue kit that we
 would provide to a new developer that starts to design an api. This kit must
 be accompanied with the reading of some useful resources link like the `REST Guidelines
 <https://www.belgif.be/specification/rest/api-guide/>`_. On a technical level,
