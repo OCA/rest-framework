@@ -32,7 +32,10 @@ class DirectoryAuth(models.Model):
         "Mail Template New Password",
     )
     cookie_secret_key = fields.Char()
-    cookie_duration = fields.Integer(default=60)
+    cookie_duration = fields.Integer(
+        default=525600,
+        help="In minute, default 525600 minutes => 1 year",
+    )
 
     @property
     def _server_env_fields(self):
@@ -46,7 +49,7 @@ class DirectoryAuth(models.Model):
         value = request.httprequest.cookies.get(COOKIE_AUTH_NAME)
         if value:
             vals = URLSafeTimedSerializer(self.cookie_secret_key).loads(
-                value, max_age=self.cookie_duration
+                value, max_age=self.cookie_duration * 60
             )
             if vals["did"] == self.id and vals["pid"]:
                 partner = self.env["res.partner"].browse(vals["pid"]).exists()
