@@ -13,7 +13,7 @@ from odoo.tools import mute_logger
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from .. import depends
+from .. import dependencies
 from ..context import odoo_env_ctx
 from ..fastapi_dispatcher import patch_odoo_environment
 from ..models.fastapi_endpoint_demo import EndpointAppInfo, ExceptionType
@@ -35,7 +35,7 @@ class FastAPIDemoCase(SavepointCase):
         cls.test_partner = cls.env["res.partner"].create({"name": "FastAPI Demo"})
         cls.fastapi_demo_app = cls.env.ref("fastapi.fastapi_endpoint_demo")
         cls.app = cls.fastapi_demo_app._get_app()
-        cls.app.dependency_overrides[depends.authenticated_partner_impl] = partial(
+        cls.app.dependency_overrides[dependencies.authenticated_partner_impl] = partial(
             lambda a: a, cls.test_partner
         )
         cls._ctx_token = odoo_env_ctx.set(
