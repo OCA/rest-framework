@@ -1313,7 +1313,7 @@ are used in the python community when developing a fastapi app.
 .. code-block::
 
   .
-  ├── x_api
+  ├── api_x
   │   ├── data
   │   │   ├── ... .xml
   │   ├── demo
@@ -1350,23 +1350,19 @@ are used in the python community when developing a fastapi app.
   be grouped in the same file. For example, all the routes starting with
   '/items' should be defined in the **'items.py'** file. The **'__init__.py'**
   file in this directory is used to import all the routers defined in the
-  directory and create a global router that can be used in an app. In
-  each router file, you will define a router without prefix and omit it
-  in each route definition. The prefix will be added when the router is
-  imported in the **'__init__.py'** file. This will allows to easily use
-  the same router in different apps with different prefixes. For example,
+  directory and create a global router that can be used in an app. For example,
   in your **'items.py'** file, you will define a router like this:
 
   .. code-block:: python
 
-    router = APIRouter()
+    router = APIRouter(tags=["items"]
 
-    router.get("/", response_model=List[Item])
+    router.get("items/", response_model=List[Item])
     def list_items():
         pass
 
-  In the **'__init__.py'** file, you will import the router and add the prefix
-  to the router.
+  In the **'__init__.py'** file, you will import the router and add it to the global
+  router or your addon.
 
   .. code-block:: python
 
@@ -1375,21 +1371,7 @@ are used in the python community when developing a fastapi app.
     from .items import router as items_router
 
     router = APIRouter()
-    router.include_router(items_router, prefix="/items", tags=["items"])
-
-  When you include specific routers in the overall router, you should also
-  add the tags to the router. The tags will be used to group the routes in
-  the openapi documentation.
-  As you can see in the previous example, routes are grouped in a file named
-  as the default prefix of the routes. This is not mandatory but it's a good
-  practice to follow. It will help you to easily find the code executed for
-  a specific url.
-
-  .. code-block:: bash
-
-    GET my_app/items/ -> ???/routers/items.py
-
-    Documentation: Tags items -> ???/routers/items.py
+    router.include_router(items_router)
 
 * The **'schemas.py'** will be used to define the pydantic models. For complex
   APIs with a lot of models, it will be better to create a **'schemas'** directory

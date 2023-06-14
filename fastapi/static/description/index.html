@@ -1521,7 +1521,7 @@ and it will help the other developers to understand your code.</p>
 are used in the python community when developing a fastapi app.</p>
 <pre class="code literal-block">
 .
-├── x_api
+├── api_x
 │&nbsp;&nbsp; ├── data
 │&nbsp;&nbsp; │   ├── ... .xml
 │&nbsp;&nbsp; ├── demo
@@ -1559,40 +1559,24 @@ new routers in this directory. Each route starting with the same prefix should
 be grouped in the same file. For example, all the routes starting with
 ‘/items’ should be defined in the <strong>‘items.py’</strong> file. The <strong>‘__init__.py’</strong>
 file in this directory is used to import all the routers defined in the
-directory and create a global router that can be used in an app. In
-each router file, you will define a router without prefix and omit it
-in each route definition. The prefix will be added when the router is
-imported in the <strong>‘__init__.py’</strong> file. This will allows to easily use
-the same router in different apps with different prefixes. For example,
+directory and create a global router that can be used in an app. For example,
 in your <strong>‘items.py’</strong> file, you will define a router like this:</p>
 <pre class="code python literal-block">
-<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">]</span>
 
-<span class="n">router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">])</span>
+<span class="n">router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;items/&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">list_items</span><span class="p">():</span>
     <span class="k">pass</span>
 </pre>
-<p>In the <strong>‘__init__.py’</strong> file, you will import the router and add the prefix
-to the router.</p>
+<p>In the <strong>‘__init__.py’</strong> file, you will import the router and add it to the global
+router or your addon.</p>
 <pre class="code python literal-block">
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
 
 <span class="kn">from</span> <span class="nn">.items</span> <span class="kn">import</span> <span class="n">router</span> <span class="k">as</span> <span class="n">items_router</span>
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
-<span class="n">router</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">items_router</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;/items&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">])</span>
-</pre>
-<p>When you include specific routers in the overall router, you should also
-add the tags to the router. The tags will be used to group the routes in
-the openapi documentation.
-As you can see in the previous example, routes are grouped in a file named
-as the default prefix of the routes. This is not mandatory but it’s a good
-practice to follow. It will help you to easily find the code executed for
-a specific url.</p>
-<pre class="code bash literal-block">
-GET my_app/items/ -&gt; ???/routers/items.py
-
-Documentation: Tags items -&gt; ???/routers/items.py
+<span class="n">router</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">items_router</span><span class="p">)</span>
 </pre>
 </li>
 <li><p class="first">The <strong>‘schemas.py’</strong> will be used to define the pydantic models. For complex
