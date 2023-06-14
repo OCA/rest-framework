@@ -13,8 +13,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from .. import depends
-from ..context import odoo_env_ctx
 from ..models.fastapi_endpoint_demo import EndpointAppInfo, ExceptionType
+from .common import set_fastapi_env_ctx
 
 
 class FastAPIDemoCase(TransactionCase):
@@ -40,15 +40,11 @@ class FastAPIDemoCase(TransactionCase):
         # TestClient will let unexpected exception bubble up to the test method
         # to allows you to process the error accordingly
         cls.client = TestClient(cls.app, raise_server_exceptions=False)
-        cls._ctx_token = odoo_env_ctx.set(
-            cls.env(user=cls.env.ref("fastapi.my_demo_app_user"))
-        )
+        set_fastapi_env_ctx(cls, cls.env(user=cls.env.ref("fastapi.my_demo_app_user")))
 
     @classmethod
     def tearDownClass(cls) -> None:
-        odoo_env_ctx.reset(cls._ctx_token)
         cls.fastapi_demo_app._reset_app()
-
         super().tearDownClass()
 
     def _get_path(self, path) -> str:

@@ -946,7 +946,7 @@ defined into the demo app is as simple as
   from fastapi.testclient import TestClient
 
   from .. import depends
-  from ..context import odoo_env_ctx
+  from .common import set_fastapi_env_ctx
 
 
   class FastAPIDemoCase(TransactionCase):
@@ -961,13 +961,11 @@ defined into the demo app is as simple as
               lambda a: a, cls.test_partner
           )
           cls.client = TestClient(cls.app)
-          cls._ctx_token = odoo_env_ctx.set(cls.env)
+          set_fastapi_env_ctx(cls, cls.env(user=cls.env.ref("fastapi.my_demo_app_user")))
 
       @classmethod
       def tearDownClass(cls) -> None:
-          odoo_env_ctx.reset(cls._ctx_token)
           cls.fastapi_demo_app._reset_app()
-
           super().tearDownClass()
 
       def _get_path(self, path) -> str:
@@ -978,6 +976,13 @@ defined into the demo app is as simple as
           self.assertEqual(response.status_code, status.HTTP_200_OK)
           self.assertDictEqual(response.json(), {"Hello": "World"})
 
+.. note::
+
+  The module 'odoo.addons.fastapi.tests.common' provides a helper method
+  **'set_fastapi_env_ctx'** that must be used to set the odoo environment
+  context at the end of the **'setUpClass'** method. This method will make
+  the provided environment available in fastapi app context and remove it when
+  the test is finished.
 
 Overall considerations when you develop an fastapi app
 *******************************************************
