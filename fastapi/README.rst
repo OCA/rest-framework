@@ -1313,7 +1313,7 @@ are used in the python community when developing a fastapi app.
 .. code-block::
 
   .
-  ├── x_api_addon
+  ├── x_api
   │   ├── data
   │   │   ├── ... .xml
   │   ├── demo
@@ -1328,7 +1328,7 @@ are used in the python community when developing a fastapi app.
   │   │   ├── __init__.py
   │   │   ├── items.py
   │   │   └── ... .py
-  │   ├── schemas
+  │   ├── schemas | schemas.py
   │   │   ├── __init__.py
   │   │   ├── my_model.py  # pydantic model
   │   │   └── ... .py
@@ -1351,22 +1351,23 @@ are used in the python community when developing a fastapi app.
   '/items' should be defined in the **'items.py'** file. The **'__init__.py'**
   file in this directory is used to import all the routers defined in the
   directory and create a global router that can be used in an app. In
-  each router file, you will define a router without prefix and omit the
+  each router file, you will define a router without prefix and omit it
   in each route definition. The prefix will be added when the router is
   imported in the **'__init__.py'** file. This will allows to easily use
   the same router in different apps with different prefixes. For example,
   in your **'items.py'** file, you will define a router like this:
+
   .. code-block:: python
 
     router = APIRouter()
 
     router.get("/", response_model=List[Item])
-
-    def list_items(..):
-        ...
+    def list_items():
+        pass
 
   In the **'__init__.py'** file, you will import the router and add the prefix
   to the router.
+
   .. code-block:: python
 
     from fastapi import APIRouter
@@ -1379,11 +1380,24 @@ are used in the python community when developing a fastapi app.
   When you include specific routers in the overall router, you should also
   add the tags to the router. The tags will be used to group the routes in
   the openapi documentation.
-* The **'schemas'** directory contains the pydantic models. You will add your
-  new pydantic models in this directory. Each model should be defined in a
-  separate file. The **'__init__.py'** file in this directory is used to import
-  all the models defined in the directory. For example, in your **'my_model.py'**
+  As you can see in the previous example, routes are grouped in a file named
+  as the default prefix of the routes. This is not mandatory but it's a good
+  practice to follow. It will help you to easily find the code executed for
+  a specific url.
+
+  .. code-block:: bash
+
+    GET my_app/items/ -> ???/routers/items.py
+
+    Documentation: Tags items -> ???/routers/items.py
+
+* The **'schemas.py'** will be used to define the pydantic models. For complex
+  APIs with a lot of models, it will be better to create a **'schemas'** directory
+  and split the models in different files.  The **'__init__.py'** file in this
+  directory will be used to import all the models defined in the directory.
+  For example, in your **'my_model.py'**
   file, you will define a model like this:
+
   .. code-block:: python
 
     from pydantic import BaseModel
@@ -1392,13 +1406,17 @@ are used in the python community when developing a fastapi app.
         name: str
         description: str = None
 
-  In the **'__init__.py'** file, you will import the model and add the prefix
-  to the model.
+  In the **'__init__.py'** file, you will import the model's classes from the
+  files in the directory.
+
   .. code-block:: python
 
     from .my_model import MyModel
 
-  This will allows to easily import models from the schemas package.
+  This will allow to always import the models from the schemas module whatever
+  the models are spread across different files or defined in the **'schemas.py'**
+  file.
+
   .. code-block:: python
 
     from x_api_addon.schemas import MyModel

@@ -1521,7 +1521,7 @@ and it will help the other developers to understand your code.</p>
 are used in the python community when developing a fastapi app.</p>
 <pre class="code literal-block">
 .
-├── x_api_addon
+├── x_api
 │&nbsp;&nbsp; ├── data
 │&nbsp;&nbsp; │   ├── ... .xml
 │&nbsp;&nbsp; ├── demo
@@ -1536,7 +1536,7 @@ are used in the python community when developing a fastapi app.</p>
 │&nbsp;&nbsp; │   ├── __init__.py
 │&nbsp;&nbsp; │   ├── items.py
 │&nbsp;&nbsp; │   └── ... .py
-│&nbsp;&nbsp; ├── schemas
+│&nbsp;&nbsp; ├── schemas | schemas.py
 │&nbsp;&nbsp; │   ├── __init__.py
 │&nbsp;&nbsp; │   ├── my_model.py  # pydantic model
 │&nbsp;&nbsp; │   └── ... .py
@@ -1560,60 +1560,65 @@ be grouped in the same file. For example, all the routes starting with
 ‘/items’ should be defined in the <strong>‘items.py’</strong> file. The <strong>‘__init__.py’</strong>
 file in this directory is used to import all the routers defined in the
 directory and create a global router that can be used in an app. In
-each router file, you will define a router without prefix and omit the
+each router file, you will define a router without prefix and omit it
 in each route definition. The prefix will be added when the router is
 imported in the <strong>‘__init__.py’</strong> file. This will allows to easily use
 the same router in different apps with different prefixes. For example,
-in your <strong>‘items.py’</strong> file, you will define a router like this:
-.. code-block:: python</p>
-<blockquote>
-<p>router = APIRouter()</p>
-<p>router.get(“/”, response_model=List[Item])</p>
-<dl class="docutils">
-<dt>def list_items(..):</dt>
-<dd><p class="first last">…</p>
-</dd>
-</dl>
-</blockquote>
+in your <strong>‘items.py’</strong> file, you will define a router like this:</p>
+<pre class="code python literal-block">
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+
+<span class="n">router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">list_items</span><span class="p">():</span>
+    <span class="k">pass</span>
+</pre>
 <p>In the <strong>‘__init__.py’</strong> file, you will import the router and add the prefix
-to the router.
-.. code-block:: python</p>
-<blockquote>
-<p>from fastapi import APIRouter</p>
-<p>from .items import router as items_router</p>
-<p>router = APIRouter()
-router.include_router(items_router, prefix=”/items”, tags=[“items”])</p>
-</blockquote>
+to the router.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
+
+<span class="kn">from</span> <span class="nn">.items</span> <span class="kn">import</span> <span class="n">router</span> <span class="k">as</span> <span class="n">items_router</span>
+
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+<span class="n">router</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">items_router</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;/items&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">])</span>
+</pre>
 <p>When you include specific routers in the overall router, you should also
 add the tags to the router. The tags will be used to group the routes in
-the openapi documentation.</p>
+the openapi documentation.
+As you can see in the previous example, routes are grouped in a file named
+as the default prefix of the routes. This is not mandatory but it’s a good
+practice to follow. It will help you to easily find the code executed for
+a specific url.</p>
+<pre class="code bash literal-block">
+GET my_app/items/ -&gt; ???/routers/items.py
+
+Documentation: Tags items -&gt; ???/routers/items.py
+</pre>
 </li>
-<li><p class="first">The <strong>‘schemas’</strong> directory contains the pydantic models. You will add your
-new pydantic models in this directory. Each model should be defined in a
-separate file. The <strong>‘__init__.py’</strong> file in this directory is used to import
-all the models defined in the directory. For example, in your <strong>‘my_model.py’</strong>
-file, you will define a model like this:
-.. code-block:: python</p>
-<blockquote>
-<p>from pydantic import BaseModel</p>
-<dl class="docutils">
-<dt>class MyModel(BaseModel):</dt>
-<dd><p class="first last">name: str
-description: str = None</p>
-</dd>
-</dl>
-</blockquote>
-<p>In the <strong>‘__init__.py’</strong> file, you will import the model and add the prefix
-to the model.
-.. code-block:: python</p>
-<blockquote>
-<p>from .my_model import MyModel</p>
-</blockquote>
-<p>This will allows to easily import models from the schemas package.
-.. code-block:: python</p>
-<blockquote>
-<p>from x_api_addon.schemas import MyModel</p>
-</blockquote>
+<li><p class="first">The <strong>‘schemas.py’</strong> will be used to define the pydantic models. For complex
+APIs with a lot of models, it will be better to create a <strong>‘schemas’</strong> directory
+and split the models in different files.  The <strong>‘__init__.py’</strong> file in this
+directory will be used to import all the models defined in the directory.
+For example, in your <strong>‘my_model.py’</strong>
+file, you will define a model like this:</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+</pre>
+<p>In the <strong>‘__init__.py’</strong> file, you will import the model’s classes from the
+files in the directory.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">.my_model</span> <span class="kn">import</span> <span class="n">MyModel</span>
+</pre>
+<p>This will allow to always import the models from the schemas module whatever
+the models are spread across different files or defined in the <strong>‘schemas.py’</strong>
+file.</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">x_api_addon.schemas</span> <span class="kn">import</span> <span class="n">MyModel</span>
+</pre>
 </li>
 <li><p class="first">The <strong>‘dependencies.py’</strong> file contains the custom dependencies that you
 will use in your routers. For example, you can define a dependency to
