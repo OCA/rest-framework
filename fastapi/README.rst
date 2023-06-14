@@ -1324,7 +1324,7 @@ are used in the python community when developing a fastapi app.
 .. code-block::
 
   .
-  ├── api_x
+  ├── x_api
   │   ├── data
   │   │   ├── ... .xml
   │   ├── demo
@@ -1368,7 +1368,7 @@ are used in the python community when developing a fastapi app.
 
     router = APIRouter(tags=["items"])
 
-    router.get("items/", response_model=List[Item])
+    router.get("/items", response_model=List[Item])
     def list_items():
         pass
 
