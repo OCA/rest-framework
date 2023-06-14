@@ -1355,7 +1355,7 @@ are used in the python community when developing a fastapi app.
 
   .. code-block:: python
 
-    router = APIRouter(tags=["items"]
+    router = APIRouter(tags=["items"])
 
     router.get("items/", response_model=List[Item])
     def list_items():

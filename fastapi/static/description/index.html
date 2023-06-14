@@ -1562,7 +1562,7 @@ file in this directory is used to import all the routers defined in the
 directory and create a global router that can be used in an app. For example,
 in your <strong>‘items.py’</strong> file, you will define a router like this:</p>
 <pre class="code python literal-block">
-<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">]</span>
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">])</span>
 
 <span class="n">router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;items/&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">list_items</span><span class="p">():</span>
