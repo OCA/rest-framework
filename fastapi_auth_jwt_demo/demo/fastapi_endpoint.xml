@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="fastapi.endpoint" id="fastapi_endpoint_auth_jwt_demo">
+        <field name="name">Auth JWT Fastapi Demo Endpoint</field>
+        <field name="app">auth_jwt_demo</field>
+        <field name="root_path">/fastapi_auth_jwt_demo</field>
+        <field name="user_id" ref="fastapi.my_demo_app_user" />
+    </record>
+</odoo>
