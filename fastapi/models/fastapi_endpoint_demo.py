@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, Field
 
-from ..depends import (
+from ..dependencies import (
     authenticated_partner,
     authenticated_partner_from_basic_auth_user,
     authenticated_partner_impl,

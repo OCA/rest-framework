@@ -14,7 +14,7 @@ from odoo import _, api, exceptions, fields, models, tools
 
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
 
-from .. import depends, error_handlers
+from .. import dependencies, error_handlers
 
 _logger = logging.getLogger(__name__)
 
@@ -201,7 +201,7 @@ class FastapiEndpoint(models.Model):
         app = FastAPI(**self._prepare_fastapi_app_params())
         for router in self._get_fastapi_routers():
             app.include_router(prefix=self.root_path, router=router)
-        app.dependency_overrides[depends.fastapi_endpoint_id] = partial(
+        app.dependency_overrides[dependencies.fastapi_endpoint_id] = partial(
             lambda a: a, self.id
         )
         for exception, handler in self._get_app_exception_handlers().items():
@@ -265,4 +265,4 @@ class FastapiEndpoint(models.Model):
 
     def _get_fastapi_app_dependencies(self) -> List[Depends]:
         """Return the dependencies to use for the fastapi app."""
-        return [Depends(depends.accept_language)]
+        return [Depends(dependencies.accept_language)]
