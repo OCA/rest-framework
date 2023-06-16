@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.15.1: http://docutils.sourceforge.net/" />
 <title>Odoo FastAPI</title>
 <style type="text/css">
 
@@ -1222,7 +1222,7 @@ authenticated partner.</li>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;implied_ids&quot;</span> <span class="na">eval=</span><span class="s">&quot;[(4, ref('group_fastapi_endpoint_runner'))]&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;/record&gt;</span>
 
-<span class="cm">&lt;!-- acl for the model 'sale.order' --&gt;</span>
+<span class="c">&lt;!-- acl for the model 'sale.order' --&gt;</span>
 <span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;sale_order_demo_app_access&quot;</span> <span class="na">model=</span><span class="s">&quot;ir.model.access&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>My Demo App: access to sale.order<span class="nt">&lt;/field&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;model_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;model_sale_order&quot;</span><span class="nt">/&gt;</span>
@@ -1233,7 +1233,7 @@ authenticated partner.</li>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;perm_unlink&quot;</span> <span class="na">eval=</span><span class="s">&quot;False&quot;</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;/record&gt;</span>
 
-<span class="cm">&lt;!-- a record rule to allows the authenticated partner to access only its sale orders --&gt;</span>
+<span class="c">&lt;!-- a record rule to allows the authenticated partner to access only its sale orders --&gt;</span>
 <span class="nt">&lt;record</span> <span class="na">id=</span><span class="s">&quot;demo_app_sale_order_rule&quot;</span> <span class="na">model=</span><span class="s">&quot;ir.rule&quot;</span><span class="nt">&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;name&quot;</span><span class="nt">&gt;</span>Sale Order Rule<span class="nt">&lt;/field&gt;</span>
   <span class="nt">&lt;field</span> <span class="na">name=</span><span class="s">&quot;model_id&quot;</span> <span class="na">ref=</span><span class="s">&quot;model_sale_order&quot;</span><span class="nt">/&gt;</span>
