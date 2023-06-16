@@ -10,6 +10,13 @@ from odoo import tests
 
 @tests.tagged("post_install", "-at_install")
 class TestEndToEnd(tests.HttpCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env.ref(
+            "fastapi_auth_jwt_demo.fastapi_endpoint_auth_jwt_demo"
+        )._handle_registry_sync()
+
     def _get_token(self, aud=None, email=None):
         validator = self.env["auth.jwt.validator"].search([("name", "=", "demo")])
         payload = {
