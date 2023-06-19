@@ -22,13 +22,13 @@ class FastAPIHttpCase(HttpCase):
         lang.active = True
 
     def _assert_expected_lang(self, accept_language, expected_lang):
-        route = "/fastapi_demo/lang"
+        route = "/fastapi_demo/demo/lang"
         response = self.url_open(route, headers={"Accept-language": accept_language})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, expected_lang)
 
     def test_call(self):
-        route = "/fastapi_demo/"
+        route = "/fastapi_demo/demo/"
         response = self.url_open(route)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'{"Hello":"World"}')
