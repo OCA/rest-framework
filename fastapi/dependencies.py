@@ -1,7 +1,7 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated
 
 from odoo.api import Environment
 from odoo.exceptions import AccessDenied
@@ -32,15 +32,15 @@ def authenticated_partner_impl() -> Partner:
 
 
 def authenticated_partner_env(
-    partner: Partner = Depends(authenticated_partner_impl),  # noqa: B008
+    partner: Annotated[Partner, Depends(authenticated_partner_impl)]
 ) -> Environment:
     """Return an environment with the authenticated partner id in the context"""
     return partner.with_context(authenticated_partner_id=partner.id).env
 
 
 def authenticated_partner(
-    partner: Partner = Depends(authenticated_partner_impl),  # noqa: B008
-    partner_env: Environment = Depends(authenticated_partner_env),  # noqa: B008
+    partner: Annotated[Partner, Depends(authenticated_partner_impl)],
+    partner_env: Annotated[Environment, Depends(authenticated_partner_env)],
 ) -> Partner:
     """If you need to get access to the authenticated partner into your
     endpoint, you can add a dependency into the endpoint definition on this
@@ -55,15 +55,15 @@ def authenticated_partner(
 
 
 def paging(
-    page: int = Query(1, gte=1), page_size: int = Query(80, gte=1)  # noqa: B008
+    page: Annotated[int, Query(gte=1)] = 1, page_size: Annotated[int, Query(gte=1)] = 80
 ) -> Paging:
     """Return a Paging object from the page and page_size parameters"""
     return Paging(limit=page_size, offset=(page - 1) * page_size)
 
 
 def basic_auth_user(
-    credential: HTTPBasicCredentials = Depends(HTTPBasic()),  # noqa: B008
-    env: Environment = Depends(odoo_env),  # noqa: B008
+    credential: Annotated[HTTPBasicCredentials, Depends(HTTPBasic())],
+    env: Annotated[Environment, Depends(odoo_env)],
 ) -> Users:
     username = credential.username
     password = credential.password
@@ -85,8 +85,8 @@ def basic_auth_user(
 
 
 def authenticated_partner_from_basic_auth_user(
-    user: Users = Depends(basic_auth_user),  # noqa: B008
-    env: Environment = Depends(odoo_env),  # noqa: B008
+    user: Annotated[Users, Depends(basic_auth_user)],
+    env: Annotated[Environment, Depends(odoo_env)],
 ) -> Partner:
     return env["res.partner"].browse(user.sudo().partner_id.id)
 
@@ -100,21 +100,23 @@ def fastapi_endpoint_id() -> int:
 
 
 def fastapi_endpoint(
-    _id: int = Depends(fastapi_endpoint_id),  # noqa: B008
-    env: Environment = Depends(odoo_env),  # noqa: B008
+    _id: Annotated[int, Depends(fastapi_endpoint_id)],
+    env: Annotated[Environment, Depends(odoo_env)],
 ) -> "FastapiEndpoint":
     """Return the fastapi.endpoint record"""
     return env["fastapi.endpoint"].browse(_id)
 
 
 def accept_language(
-    accept_language: str = Header(  # noqa: B008
-        None,
-        alias="Accept-Language",
-        description="The Accept-Language header is used to specify the language "
-        "of the content to be returned. If a language is not available, the "
-        "server will return the content in the default language.",
-    )
+    accept_language: Annotated[
+        str | None,
+        Header(
+            alias="Accept-Language",
+            description="The Accept-Language header is used to specify the language "
+            "of the content to be returned. If a language is not available, the "
+            "server will return the content in the default language.",
+        ),
+    ] = None,
 ) -> str:
     """This dependency is used at application level to document the way the language
     to use for the response is specified. The header is processed outside of the
