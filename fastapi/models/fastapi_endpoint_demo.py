@@ -1,6 +1,6 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
-from typing import Any, List
+from typing import Annotated, Any, List
 
 from odoo import _, api, fields, models
 from odoo.api import Environment
@@ -81,13 +81,16 @@ class FastapiEndpoint(models.Model):
 
 
 def api_key_based_authenticated_partner_impl(
-    api_key: str = Depends(  # noqa: B008
-        APIKeyHeader(
-            name="api-key",
-            description="In this demo, you can use a user's login as api key.",
-        )
-    ),
-    env: Environment = Depends(odoo_env),  # noqa: B008
+    api_key: Annotated[
+        str,
+        Depends(
+            APIKeyHeader(
+                name="api-key",
+                description="In this demo, you can use a user's login as api key.",
+            )
+        ),
+    ],
+    env: Annotated[Environment, Depends(odoo_env)],
 ) -> Partner:
     """A dummy implementation that look for a user with the same login
     as the provided api key
