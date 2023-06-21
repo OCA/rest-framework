@@ -475,11 +475,11 @@ let’s create an addon called <em>my_demo_api</em>.</p>
 instance is the mount point for a fastapi app into Odoo. When you create a new
 endpoint, you can define the app that you want to mount in the <strong>‘app’</strong> field
 and the path where you want to mount it in the <strong>‘path’</strong> field.</p>
-<p>figure:: static/description/endpoint.png</p>
+<p>figure:: static/description/endpoint_create.png</p>
 <blockquote>
 FastAPI Endpoint</blockquote>
 <p>Thanks to the <strong>‘fastapi.endpoint’</strong> model, you can create as many endpoints as
-you wand and mount as many apps as you want in each endpoint. The endpoint is
+you want and mount as many apps as you want in each endpoint. The endpoint is
 also the place where you can define configuration parameters for your app. A
 typical example is the authentication method that you want to use for your app
 when accessed at the endpoint path.</p>
@@ -600,7 +600,7 @@ of the route that you have defined. The result of the request will be displayed
 in the ‘Response’ section and contains the list of partners.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The <strong>‘FastAPI Endpoint Runner’</strong> group ensures that the user can access any
+<p class="last">The <strong>‘FastAPI Endpoint Runner’</strong> group ensures that the user cannot access any
 information others than the 3 ones mentioned above. This means that for every
 information that you want to access from your app, you need to create the
 proper ACLs and record rules. (see <a class="reference internal" href="#managing-security-into-the-route-handlers">Managing security into the route handlers</a>)

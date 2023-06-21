@@ -145,12 +145,12 @@ instance is the mount point for a fastapi app into Odoo. When you create a new
 endpoint, you can define the app that you want to mount in the **'app'** field
 and the path where you want to mount it in the **'path'** field.
 
-figure:: static/description/endpoint.png
+figure:: static/description/endpoint_create.png
 
     FastAPI Endpoint
 
 Thanks to the **'fastapi.endpoint'** model, you can create as many endpoints as
-you wand and mount as many apps as you want in each endpoint. The endpoint is
+you want and mount as many apps as you want in each endpoint. The endpoint is
 also the place where you can define configuration parameters for your app. A
 typical example is the authentication method that you want to use for your app
 when accessed at the endpoint path.
@@ -284,7 +284,7 @@ of the route that you have defined. The result of the request will be displayed
 in the 'Response' section and contains the list of partners.
 
 .. note::
-  The **'FastAPI Endpoint Runner'** group ensures that the user can access any
+  The **'FastAPI Endpoint Runner'** group ensures that the user cannot access any
   information others than the 3 ones mentioned above. This means that for every
   information that you want to access from your app, you need to create the
   proper ACLs and record rules. (see `Managing security into the route handlers`_)
