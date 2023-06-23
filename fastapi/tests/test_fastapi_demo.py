@@ -4,8 +4,6 @@
 from functools import partial
 from unittest import mock
 
-from requests import Response
-
 import odoo
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
@@ -53,9 +51,6 @@ class FastAPIDemoCase(TransactionCase):
 
         super().tearDownClass()
 
-    def _get_path(self, path) -> str:
-        return path
-
     @mute_logger("odoo.addons.fastapi.error_handlers")
     def assert_exception_processed(
         self,
@@ -65,8 +60,8 @@ class FastAPIDemoCase(TransactionCase):
         expected_status_code: int,
     ) -> None:
         with mock.patch.object(self.env.cr.__class__, "rollback") as mock_rollback:
-            response: Response = self.client.get(
-                self._get_path("/exception"),
+            response = self.client.get(
+                "/exception",
                 params={
                     "exception_type": exception_type.value,
                     "error_message": error_message,
@@ -82,12 +77,12 @@ class FastAPIDemoCase(TransactionCase):
         )
 
     def test_hello_world(self) -> None:
-        response: Response = self.client.get(self._get_path("/"))
+        response = self.client.get("/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(response.json(), {"Hello": "World"})
 
     def test_who_ami(self) -> None:
-        response: Response = self.client.get(self._get_path("/who_ami"))
+        response = self.client.get("/who_ami")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(
             response.json(),
@@ -98,7 +93,7 @@ class FastAPIDemoCase(TransactionCase):
         )
 
     def test_endpoint_info(self) -> None:
-        response: Response = self.client.get(self._get_path("/endpoint_app_info"))
+        response = self.client.get("/endpoint_app_info")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(
             response.json(),
