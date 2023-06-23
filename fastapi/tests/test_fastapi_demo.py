@@ -6,6 +6,7 @@ from unittest import mock
 
 from requests import Response
 
+import odoo
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
 
@@ -17,6 +18,7 @@ from ..context import odoo_env_ctx
 from ..models.fastapi_endpoint_demo import EndpointAppInfo, ExceptionType
 
 
+@odoo.tests.tagged("post_install", "-at_install")
 class FastAPIDemoCase(TransactionCase):
     """The fastapi lib comes with a useful testclient that let's you
     easily test your endpoints. Moreover, the dependency overrides functionality
@@ -52,7 +54,7 @@ class FastAPIDemoCase(TransactionCase):
         super().tearDownClass()
 
     def _get_path(self, path) -> str:
-        return self.fastapi_demo_app.root_path + path
+        return path
 
     @mute_logger("odoo.addons.fastapi.error_handlers")
     def assert_exception_processed(
