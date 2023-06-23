@@ -46,3 +46,11 @@ The following FastAPI dependencies  are provided and importable from
 
   The default implementation returns ``None`` meaning only one active JWT validator is
   allowed. This dependency is meant to be overridden.
+
+``def auth_jwt_http_header_authorization() -> str | None``
+
+  By default, return the credentials part of the ``Authorization`` header, or ``None``
+  if absent. This dependency is meant to be overridden, in particular with
+  ``fastapi.security.OAuth2AuthorizationCodeBearer`` to let swagger handle OAuth2
+  authorization (such override is only necessary for comfort when using the swagger
+  interface).

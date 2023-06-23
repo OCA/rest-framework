@@ -39,10 +39,10 @@ def _get_auth_jwt_validator(
 
 def _request_has_authentication(
     request: Request,
-    authorization_credentials: Optional[HTTPAuthorizationCredentials],
+    authorization_header: Optional[str],
     validator: AuthJwtValidator,
 ) -> Union[Payload, None]:
-    if authorization_credentials is not None:
+    if authorization_header is not None:
         return True
     if not validator.cookie_enabled:
         # no Authorization header and cookies not enabled
@@ -52,13 +52,13 @@ def _request_has_authentication(
 
 def _get_jwt_payload(
     request: Request,
-    authorization_header: Optional[HTTPAuthorizationCredentials],
+    authorization_header: Optional[str],
     validator: AuthJwtValidator,
 ) -> Payload:
     """Obtain and validate the JWT payload from the request authorization header or
     cookie (if enabled on the validator)."""
     if authorization_header is not None:
-        return validator._decode(authorization_header.credentials)
+        return validator._decode(authorization_header)
     if not validator.cookie_enabled:
         _logger.info("Missing or malformed authorization header.")
         raise UnauthorizedMissingAuthorizationHeader()
@@ -76,7 +76,7 @@ def _get_jwt_payload(
 def _get_jwt_payload_and_validator(
     request: Request,
     response: Response,
-    authorization_header: Optional[HTTPAuthorizationCredentials],
+    authorization_header: Optional[str],
     validator: AuthJwtValidator,
 ) -> Tuple[Payload, AuthJwtValidator]:
     try:
@@ -121,6 +121,17 @@ def auth_jwt_default_validator_name() -> Union[str, None]:
     return None
 
 
+def auth_jwt_http_header_authorization(
+    credentials: Annotated[
+        Optional[HTTPAuthorizationCredentials],
+        Depends(HTTPBearer(auto_error=False)),
+    ]
+):
+    if credentials is None:
+        return None
+    return credentials.credentials
+
+
 class BaseAuthJwt:  # noqa: B903
     def __init__(
         self, validator_name: Optional[str] = None, allow_unauthenticated: bool = False
@@ -135,8 +146,8 @@ class AuthJwtPayload(BaseAuthJwt):
         request: Request,
         response: Response,
         authorization_header: Annotated[
-            Optional[HTTPAuthorizationCredentials],
-            Depends(HTTPBearer(auto_error=False)),
+            Optional[str],
+            Depends(auth_jwt_http_header_authorization),
         ],
         default_validator_name: Annotated[
             Union[str, None],
@@ -165,8 +176,8 @@ class AuthJwtPartner(BaseAuthJwt):
         request: Request,
         response: Response,
         authorization_header: Annotated[
-            Optional[HTTPAuthorizationCredentials],
-            Depends(HTTPBearer(auto_error=False)),
+            Optional[str],
+            Depends(auth_jwt_http_header_authorization),
         ],
         default_validator_name: Annotated[
             Union[str, None],
@@ -204,8 +215,8 @@ class AuthJwtOdooEnv(BaseAuthJwt):
         request: Request,
         response: Response,
         authorization_header: Annotated[
-            Optional[HTTPAuthorizationCredentials],
-            Depends(HTTPBearer(auto_error=False)),
+            Optional[str],
+            Depends(auth_jwt_http_header_authorization),
         ],
         default_validator_name: Annotated[
             Union[str, None],
