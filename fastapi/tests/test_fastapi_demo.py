@@ -59,7 +59,7 @@ class FastAPIDemoCase(SavepointCase):
         super().tearDownClass()
 
     def _get_path(self, path) -> str:
-        return self.fastapi_demo_app.root_path + path
+        return path
 
     @mute_logger("odoo.addons.fastapi.error_handlers")
     def assert_exception_processed(
