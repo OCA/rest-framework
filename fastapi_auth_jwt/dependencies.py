@@ -65,7 +65,10 @@ def _get_jwt_payload(
     assert validator.cookie_name
     cookie_token = request.cookies.get(validator.cookie_name)
     if not cookie_token:
-        _logger.info("Missing authorization cookie %s.", validator.cookie_name)
+        _logger.info(
+            "Missing or malformed authorization header, and %s cookie not present.",
+            validator.cookie_name,
+        )
         raise UnauthorizedMissingCookie()
     return validator._decode(cookie_token, secret=validator._get_jwt_cookie_secret())
 
