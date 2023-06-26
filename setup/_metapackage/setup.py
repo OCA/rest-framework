@@ -17,6 +17,8 @@ setuptools.setup(
         'odoo-addon-extendable>=16.0dev,<16.1dev',
         'odoo-addon-extendable_fastapi>=16.0dev,<16.1dev',
         'odoo-addon-fastapi>=16.0dev,<16.1dev',
+        'odoo-addon-fastapi_auth_jwt>=16.0dev,<16.1dev',
+        'odoo-addon-fastapi_auth_jwt_demo>=16.0dev,<16.1dev',
         'odoo-addon-graphql_base>=16.0dev,<16.1dev',
         'odoo-addon-graphql_demo>=16.0dev,<16.1dev',
         'odoo-addon-pydantic>=16.0dev,<16.1dev',
