@@ -5,6 +5,7 @@ from functools import partial
 from typing import Any, Callable, Dict
 
 from odoo.api import Environment
+from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
 from odoo.addons.base.models.res_partner import Partner
@@ -17,6 +18,7 @@ from ..context import odoo_env_ctx
 from ..dependencies import authenticated_partner_impl
 
 
+@tagged("post_install", "-at_install")
 class FastAPITransactionCase(TransactionCase):
     """
     This class is a base class for FastAPI tests.
