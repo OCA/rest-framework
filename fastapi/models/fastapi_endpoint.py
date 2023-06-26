@@ -187,7 +187,9 @@ class FastapiEndpoint(models.Model):
         record = self.search([("root_path", "=", root_path)])
         if not record:
             return None
-        return ASGIMiddleware(record._get_app())
+        app = FastAPI()
+        app.mount(record.root_path, record._get_app())
+        return ASGIMiddleware(app)
 
     @api.model
     @tools.ormcache("root_path")
@@ -200,7 +202,7 @@ class FastapiEndpoint(models.Model):
     def _get_app(self) -> FastAPI:
         app = FastAPI(**self._prepare_fastapi_app_params())
         for router in self._get_fastapi_routers():
-            app.include_router(prefix=self.root_path, router=router)
+            app.include_router(router=router)
         app.dependency_overrides[dependencies.fastapi_endpoint_id] = partial(
             lambda a: a, self.id
         )
@@ -245,9 +247,6 @@ class FastapiEndpoint(models.Model):
         return {
             "title": self.name,
             "description": self.description,
-            "openapi_url": self.openapi_url,
-            "docs_url": self.docs_url,
-            "redoc_url": self.redoc_url,
             "middleware": self._get_fastapi_app_middlewares(),
             "dependencies": self._get_fastapi_app_dependencies(),
         }
