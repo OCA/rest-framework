@@ -2,8 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 # from urllib.parse import urlparse
 import json
-
-import mock
+from unittest import mock
 
 from odoo import exceptions
 from odoo.tools import mute_logger
