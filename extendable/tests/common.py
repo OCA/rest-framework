@@ -7,7 +7,7 @@ import odoo
 from odoo import api
 from odoo.tests import common
 
-from extendable.context import extendable_registry
+from extendable import context
 
 
 def _get_addon_name(full_name: str) -> str:
@@ -37,7 +37,7 @@ def new_rollbacked_env():
 
 class ExtendableMixin(object):
     @classmethod
-    def setUpExtendable(cls):
+    def init_extendable_registry(cls):
         with new_rollbacked_env() as env:
             builder = env["extendable.registry.loader"]
             # build the extendable classes of every installed addons
@@ -51,12 +51,8 @@ class ExtendableMixin(object):
             # build the extendable classes of the current tested addon
             current_addon = _get_addon_name(cls.__module__)
             extendable_registry.init_registry([f"odoo.addons.{current_addon}.*"])
+            cls.token = context.extendable_registry.set(cls._extendable_registry)
 
-    # pylint: disable=W8106
-    def setUp(self):
-        # initialize the registry context
-        token = extendable_registry.set(self._extendable_registry)
-
-        @self.addCleanup
-        def reset_context():
-            extendable_registry.reset(token)
+    @classmethod
+    def reset_extendable_registry(cls):
+        context.extendable_registry.reset(cls.token)
