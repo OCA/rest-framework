@@ -3,10 +3,11 @@
 
 from typing import Annotated, Union
 
+from fastapi import APIRouter, Depends
+
 from odoo.addons.base.models.res_partner import Partner
 from odoo.addons.fastapi_auth_jwt.dependencies import AuthJwtPartner
 
-from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 
