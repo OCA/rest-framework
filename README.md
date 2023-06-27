@@ -12,7 +12,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[base_rest](base_rest/) | 13.0.3.1.3 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest](base_rest/) | 13.0.3.1.4 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_auth_user_service](base_rest_auth_user_service/) | 13.0.1.0.1 |  | Login/logout from session using a REST call
 [base_rest_datamodel](base_rest_datamodel/) | 13.0.3.1.1 |  | Datamodel binding for base_rest
 [base_rest_demo](base_rest_demo/) | 13.0.3.0.3 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Demo addon for Base REST
