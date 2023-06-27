@@ -68,7 +68,7 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
     get_original_headers = exception.get_headers
     exception.traceback = "".join(traceback.format_exception(*sys.exc_info()))
 
-    def get_body(environ=None):
+    def get_body(environ=None, scope=None):
         res = {"code": exception.code, "name": escape(exception.name)}
         description = exception.get_description(environ)
         if config.get_misc("base_rest", "dev_mode"):
@@ -79,7 +79,7 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
         res.update(extra_info or {})
         return JSONEncoder().encode(res)
 
-    def get_headers(environ=None):
+    def get_headers(environ=None, scope=None):
         """Get a list of headers."""
         _headers = [("Content-Type", "application/json")]
         for key, value in get_original_headers(environ=environ):
