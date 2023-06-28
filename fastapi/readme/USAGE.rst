@@ -129,9 +129,14 @@ that returns a list of partners.
 
 .. code-block:: python
 
+    from typing import Annotated
+
     from fastapi import APIRouter
     from pydantic import BaseModel
+
     from odoo import api, fields, models
+    from odoo.api import Environment
+
     from odoo.addons.fastapi.dependencies import odoo_env
 
     class FastapiEndpoint(models.Model):
@@ -155,7 +160,7 @@ that returns a list of partners.
         email: str
 
     @demo_api_router.get("/partners", response_model=list[PartnerInfo])
-    def get_partners(env=Depends(odoo_env)) -> list[PartnerInfo]:
+    def get_partners(env: Annotated[Environment, Depends(odoo_env)]) -> list[PartnerInfo]:
         return [
             PartnerInfo(name=partner.name, email=partner.email)
             for partner in env["res.partner"].search([])
@@ -227,10 +232,13 @@ odoo models and the database from your route handlers.
 
 .. code-block:: python
 
+    from typing import Annotated
+
+    from odoo.api import Environment
     from odoo.addons.fastapi.dependencies import odoo_env
 
     @demo_api_router.get("/partners", response_model=list[PartnerInfo])
-    def get_partners(env=Depends(odoo_env)) -> list[PartnerInfo]:
+    def get_partners(env: Annotated[Environment, Depends(odoo_env)]) -> list[PartnerInfo]:
         return [
             PartnerInfo(name=partner.name, email=partner.email)
             for partner in env["res.partner"].search([])
@@ -290,8 +298,8 @@ of these parameters are dependencies themselves.
 
 
     def fastapi_endpoint(
-        _id: int = Depends(fastapi_endpoint_id),  # noqa: B008
-        env: Environment = Depends(odoo_env),  # noqa: B008
+        _id: Annotated[int, Depends(fastapi_endpoint_id)],
+        env: Annotated[Environment, Depends(odoo_env)],
     ) -> "FastapiEndpoint":
         """Return the fastapi.endpoint record"""
         return env["fastapi.endpoint"].browse(_id)
@@ -334,9 +342,12 @@ dependency as a parameter of your route handler.
 
 .. code-block:: python
 
+    from odoo.addons.base.models.res_partner import Partner
+
+
     @demo_api_router.get("/partners", response_model=list[PartnerInfo])
     def get_partners(
-        env=Depends(odoo_env), partner=Depends(authenticated_partner)
+        env: Annotated[Environment, Depends(odoo_env)], partner: Annotated[Partner, Depends(authenticated_partner)]
     ) -> list[PartnerInfo]:
         return [
             PartnerInfo(name=partner.name, email=partner.email)
@@ -355,8 +366,8 @@ by the **'fastapi.security'** module.
 .. code-block:: python
 
       def authenticated_partner(
-          env: Environment = Depends(odoo_env),
-          security: HTTPBasicCredentials = Depends(HTTPBasic()),
+          env: Annotated[Environment, Depends(odoo_env)],
+          security: Annotated[HTTPBasicCredentials, Depends(HTTPBasic())],
       ) -> "res.partner":
           """Return the authenticated partner"""
           partner = env["res.partner"].search(
@@ -399,13 +410,13 @@ implemented, we will only implement the api key authentication mechanism.
   from fastapi.security import APIKeyHeader
 
   def api_key_based_authenticated_partner_impl(
-      api_key: str = Depends(  # noqa: B008
+      api_key: Annotated[str, Depends(
           APIKeyHeader(
               name="api-key",
               description="In this demo, you can use a user's login as api key.",
           )
-      ),
-      env: Environment = Depends(odoo_env),  # noqa: B008
+      )],
+      env: Annotated[Environment, Depends(odoo_env)],
   ) -> Partner:
       """A dummy implementation that look for a user with the same login
       as the provided api key
@@ -527,7 +538,7 @@ current request.
         dependencies=[Depends(authenticated_partner)],
     )
     async def endpoint_app_info(
-        endpoint: FastapiEndpoint = Depends(fastapi_endpoint),  # noqa: B008
+        endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
     ) -> EndpointAppInfo:
         """Returns the current endpoint configuration"""
         # This method show you how to get access to current endpoint configuration
@@ -653,7 +664,7 @@ method **'echo'**.
   )
   async def echo(
       message: str,
-      odoo_env: OdooEnv = Depends(odoo_env),
+      odoo_env: Annotated[Environment, Depends(odoo_env)],
   ) -> EchoResponse:
       """Echo the message"""
       return EchoResponse(message=odoo_env["demo.fastapi.endpoint"].echo(message))
@@ -718,7 +729,7 @@ it.
   )
   async def echo2(
       message: str,
-      odoo_env: OdooEnv = Depends(odoo_env),
+      odoo_env: Annotated[Environment, Depends(odoo_env)],
   ) -> EchoResponse:
       """Echo the message"""
       echo = odoo_env["demo.fastapi.endpoint"].echo2(message)
@@ -753,7 +764,7 @@ returned by the method **'_get_fastapi_routers'** of the model
   )
   async def echo2(
       message: str,
-      odoo_env: OdooEnv = Depends(odoo_env),
+      odoo_env: Annotated[Environment, Depends(odoo_env)],
   ) -> EchoResponse:
       """Echo the message"""
       echo = odoo_env["demo.fastapi.endpoint"].echo2(message)
@@ -800,7 +811,7 @@ pydantic.
       dependencies=[Depends(authenticated_partner)],
   )
   async def partner(
-      partner: ResPartner = Depends(authenticated_partner),
+      partner: Annotated[ResPartner, Depends(authenticated_partner)],
   ) -> Partner:
       """Return the location"""
       return Partner.from_orm(partner)
@@ -931,49 +942,63 @@ normally provided by the normal processing of the request by the fastapi app.
 to test the behavior of your route handlers when the partner is not authenticated,
 you can also inject a mock for the odoo_env etc...)
 
-With all these features, writing a test for the 'Hello world' route handler
-defined into the demo app is as simple as
+The fastapi addon provides a base class for the test cases that you can use to
+write your tests. This base class is **'odoo.fastapi.tests.common.FastAPITransactionCase'**.
+This class mainly provides the method **'_create_test_client'** that you can
+use to create a test client for your fastapi app. This method encapsulates the
+creation of the test client and the injection of the dependencies. It also
+ensures that the odoo environment is make available into the context of the
+route handlers. This method is designed to be used when you need to test your
+app or when you need to test a specific router (It's therefore easy to defines
+tests for routers in an addon that doesn't provide a fastapi endpoint).
+
+With this base class, writing a test for a route handler is as simple as:
 
 .. code-block:: python
 
-  from functools import partial
+  from odoo.fastapi.tests.common import FastAPITransactionCase
 
-  from requests import Response
+  from odoo.addons.fastapi import dependencies
+  from odoo.addons.fastapi.routers import demo_router
 
-  from odoo.tests.common import TransactionCase
-
-  from fastapi.testclient import TestClient
-
-  from .. import dependencies
-  from ..context import odoo_env_ctx
-
-
-  class FastAPIDemoCase(TransactionCase):
+  class FastAPIDemoCase(FastAPITransactionCase):
 
       @classmethod
       def setUpClass(cls) -> None:
           super().setUpClass()
-          cls.test_partner = cls.env["res.partner"].create({"name": "FastAPI Demo"})
-          cls.fastapi_demo_app = cls.env.ref("fastapi.fastapi_endpoint_demo")
-          cls.app = cls.fastapi_demo_app._get_app()
-          cls.app.dependency_overrides[dependencies.authenticated_partner_impl] = partial(
-              lambda a: a, cls.test_partner
-          )
-          cls.client = TestClient(cls.app)
-          cls._ctx_token = odoo_env_ctx.set(cls.env)
-
-      @classmethod
-      def tearDownClass(cls) -> None:
-          odoo_env_ctx.reset(cls._ctx_token)
-          cls.fastapi_demo_app._reset_app()
-
-          super().tearDownClass()
-
-      def _get_path(self, path) -> str:
-          return self.fastapi_demo_app.root_path + path
+          cls.default_fastapi_running_user = cls.env.ref("fastapi.my_demo_app_user")
+          cls.default_fastapi_authenticated_partner = cls.env["res.partner"].create({"name": "FastAPI Demo"})
 
       def test_hello_world(self) -> None:
-          response: Response = self.client.get(self._get_path("/"))
+          with self._create_test_client(router=demo_router) as test_client:
+              response: Response = test_client.get("/demo/")
+          self.assertEqual(response.status_code, status.HTTP_200_OK)
+          self.assertDictEqual(response.json(), {"Hello": "World"})
+
+
+In the previous example, we created a test client for the demo_router. We could
+have created a test client for the whole app by not specifying the router but
+the app instead.
+
+.. code-block:: python
+
+  from odoo.fastapi.tests.common import FastAPITransactionCase
+
+  from odoo.addons.fastapi import dependencies
+  from odoo.addons.fastapi.routers import demo_router
+
+  class FastAPIDemoCase(FastAPITransactionCase):
+
+      @classmethod
+      def setUpClass(cls) -> None:
+          super().setUpClass()
+          cls.default_fastapi_running_user = cls.env.ref("fastapi.my_demo_app_user")
+          cls.default_fastapi_authenticated_partner = cls.env["res.partner"].create({"name": "FastAPI Demo"})
+
+      def test_hello_world(self) -> None:
+          demo_endpoint = self.env.ref("fastapi.fastapi_endpoint_demo")
+          with self._create_test_client(app=demo_endpoint._get_app()) as test_client:
+              response: Response = test_client.get(f"{demo_endpoint.root_path}/demo/")
           self.assertEqual(response.status_code, status.HTTP_200_OK)
           self.assertDictEqual(response.json(), {"Hello": "World"})
 
@@ -1128,6 +1153,7 @@ you be consistent when writing a route handler for a search route.
 
 .. code-block:: python
 
+    from typing import Annotated
     from pydantic import BaseModel
 
     from odoo.api import Environment
@@ -1145,8 +1171,8 @@ you be consistent when writing a route handler for a search route.
         response_model_exclude_unset=True,
     )
     def get_sale_orders(
-        paging: Paging = Depends(paging),
-        env: Environment = Depends(authenticated_partner_env),
+        paging: Annotated[Paging, Depends(paging)],
+        env: Annotated[Environment, Depends(authenticated_partner_env)],
     ) -> PagedCollection[SaleOrder]:
         """Get the list of sale orders."""
         count = env["sale.order"].search_count([])
