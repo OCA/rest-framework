@@ -1,14 +1,19 @@
 # Copyright 2023 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-from typing import Annotated, Union
-
-from fastapi import APIRouter, Depends
+import sys
+from typing import Union
 
 from odoo.addons.base.models.res_partner import Partner
 from odoo.addons.fastapi_auth_jwt.dependencies import AuthJwtPartner
 
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
 
 
 class TestData(BaseModel):

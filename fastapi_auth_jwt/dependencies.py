@@ -2,10 +2,9 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import logging
-from typing import Annotated, Any, Dict, Optional, Tuple, Union
+import sys
+from typing import Any, Dict, Optional, Tuple, Union
 
-from fastapi import Depends, HTTPException, Request, Response
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette.status import HTTP_401_UNAUTHORIZED
 
 from odoo.api import Environment
@@ -20,6 +19,14 @@ from odoo.addons.auth_jwt.exceptions import (
 from odoo.addons.auth_jwt.models.auth_jwt_validator import AuthJwtValidator
 from odoo.addons.base.models.res_partner import Partner
 from odoo.addons.fastapi.dependencies import odoo_env
+
+from fastapi import Depends, HTTPException, Request, Response
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
 
 _logger = logging.getLogger(__name__)
 

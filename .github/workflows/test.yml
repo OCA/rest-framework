@@ -50,7 +50,7 @@ jobs:
         ports:
           - 5432:5432
     env:
-      EXCLUDE: extendable,extendable_fastapi,fastapi
+      EXCLUDE: extendable,extendable_fastapi,fastapi,fastapi_auth_jwt,fastapi_auth_jwt_demo
     steps:
       - uses: actions/checkout@v2
         with:
@@ -92,7 +92,7 @@ jobs:
         ports:
           - 5432:5432
     env:
-      INCLUDE: extendable,extendable_fastapi,fastapi
+      INCLUDE: extendable,extendable_fastapi,fastapi,fastapi_auth_jwt,fastapi_auth_jwt_demo
     steps:
       - uses: actions/checkout@v2
         with:

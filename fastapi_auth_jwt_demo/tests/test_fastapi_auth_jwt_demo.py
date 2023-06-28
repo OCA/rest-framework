@@ -10,10 +10,9 @@ from odoo import tests
 
 @tests.tagged("post_install", "-at_install")
 class TestEndToEnd(tests.HttpCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.env.ref(
+    def setUp(self):
+        super().setUp()
+        self.env.ref(
             "fastapi_auth_jwt_demo.fastapi_endpoint_auth_jwt_demo"
         )._handle_registry_sync()
 
