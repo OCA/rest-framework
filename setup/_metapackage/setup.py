@@ -17,6 +17,8 @@ setuptools.setup(
         'odoo14-addon-base_rest_pydantic',
         'odoo14-addon-datamodel',
         'odoo14-addon-extendable',
+        'odoo14-addon-extendable_fastapi',
+        'odoo14-addon-fastapi',
         'odoo14-addon-graphql_base',
         'odoo14-addon-graphql_demo',
         'odoo14-addon-model_serializer',
