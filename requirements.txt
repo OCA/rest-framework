@@ -3,7 +3,6 @@ a2wsgi
 apispec
 apispec>=4.0.0
 cerberus
-contextvars;python_version<"3.7"
 extendable-pydantic
 extendable-pydantic>=0.0.4
 extendable>=0.0.4
