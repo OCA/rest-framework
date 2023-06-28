@@ -204,9 +204,14 @@ that returns a list of partners.
 
 .. code-block:: python
 
+    from typing import Annotated
+
     from fastapi import APIRouter
     from pydantic import BaseModel
+
     from odoo import api, fields, models
+    from odoo.api import Environment
+
     from odoo.addons.fastapi.dependencies import odoo_env
 
     class FastapiEndpoint(models.Model):
@@ -230,7 +235,7 @@ that returns a list of partners.
         email: str
 
     @demo_api_router.get("/partners", response_model=list[PartnerInfo])
-    def get_partners(env=Depends(odoo_env)) -> list[PartnerInfo]:
+    def get_partners(env: Annotated[Environment, Depends(odoo_env)]) -> list[PartnerInfo]:
         return [
             PartnerInfo(name=partner.name, email=partner.email)
             for partner in env["res.partner"].search([])
@@ -302,10 +307,13 @@ odoo models and the database from your route handlers.
 
 .. code-block:: python
 
+    from typing import Annotated
+
+    from odoo.api import Environment
     from odoo.addons.fastapi.dependencies import odoo_env
 
     @demo_api_router.get("/partners", response_model=list[PartnerInfo])
-    def get_partners(env=Depends(odoo_env)) -> list[PartnerInfo]:
+    def get_partners(env: Annotated[Environment, Depends(odoo_env)]) -> list[PartnerInfo]:
         return [
             PartnerInfo(name=partner.name, email=partner.email)
             for partner in env["res.partner"].search([])
@@ -365,8 +373,8 @@ of these parameters are dependencies themselves.
 
 
     def fastapi_endpoint(
-        _id: int = Depends(fastapi_endpoint_id),  # noqa: B008
-        env: Environment = Depends(odoo_env),  # noqa: B008
+        _id: Annotated[int, Depends(fastapi_endpoint_id)],
+        env: Annotated[Environment, Depends(odoo_env)],
     ) -> "FastapiEndpoint":
         """Return the fastapi.endpoint record"""
         return env["fastapi.endpoint"].browse(_id)
@@ -409,9 +417,12 @@ dependency as a parameter of your route handler.
 
 .. code-block:: python
 
+    from odoo.addons.base.models.res_partner import Partner
+
+
     @demo_api_router.get("/partners", response_model=list[PartnerInfo])
     def get_partners(
-        env=Depends(odoo_env), partner=Depends(authenticated_partner)
+        env: Annotated[Environment, Depends(odoo_env)], partner: Annotated[Partner, Depends(authenticated_partner)]
     ) -> list[PartnerInfo]:
         return [
             PartnerInfo(name=partner.name, email=partner.email)
@@ -430,8 +441,8 @@ by the **'fastapi.security'** module.
 .. code-block:: python
 
       def authenticated_partner(
-          env: Environment = Depends(odoo_env),
-          security: HTTPBasicCredentials = Depends(HTTPBasic()),
+          env: Annotated[Environment, Depends(odoo_env)],
+          security: Annotated[HTTPBasicCredentials, Depends(HTTPBasic())],
       ) -> "res.partner":
           """Return the authenticated partner"""
           partner = env["res.partner"].search(
@@ -474,13 +485,13 @@ implemented, we will only implement the api key authentication mechanism.
   from fastapi.security import APIKeyHeader
 
   def api_key_based_authenticated_partner_impl(
-      api_key: str = Depends(  # noqa: B008
+      api_key: Annotated[str, Depends(
           APIKeyHeader(
               name="api-key",
               description="In this demo, you can use a user's login as api key.",
           )
-      ),
-      env: Environment = Depends(odoo_env),  # noqa: B008
+      )],
+      env: Annotated[Environment, Depends(odoo_env)],
   ) -> Partner:
       """A dummy implementation that look for a user with the same login
       as the provided api key
@@ -602,7 +613,7 @@ current request.
         dependencies=[Depends(authenticated_partner)],
     )
     async def endpoint_app_info(
-        endpoint: FastapiEndpoint = Depends(fastapi_endpoint),  # noqa: B008
+        endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
     ) -> EndpointAppInfo:
         """Returns the current endpoint configuration"""
         # This method show you how to get access to current endpoint configuration
@@ -728,7 +739,7 @@ method **'echo'**.
   )
   async def echo(
       message: str,
-      odoo_env: OdooEnv = Depends(odoo_env),
+      odoo_env: Annotated[Environment, Depends(odoo_env)],
   ) -> EchoResponse:
       """Echo the message"""
       return EchoResponse(message=odoo_env["demo.fastapi.endpoint"].echo(message))
@@ -793,7 +804,7 @@ it.
   )
   async def echo2(
       message: str,
-      odoo_env: OdooEnv = Depends(odoo_env),
+      odoo_env: Annotated[Environment, Depends(odoo_env)],
   ) -> EchoResponse:
       """Echo the message"""
       echo = odoo_env["demo.fastapi.endpoint"].echo2(message)
@@ -828,7 +839,7 @@ returned by the method **'_get_fastapi_routers'** of the model
   )
   async def echo2(
       message: str,
-      odoo_env: OdooEnv = Depends(odoo_env),
+      odoo_env: Annotated[Environment, Depends(odoo_env)],
   ) -> EchoResponse:
       """Echo the message"""
       echo = odoo_env["demo.fastapi.endpoint"].echo2(message)
@@ -875,7 +886,7 @@ pydantic.
       dependencies=[Depends(authenticated_partner)],
   )
   async def partner(
-      partner: ResPartner = Depends(authenticated_partner),
+      partner: Annotated[ResPartner, Depends(authenticated_partner)],
   ) -> Partner:
       """Return the location"""
       return Partner.from_orm(partner)
@@ -1217,6 +1228,7 @@ you be consistent when writing a route handler for a search route.
 
 .. code-block:: python
 
+    from typing import Annotated
     from pydantic import BaseModel
 
     from odoo.api import Environment
@@ -1234,8 +1246,8 @@ you be consistent when writing a route handler for a search route.
         response_model_exclude_unset=True,
     )
     def get_sale_orders(
-        paging: Paging = Depends(paging),
-        env: Environment = Depends(authenticated_partner_env),
+        paging: Annotated[Paging, Depends(paging)],
+        env: Annotated[Environment, Depends(authenticated_partner_env)],
     ) -> PagedCollection[SaleOrder]:
         """Get the list of sale orders."""
         count = env["sale.order"].search_count([])
