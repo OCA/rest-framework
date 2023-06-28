@@ -4,7 +4,12 @@
 The demo router is a router that demonstrates how to use the fastapi
 integration with odoo.
 """
-from typing import Annotated
+import sys
+
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
 
 from odoo.api import Environment
 from odoo.exceptions import AccessError, MissingError, UserError, ValidationError

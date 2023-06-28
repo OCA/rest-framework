@@ -1,12 +1,14 @@
 # Copyright 2023 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
+from __future__ import annotations
+
 from contextlib import contextmanager
 from functools import partial
 from typing import Any, Callable, Dict
 
 from odoo.api import Environment
 from odoo.tests import tagged
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import SavepointCase
 
 from odoo.addons.base.models.res_partner import Partner
 from odoo.addons.base.models.res_users import Users
@@ -19,7 +21,7 @@ from ..dependencies import authenticated_partner_impl
 
 
 @tagged("post_install", "-at_install")
-class FastAPITransactionCase(TransactionCase):
+class FastAPITransactionCase(SavepointCase):
     """
     This class is a base class for FastAPI tests.
 

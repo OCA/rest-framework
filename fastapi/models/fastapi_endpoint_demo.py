@@ -1,6 +1,15 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
-from typing import Annotated, Any, List
+from __future__ import annotations
+
+import sys
+
+if sys.version_info >= (3, 9):
+    from typing import Annotated
+else:
+    from typing_extensions import Annotated
+
+from typing import Any, List
 
 from odoo import _, api, fields, models
 from odoo.api import Environment
