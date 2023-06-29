@@ -4,11 +4,9 @@ import logging
 from contextlib import contextmanager
 from io import BytesIO
 
-from odoo.api import Environment, Environments
 from odoo.http import request as odoo_request
-from odoo.tools import classproperty
 
-from .context import odoo_env_ctx, odoo_environments_ctx
+from .context import odoo_env_ctx
 
 _logger = logging.getLogger(__name__)
 
@@ -35,7 +33,7 @@ class FastApiDispatcher:
         app = fastapi_endpoint.get_app(root_path)
         uid = fastapi_endpoint.get_uid(root_path)
         data = BytesIO()
-        with self._manage_odoo_env(uid), patch_odoo_environment():
+        with self._manage_odoo_env(uid):
             for r in app(environ, self._make_response):
                 data.write(r)
             response = self.request.make_response(data.getvalue(), headers=self.headers)
@@ -76,86 +74,3 @@ class FastApiDispatcher:
             yield
         finally:
             odoo_env_ctx.reset(token)
-
-
-@classproperty
-def contextvars_envs(_cls):
-    return odoo_environments_ctx.get()
-
-
-@classmethod  # type: ignore
-@contextmanager
-def contextvars_manage(_cls):
-    """Context manager for a set of environments."""
-    if odoo_environments_ctx.get():
-        yield
-    else:
-        try:
-            odoo_environments_ctx.set(Environments())
-            _logger.debug("envs manage start")
-            yield
-        finally:
-            _logger.debug("envs manage end")
-            odoo_environments_ctx.set(())
-
-
-@classmethod  # type: ignore
-def contextvars_reset(_cls):
-    """Clear the set of environments.
-    This may be useful when recreating a registry inside a transaction.
-    """
-    odoo_environments_ctx.set(Environments())
-
-
-@contextmanager
-def patch_environment_envs() -> None:
-    envs = Environment.envs
-    Environment.envs = contextvars_envs
-    try:
-        yield
-    finally:
-        Environment.envs = envs
-
-
-@contextmanager
-def patch_environment_manage() -> None:
-    manage = Environment.manage
-    Environment.manage = contextvars_manage
-    try:
-        yield
-    finally:
-        Environment.manage = manage
-
-
-@contextmanager
-def patch_environment_reset() -> None:
-    reset = Environment.reset
-    Environment.reset = contextvars_reset
-    try:
-        yield
-    finally:
-        Environment.reset = reset
-
-
-@contextmanager
-def patch_environement_local() -> None:
-    """Patch odoo Environment _local attribute to use contextvars.
-    and ensure that the cache is compliant with the asyncio event loop.
-    """
-    _local = Environment._local
-    token = odoo_environments_ctx.set(_local.environments)
-    try:
-        delattr(Environment, "_local")  # to be sure it is not used
-        yield
-    finally:
-        odoo_environments_ctx.reset(token)
-        Environment._local = _local
-
-
-@contextmanager
-def patch_odoo_environment() -> None:
-    # fmt: off
-    with patch_environment_envs(), patch_environment_manage(), \
-            patch_environment_reset(), patch_environement_local():
-        yield
-    # fmt: on
