@@ -8,4 +8,3 @@ from contextvars import ContextVar
 from odoo.api import Environment
 
 odoo_env_ctx: ContextVar[Environment] = ContextVar("odoo_env_ctx")
-odoo_environments_ctx = ContextVar("odoo.environments", default=())
