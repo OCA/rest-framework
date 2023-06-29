@@ -80,10 +80,11 @@ class FastapiEndpoint(models.Model):
 
     @api.depends("root_path")
     def _compute_urls(self):
+        base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
         for rec in self:
-            rec.docs_url = f"{rec.root_path}/docs"
-            rec.redoc_url = f"{rec.root_path}/redoc"
-            rec.openapi_url = f"{rec.root_path}/openapi.json"
+            rec.docs_url = f"{base_url}{rec.root_path}/docs"
+            rec.redoc_url = f"{base_url}{rec.root_path}/redoc"
+            rec.openapi_url = f"{base_url}{rec.root_path}/openapi.json"
 
     #
     # endpoint.route.sync.mixin methods implementation
