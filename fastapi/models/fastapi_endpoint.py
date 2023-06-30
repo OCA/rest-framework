@@ -15,6 +15,7 @@ from odoo import _, api, exceptions, fields, models, tools
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
 
 from .. import dependencies, error_handlers
+from ..http import FastapiRootPaths
 
 _logger = logging.getLogger(__name__)
 
@@ -49,6 +50,15 @@ class FastapiEndpoint(models.Model):
     redoc_url: str = fields.Char(compute="_compute_urls")
     openapi_url: str = fields.Char(compute="_compute_urls")
 
+    def _register_hook(self):
+        super()._register_hook()
+        self._update_root_paths_registry()
+
+    @api.model
+    def _update_root_paths_registry(self):
+        root_paths = self.env["fastapi.endpoint"].search([]).mapped("root_path")
+        FastapiRootPaths.set_root_paths(self.env.cr.dbname, root_paths)
+
     @api.depends("root_path")
     def _compute_root_path(self):
         for rec in self:
@@ -57,6 +67,7 @@ class FastapiEndpoint(models.Model):
     def _inverse_root_path(self):
         for rec in self:
             rec.root_path = rec._clean_root_path()
+        self._update_root_paths_registry()
 
     def _clean_root_path(self):
         root_path = (self.root_path or "").strip()
@@ -159,7 +170,7 @@ class FastapiEndpoint(models.Model):
     def _get_routing_info(self):
         self.ensure_one()
         return {
-            "type": "http",
+            "type": "fastapi",
             "auth": "public",
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
             "routes": [
