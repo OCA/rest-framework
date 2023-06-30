@@ -177,7 +177,7 @@ class FastapiEndpoint(models.Model):
                 f"{self.root_path}/",
                 f"{self.root_path}/<path:application_path>",
             ],
-            # csrf ?????
+            "csrf": False,
         }
 
     def _endpoint_registry_route_unique_key(self, routing: Dict[str, Any]):
