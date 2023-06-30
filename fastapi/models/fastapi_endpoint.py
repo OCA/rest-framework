@@ -15,6 +15,7 @@ from odoo import _, api, exceptions, fields, models, tools
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
 
 from .. import dependencies, error_handlers
+from ..http import FastapiRootPaths
 
 _logger = logging.getLogger(__name__)
 
@@ -49,6 +50,15 @@ class FastapiEndpoint(models.Model):
     redoc_url: str = fields.Char(compute="_compute_urls")
     openapi_url: str = fields.Char(compute="_compute_urls")
 
+    def _register_hook(self):
+        super()._register_hook()
+        self._update_root_paths_registry()
+
+    @api.model
+    def _update_root_paths_registry(self):
+        root_paths = self.env["fastapi.endpoint"].search([]).mapped("root_path")
+        FastapiRootPaths.set_root_paths(self.env.cr.dbname, root_paths)
+
     @api.depends("root_path")
     def _compute_root_path(self):
         for rec in self:
@@ -57,6 +67,7 @@ class FastapiEndpoint(models.Model):
     def _inverse_root_path(self):
         for rec in self:
             rec.root_path = rec._clean_root_path()
+        self._update_root_paths_registry()
 
     def _clean_root_path(self):
         root_path = (self.root_path or "").strip()
@@ -80,10 +91,11 @@ class FastapiEndpoint(models.Model):
 
     @api.depends("root_path")
     def _compute_urls(self):
+        base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
         for rec in self:
-            rec.docs_url = f"{rec.root_path}/docs"
-            rec.redoc_url = f"{rec.root_path}/redoc"
-            rec.openapi_url = f"{rec.root_path}/openapi.json"
+            rec.docs_url = f"{base_url}{rec.root_path}/docs"
+            rec.redoc_url = f"{base_url}{rec.root_path}/redoc"
+            rec.openapi_url = f"{base_url}{rec.root_path}/openapi.json"
 
     #
     # endpoint.route.sync.mixin methods implementation
@@ -158,14 +170,14 @@ class FastapiEndpoint(models.Model):
     def _get_routing_info(self):
         self.ensure_one()
         return {
-            "type": "http",
+            "type": "fastapi",
             "auth": "public",
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
             "routes": [
                 f"{self.root_path}/",
                 f"{self.root_path}/<path:application_path>",
             ],
-            # csrf ?????
+            "csrf": False,
         }
 
     def _endpoint_registry_route_unique_key(self, routing: Dict[str, Any]):

@@ -31,6 +31,12 @@ async def hello_word():
     return {"Hello": "World"}
 
 
+@router.post("/post_demo")
+async def post_demo(data: dict):
+    """Post demo"""
+    return data
+
+
 @router.get("/demo/exception")
 async def exception(exception_type: DemoExceptionType, error_message: str):
     """Raise an exception
