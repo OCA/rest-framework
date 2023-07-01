@@ -1,5 +1,5 @@
 What's building an API with fastapi?
-************************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FastAPI is a modern, fast (high-performance), web framework for building APIs
 with Python 3.7+ based on standard Python type hints. This addons let's you
@@ -223,7 +223,7 @@ in the 'Response' section and contains the list of partners.
   the proper security rules for your endoints.
 
 Dealing with the odoo environment
-*********************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **'odoo.addons.fastapi.dependencies'** module provides a set of functions that you can use
 to inject reusable dependencies into your routes. For example, the **'odoo_env'**
@@ -273,7 +273,7 @@ available without extra work.
   not public.
 
 The dependency injection mechanism
-**********************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **'odoo_env'** dependency relies on a simple implementation that retrieves
 the current odoo environment from ContextVar variable initialized at the start
@@ -331,7 +331,7 @@ used by any other addon and for which the implementation could depend on the
 endpoint configuration.
 
 The authentication mechanism
-****************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To make our app not tightly coupled with a specific authentication mechanism,
 we will use the **'authenticated_partner'** dependency. As for the
@@ -508,7 +508,7 @@ configured on your fastapi endpoint, the documentation will change.
   <https://github.com/tiangolo/fastapi/pull/5452>`_
 
 Managing configuration parameters for your app
-***********************************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As we have seen in the previous section, you can add configuration fields
 on the fastapi endpoint model to allow the user to configure your app (as for
@@ -577,7 +577,7 @@ list.
           return fields
 
 Dealing with languages
-**********************
+~~~~~~~~~~~~~~~~~~~~~~
 
 The fastapi addon parses the Accept-Language header of the request to determine
 the language to use. This parsing is done by respecting the `RFC 7231 specification
@@ -592,7 +592,7 @@ of your app to instruct the api consumers how to request a specific language.
 
 
 How to extend an existing app
-******************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When you develop a fastapi app, in a native python app it's not possible
 to extend an existing one. This limitation doesn't apply to the fastapi addon
@@ -855,7 +855,7 @@ If your new addon is not installed in a database, a call to the route handler
   default values for the new optional fields.
 
 Managing security into the route handlers
-*****************************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 By default the route handlers are processed using the user configured on the
 **'fastapi.endpoint'** model instance. (default is the Public user).
@@ -928,7 +928,7 @@ fastapi app and you want to protect your data in an efficient and traceable way 
   </record>
 
 How to test your fastapi app
-****************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Thanks to the starlette test client, it's possible to test your fastapi app
 in a very simple way. With the test client, you can call your route handlers
@@ -1004,7 +1004,7 @@ the app instead.
 
 
 Overall considerations when you develop an fastapi app
-*******************************************************
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Developing a fastapi app requires to follow some good practices to ensure that
 the app is robust and easy to maintain. Here are some of them:
@@ -1138,7 +1138,7 @@ useful information as well, with a lot of examples. Last but not least, the
 `pydantic`_ documentation is also very useful.
 
 Miscellaneous
-*************
+~~~~~~~~~~~~~
 
 Development of a search route handler
 =====================================
@@ -1364,7 +1364,7 @@ are used in the python community when developing a fastapi app.
   you can define them in this file.
 
 What's next?
-************
+~~~~~~~~~~~~
 
 The **'odoo-addon-fastapi'** module is still in its early stage of development.
 It will evolve over time to integrate your feedback and to provide the missing

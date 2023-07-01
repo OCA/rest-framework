@@ -4,8 +4,7 @@ framework into Odoo.
 This integration allows you to use all the goodies from `FastAPI`_ to build custom
 APIs for your Odoo server based on standard Python type hints.
 
-What is building an API?
-************************
+**What is building an API?**
 
 An API is a set of functions that can be called from the outside world. The
 goal of an API is to provide a way to interact with your application from the
