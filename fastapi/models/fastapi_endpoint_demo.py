@@ -1,6 +1,11 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
-from typing import Annotated, Any, List
+from typing import Any, Dict, List
+
+try:
+    from typing import Annotated
+except ImportError:
+    from typing_extensions import Annotated
 
 from odoo import _, api, fields, models
 from odoo.api import Environment
@@ -71,7 +76,7 @@ class FastapiEndpoint(models.Model):
             ] = authenticated_partner_impl_override
         return app
 
-    def _prepare_fastapi_app_params(self) -> dict[str, Any]:
+    def _prepare_fastapi_app_params(self) -> Dict[str, Any]:
         params = super()._prepare_fastapi_app_params()
         if self.app == "demo":
             tags_metadata = params.get("openapi_tags", []) or []

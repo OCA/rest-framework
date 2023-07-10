@@ -203,7 +203,10 @@ that returns a list of partners.
 
 .. code-block:: python
 
-    from typing import Annotated
+    try:
+      from typing import Annotated
+    except ImportError:
+      from typing_extensions import Annotated
 
     from fastapi import APIRouter
     from pydantic import BaseModel
@@ -306,7 +309,10 @@ odoo models and the database from your route handlers.
 
 .. code-block:: python
 
-    from typing import Annotated
+    try:
+      from typing import Annotated
+    except ImportError:
+      from typing_extensions import Annotated
 
     from odoo.api import Environment
     from odoo.addons.fastapi.dependencies import odoo_env
@@ -1227,7 +1233,10 @@ you be consistent when writing a route handler for a search route.
 
 .. code-block:: python
 
-    from typing import Annotated
+    try:
+      from typing import Annotated
+    except ImportError:
+      from typing_extensions import Annotated
     from pydantic import BaseModel
 
     from odoo.api import Environment

@@ -1,7 +1,12 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
+from typing import TYPE_CHECKING, Union
 
-from typing import TYPE_CHECKING, Annotated
+try:
+    from typing import Annotated
+except ImportError:
+    from typing_extensions import Annotated
+
 
 from odoo.api import Environment
 from odoo.exceptions import AccessDenied
@@ -109,7 +114,7 @@ def fastapi_endpoint(
 
 def accept_language(
     accept_language: Annotated[
-        str | None,
+        Union[str, None],
         Header(
             alias="Accept-Language",
             description="The Accept-Language header is used to specify the language "
