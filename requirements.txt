@@ -18,4 +18,5 @@ pydantic
 pyquerystring
 python-multipart
 typing-extensions
+typing_extensions
 ujson
