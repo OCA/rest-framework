@@ -14,6 +14,6 @@
     "depends": [],
     "data": [],
     "demo": [],
-    "external_dependencies": {"python": ["pydantic", "typing-extensions"]},
+    "external_dependencies": {"python": ["pydantic<2", "typing-extensions"]},
     "installable": True,
 }
