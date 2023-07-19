@@ -38,12 +38,14 @@ class ApiDocsController(Controller):
 
     @route("/api-docs/<path:collection>/<string:service_name>.json", auth="public")
     def api(self, collection, service_name):
-        with self.service_and_controller_class(collection, service_name) as (
+        root_path = self._get_root_path_from_collection_path(collection)
+        with self.service_and_controller_class(root_path, service_name) as (
             service,
             controller_class,
         ):
             openapi_doc = service.to_openapi(
-                default_auth=controller_class._default_auth
+                default_auth=controller_class._default_auth,
+                root_path=root_path,
             )
             return self.make_json_response(openapi_doc)
 
@@ -54,20 +56,20 @@ class ApiDocsController(Controller):
         :return:
         """
         services_registry = _rest_services_databases.get(request.env.cr.dbname, {})
-        api_urls = []
+        api_urls = set()
         for rest_root_path, spec in list(services_registry.items()):
             collection_path = rest_root_path[1:-1]  # remove '/'
             collection_name = spec["collection_name"]
             for service in self._get_service_in_collection(collection_name):
-                api_urls.append(
-                    {
-                        "name": "{}: {}".format(collection_path, service._usage),
-                        "url": "/api-docs/%s/%s.json"
-                        % (collection_path, service._usage),
-                    }
+                api_urls.add(
+                    (
+                        "{}: {}".format(collection_path, service._usage),
+                        "/api-docs/{}/{}.json".format(collection_path, service._usage),
+                    )
                 )
-        api_urls = sorted(api_urls, key=lambda k: k["name"])
-        return api_urls
+        api_urls = list(api_urls)
+        api_urls.sort(key=lambda x: x[0])  # noqa: F821
+        return [{"name": a[0], "url": a[1]} for a in api_urls]
 
     def _filter_service_components(self, components):
         reg_model = request.env["rest.service.registration"]
@@ -108,6 +110,9 @@ class ApiDocsController(Controller):
         collection = _PseudoCollection(collection_name, request.env)
         yield WorkContext(model_name="rest.service.registration", collection=collection)
 
-    def _get_services_specs(self, path):
+    def _get_services_specs(self, root_path):
         services_registry = _rest_services_databases.get(request.env.cr.dbname, {})
-        return services_registry["/" + path + "/"]
+        return services_registry[root_path]
+
+    def _get_root_path_from_collection_path(self, collection_path):
+        return "/" + collection_path + "/"
