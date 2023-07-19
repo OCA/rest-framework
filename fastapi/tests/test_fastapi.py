@@ -1,13 +1,10 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
-import os
-import unittest
-
-from odoo.tests.common import HttpSavepointCase
+from odoo.tests.common import HttpSavepointCase, tagged
 
 
-@unittest.skipIf(os.getenv("SKIP_HTTP_CASE"), "EndpointHttpCase skipped")
+@tagged("post_install", "-at_install")
 class FastAPIHttpCase(HttpSavepointCase):
     @classmethod
     def setUpClass(cls):
@@ -32,6 +29,12 @@ class FastAPIHttpCase(HttpSavepointCase):
         response = self.url_open(route)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'{"Hello":"World"}')
+
+    def test_post(self):
+        route = "/fastapi_demo/post_demo"
+        response = self.url_open(route, data={"foo": "bar"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'{"foo":"bar"}')
 
     def test_lang(self):
         self._assert_expected_lang("fr,en;q=0.7,en-GB;q=0.3", b'"fr_BE"')
