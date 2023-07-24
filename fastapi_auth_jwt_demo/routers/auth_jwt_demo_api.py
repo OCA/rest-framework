@@ -11,8 +11,8 @@ from pydantic import BaseModel
 
 
 class TestData(BaseModel):
-    name: Union[str, None]
-    email: Union[str, None]
+    name: Union[str, None] = None
+    email: Union[str, None] = None
     uid: int
 
 
