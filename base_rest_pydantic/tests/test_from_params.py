@@ -33,7 +33,10 @@ class TestPydantic(TransactionCase):
         return restapi_pydantic.from_params(mock_service, params)
 
     def test_from_params(self):
-        params = {"name": "Instance Name", "description": "Instance Description"}
+        params = {
+            "name": "Instance Name",
+            "description": "Instance Description",
+        }
         instance = self._from_params(self.Model1, params)
         self.assertEqual(instance.name, params["name"])
         self.assertEqual(instance.description, params["description"])
@@ -45,14 +48,20 @@ class TestPydantic(TransactionCase):
         self.assertIsNone(instance.description)
 
     def test_from_params_missing_required_field(self):
-        msg = r"value_error.missing"
+        msg = r"Field required"
         with self.assertRaisesRegex(UserError, msg):
             self._from_params(self.Model1, {"description": "Instance Description"})
 
     def test_from_params_pydantic_model_list(self):
         params = [
-            {"name": "Instance Name", "description": "Instance Description"},
-            {"name": "Instance Name 2", "description": "Instance Description 2"},
+            {
+                "name": "Instance Name",
+                "description": "Instance Description",
+            },
+            {
+                "name": "Instance Name 2",
+                "description": "Instance Description 2",
+            },
         ]
         instances = self._from_params(self.Model1, params)
         self.assertEqual(len(instances), 2)

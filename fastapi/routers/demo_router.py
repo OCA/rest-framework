@@ -83,4 +83,4 @@ async def endpoint_app_info(
     # This method show you how to get access to current endpoint configuration
     # It also show you how you can specify a dependency to force the security
     # even if the method doesn't require the authenticated partner as parameter
-    return DemoEndpointAppInfo.from_orm(endpoint)
+    return DemoEndpointAppInfo.model_validate(endpoint)

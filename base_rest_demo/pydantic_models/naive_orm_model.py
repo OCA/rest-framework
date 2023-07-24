@@ -3,12 +3,8 @@
 
 from extendable_pydantic import ExtendableModelMeta
 
-from odoo.addons.pydantic import utils
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class NaiveOrmModel(BaseModel, metaclass=ExtendableModelMeta):
-    class Config:
-        orm_mode = True
-        getter_dict = utils.GenericOdooGetter
+    model_config: ConfigDict = ConfigDict(from_attributes=True)

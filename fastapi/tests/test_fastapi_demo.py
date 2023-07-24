@@ -92,7 +92,7 @@ class FastAPIDemoCase(FastAPITransactionCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(
             response.json(),
-            DemoEndpointAppInfo.from_orm(demo_app).dict(by_alias=True),
+            DemoEndpointAppInfo.model_validate(demo_app).model_dump(by_alias=True),
         )
 
     def test_user_error(self) -> None:
