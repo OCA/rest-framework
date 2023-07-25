@@ -602,9 +602,8 @@ current request.
     app: str
     auth_method: str = Field(alias="demo_auth_method")
     root_path: str
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
 
     @demo_api_router.get(
         "/endpoint_app_info",
@@ -618,7 +617,7 @@ current request.
         # This method show you how to get access to current endpoint configuration
         # It also show you how you can specify a dependency to force the security
         # even if the method doesn't require the authenticated partner as parameter
-        return EndpointAppInfo.from_orm(endpoint)
+        return EndpointAppInfo.model_validate(endpoint)
 
 Some of the configuration fields of the fastapi endpoint could impact the way
 the app is instantiated. For example, in the previous section, we have seen
@@ -872,6 +871,7 @@ first define the model as an extendable model by using a dedicated metaclass
 
   class Partner(BaseModel, metaclass=ExtendableModelMeta):
     name = 0.1
+    model_config = ConfigDict(from_attributes=True)
 
 As any other pydantic model, you can now use this model as parameter or as response
 of a route handler. You can also use all the features of models defined with
@@ -888,7 +888,7 @@ pydantic.
       partner: Annotated[ResPartner, Depends(authenticated_partner)],
   ) -> Partner:
       """Return the location"""
-      return Partner.from_orm(partner)
+      return Partner.model_validate(partner)
 
 
 If you need to add a new field into the model **'Partner'**, you can extend it
@@ -1237,6 +1237,7 @@ you be consistent when writing a route handler for a search route.
     class SaleOrder(BaseModel):
         id: int
         name: str
+        model_config = ConfigDict(from_attributes=True)
 
 
     @router.get(
@@ -1253,7 +1254,7 @@ you be consistent when writing a route handler for a search route.
         orders = env["sale.order"].search([], limit=paging.limit, offset=paging.offset)
         return PagedCollection[SaleOrder](
             total=count,
-            items=[SaleOrder.from_orm(order) for order in orders],
+            items=[SaleOrder.model_validate(order) for order in orders],
         )
 
 .. note::

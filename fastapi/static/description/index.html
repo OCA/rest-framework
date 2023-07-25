@@ -921,9 +921,8 @@ current request.</p>
   <span class="n">app</span><span class="p">:</span> <span class="nb">str</span>
   <span class="n">auth_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;demo_auth_method&quot;</span><span class="p">)</span>
   <span class="n">root_path</span><span class="p">:</span> <span class="nb">str</span>
+  <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">from_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-  <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-      <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span>
 
   <span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
       <span class="s2">&quot;/endpoint_app_info&quot;</span><span class="p">,</span>
@@ -937,7 +936,7 @@ current request.</p>
       <span class="c1"># This method show you how to get access to current endpoint configuration</span>
       <span class="c1"># It also show you how you can specify a dependency to force the security</span>
       <span class="c1"># even if the method doesn't require the authenticated partner as parameter</span>
-      <span class="k">return</span> <span class="n">EndpointAppInfo</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">EndpointAppInfo</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
 </pre>
 <p>Some of the configuration fields of the fastapi endpoint could impact the way
 the app is instantiated. For example, in the previous section, we have seen
@@ -1166,6 +1165,7 @@ first define the model as an extendable model by using a dedicated metaclass</p>
 
 <span class="k">class</span> <span class="nc">Partner</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ExtendableModelMeta</span><span class="p">):</span>
   <span class="n">name</span> <span class="o">=</span> <span class="mf">0.1</span>
+  <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">from_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre>
 <p>As any other pydantic model, you can now use this model as parameter or as response
 of a route handler. You can also use all the features of models defined with
@@ -1180,7 +1180,7 @@ pydantic.</p>
     <span class="n">partner</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">ResPartner</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">authenticated_partner</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Partner</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return the location&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Partner</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">partner</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Partner</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">partner</span><span class="p">)</span>
 </pre>
 <p>If you need to add a new field into the model <strong>‘Partner’</strong>, you can extend it
 in your new addon by defining a new model that inherits from the model <strong>‘Partner’</strong>.</p>
@@ -1486,6 +1486,7 @@ handler enclosed in a json document that contains the total number of records.</
 <span class="k">class</span> <span class="nc">SaleOrder</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">from_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">&#64;router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -1502,7 +1503,7 @@ handler enclosed in a json document that contains the total number of records.</
     <span class="n">orders</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;sale.order&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">search</span><span class="p">([],</span> <span class="n">limit</span><span class="o">=</span><span class="n">paging</span><span class="o">.</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">paging</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">PagedCollection</span><span class="p">[</span><span class="n">SaleOrder</span><span class="p">](</span>
         <span class="n">total</span><span class="o">=</span><span class="n">count</span><span class="p">,</span>
-        <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="n">SaleOrder</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">],</span>
+        <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="n">SaleOrder</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">],</span>
     <span class="p">)</span>
 </pre>
 <div class="admonition note">
