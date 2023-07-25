@@ -38,5 +38,5 @@ msgstr ""
 #. odoo-python
 #: code:addons/base_rest_pydantic/restapi.py:0
 #, python-format
-msgid "Invalid Response %s"
+msgid "Invalid Response"
 msgstr ""
