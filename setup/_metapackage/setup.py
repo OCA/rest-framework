@@ -22,6 +22,7 @@ setuptools.setup(
         'odoo-addon-graphql_base>=16.0dev,<16.1dev',
         'odoo-addon-graphql_demo>=16.0dev,<16.1dev',
         'odoo-addon-pydantic>=16.0dev,<16.1dev',
+        'odoo-addon-test_extendable_pydantic_fastapi>=16.0dev,<16.1dev',
     ],
     classifiers=[
         'Programming Language :: Python',
