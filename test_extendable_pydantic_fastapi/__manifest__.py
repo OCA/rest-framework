@@ -6,7 +6,7 @@
     "summary": """
         Tests integration between extendable_pydantic/odoo_addon_fastapi and
         odoo_addon_extendable_fastapi""",
-    "version": "16.0.1.0.0",
+    "version": "16.0.2.0.0",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/rest-framework",
