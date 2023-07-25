@@ -4,21 +4,20 @@
 from enum import Enum
 from typing import Generic, List, Optional, TypeVar
 
-from pydantic import BaseModel, Field
-from pydantic.generics import GenericModel
+from pydantic import BaseModel, ConfigDict, Field
 
 T = TypeVar("T")
 
 
-class PagedCollection(GenericModel, Generic[T]):
+class PagedCollection(BaseModel, Generic[T]):
 
     total: int
     items: List[T]
 
 
 class Paging(BaseModel):
-    limit: Optional[int]
-    offset: Optional[int]
+    limit: Optional[int] = None
+    offset: Optional[int] = None
 
 
 #############################################################
@@ -30,14 +29,12 @@ class DemoUserInfo(BaseModel):
 
 
 class DemoEndpointAppInfo(BaseModel):
-    id: str
+    id: int
     name: str
     app: str
     auth_method: str = Field(alias="demo_auth_method")
     root_path: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DemoExceptionType(str, Enum):

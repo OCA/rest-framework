@@ -246,7 +246,8 @@
           },
           "street2": {
             "title": "Street2",
-            "type": "string"
+            "type": "string",
+            "default": null
           },
           "zip": {
             "title": "Zip",
@@ -258,21 +259,23 @@
           },
           "phone": {
             "title": "Phone",
-            "type": "string"
+            "type": "string",
+            "default": null
           },
-          "state_id": {
+          "state": {
             "$ref": "#/components/schemas/StateInfo"
           },
-          "country_id": {
+          "country": {
             "$ref": "#/components/schemas/CountryInfo"
           },
           "is_company": {
             "title": "Is Company",
-            "type": "boolean"
+            "type": "boolean",
+            "default": null
           }
         },
-        "required": ["id", "name", "street", "zip", "city", "state_id", "country_id"],
-        "definitions": {
+        "required": ["id", "name", "street", "zip", "city", "state", "country"],
+        "$defs": {
           "StateInfo": {
             "title": "StateInfo",
             "type": "object",
