@@ -27,6 +27,11 @@ def post_private_user(user: PrivateUser) -> User:
 
     Type of the request body is PrivateUser. This model inherits base model
     User but does not extend it.
+
+    This method will return attributes from the declared response type.
+    It will never return attribute of a derived type from the declared response
+    type, even if in the route implementation we return an instance of the
+    derived type.
     """
     return user
 
@@ -38,5 +43,10 @@ def post_private_user_generic(user: PrivateUser) -> UserSearchResponse:
 
     Type of the request body is PrivateUser. This model inherits base model
     User but does not extend it.
+
+    This method will return attributes from the declared response type.
+    It will never return attribute of a derived type from the declared response
+    type, even if in the route implementation we return an instance of the
+    derived type. This assertion is also true with generics.
     """
     return UserSearchResponse(total=1, items=[user])

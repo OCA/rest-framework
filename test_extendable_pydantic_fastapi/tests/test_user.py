@@ -97,6 +97,13 @@ class TestUser(FastAPITransactionCase):
             self.assertFalse("password" in user.keys())
 
     def test_post_private_user(self):
+        """
+        /post_private_user return attributes from User, but not PrivateUser
+
+        Security check: this method should never return attributes from
+        derived type PrivateUser, even thought a PrivateUser object
+        is given as input.
+        """
         name = "Jean Dupont"
         address = "Rue du Puits 12, 4000 Liège"
         password = "dummy123"
@@ -117,6 +124,14 @@ class TestUser(FastAPITransactionCase):
             self.assertFalse("password" in user.keys())
 
     def test_post_private_user_generic(self):
+        """
+        /post_private_user_generic return attributes from User, but not PrivateUser
+
+        Security check: this method should never return attributes from
+        derived type PrivateUser, even thought a PrivateUser object
+        is given as input.
+        This test is specifically made to test this assertion with generics.
+        """
         name = "Jean Dupont"
         address = "Rue du Puits 12, 4000 Liège"
         password = "dummy123"
