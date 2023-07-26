@@ -21,11 +21,22 @@ def post_user(user: User) -> UserSearchResponse:
 
 
 @demo_pydantic_router.post("/post_private_user")
-def post_private_user(user: PrivateUser) -> UserSearchResponse:
+def post_private_user(user: PrivateUser) -> User:
     """A demo endpoint to test the extendable pydantic model integration
     with fastapi and odoo.
 
     Type of the request body is PrivateUser. This model inherits base model
-    User.
+    User but does not extend it.
+    """
+    return user
+
+
+@demo_pydantic_router.post("/post_private_user_generic")
+def post_private_user_generic(user: PrivateUser) -> UserSearchResponse:
+    """A demo endpoint to test the extendable pydantic model integration
+    with fastapi and odoo.
+
+    Type of the request body is PrivateUser. This model inherits base model
+    User but does not extend it.
     """
     return UserSearchResponse(total=1, items=[user])

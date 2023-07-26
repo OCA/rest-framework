@@ -42,6 +42,18 @@ class TestUser(FastAPITransactionCase):
                 to_openapi["paths"]["/post_private_user"]["post"]["responses"]["200"][
                     "content"
                 ]["application/json"]["schema"]["$ref"],
+                "#/components/schemas/User",
+            )
+            self.assertEqual(
+                to_openapi["paths"]["/post_private_user_generic"]["post"][
+                    "requestBody"
+                ]["content"]["application/json"]["schema"]["$ref"],
+                "#/components/schemas/PrivateUser",
+            )
+            self.assertEqual(
+                to_openapi["paths"]["/post_private_user_generic"]["post"]["responses"][
+                    "200"
+                ]["content"]["application/json"]["schema"]["$ref"],
                 "#/components/schemas/UserSearchResponse",
             )
 
@@ -96,6 +108,26 @@ class TestUser(FastAPITransactionCase):
         with self._create_test_client(router=demo_pydantic_router) as test_client:
             response: Response = test_client.post(
                 "/post_private_user", content=pydantic_data.model_dump_json()
+            )
+            self.assertEqual(response.status_code, 200)
+            user = response.json()
+            self.assertEqual(user["name"], name)
+            self.assertEqual(user["address"], address)
+            # Private attrs were not returned
+            self.assertFalse("password" in user.keys())
+
+    def test_post_private_user_generic(self):
+        name = "Jean Dupont"
+        address = "Rue du Puits 12, 4000 Liège"
+        password = "dummy123"
+        pydantic_data = PrivateUser(name=name, address=address, password=password)
+        # Assert that class was correctly extended
+        self.assertTrue(pydantic_data.address)
+        self.assertTrue(pydantic_data.password)
+
+        with self._create_test_client(router=demo_pydantic_router) as test_client:
+            response: Response = test_client.post(
+                "/post_private_user_generic", content=pydantic_data.model_dump_json()
             )
             self.assertEqual(response.status_code, 200)
             res = response.json()
