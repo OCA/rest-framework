@@ -1,10 +1,40 @@
 # Copyright 2023 ACSONE SA/NV
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
-from fastapi import APIRouter
+from typing import Annotated
+
+from odoo import api
+
+from odoo.addons.fastapi.dependencies import odoo_env
+
+from fastapi import APIRouter, Depends
 
 from .schemas import PrivateUser, User, UserSearchResponse
 
 demo_pydantic_router = APIRouter(tags=["demo_pydantic"])
+
+
+@demo_pydantic_router.get("/{user_id}")
+def get(env: Annotated[api.Environment, Depends(odoo_env)], user_id: int) -> User:
+    """
+    Get a specific user using its Odoo id.
+    """
+    user = env["res.users"].sudo().search([("id", "=", user_id)])
+    if not user:
+        raise ValueError("No user found")
+    return User.from_user(user)
+
+
+@demo_pydantic_router.get("/private/{user_id}")
+def get_private(
+    env: Annotated[api.Environment, Depends(odoo_env)], user_id: int
+) -> User:
+    """
+    Get a specific user using its Odoo id.
+    """
+    user = env["res.users"].sudo().search([("id", "=", user_id)])
+    if not user:
+        raise ValueError("No user found")
+    return PrivateUser.from_user(user)
 
 
 @demo_pydantic_router.post("/post_user")

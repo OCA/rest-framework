@@ -7,16 +7,41 @@ from extendable_pydantic.main import ExtendableModelMeta
 from pydantic import BaseModel
 
 
-class User(BaseModel, metaclass=ExtendableModelMeta):
+class User(BaseModel, metaclass=ExtendableModelMeta, revalidate_instances="always"):
+    """
+    We MUST set revalidate_instances="always" to be sure that FastAPI validates
+    responses of this model type.
+    """
+
     name: str
+
+    @classmethod
+    def from_user(cls, user):
+        res = cls.model_construct()
+        res.name = user.name
+        return res
 
 
 class ExtendedUser(User, extends=User):
     address: str
 
+    @classmethod
+    def from_user(cls, user):
+        res = super().from_user(user)
+        if user.street or user.city:
+            # Dummy address construction
+            res.address = (user.street or "") + (user.city or "")
+        return res
+
 
 class PrivateUser(User):
     password: str
+
+    @classmethod
+    def from_user(cls, user):
+        res = super().from_user(user)
+        res.password = user.password
+        return res
 
 
 _T = TypeVar("_T")

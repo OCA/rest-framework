@@ -6,6 +6,8 @@ from odoo.tests.common import tagged
 
 from odoo.addons.extendable_fastapi.tests.common import FastAPITransactionCase
 
+from fastapi.exceptions import ResponseValidationError
+
 from ..routers import demo_pydantic_router
 from ..schemas import PrivateUser, User
 
@@ -152,3 +154,38 @@ class TestUser(FastAPITransactionCase):
             self.assertEqual(user["address"], address)
             # Private attrs were not returned
             self.assertFalse("password" in user.keys())
+
+    def test_get_user_failed_no_address(self):
+        """
+        Try to get a specific user but having no address
+        -> Error because address is a required field on User (extended) class
+        :return:
+        """
+        user = self.env["res.users"].create(
+            {
+                "name": "Michel Dupont",
+                "login": "michel",
+            }
+        )
+        with self._create_test_client(
+            router=demo_pydantic_router
+        ) as test_client, self.assertRaises(ResponseValidationError):
+            test_client.get(f"/{user.id}")
+
+    def test_get_user_failed_no_pwd(self):
+        """
+        Try to get a specific user having an address but no password.
+        -> No error because return type is User, not PrivateUser
+        :return:
+        """
+        user = self.env["res.users"].create(
+            {
+                "name": "Michel Dupont",
+                "login": "michel",
+                "street": "Rue du Moulin",
+            }
+        )
+        self.assertFalse(user.password)
+        with self._create_test_client(router=demo_pydantic_router) as test_client:
+            response: Response = test_client.get(f"/private/{user.id}")
+            self.assertEqual(response.status_code, 200)
