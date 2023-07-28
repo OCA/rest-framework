@@ -15,7 +15,7 @@
     "demo": [],
     "external_dependencies": {
         "python": [
-            "extendable-pydantic>=1.0.0",
+            "extendable-pydantic>=1.1.0",
         ],
     },
     "installable": True,
