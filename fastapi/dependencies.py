@@ -19,8 +19,20 @@ if TYPE_CHECKING:
     from .models.fastapi_endpoint import FastapiEndpoint
 
 
-def odoo_env() -> Environment:
-    yield odoo_env_ctx.get()
+def company_id() -> int | None:
+    """This method may be overriden by the FastAPI app to set the allowed company
+    in the Odoo env of the endpoint. By default, the company defined on the
+    endpoint record is used.
+    """
+    return None
+
+
+def odoo_env(company_id: Annotated[int | None, Depends(company_id)]) -> Environment:
+    env = odoo_env_ctx.get()
+    if company_id is not None:
+        env = env(context=dict(env.context, allowed_company_ids=[company_id]))
+
+    yield env
 
 
 def authenticated_partner_impl() -> Partner:

@@ -44,6 +44,7 @@
                         <field name="app" />
                         <field name="root_path" />
                         <field name="user_id" />
+                        <field name="company_id" />
                         <field name="description" />
                     </group>
                     <group name="resoures">
