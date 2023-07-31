@@ -48,6 +48,13 @@ class FastapiEndpoint(models.Model):
     docs_url: str = fields.Char(compute="_compute_urls")
     redoc_url: str = fields.Char(compute="_compute_urls")
     openapi_url: str = fields.Char(compute="_compute_urls")
+    company_id = fields.Many2one(
+        "res.company",
+        compute="_compute_company_id",
+        store=True,
+        readonly=False,
+        domain="[('user_ids', 'in', user_id)]",
+    )
 
     @api.depends("root_path")
     def _compute_root_path(self):
@@ -84,6 +91,11 @@ class FastapiEndpoint(models.Model):
             rec.docs_url = f"{rec.root_path}/docs"
             rec.redoc_url = f"{rec.root_path}/redoc"
             rec.openapi_url = f"{rec.root_path}/openapi.json"
+
+    @api.depends("user_id")
+    def _compute_company_id(self):
+        for endpoint in self:
+            endpoint.company_id = endpoint.user_id.company_id
 
     #
     # endpoint.route.sync.mixin methods implementation
@@ -203,12 +215,16 @@ class FastapiEndpoint(models.Model):
         app = FastAPI(**self._prepare_fastapi_app_params())
         for router in self._get_fastapi_routers():
             app.include_router(router=router)
-        app.dependency_overrides[dependencies.fastapi_endpoint_id] = partial(
-            lambda a: a, self.id
-        )
+        app.dependency_overrides.update(self._get_app_dependencies_overrides())
         for exception, handler in self._get_app_exception_handlers().items():
             app.add_exception_handler(exception, handler)
         return app
+
+    def _get_app_dependencies_overrides(self) -> Dict[Callable, Callable]:
+        return {
+            dependencies.fastapi_endpoint_id: partial(lambda a: a, self.id),
+            dependencies.company_id: partial(lambda a: a, self.company_id.id),
+        }
 
     def _get_app_exception_handlers(
         self,
