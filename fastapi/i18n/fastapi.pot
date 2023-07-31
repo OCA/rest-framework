@@ -51,6 +51,11 @@ msgid "Authenciation method"
 msgstr ""
 
 #. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__company_id
+msgid "Company"
+msgstr ""
+
+#. module: fastapi
 #: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_demo_form_view
 msgid "Configuration"
 msgstr ""
