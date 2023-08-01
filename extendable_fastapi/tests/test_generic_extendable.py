@@ -4,12 +4,11 @@ from requests import Response
 
 from odoo.tests.common import tagged
 
-from odoo.addons.extendable_fastapi.tests.common import FastAPITransactionCase
-
 from fastapi.exceptions import ResponseValidationError
 
-from ..routers import demo_pydantic_router
-from ..schemas import PrivateUser, User
+from .common import FastAPITransactionCase
+from .routers import demo_pydantic_router
+from .schemas import PrivateCustomer, PrivateUser, User
 
 
 @tagged("post_install", "-at_install")
@@ -189,3 +188,21 @@ class TestUser(FastAPITransactionCase):
         with self._create_test_client(router=demo_pydantic_router) as test_client:
             response: Response = test_client.get(f"/private/{user.id}")
             self.assertEqual(response.status_code, 200)
+
+    def test_extra_forbid_response_fails(self):
+        """
+        If adding extra="forbid" to the User model, we cannot write
+        a router with a response type = User and returning PrivateUser
+        in the code
+        """
+        name = "Jean Dupont"
+        address = "Rue du Puits 12, 4000 Liège"
+        password = "dummy123"
+        pydantic_data = PrivateCustomer(name=name, address=address, password=password)
+
+        with self.assertRaises(ResponseValidationError), self._create_test_client(
+            router=demo_pydantic_router
+        ) as test_client:
+            test_client.post(
+                "/post_private_customer", content=pydantic_data.model_dump_json()
+            )

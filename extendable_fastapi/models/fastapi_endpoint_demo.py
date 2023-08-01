@@ -5,7 +5,7 @@ from odoo import models
 
 from fastapi import APIRouter
 
-from ..routers import demo_pydantic_router
+from ..tests.routers import demo_pydantic_router
 
 
 class FastapiEndpoint(models.Model):
@@ -13,6 +13,7 @@ class FastapiEndpoint(models.Model):
     _inherit = "fastapi.endpoint"
 
     def _get_fastapi_routers(self) -> list[APIRouter]:
+        # Add router defined for tests to the demo app
         routers = super()._get_fastapi_routers()
         if self.app == "demo":
             routers.append(demo_pydantic_router)
