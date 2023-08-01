@@ -8,7 +8,7 @@ from odoo.addons.fastapi.dependencies import odoo_env
 
 from fastapi import APIRouter, Depends
 
-from .schemas import PrivateUser, User, UserSearchResponse
+from .schemas import Customer, PrivateCustomer, PrivateUser, User, UserSearchResponse
 
 demo_pydantic_router = APIRouter(tags=["demo_pydantic"])
 
@@ -80,3 +80,21 @@ def post_private_user_generic(user: PrivateUser) -> UserSearchResponse:
     derived type. This assertion is also true with generics.
     """
     return UserSearchResponse(total=1, items=[user])
+
+
+@demo_pydantic_router.post("/post_private_customer")
+def post_private_customer(customer: PrivateCustomer) -> Customer:
+    """A demo endpoint to test the extendable pydantic model integration
+    with fastapi and odoo, and more particularly the extra="forbid" config parameter.
+
+    Type of the request body is PrivateCustomer. This model inherits base model
+    Customer but does not extend it.
+
+    This method will return attributes from the declared response type.
+    It will never return attribute of a derived type from the declared response
+    type, even if in the route implementation we return an instance of the
+    derived type.
+
+    Since Customer has extra fields forbidden, this route is not supposed to work.
+    """
+    return customer
