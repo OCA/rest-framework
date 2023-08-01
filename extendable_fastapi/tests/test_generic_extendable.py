@@ -4,12 +4,11 @@ from requests import Response
 
 from odoo.tests.common import tagged
 
-from odoo.addons.extendable_fastapi.tests.common import FastAPITransactionCase
-
 from fastapi.exceptions import ResponseValidationError
 
-from ..routers import demo_pydantic_router
-from ..schemas import PrivateUser, User
+from .common import FastAPITransactionCase
+from .routers import demo_pydantic_router
+from .schemas import PrivateUser, User
 
 
 @tagged("post_install", "-at_install")
