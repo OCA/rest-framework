@@ -2,12 +2,10 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 from typing import Generic, TypeVar
 
-from extendable_pydantic.main import ExtendableModelMeta
-
-from pydantic import BaseModel
+from extendable_pydantic import ExtendableBaseModel
 
 
-class User(BaseModel, metaclass=ExtendableModelMeta, revalidate_instances="always"):
+class User(ExtendableBaseModel, revalidate_instances="always"):
     """
     We MUST set revalidate_instances="always" to be sure that FastAPI validates
     responses of this model type.
@@ -17,12 +15,10 @@ class User(BaseModel, metaclass=ExtendableModelMeta, revalidate_instances="alway
 
     @classmethod
     def from_user(cls, user):
-        res = cls.model_construct()
-        res.name = user.name
-        return res
+        return cls.model_construct(name=user.name)
 
 
-class ExtendedUser(User, extends=User):
+class ExtendedUser(User, extends=True):
     address: str
 
     @classmethod
@@ -47,7 +43,7 @@ class PrivateUser(User):
 _T = TypeVar("_T")
 
 
-class SearchResponse(BaseModel, Generic[_T], metaclass=ExtendableModelMeta):
+class SearchResponse(ExtendableBaseModel, Generic[_T]):
     total: int
     items: list[_T]
 
