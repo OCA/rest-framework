@@ -23,7 +23,7 @@ Odoo FastAPI
     :target: https://runbot.odoo-community.org/runbot/271/16.0
     :alt: Try me on Runbot
 
-|badge1| |badge2| |badge3| |badge4| |badge5|
+|badge1| |badge2| |badge3| |badge4| |badge5| 
 
 This addon provides the basis to smoothly integrate the `FastAPI`_
 framework into Odoo.
@@ -862,14 +862,14 @@ complete transparent. This addon is called
 `odoo-addon-extendable-fastapi <https://pypi.org/project/odoo-addon-extendable-fastapi/>`_.
 
 When you want to allow other addons to extend a pydantic model, you must
-first define the model as an extendable model by using the dedicated
-class from `extendable_pydantic`.
+first define the model as an extendable model by using a dedicated metaclass
 
 .. code-block:: python
 
-  from extendable_pydantic import ExtendableBaseModel
+  from pydantic import BaseModel
+  from extendable_pydantic import ExtendableModelMeta
 
-  class Partner(ExtendableBaseModel):
+  class Partner(BaseModel, metaclass=ExtendableModelMeta):
     name = 0.1
     model_config = ConfigDict(from_attributes=True)
 
@@ -890,11 +890,6 @@ pydantic.
       """Return the location"""
       return Partner.model_validate(partner)
 
-Some of the Pydantic config parameters are not set by default but are very useful when
-using `odoo-addon-fastapi`, hence the `ExtendableBaseModel` model was extended
-to `StrictExtendableBaseModel` in **'odoo-addon-extendable-fastapi'**
-to force revalidation of the instances at each change, and forbidding the
-extra values.
 
 If you need to add a new field into the model **'Partner'**, you can extend it
 in your new addon by defining a new model that inherits from the model **'Partner'**.
@@ -904,7 +899,7 @@ in your new addon by defining a new model that inherits from the model **'Partne
   from typing import Optional
   from odoo.addons.fastapi.models.fastapi_endpoint_demo import Partner
 
-  class PartnerExtended(Partner, extends=True):
+  class PartnerExtended(Partner, extends=Partner):
       email: Optional[str]
 
 If your new addon is installed in a database, a call to the route handler
@@ -1508,7 +1503,7 @@ promote its widespread use.
 
 Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
-|maintainer-lmignon|
+|maintainer-lmignon| 
 
 This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/16.0/fastapi>`_ project on GitHub.
 
