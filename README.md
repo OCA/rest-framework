@@ -35,7 +35,7 @@ addon | version | maintainers | summary
 [graphql_base](graphql_base/) | 16.0.1.0.1 | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | Base GraphQL/GraphiQL controller
 [graphql_demo](graphql_demo/) | 16.0.1.0.1 | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | GraphQL Demo
 [pydantic](pydantic/) | 16.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Utility addon to ease mapping between Pydantic and Odoo models
-[test_extendable_pydantic_fastapi](test_extendable_pydantic_fastapi/) | 16.0.2.0.0 |  | Tests integration between extendable_pydantic/odoo_addon_fastapi and odoo_addon_extendable_fastapi
+[test_extendable_pydantic_fastapi](test_extendable_pydantic_fastapi/) | 16.0.2.0.1 |  | Tests integration between extendable_pydantic/odoo_addon_fastapi and odoo_addon_extendable_fastapi
 
 
 Unported addons
