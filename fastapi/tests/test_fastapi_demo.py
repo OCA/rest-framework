@@ -85,6 +85,19 @@ class FastAPIDemoCase(FastAPITransactionCase):
             },
         )
 
+    def test_who_is_superuser(self) -> None:
+        with self._create_test_client() as test_client:
+            response: Response = test_client.get("/demo/who_is_superuser")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        partner = self.env["res.partner"].browse(1)
+        self.assertDictEqual(
+            response.json(),
+            {
+                "name": partner.name,
+                "display_name": partner.display_name,
+            },
+        )
+
     def test_endpoint_info(self) -> None:
         demo_app = self.env.ref("fastapi.fastapi_endpoint_demo")
         with self._create_test_client(

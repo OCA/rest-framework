@@ -83,6 +83,18 @@ async def who_ami(
     return DemoUserInfo(name=partner.name, display_name=partner.display_name)
 
 
+@router.get("/demo/who_is_superuser")
+async def sudo_who_is_superuser(
+    env: Annotated[Environment, Depends(odoo_env)]
+) -> DemoUserInfo:
+    """Who is superuser?"""
+    # you should avoid to use sudo and use security rule
+    # but sometime in your router you will call odoo code
+    # that can use a sudo
+    partner = env["res.partner"].sudo().browse(1)
+    return DemoUserInfo(name=partner.name, display_name=partner.display_name)
+
+
 @router.get(
     "/demo/endpoint_app_info",
     dependencies=[Depends(authenticated_partner)],
