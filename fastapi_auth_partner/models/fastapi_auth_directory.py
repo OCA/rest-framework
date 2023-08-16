@@ -8,12 +8,12 @@ from itsdangerous import URLSafeTimedSerializer
 from odoo import fields, models
 from odoo.http import request
 
-COOKIE_AUTH_NAME = "partner_auth"
+COOKIE_AUTH_NAME = "fastapi_partner_auth"
 
 
-class DirectoryAuth(models.Model):
-    _name = "directory.auth"
-    _description = "Directory Auth"
+class FastApiAuthDirectory(models.Model):
+    _name = "fastapi.auth.directory"
+    _description = "FastApi Auth Directory"
 
     name = fields.Char(required=True)
     set_password_token_duration = fields.Integer(

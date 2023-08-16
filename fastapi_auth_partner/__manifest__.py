@@ -8,14 +8,13 @@
     "version": "14.0.1.0.0",
     "license": "AGPL-3",
     "author": "Akretion,Odoo Community Association (OCA)",
-    "website": "https://github.com/akretion/rest-authenticable",
+    "website": "https://github.com/OCA/rest-framework",
     "depends": [
         "extendable_fastapi",
         "mail",
         "base_future_response",
-        "sale",
         "queue_job",
-    ],  # sale is needed ?
+    ],
     "data": [
         "security/res_group.xml",
         "security/ir.model.access.csv",
@@ -23,9 +22,9 @@
         "views/fastapi_endpoint_view.xml",
     ],
     "demo": [
-        "demo/directory_auth_demo.xml",
+        "demo/fastapi_auth_directory_demo.xml",
         "demo/res_partner_demo.xml",
-        "demo/partner_auth_demo.xml",
+        "demo/fastapi_auth_partner_demo.xml",
         "demo/fastapi_endpoint_demo.xml",
     ],
     "external_dependencies": {

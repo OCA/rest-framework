@@ -2,9 +2,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from extendable_pydantic import ExtendableModelMeta
-from pydantic import BaseModel
 
 from odoo.addons.pydantic import utils
+
+from pydantic import BaseModel
 
 
 class AuthLoginInput(BaseModel, metaclass=ExtendableModelMeta):

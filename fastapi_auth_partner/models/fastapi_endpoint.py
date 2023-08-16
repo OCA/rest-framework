@@ -4,11 +4,11 @@
 
 from typing import List
 
-from fastapi import APIRouter
-
 from odoo import fields, models
 
-from ..routers.authenticable import auth_router
+from fastapi import APIRouter
+
+from ..routers.auth import auth_router
 
 
 class FastapiEndpoint(models.Model):
@@ -25,7 +25,7 @@ class FastapiEndpoint(models.Model):
         ],
         string="Authenciation method",
     )
-    directory_id = fields.Many2one("directory.auth")
+    directory_id = fields.Many2one("fastapi.auth.directory")
 
     def _get_fastapi_routers(self) -> List[APIRouter]:
         routers = super()._get_fastapi_routers()
