@@ -72,6 +72,7 @@ class PartnerAuth(models.Model):
             raise AccessDenied()
 
     def _get_hashed_password(self, directory, login):
+        self.flush()
         self.env.cr.execute(
             """
             SELECT id, COALESCE(encrypted_password, '')
@@ -80,7 +81,8 @@ class PartnerAuth(models.Model):
             (login, directory.id),
         )
         hashed = self.env.cr.fetchone()
-        if hashed:
+        if hashed and hashed[1]:
+            # ensure that we have a partner_auth and this partner have a password set
             return hashed
         else:
             raise AccessDenied()
@@ -94,25 +96,6 @@ class PartnerAuth(models.Model):
         for record in self:
             ctx = record._crypt_context()
             record.encrypted_password = ctx.encrypt(record.password)
-
-    def _prepare_partner_register(self, params):
-        return {
-            "name": params["name"],
-            "email": params["login"],
-        }
-
-    def _prepare_partner_auth_register(self, params):
-        return {
-            "login": params["login"],
-            "password": params["password"],
-        }
-
-    def register(self, directory, params):
-        vals = self._prepare_partner_register(params)
-        partner = self.env["res.partner"].create(vals)
-        vals = self._prepare_partner_auth_register(params)
-        vals.update({"partner_id": partner.id, "directory_id": directory.id})
-        return self.create(vals)
 
     @api.model
     def log_in(self, directory, login, password):
@@ -166,8 +149,8 @@ class PartnerAuth(models.Model):
         else:
             raise UserError(_("The token is not valid, please request a new one"))
 
-    def forgot_password(self, directory, login):
-        # forgot_password is called from a job so we return the result as a string
+    def forget_password(self, directory, login):
+        # forget_password is called from a job so we return the result as a string
         auth = self.search(
             [
                 ("directory_id", "=", directory.id),
