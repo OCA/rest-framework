@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fastapi_auth_directory,fastapi_auth_directory_manager,model_fastapi_auth_directory,base.group_system,1,1,1,1
+access_fastapi_auth_partner,fastapi_auth_partner_manager,model_fastapi_auth_partner,group_partner_auth_manager,1,1,1,1

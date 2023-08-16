@@ -12,7 +12,6 @@ if sys.version_info >= (3, 9):
 else:
     from typing_extensions import Annotated
 
-from fastapi import APIRouter, Depends
 from itsdangerous import URLSafeTimedSerializer
 
 from odoo import _, models, tools
@@ -20,6 +19,8 @@ from odoo.api import Environment
 
 from odoo.addons.fastapi.dependencies import fastapi_endpoint, odoo_env
 from odoo.addons.fastapi.models import FastapiEndpoint
+
+from fastapi import APIRouter, Depends
 
 from ..schemas import (
     AuthForgetPasswordInput,
@@ -32,7 +33,7 @@ from ..schemas import (
 auth_router = APIRouter(tags=["auth"])
 
 
-COOKIE_AUTH_NAME = "partner_auth"
+COOKIE_AUTH_NAME = "fastapi_partner_auth"
 
 
 @auth_router.post("/auth/register", status_code=201)
@@ -41,7 +42,9 @@ def register(
     env: Annotated[Environment, Depends(odoo_env)],
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
 ) -> AuthPartnerResponse:
-    partner_auth = env["auth.service"]._register_auth(endpoint.directory_id, data)
+    partner_auth = env["fastapi.auth.service"]._register_auth(
+        endpoint.directory_id, data
+    )
     return AuthPartnerResponse.from_orm(partner_auth)
 
 
@@ -51,7 +54,7 @@ def login(
     env: Annotated[Environment, Depends(odoo_env)],
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
 ) -> AuthPartnerResponse:
-    partner_auth = env["auth.service"]._login(endpoint.directory_id, data)
+    partner_auth = env["fastapi.auth.service"]._login(endpoint.directory_id, data)
     return AuthPartnerResponse.from_orm(partner_auth)
 
 
@@ -60,7 +63,7 @@ def logout(
     env: Annotated[Environment, Depends(odoo_env)],
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
 ):
-    env["auth.service"]._logout(endpoint.directory_id)
+    env["fastapi.auth.service"]._logout(endpoint.directory_id)
 
 
 @auth_router.post("/auth/forget_password")
@@ -69,7 +72,7 @@ def forget_password(
     env: Annotated[Environment, Depends(odoo_env)],
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
 ):
-    env["auth.service"]._forget_password(endpoint.directory_id, data)
+    env["fastapi.auth.service"]._forget_password(endpoint.directory_id, data)
 
 
 @auth_router.post("/auth/set_password")
@@ -78,13 +81,15 @@ def set_password(
     env: Annotated[Environment, Depends(odoo_env)],
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
 ) -> AuthPartnerResponse:
-    partner_auth = env["auth.service"]._set_password(endpoint.directory_id, data)
+    partner_auth = env["fastapi.auth.service"]._set_password(
+        endpoint.directory_id, data
+    )
     return AuthPartnerResponse.from_orm(partner_auth)
 
 
 class AuthService(models.AbstractModel):
-    _name = "auth.service"
-    _description = "Auth Service"
+    _name = "fastapi.auth.service"
+    _description = "Fastapi Auth Service"
 
     def _prepare_partner_register(self, data):
         return {
@@ -103,7 +108,7 @@ class AuthService(models.AbstractModel):
         partner = self.env["res.partner"].create([vals])
         vals = self._prepare_partner_auth_register(data)
         vals.update({"partner_id": partner.id, "directory_id": directory.id})
-        partner_auth = self.env["partner.auth"].create(vals)
+        partner_auth = self.env["fastapi.auth.partner"].create(vals)
         self._set_auth_cookie(partner_auth)
         return partner_auth
 
@@ -144,7 +149,9 @@ class AuthService(models.AbstractModel):
 
     def _login(self, directory, data):
         partner_auth = (
-            self.env["partner.auth"].sudo().log_in(directory, data.login, data.password)
+            self.env["fastapi.auth.partner"]
+            .sudo()
+            .log_in(directory, data.login, data.password)
         )
         if partner_auth:
             self._set_auth_cookie(partner_auth)
@@ -158,7 +165,7 @@ class AuthService(models.AbstractModel):
 
     def _set_password(self, directory, data):
         partner_auth = (
-            self.env["partner.auth"]
+            self.env["fastapi.auth.partner"]
             .sudo()
             .set_password(directory, data.token_set_password, data.password)
         )
@@ -166,6 +173,6 @@ class AuthService(models.AbstractModel):
         return partner_auth
 
     def _forget_password(self, directory, data):
-        self.env["partner.auth"].sudo().with_delay().forget_password(
+        self.env["fastapi.auth.partner"].sudo().with_delay().forget_password(
             directory, data.login
         )

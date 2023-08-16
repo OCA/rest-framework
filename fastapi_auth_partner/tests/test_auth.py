@@ -2,7 +2,6 @@ import json
 from contextlib import contextmanager
 from functools import partial
 
-from fastapi import status
 from requests import Response
 
 from odoo.tests.common import tagged
@@ -10,7 +9,9 @@ from odoo.tests.common import tagged
 from odoo.addons.extendable_fastapi.tests.common import FastAPITransactionCase
 from odoo.addons.fastapi.dependencies import fastapi_endpoint
 
-from ..routers.authenticable import auth_router
+from fastapi import status
+
+from ..routers.auth import auth_router
 
 
 @tagged("post_install", "-at_install")
@@ -23,7 +24,7 @@ class TestAuth(FastAPITransactionCase):
 
     @contextmanager
     def _create_test_auth_client(self):
-        demo_app = self.env.ref("partner_auth.fastapi_endpoint_demo")
+        demo_app = self.env.ref("fastapi_partner_auth.fastapi_endpoint_demo")
         with self._create_test_client(
             demo_app._get_app(),
             dependency_overrides={fastapi_endpoint: partial(lambda a: a, demo_app)},

@@ -2,11 +2,11 @@
 <odoo>
     <data noupdate="1">
         <record id="email_forget_password" model="mail.template">
-            <field name="name">Auth Directory: Reset Password</field>
+            <field name="name">FastApi Auth Directory: Reset Password</field>
             <field name="email_from">noreply@example.org</field>
             <field name="subject">Reset Password</field>
             <field name="partner_to">${object.partner_id.id}</field>
-            <field name="model_id" ref="model_partner_auth" />
+            <field name="model_id" ref="model_fastapi_auth_partner" />
             <field name="auto_delete" eval="True" />
             <field name="lang">fr_FR</field>
             <field name="body_html" type="html">
@@ -23,11 +23,11 @@
         </record>
 
         <record id="email_invite_set_password" model="mail.template">
-            <field name="name">Auth Directory: Set Password</field>
+            <field name="name">FastApi Auth Directory: Set Password</field>
             <field name="email_from">noreply@example.org</field>
             <field name="subject">Welcome</field>
             <field name="partner_to">${object.partner_id.id}</field>
-            <field name="model_id" ref="model_partner_auth" />
+            <field name="model_id" ref="model_fastapi_auth_partner" />
             <field name="auto_delete" eval="True" />
             <field name="lang">fr_FR</field>
             <field name="body_html" type="html">

@@ -23,12 +23,12 @@ DEFAULT_CRYPT_CONTEXT_TOKEN = passlib.context.CryptContext(
 _logger = logging.getLogger(__name__)
 
 
-class PartnerAuth(models.Model):
-    _name = "partner.auth"
-    _description = "Partner Auth"
+class FastApiAuthPartner(models.Model):
+    _name = "fastapi.auth.partner"
+    _description = "FastApi Auth Partner"
 
     partner_id = fields.Many2one("res.partner", "Partner", required=True)
-    directory_id = fields.Many2one("directory.auth", "Directory", required=True)
+    directory_id = fields.Many2one("fastapi.auth.directory", "Directory", required=True)
     login = fields.Char(compute="_compute_login", store=True, required=True)
     password = fields.Char(compute="_compute_password", inverse="_inverse_password")
     encrypted_password = fields.Char()
@@ -76,7 +76,7 @@ class PartnerAuth(models.Model):
         self.env.cr.execute(
             """
             SELECT id, COALESCE(encrypted_password, '')
-            FROM partner_auth
+            FROM fastapi_auth_partner
             WHERE login=%s AND directory_id=%s""",
             (login, directory.id),
         )
