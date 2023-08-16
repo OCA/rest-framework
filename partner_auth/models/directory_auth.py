@@ -3,12 +3,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 
-from datetime import datetime, timedelta
-
 from itsdangerous import URLSafeTimedSerializer
 
-from odoo import _, fields, models, tools
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 from odoo.http import request
 
 COOKIE_AUTH_NAME = "partner_auth"
@@ -61,28 +58,3 @@ class DirectoryAuth(models.Model):
                     )
                     if auth:
                         return partner
-
-    def _prepare_cookie_payload(self, partner_id):
-        # use short key to reduce cookie size
-        return {
-            "did": self.id,
-            "pid": partner_id,
-        }
-
-    def _prepare_cookie(self, partner_id):
-        if not self.cookie_secret_key:
-            raise ValidationError(_("No cookie secret key defined"))
-        payload = self._prepare_cookie_payload(partner_id)
-        value = URLSafeTimedSerializer(self.cookie_secret_key).dumps(payload)
-        exp = (datetime.utcnow() + timedelta(minutes=self.cookie_duration)).timestamp()
-        vals = {
-            "value": value,
-            "expires": exp,
-            "httponly": True,
-            "secure": True,
-            "samesite": "strict",
-        }
-        if tools.config.get("test_enable"):
-            # do not force https for test
-            vals["secure"] = False
-        return vals

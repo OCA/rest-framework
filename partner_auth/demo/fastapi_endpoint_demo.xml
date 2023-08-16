@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+  <record model="fastapi.endpoint" id="fastapi_endpoint_demo">
+    <field name="name">Fastapi Partner Auth Demo Endpoint</field>
+    <field
+            name="description"
+        ><![CDATA[
+# A Dummy FastApi Partner Auth Demo
+
+This demo endpoint has been created by inhering from "fastapi.endpoint", registering
+a new app into the app selection field and implementing the `_get_fastapi_routers`
+methods. See documentation to learn more about how to create a new app.
+]]></field>
+    <field name="app">demo</field>
+    <field name="root_path">/fastapi_partner_auth_demo</field>
+    <field name="demo_auth_method">partner_auth</field>
+    <field name="user_id" ref="fastapi.my_demo_app_user" />
+    <field name="directory_id" ref="demo_directory" />
+  </record>
+</odoo>
