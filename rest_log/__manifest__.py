@@ -5,7 +5,7 @@
 {
     "name": "REST Log",
     "summary": "Track REST API calls into DB",
-    "version": "13.0.1.4.0",
+    "version": "13.0.1.5.0",
     "development_status": "Alpha",
     "website": "https://github.com/OCA/rest-framework",
     "author": "Camptocamp, ACSONE, Odoo Community Association (OCA)",
