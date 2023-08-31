@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record model="ir.rule" id="res_partner_api_rule">
+        <field name="name">Res Partner Register API</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="groups" eval="[(4, ref('group_partner_auth_api'))]" />
+        <field name="domain_force">[('partner_auth_ids','!=', False)]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+
+</odoo>

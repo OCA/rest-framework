@@ -18,6 +18,7 @@
     "data": [
         "security/res_group.xml",
         "security/ir.model.access.csv",
+        "security/ir_rule.xml",
         "data/email_data.xml",
         "views/fastapi_endpoint_view.xml",
     ],

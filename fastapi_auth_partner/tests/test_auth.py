@@ -24,7 +24,7 @@ class TestAuth(FastAPITransactionCase):
 
     @contextmanager
     def _create_test_auth_client(self):
-        demo_app = self.env.ref("fastapi_partner_auth.fastapi_endpoint_demo")
+        demo_app = self.env.ref("fastapi_auth_partner.fastapi_endpoint_demo")
         with self._create_test_client(
             demo_app._get_app(),
             dependency_overrides={fastapi_endpoint: partial(lambda a: a, demo_app)},

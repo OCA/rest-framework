@@ -4,9 +4,10 @@ import logging
 from datetime import datetime, timedelta
 
 import passlib
+from itsdangerous import URLSafeTimedSerializer
 
-from odoo import _, api, fields, models
-from odoo.exceptions import AccessDenied, UserError
+from odoo import _, api, fields, models, tools
+from odoo.exceptions import AccessDenied, UserError, ValidationError
 
 from odoo.addons.auth_signup.models.res_partner import random_token
 
@@ -21,6 +22,9 @@ DEFAULT_CRYPT_CONTEXT_TOKEN = passlib.context.CryptContext(
 
 
 _logger = logging.getLogger(__name__)
+
+
+COOKIE_AUTH_NAME = "fastapi_auth_partner"
 
 
 class FastApiAuthPartner(models.Model):
@@ -185,3 +189,34 @@ class FastApiAuthPartner(models.Model):
         token = self._generate_token()
         template.with_context(token=token).send_mail(self.id)
         return True
+
+    def _prepare_cookie_payload(self):
+        # use short key to reduce cookie size
+        return {
+            "did": self.directory_id.id,
+            "pid": self.partner_id.id,
+        }
+
+    def _prepare_cookie(self):
+        secret = self.directory_id.cookie_secret_key
+        if not secret:
+            raise ValidationError(_("No cookie secret key defined"))
+        payload = self._prepare_cookie_payload()
+        value = URLSafeTimedSerializer(secret).dumps(payload)
+        exp = (
+            datetime.utcnow() + timedelta(minutes=self.directory_id.cookie_duration)
+        ).timestamp()
+        vals = {
+            "value": value,
+            "expires": exp,
+            "httponly": True,
+            "secure": True,
+            "samesite": "strict",
+        }
+        if tools.config.get("test_enable"):
+            # do not force https for test
+            vals["secure"] = False
+        return vals
+
+    def _set_auth_cookie(self, response):
+        response.set_cookie(COOKIE_AUTH_NAME, **self._prepare_cookie())
