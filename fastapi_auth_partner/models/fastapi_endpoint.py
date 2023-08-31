@@ -21,7 +21,7 @@ class FastapiEndpoint(models.Model):
         selection=[
             ("api_key", "Api Key"),
             ("http_basic", "HTTP Basic"),
-            ("partner_auth", "Partner Auth"),
+            ("auth_partner", "Partner Auth"),
         ],
         string="Authenciation method",
     )

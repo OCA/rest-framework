@@ -9,8 +9,8 @@
             <field
                     name="directory_id"
                     attrs="{
-                    'invisible': [('demo_auth_method', '!=', 'partner_auth')],
-                    'required': [('demo_auth_method', '=', 'partner_auth')]
+                    'invisible': [('demo_auth_method', '!=', 'auth_partner')],
+                    'required': [('demo_auth_method', '=', 'auth_partner')]
                 }"
                 />
         </field>

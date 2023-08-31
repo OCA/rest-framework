@@ -10,4 +10,15 @@
         />
     </record>
 
+    <record id="group_partner_auth_api" model="res.groups">
+        <field name="name">API Partner Auth access</field>
+        <field name="category_id" ref="base.module_category_hidden" />
+        <field
+            name="implied_ids"
+            eval="[
+        (4, ref('fastapi.group_fastapi_endpoint_runner')),
+        ]"
+        />
+    </record>
+
 </odoo>
