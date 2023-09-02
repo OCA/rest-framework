@@ -1,2 +1,0 @@
-* Laurent Mignon <laurent.mignon@acsone.eu> (https://acsone.eu)
-* Marie Lejeune <marie.lejeune@acsone.eu> (https://acsone.eu)
