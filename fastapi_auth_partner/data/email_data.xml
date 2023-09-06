@@ -8,7 +8,7 @@
             <field name="partner_to">${object.partner_id.id}</field>
             <field name="model_id" ref="model_fastapi_auth_partner" />
             <field name="auto_delete" eval="True" />
-            <field name="lang">fr_FR</field>
+            <field name="lang">${object.partner_id.lang}</field>
             <field name="body_html" type="html">
                 <div>
                 Hi ${object.partner_id.name},
@@ -29,7 +29,7 @@
             <field name="partner_to">${object.partner_id.id}</field>
             <field name="model_id" ref="model_fastapi_auth_partner" />
             <field name="auto_delete" eval="True" />
-            <field name="lang">fr_FR</field>
+            <field name="lang">${object.partner_id.lang}</field>
             <field name="body_html" type="html">
                 <div>
                 Hi ${object.partner_id.name},
@@ -43,5 +43,6 @@
                 </div>
             </field>
         </record>
+
     </data>
 </odoo>

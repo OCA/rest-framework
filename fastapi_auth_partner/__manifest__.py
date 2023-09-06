@@ -21,6 +21,10 @@
         "security/ir_rule.xml",
         "data/email_data.xml",
         "views/fastapi_endpoint_view.xml",
+        "views/fastapi_auth_directory_view.xml",
+        "views/fastapi_auth_partner_view.xml",
+        "views/res_partner_view.xml",
+        "wizards/wizard_partner_auth_reset_password_view.xml",
     ],
     "demo": [
         "demo/fastapi_auth_directory_demo.xml",

@@ -30,6 +30,7 @@ COOKIE_AUTH_NAME = "fastapi_auth_partner"
 class FastApiAuthPartner(models.Model):
     _name = "fastapi.auth.partner"
     _description = "FastApi Auth Partner"
+    _rec_name = "login"
 
     partner_id = fields.Many2one("res.partner", "Partner", required=True)
     directory_id = fields.Many2one("fastapi.auth.directory", "Directory", required=True)
@@ -38,6 +39,20 @@ class FastApiAuthPartner(models.Model):
     encrypted_password = fields.Char()
     token_set_password_encrypted = fields.Char()
     token_expiration = fields.Datetime()
+    nbr_pending_reset_sent = fields.Integer(
+        help=(
+            "Number of pending reset sent from your customer."
+            "This field is usefull when after a migration from an other system "
+            "you ask all you customer to reset their password and you send"
+            "different mail depending on the number of reminder"
+        )
+    )
+    date_last_request_reset_pwd = fields.Datetime(
+        help="Date of the last password reset request"
+    )
+    date_last_sucessfull_reset_pwd = fields.Datetime(
+        help="Date of the last sucessfull password reset"
+    )
 
     _sql_constraints = [
         (
@@ -119,13 +134,16 @@ class FastApiAuthPartner(models.Model):
     def _get_template_invite_set_password(self, directory):
         return directory.invite_set_password_template_id
 
-    def _generate_token(self):
+    def _generate_token(self, force_expiration=None):
+        expiration = force_expiration or (
+            datetime.now()
+            + timedelta(minutes=self.directory_id.set_password_token_duration)
+        )
         token = random_token()
         self.write(
             {
                 "token_set_password_encrypted": self._encrypt_token(token),
-                "token_expiration": datetime.now()
-                + timedelta(minutes=self.directory_id.set_password_token_duration),
+                "token_expiration": expiration,
             }
         )
         return token
@@ -135,7 +153,7 @@ class FastApiAuthPartner(models.Model):
 
     def set_password(self, directory, token_set_password, password):
         hashed_token = self._encrypt_token(token_set_password)
-        partner_auth = self.env["partner.auth"].search(
+        partner_auth = self.search(
             [
                 ("token_set_password_encrypted", "=", hashed_token),
                 ("directory_id", "=", directory.id),
@@ -153,6 +171,15 @@ class FastApiAuthPartner(models.Model):
         else:
             raise UserError(_("The token is not valid, please request a new one"))
 
+    def send_reset_password(self, template, force_expiration=None):
+        self.ensure_one()
+        token = self._generate_token(force_expiration=force_expiration)
+        template.sudo().with_context(token=token).send_mail(self.id)
+        self.date_last_request_reset_pwd = fields.Datetime.now()
+        self.date_last_sucessfull_reset_pwd = None
+        self.nbr_pending_reset_sent += 1
+        return "Instruction sent by email"
+
     def forget_password(self, directory, login):
         # forget_password is called from a job so we return the result as a string
         auth = self.search(
@@ -169,9 +196,7 @@ class FastApiAuthPartner(models.Model):
                         directory.name
                     )
                 )
-            token = auth._generate_token()
-            template.sudo().with_context(token=token).send_mail(auth.id)
-            return "Partner Auth reset password token sent"
+            return auth.send_reset_password(template)
         else:
             return "No Partner Auth found, skip"
 
@@ -186,9 +211,7 @@ class FastApiAuthPartner(models.Model):
                     "Invitation to Set Password template is missing for directory {}"
                 ).format(self.directory_id.name)
             )
-        token = self._generate_token()
-        template.with_context(token=token).send_mail(self.id)
-        return True
+        return self.send_reset_password(template)
 
     def _prepare_cookie_payload(self):
         # use short key to reduce cookie size

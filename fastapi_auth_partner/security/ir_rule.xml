@@ -2,12 +2,25 @@
 <odoo>
 
     <record model="ir.rule" id="res_partner_api_rule">
-        <field name="name">Res Partner Register API</field>
+        <field name="name">Fast API auth API (res_partner)</field>
         <field name="model_id" ref="base.model_res_partner" />
         <field name="groups" eval="[(4, ref('group_partner_auth_api'))]" />
-        <field name="domain_force">[('partner_auth_ids','!=', False)]</field>
+        <field name="domain_force">[('id','=', authenticated_partner_id)]</field>
         <field name="perm_read" eval="True" />
-        <field name="perm_create" eval="True" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record model="ir.rule" id="fastapi_auth_partner_api_rule">
+        <field name="name">Fast API auth API (fastapi_partner_auth)</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="groups" eval="[(4, ref('group_partner_auth_api'))]" />
+        <field
+            name="domain_force"
+        >[('partner_id','=', authenticated_partner_id)]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_create" eval="False" />
         <field name="perm_write" eval="False" />
         <field name="perm_unlink" eval="False" />
     </record>
