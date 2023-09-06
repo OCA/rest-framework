@@ -69,13 +69,15 @@ def logout(
     env["fastapi.auth.service"].sudo()._logout(endpoint.directory_id, response)
 
 
-@auth_router.post("/auth/forget_password")
-def forget_password(
+@auth_router.post("/auth/request_reset_password")
+def request_reset_password(
     data: AuthForgetPasswordInput,
     env: Annotated[Environment, Depends(odoo_env)],
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
 ):
-    env["fastapi.auth.service"].sudo()._forget_password(endpoint.directory_id, data)
+    env["fastapi.auth.service"].sudo()._request_reset_password(
+        endpoint.directory_id, data
+    )
 
 
 @auth_router.post("/auth/set_password")
@@ -154,7 +156,7 @@ class AuthService(models.AbstractModel):
             partner_auth.nbr_pending_reset_sent = 0
         return partner_auth
 
-    def _forget_password(self, directory, data):
-        self.env["fastapi.auth.partner"].sudo().with_delay().forget_password(
+    def _request_reset_password(self, directory, data):
+        self.env["fastapi.auth.partner"].sudo().with_delay().request_reset_password(
             directory, data.login
         )
