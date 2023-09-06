@@ -2,7 +2,10 @@
 <odoo>
     <record id="demo_directory" model="fastapi.auth.directory">
         <field name="name">Demo Auth Directory</field>
-        <field name="forget_password_template_id" ref="email_forget_password" />
+        <field
+            name="request_reset_password_template_id"
+            ref="email_request_reset_password"
+        />
         <field name="invite_set_password_template_id" ref="email_invite_set_password" />
         <field name="cookie_secret_key">SuperSecret</field>
     </record>

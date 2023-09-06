@@ -128,8 +128,8 @@ class FastApiAuthPartner(models.Model):
             raise AccessDenied()
         return self.browse(_id)
 
-    def _get_template_forgot_password(self, directory):
-        return directory.forget_password_template_id
+    def _get_template_request_reset_password(self, directory):
+        return directory.request_reset_password_template_id
 
     def _get_template_invite_set_password(self, directory):
         return directory.invite_set_password_template_id
@@ -180,8 +180,8 @@ class FastApiAuthPartner(models.Model):
         self.nbr_pending_reset_sent += 1
         return "Instruction sent by email"
 
-    def forget_password(self, directory, login):
-        # forget_password is called from a job so we return the result as a string
+    def request_reset_password(self, directory, login):
+        # request_reset_password is called from a job so we return the result as a string
         auth = self.search(
             [
                 ("directory_id", "=", directory.id),
@@ -189,7 +189,7 @@ class FastApiAuthPartner(models.Model):
             ]
         )
         if auth:
-            template = self._get_template_forgot_password(directory)
+            template = self._get_template_request_reset_password(directory)
             if not template:
                 raise UserError(
                     _("Forgotten Password template is missing for directory {}").format(

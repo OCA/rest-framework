@@ -14,7 +14,7 @@ class FastApiAuthDirectory(models.Model):
     set_password_token_duration = fields.Integer(
         default=1440, help="In minute, default 1440 minutes => 24h", required=True
     )
-    forget_password_template_id = fields.Many2one(
+    request_reset_password_template_id = fields.Many2one(
         "mail.template", "Mail Template Forget Password", required=True
     )
     invite_set_password_template_id = fields.Many2one(

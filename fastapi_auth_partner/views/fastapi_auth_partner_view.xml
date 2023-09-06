@@ -64,6 +64,13 @@
     </record>
 
     <menuitem
+        id="fastapi_auth"
+        parent="fastapi.menu_fastapi_root"
+        sequence="50"
+        name="Authentication"
+    />
+
+    <menuitem
         id="fastapi_auth_partner_menu"
         parent="fastapi_auth"
         sequence="10"

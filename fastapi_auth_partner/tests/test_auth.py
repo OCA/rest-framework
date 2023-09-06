@@ -72,11 +72,11 @@ class TestAuth(FastAPITransactionCase):
             response: Response = test_client.post("/auth/logout")
         self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
 
-    def test_forget_password(self):
+    def test_request_reset_password(self):
         self._register_partner()
         with self._create_test_auth_client() as test_client:
             response: Response = test_client.post(
-                "/auth/forget_password",
+                "/auth/request_reset_password",
                 content=json.dumps({"login": "loriot@example.org"}),
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
