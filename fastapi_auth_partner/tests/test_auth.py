@@ -80,12 +80,15 @@ class TestAuth(FastAPITransactionCase):
                 content=json.dumps({"login": "loriot@example.org"}),
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
+            mail = self.env["mail.mail"].search([], limit=1, order="id desc")
+            token = mail.body.split("token=")[1].split('" targe')[0]
             response: Response = test_client.post(
                 "/auth/set_password",
                 content=json.dumps(
                     {
-                        "login": "loriot@example.org",
-                        "token": "TODO",
+                        "password": "megasecret",
+                        "token": token,
                     }
                 ),
             )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)

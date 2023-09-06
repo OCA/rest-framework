@@ -47,14 +47,14 @@ class AuthPartner:
             return env["res.partner"].with_user(env.ref("base.public_user")).browse()
 
         elif fastapi_auth_partner:
-            directory = endpoint.directory_id
+            directory = endpoint.sudo().directory_id
             vals = URLSafeTimedSerializer(directory.cookie_secret_key).loads(
                 fastapi_auth_partner, max_age=directory.cookie_duration * 60
             )
             if vals["did"] == directory.id and vals["pid"]:
                 partner = env["res.partner"].browse(vals["pid"]).exists()
                 if partner:
-                    auth = partner.partner_auth_ids.filtered(
+                    auth = partner.sudo().partner_auth_ids.filtered(
                         lambda s: s.directory_id == directory
                     )
                     if auth:
