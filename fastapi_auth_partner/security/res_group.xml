@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="group_partner_auth_manager" model="res.groups">
-        <field name="name">Manage Partner Auth</field>
+        <field name="name">FastAPI Partner Auth Manager</field>
         <field name="category_id" ref="base.module_category_hidden" />
         <field
             name="users"
