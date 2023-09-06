@@ -32,20 +32,25 @@ class FastApiAuthPartner(models.Model):
     _description = "FastApi Auth Partner"
     _rec_name = "login"
 
-    partner_id = fields.Many2one("res.partner", "Partner", required=True)
-    directory_id = fields.Many2one("fastapi.auth.directory", "Directory", required=True)
-    login = fields.Char(compute="_compute_login", store=True, required=True)
+    partner_id = fields.Many2one(
+        "res.partner", "Partner", required=True, ondelete="cascade", index=True
+    )
+    directory_id = fields.Many2one(
+        "fastapi.auth.directory", "Directory", required=True, index=True
+    )
+    login = fields.Char(compute="_compute_login", store=True, required=True, index=True)
     password = fields.Char(compute="_compute_password", inverse="_inverse_password")
-    encrypted_password = fields.Char()
+    encrypted_password = fields.Char(index=True)
     token_set_password_encrypted = fields.Char()
     token_expiration = fields.Datetime()
     nbr_pending_reset_sent = fields.Integer(
+        index=True,
         help=(
             "Number of pending reset sent from your customer."
             "This field is usefull when after a migration from an other system "
             "you ask all you customer to reset their password and you send"
             "different mail depending on the number of reminder"
-        )
+        ),
     )
     date_last_request_reset_pwd = fields.Datetime(
         help="Date of the last password reset request"

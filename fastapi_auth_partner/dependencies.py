@@ -64,5 +64,4 @@ class AuthPartner:
 
 
 auth_partner_authenticated_partner = AuthPartner()
-
 auth_partner_optionally_authenticated_partner = AuthPartner(allow_unauthenticated=True)
