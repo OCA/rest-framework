@@ -1,7 +1,6 @@
 # Copyright 2023 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 from contextlib import contextmanager
-from functools import partial
 from typing import Any, Callable, Dict
 
 from odoo.api import Environment
@@ -94,8 +93,7 @@ class FastAPITransactionCase(TransactionCase):
         if user:
             env = env(user=user)
         partner = partner or self.default_fastapi_authenticated_partner
-        if partner:
-            dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
+        dependencies[authenticated_partner_impl] = lambda: partner
         app = app or self.default_fastapi_app or FastAPI()
         router = router or self.default_fastapi_router
         if router:
