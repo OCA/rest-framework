@@ -10,7 +10,7 @@ class ResPartner(models.Model):
 
     # guest logic should be move in an dependency module
     guest = fields.Boolean()
-    partner_auth_ids = fields.One2many(
+    auth_partner_ids = fields.One2many(
         "fastapi.auth.partner", "partner_id", "Partner Auth"
     )
     count_partner_auth = fields.Integer(compute="_compute_count_partner_auth")

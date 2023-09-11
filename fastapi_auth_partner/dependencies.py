@@ -54,7 +54,7 @@ class AuthPartner:
             if vals["did"] == directory.id and vals["pid"]:
                 partner = env["res.partner"].browse(vals["pid"]).exists()
                 if partner:
-                    auth = partner.sudo().partner_auth_ids.filtered(
+                    auth = partner.sudo().auth_partner_ids.filtered(
                         lambda s: s.directory_id == directory
                     )
                     if auth:
