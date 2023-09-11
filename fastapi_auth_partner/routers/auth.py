@@ -100,7 +100,7 @@ def profile(
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
     partner: Annotated[Partner, Depends(auth_partner_authenticated_partner)],
 ) -> AuthPartnerResponse:
-    partner_auth = partner.partner_auth_ids.filtered(
+    partner_auth = partner.auth_partner_ids.filtered(
         lambda s: s.directory_id == endpoint.sudo().directory_id
     )
     return AuthPartnerResponse.from_orm(partner_auth)
@@ -114,7 +114,7 @@ class AuthService(models.AbstractModel):
         return {
             "name": data.name,
             "email": data.login,
-            "partner_auth_ids": [
+            "auth_partner_ids": [
                 (0, 0, self._prepare_partner_auth_register(directory, data))
             ],
         }
@@ -129,7 +129,7 @@ class AuthService(models.AbstractModel):
     def _register_auth(self, directory, data):
         vals = self._prepare_partner_register(directory, data)
         partner = self.env["res.partner"].create([vals])
-        return partner.partner_auth_ids
+        return partner.auth_partner_ids
 
     def _login(self, directory, data):
         partner_auth = (

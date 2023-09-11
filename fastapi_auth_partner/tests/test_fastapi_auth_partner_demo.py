@@ -30,7 +30,7 @@ def whoami_public_or_partner(
     ],
 ) -> AuthPartnerResponse:
     if partner:
-        return AuthPartnerResponse.from_orm(partner.partner_auth_ids)
+        return AuthPartnerResponse.from_orm(partner.auth_partner_ids)
     return AuthPartnerResponse(login="no-one")
 
 
