@@ -45,15 +45,14 @@ class PydanticModel(restapi.RestMethodParam):
 
     def to_response(self, service, result):
         # do we really need to validate the instance????
-        json_dict = result.model_dump()
         orm_mode = result.model_config.get("from_attributes", None)
-        to_validate = json_dict if orm_mode else result.model_dump(by_alias=True)
+        json_dict = result.model_dump(by_alias=not orm_mode)
         # Ensure that to_validate is under json format
         try:
-            json.loads(to_validate)
-            to_validate_jsonified = to_validate
+            json.loads(json_dict)
+            to_validate_jsonified = json_dict
         except TypeError:
-            to_validate_jsonified = json.dumps(to_validate)
+            to_validate_jsonified = result.model_dump_json(by_alias=not orm_mode)
 
         try:
             self._model_cls.model_validate_json(to_validate_jsonified)
