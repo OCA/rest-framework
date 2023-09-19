@@ -6,7 +6,6 @@ class StrictExtendableBaseModel(
     revalidate_instances="always",
     validate_assignment=True,
     extra="forbid",
-    strict=True,
 ):
     """
     An ExtendableBaseModel with strict validation.
@@ -24,6 +23,4 @@ class StrictExtendableBaseModel(
     (default is "never")
     * validate_assignment=True: revalidate the model when the data is changed (default is False)
     * extra="forbid": Forbid any extra attributes (default is "ignore")
-    * strict=True: raise an error if a value's type does not match the field's type
-    annotation (default is False; Pydantic attempts to coerce values to the correct type)
     """
