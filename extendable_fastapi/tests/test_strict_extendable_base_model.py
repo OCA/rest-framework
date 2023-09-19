@@ -55,14 +55,9 @@ class TestStrictExtendableBaseModel(FastAPITransactionCase):
         with self.assertRaises(ValidationError):
             self.StrictModel(x=1, z=3, d=None)
 
-    def test_Model_strict_false(self):
-        # Coerce str->date is allowed
-        m = self.Model(x=1, d=None)
+    def test_StrictModel_strict_false(self):
+        # Coerce str->date is allowed to enable coercion from JSON
+        # by FastAPI
+        m = self.StrictModel(x=1, d=None)
         m.d = "2023-01-01"
         self.assertTrue(m.model_validate(m))
-
-    def test_StrictModel_strict_true(self):
-        # Coerce str->date is forbidden
-        m = self.StrictModel(x=1, d=None)
-        with self.assertRaises(ValidationError):
-            m.d = "2023-01-01"
