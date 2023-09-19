@@ -114,10 +114,10 @@ class PydanticModel(restapi.RestMethodParam):
         }
 
     def to_json_schema(self, service, spec, direction):
-        schema = self._model_cls.model_json_schema()
+        schema = self._model_cls.model_json_schema(by_alias=False)
         schema_name = schema["title"]
         if schema_name not in spec.components.schemas:
-            definitions = schema.get("$defs", {})
+            definitions = schema.pop("$defs", {})
             for name, sch in definitions.items():
                 if name in spec.components.schemas:
                     continue

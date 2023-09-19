@@ -198,24 +198,7 @@
   "openapi": "3.0.0",
   "components": {
     "schemas": {
-      "StateInfo": {
-        "title": "StateInfo",
-        "type": "object",
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "integer"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          }
-        },
-        "required": ["id", "name"]
-      },
       "CountryInfo": {
-        "title": "CountryInfo",
-        "type": "object",
         "properties": {
           "id": {
             "title": "Id",
@@ -226,11 +209,26 @@
             "type": "string"
           }
         },
-        "required": ["id", "name"]
+        "required": ["id", "name"],
+        "title": "CountryInfo",
+        "type": "object"
+      },
+      "StateInfo": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"],
+        "title": "StateInfo",
+        "type": "object"
       },
       "PartnerInfo": {
-        "title": "PartnerInfo",
-        "type": "object",
         "properties": {
           "id": {
             "title": "Id",
@@ -245,12 +243,12 @@
             "type": "string"
           },
           "street2": {
+            "default": null,
             "title": "Street2",
-            "type": "string",
-            "default": null
+            "type": "string"
           },
-          "zip": {
-            "title": "Zip",
+          "zip_code": {
+            "title": "Zip Code",
             "type": "string"
           },
           "city": {
@@ -258,9 +256,9 @@
             "type": "string"
           },
           "phone": {
+            "default": null,
             "title": "Phone",
-            "type": "string",
-            "default": null
+            "type": "string"
           },
           "state": {
             "$ref": "#/components/schemas/StateInfo"
@@ -269,48 +267,16 @@
             "$ref": "#/components/schemas/CountryInfo"
           },
           "is_company": {
+            "default": null,
             "title": "Is Company",
-            "type": "boolean",
-            "default": null
+            "type": "boolean"
           }
         },
-        "required": ["id", "name", "street", "zip", "city", "state", "country"],
-        "$defs": {
-          "StateInfo": {
-            "title": "StateInfo",
-            "type": "object",
-            "properties": {
-              "id": {
-                "title": "Id",
-                "type": "integer"
-              },
-              "name": {
-                "title": "Name",
-                "type": "string"
-              }
-            },
-            "required": ["id", "name"]
-          },
-          "CountryInfo": {
-            "title": "CountryInfo",
-            "type": "object",
-            "properties": {
-              "id": {
-                "title": "Id",
-                "type": "integer"
-              },
-              "name": {
-                "title": "Name",
-                "type": "string"
-              }
-            },
-            "required": ["id", "name"]
-          }
-        }
+        "required": ["id", "name", "street", "zip_code", "city", "state", "country"],
+        "title": "PartnerInfo",
+        "type": "object"
       },
       "PartnerShortInfo": {
-        "title": "PartnerShortInfo",
-        "type": "object",
         "properties": {
           "id": {
             "title": "Id",
@@ -321,7 +287,9 @@
             "type": "string"
           }
         },
-        "required": ["id", "name"]
+        "required": ["id", "name"],
+        "title": "PartnerShortInfo",
+        "type": "object"
       }
     },
     "securitySchemes": {
