@@ -82,6 +82,7 @@
                                 nolabel="1"
                                 widget="ace"
                                 options="{'mode': 'python'}"
+                                colspan="2"
                             />
                         </group>
                     </group>
