@@ -93,9 +93,12 @@ class FastAPITransactionCase(TransactionCase):
             dependencies.update(dependency_overrides)
         if user:
             env = env(user=user)
-        partner = partner or self.default_fastapi_authenticated_partner
-        if partner:
-            dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
+        partner = (
+            partner
+            or self.default_fastapi_authenticated_partner
+            or self.env["res.partner"]
+        )
+        dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
         app = app or self.default_fastapi_app or FastAPI()
         router = router or self.default_fastapi_router
         if router:
