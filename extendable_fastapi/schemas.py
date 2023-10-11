@@ -1,26 +1,19 @@
-from extendable_pydantic import ExtendableBaseModel
+from typing import Annotated, Generic, TypeVar
+
+from extendable_pydantic import StrictExtendableBaseModel
+
+from pydantic import Field
+
+T = TypeVar("T")
 
 
-class StrictExtendableBaseModel(
-    ExtendableBaseModel,
-    revalidate_instances="always",
-    validate_assignment=True,
-    extra="forbid",
-):
-    """
-    An ExtendableBaseModel with strict validation.
+class PagedCollection(StrictExtendableBaseModel, Generic[T]):
+    """A paged collection of items"""
 
-    By default, Pydantic does not revalidate instances during validation, nor
-    when the data is changed. Validation only occurs when the model is created.
-    This is not suitable for a REST API, where the data is changed after the
-    model is created or the model is created from a partial set of data and
-    then updated with more data. This class enforces strict validation by
-    forcing the revalidation of instances when the method `model_validate` is
-    called and by ensuring that the values assignment is validated.
+    # This is a generic model. The type of the items is defined by the generic type T.
+    # It provides you a common way to return a paged collection of items of
+    # extendable models. It's based on the StrictExtendableBaseModel to ensure
+    # a strict validation when used within the odoo fastapi framework.
 
-    The following parameters are added:
-    * revalidate_instances="always": model instances are revalidated during validation
-    (default is "never")
-    * validate_assignment=True: revalidate the model when the data is changed (default is False)
-    * extra="forbid": Forbid any extra attributes (default is "ignore")
-    """
+    count: Annotated[int, Field(..., description="The count of items into the system")]
+    items: list[T]
