@@ -1,18 +1,39 @@
 # Copyright 2022 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
+import warnings
 from enum import Enum
-from typing import Generic, List, Optional, TypeVar
+from typing import Annotated, Generic, List, Optional, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, computed_field
 
 T = TypeVar("T")
 
 
 class PagedCollection(BaseModel, Generic[T]):
-
-    total: int
+    count: Annotated[
+        int,
+        Field(
+            ...,
+            desciption="Count of items into the system.\n "
+            "Replaces the total field which is deprecated",
+            validation_alias=AliasChoices("count", "total"),
+        ),
+    ]
     items: List[T]
+
+    @computed_field()
+    @property
+    def total(self) -> int:
+        return self.count
+
+    @total.setter
+    def total(self, value: int):
+        warnings.warn(
+            "The total field is deprecated, please use count instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.count = value
 
 
 class Paging(BaseModel):
