@@ -5,7 +5,7 @@ apispec>=4.0.0
 cerberus
 contextvars
 extendable-pydantic
-extendable-pydantic>=1.1.0
+extendable-pydantic>=1.2.0
 extendable>=0.0.4
 fastapi
 graphene

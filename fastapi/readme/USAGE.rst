@@ -1116,8 +1116,9 @@ the app is robust and easy to maintain. Here are some of them:
 
 * As a corollary of the previous point, a search handler must always use the
   pagination mechanism with a reasonable default page size. The result list
-  must be enclosed in a json document that contains the total number of records
-  and the list of records.
+  must be enclosed in a json document that contains the count of records into
+  the system matching your search criteria and the list of records for the given
+  page and size.
 
 * Use plural for the name of a service. For example, if you provide a service
   that allows you to manage the sale orders, you must use the name 'sale_orders'
@@ -1149,7 +1150,7 @@ you be consistent when writing a route handler for a search route.
 1. A dependency method to use to specify the pagination parameters in the same
    way for all the search route handlers: **'odoo.addons.fastapi.paging'**.
 2. A PagedCollection pydantic model to use to return the result of a search route
-   handler enclosed in a json document that contains the total number of records.
+   handler enclosed in a json document that contains the count of records.
 
 .. code-block:: python
 
@@ -1179,7 +1180,7 @@ you be consistent when writing a route handler for a search route.
         count = env["sale.order"].search_count([])
         orders = env["sale.order"].search([], limit=paging.limit, offset=paging.offset)
         return PagedCollection[SaleOrder](
-            total=count,
+            count=count,
             items=[SaleOrder.model_validate(order) for order in orders],
         )
 
