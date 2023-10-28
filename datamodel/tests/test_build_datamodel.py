@@ -78,11 +78,11 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             field_str1 = fields.String(load_default="field_str1")
 
         class Datamodel2(Datamodel):
-            _inherit = "datamodel1"
+            _inherit = "datamodel1"  # pylint:disable=R8180
             field_str2 = fields.String(load_default="field_str2")
 
         class Datamodel3(Datamodel):
-            _inherit = "datamodel1"
+            _inherit = "datamodel1"  # pylint:disable=R8180
             field_str3 = fields.String(load_default="field_str3")
 
         Datamodel1._build_datamodel(self.datamodel_registry)
