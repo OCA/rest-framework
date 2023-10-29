@@ -1,36 +1,31 @@
 #  Copyright (c) Akretion 2020
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from extendable_pydantic import ExtendableModelMeta
+from extendable_pydantic import StrictExtendableBaseModel
 
-from odoo.addons.pydantic import utils
-
-from pydantic import BaseModel
+from pydantic import ConfigDict
 
 
-class AuthLoginInput(BaseModel, metaclass=ExtendableModelMeta):
+class AuthLoginInput(StrictExtendableBaseModel):
     login: str
     password: str
 
 
-class AuthRegisterInput(BaseModel, metaclass=ExtendableModelMeta):
+class AuthRegisterInput(StrictExtendableBaseModel):
     name: str
     login: str
     password: str
 
 
-class AuthForgetPasswordInput(BaseModel, metaclass=ExtendableModelMeta):
+class AuthForgetPasswordInput(StrictExtendableBaseModel):
     login: str
 
 
-class AuthSetPasswordInput(BaseModel, metaclass=ExtendableModelMeta):
+class AuthSetPasswordInput(StrictExtendableBaseModel):
     token: str
     password: str
 
 
-class AuthPartnerResponse(BaseModel, metaclass=ExtendableModelMeta):
+class AuthPartnerResponse(StrictExtendableBaseModel):
     login: str
-
-    class Config:
-        orm_mode = True
-        getter_dict = utils.GenericOdooGetter
+    model_config = ConfigDict(from_attributes=True)
