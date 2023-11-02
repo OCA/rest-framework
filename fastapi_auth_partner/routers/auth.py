@@ -43,7 +43,7 @@ def register(
         env["fastapi.auth.service"].sudo()._register_auth(endpoint.directory_id, data)
     )
     partner_auth._set_auth_cookie(response)
-    return AuthPartnerResponse.model_validate(partner_auth)
+    return AuthPartnerResponse.from_auth_partner(partner_auth)
 
 
 @auth_router.post("/auth/login")
@@ -57,7 +57,7 @@ def login(
         env["fastapi.auth.service"].sudo()._login(endpoint.directory_id, data)
     )
     partner_auth._set_auth_cookie(response)
-    return AuthPartnerResponse.model_validate(partner_auth)
+    return AuthPartnerResponse.from_auth_partner(partner_auth)
 
 
 @auth_router.post("/auth/logout", status_code=205)
@@ -91,7 +91,7 @@ def set_password(
         env["fastapi.auth.service"].sudo()._set_password(endpoint.directory_id, data)
     )
     partner_auth._set_auth_cookie(response)
-    return AuthPartnerResponse.model_validate(partner_auth)
+    return AuthPartnerResponse.from_auth_partner(partner_auth)
 
 
 @auth_router.get("/auth/profile")
@@ -103,7 +103,7 @@ def profile(
     partner_auth = partner.auth_partner_ids.filtered(
         lambda s: s.directory_id == endpoint.sudo().directory_id
     )
-    return AuthPartnerResponse.model_validate(partner_auth)
+    return AuthPartnerResponse.from_auth_partner(partner_auth)
 
 
 class AuthService(models.AbstractModel):

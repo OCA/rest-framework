@@ -3,8 +3,6 @@
 
 from extendable_pydantic import StrictExtendableBaseModel
 
-from pydantic import ConfigDict
-
 
 class AuthLoginInput(StrictExtendableBaseModel):
     login: str
@@ -28,4 +26,7 @@ class AuthSetPasswordInput(StrictExtendableBaseModel):
 
 class AuthPartnerResponse(StrictExtendableBaseModel):
     login: str
-    model_config = ConfigDict(from_attributes=True)
+
+    @classmethod
+    def from_auth_partner(cls, odoo_rec):
+        return cls.model_construct(login=odoo_rec.login)
