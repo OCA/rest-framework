@@ -1,3 +1,13 @@
+16.0.1.2.1 (2023-11-03)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- Fix a typo in the Field declaration of the 'count' attribute of the 'PagedCollection' schema.
+
+  Misspelt parameter was triggering a deprecation warning due to recent versions of Pydantic seeing it as an arbitrary parameter. (`#389 <https://github.com/OCA/rest-framework/issues/389>`_)
+
+
 16.0.1.2.0 (2023-10-13)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
