@@ -13,7 +13,9 @@ class ResPartner(models.Model):
     auth_partner_ids = fields.One2many(
         "fastapi.auth.partner", "partner_id", "Partner Auth"
     )
-    count_partner_auth = fields.Integer(compute="_compute_count_partner_auth")
+    count_partner_auth = fields.Integer(
+        compute="_compute_count_partner_auth", compute_sudo=True
+    )
 
     def _compute_count_partner_auth(self):
         data = self.env["fastapi.auth.partner"].read_group(
