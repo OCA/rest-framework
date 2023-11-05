@@ -11,6 +11,7 @@
                     name="%(fastapi_auth_partner_action)d"
                     icon="fa-user"
                     type="action"
+                    groups="fastapi_auth_partner.group_partner_auth_manager"
                     context="{'search_default_partner_id': active_id}"
                 >
                 <field name="count_partner_auth" />
