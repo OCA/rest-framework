@@ -1,1 +1,0 @@
-Fix registry corruption when running tests difined in a class inheriting of the *FastAPITransactionCase* class if an error occurs in the *setUpClass* after the call to super().

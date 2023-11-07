@@ -1,3 +1,11 @@
+16.0.2.1.1 (2023-11-07)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- Fix registry corruption when running tests difined in a class inheriting of the *FastAPITransactionCase* class if an error occurs in the *setUpClass* after the call to super(). (`#392 <https://github.com/OCA/rest-framework/issues/392>`_)
+
+
 16.0.2.1.0 (2023-10-13)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
