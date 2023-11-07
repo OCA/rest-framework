@@ -14,8 +14,4 @@ class FastAPITransactionCase(BaseFastAPITransactionCase, ExtendableMixin):
     def setUpClass(cls) -> None:
         super().setUpClass()
         cls.init_extendable_registry()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cls.reset_extendable_registry()
-        super().tearDownClass()
+        cls.addClassCleanup(cls.reset_extendable_registry)
