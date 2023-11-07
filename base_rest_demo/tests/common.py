@@ -30,11 +30,7 @@ class CommonCase(BaseRestCase, ExtendableMixin):
             model_name="rest.service.registration", collection=collection
         )
         cls.init_extendable_registry()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.reset_extendable_registry()
-        super().tearDownClass()
+        cls.addClassCleanup(cls.reset_extendable_registry)
 
     # pylint: disable=W8106
     def setUp(self):
