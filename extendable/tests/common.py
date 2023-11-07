@@ -35,7 +35,7 @@ def new_rollbacked_env():
         cr.close()
 
 
-class ExtendableMixin(object):
+class ExtendableMixin:
     @classmethod
     def init_extendable_registry(cls):
         with new_rollbacked_env() as env:

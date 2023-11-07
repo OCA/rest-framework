@@ -9,7 +9,6 @@ from ..tests.routers import demo_pydantic_router
 
 
 class FastapiEndpoint(models.Model):
-
     _inherit = "fastapi.endpoint"
 
     def _get_fastapi_routers(self) -> list[APIRouter]:

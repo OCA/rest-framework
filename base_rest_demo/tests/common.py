@@ -41,5 +41,5 @@ class CommonCase(BaseRestCase, ExtendableMixin):
 
 def get_canonical_json(file_name):
     path = os.path.join(DATA_DIR, file_name)
-    with open(path, "r") as f:
+    with open(path) as f:
         return json.load(f)

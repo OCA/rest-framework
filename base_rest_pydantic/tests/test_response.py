@@ -1,6 +1,5 @@
 # Copyright 2021 Wakari SRL
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
-from typing import List
 from unittest import mock
 
 from odoo.tests.common import TransactionCase
@@ -17,7 +16,7 @@ class TestPydantic(TransactionCase):
         mock_service.env = self.env
         return restapi_pydantic.to_response(mock_service, instance)
 
-    def _to_response_list(self, instance: List[BaseModel]):
+    def _to_response_list(self, instance: list[BaseModel]):
         restapi_pydantic = restapi.PydanticModelList(instance[0].__class__)
         mock_service = mock.Mock()
         mock_service.env = self.env

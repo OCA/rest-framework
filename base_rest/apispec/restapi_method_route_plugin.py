@@ -24,7 +24,7 @@ class RestApiMethodRoutePlugin(BasePlugin):
     """
 
     def __init__(self, service):
-        super(RestApiMethodRoutePlugin, self).__init__()
+        super().__init__()
         self.converter_mapping = dict(DEFAULT_CONVERTER_MAPPING)
         self._service = service
 

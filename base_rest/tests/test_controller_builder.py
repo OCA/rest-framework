@@ -561,7 +561,6 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
             ("csrf", "False"),
             ("save_session", "False"),
         ]:
-
             self.assertEqual(
                 routing[attr],
                 value,
