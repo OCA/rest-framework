@@ -11,7 +11,7 @@ from odoo.addons.component.core import Component
 from odoo.addons.website.tools import MockRequest
 
 
-class TestDBLoggingMixin(object):
+class TestDBLoggingMixin:
     @staticmethod
     def _get_service(class_or_instance, collection=None):
         # pylint: disable=R7980

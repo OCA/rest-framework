@@ -40,8 +40,8 @@ class TestDBLogging(TransactionRestServiceRegistryCase, TestDBLoggingMixin):
         expected = {
             # fmt:off
             "coll1.service1.endpoint": ("success", "failed"),
-            "coll1.service2.endpoint": ("failed", ),
-            "coll2.service1.endpoint": ("success", ),
+            "coll1.service2.endpoint": ("failed",),
+            "coll2.service1.endpoint": ("success",),
             # fmt: on
         }
         self.assertEqual(self.env["rest.log"]._get_log_active_conf(), expected)

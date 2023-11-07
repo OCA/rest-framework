@@ -118,7 +118,7 @@ class FastAPITransactionCase(TransactionCase):
             yield TestClient(
                 app,
                 raise_server_exceptions=raise_server_exceptions,
-                **testclient_kwargs
+                **testclient_kwargs,
             )
         finally:
             odoo_env_ctx.reset(ctx_token)

@@ -5,7 +5,6 @@ from odoo import exceptions as odoo_exceptions
 
 
 class RESTServiceDispatchException(Exception):
-
     rest_json_info = {}
 
     def __init__(self, message, log_entry_url):
