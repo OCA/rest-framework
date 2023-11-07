@@ -12,13 +12,13 @@ class RestMethodSecurityPlugin(BasePlugin):
     """
 
     def __init__(self, service, user_auths=("user",)):
-        super(RestMethodSecurityPlugin, self).__init__()
+        super().__init__()
         self._service = service
         self._supported_user_auths = user_auths
 
     # pylint: disable=W8110
     def init_spec(self, spec):
-        super(RestMethodSecurityPlugin, self).init_spec(spec)
+        super().init_spec(spec)
         self.spec = spec
         self.openapi_version = spec.openapi_version
         user_scheme = {"type": "apiKey", "in": "cookie", "name": "session_id"}
@@ -27,9 +27,7 @@ class RestMethodSecurityPlugin(BasePlugin):
     def operation_helper(self, path=None, operations=None, **kwargs):
         routing = kwargs.get(ROUTING_DECORATOR_ATTR)
         if not routing:
-            super(RestMethodSecurityPlugin, self).operation_helper(
-                path, operations, **kwargs
-            )
+            super().operation_helper(path, operations, **kwargs)
         if not operations:
             return
         auth = routing.get("auth", self.spec._params.get("default_auth"))

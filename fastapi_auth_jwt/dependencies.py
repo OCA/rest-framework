@@ -2,7 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import logging
-from typing import Annotated, Any, Dict, Optional, Tuple, Union
+from typing import Annotated, Any
 
 from starlette.status import HTTP_401_UNAUTHORIZED
 
@@ -25,11 +25,11 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 _logger = logging.getLogger(__name__)
 
 
-Payload = Dict[str, Any]
+Payload = dict[str, Any]
 
 
 def _get_auth_jwt_validator(
-    validator_name: Union[str, None],
+    validator_name: str | None,
     env: Environment,
 ) -> AuthJwtValidator:
     validator = env["auth.jwt.validator"].sudo()._get_validator_by_name(validator_name)
@@ -39,9 +39,9 @@ def _get_auth_jwt_validator(
 
 def _request_has_authentication(
     request: Request,
-    authorization_header: Optional[str],
+    authorization_header: str | None,
     validator: AuthJwtValidator,
-) -> Union[Payload, None]:
+) -> Payload | None:
     if authorization_header is not None:
         return True
     if not validator.cookie_enabled:
@@ -52,7 +52,7 @@ def _request_has_authentication(
 
 def _get_jwt_payload(
     request: Request,
-    authorization_header: Optional[str],
+    authorization_header: str | None,
     validator: AuthJwtValidator,
 ) -> Payload:
     """Obtain and validate the JWT payload from the request authorization header or
@@ -76,9 +76,9 @@ def _get_jwt_payload(
 def _get_jwt_payload_and_validator(
     request: Request,
     response: Response,
-    authorization_header: Optional[str],
+    authorization_header: str | None,
     validator: AuthJwtValidator,
-) -> Tuple[Payload, AuthJwtValidator]:
+) -> tuple[Payload, AuthJwtValidator]:
     try:
         payload = None
         exceptions = {}
@@ -117,15 +117,15 @@ def _get_jwt_payload_and_validator(
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED) from e
 
 
-def auth_jwt_default_validator_name() -> Union[str, None]:
+def auth_jwt_default_validator_name() -> str | None:
     return None
 
 
 def auth_jwt_http_header_authorization(
     credentials: Annotated[
-        Optional[HTTPAuthorizationCredentials],
+        HTTPAuthorizationCredentials | None,
         Depends(HTTPBearer(auto_error=False)),
-    ]
+    ],
 ):
     if credentials is None:
         return None
@@ -134,7 +134,7 @@ def auth_jwt_http_header_authorization(
 
 class BaseAuthJwt:  # noqa: B903
     def __init__(
-        self, validator_name: Optional[str] = None, allow_unauthenticated: bool = False
+        self, validator_name: str | None = None, allow_unauthenticated: bool = False
     ):
         self.validator_name = validator_name
         self.allow_unauthenticated = allow_unauthenticated
@@ -146,18 +146,18 @@ class AuthJwtPayload(BaseAuthJwt):
         request: Request,
         response: Response,
         authorization_header: Annotated[
-            Optional[str],
+            str | None,
             Depends(auth_jwt_http_header_authorization),
         ],
         default_validator_name: Annotated[
-            Union[str, None],
+            str | None,
             Depends(auth_jwt_default_validator_name),
         ],
         env: Annotated[
             Environment,
             Depends(odoo_env),
         ],
-    ) -> Optional[Payload]:
+    ) -> Payload | None:
         validator = _get_auth_jwt_validator(
             self.validator_name or default_validator_name, env
         )
@@ -176,11 +176,11 @@ class AuthJwtPartner(BaseAuthJwt):
         request: Request,
         response: Response,
         authorization_header: Annotated[
-            Optional[str],
+            str | None,
             Depends(auth_jwt_http_header_authorization),
         ],
         default_validator_name: Annotated[
-            Union[str, None],
+            str | None,
             Depends(auth_jwt_default_validator_name),
         ],
         env: Annotated[
@@ -215,11 +215,11 @@ class AuthJwtOdooEnv(BaseAuthJwt):
         request: Request,
         response: Response,
         authorization_header: Annotated[
-            Optional[str],
+            str | None,
             Depends(auth_jwt_http_header_authorization),
         ],
         default_validator_name: Annotated[
-            Union[str, None],
+            str | None,
             Depends(auth_jwt_default_validator_name),
         ],
         env: Annotated[
