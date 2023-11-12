@@ -13,5 +13,5 @@
     "maintainers": ["lmignon"],
     "website": "https://github.com/OCA/rest-framework",
     "external_dependencies": {"python": ["marshmallow", "marshmallow-objects>=2.0.0"]},
-    "installable": True,
+    "installable": False,
 }
