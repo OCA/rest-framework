@@ -12,5 +12,5 @@
     "author": "ACSONE SA/NV, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/rest-framework",
     "external_dependencies": {"python": ["extendable>=0.0.4"]},
-    "installable": True,
+    "installable": False,
 }

@@ -10,7 +10,7 @@
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/rest-framework",
     "depends": ["base_rest"],
-    "installable": True,
+    "installable": False,
     "external_dependencies": {
         "python": [
             "pydantic>=2.0.0",

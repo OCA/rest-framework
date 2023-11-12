@@ -22,5 +22,5 @@
     "external_dependencies": {
         "python": ["jsondiff", "extendable-pydantic", "marshmallow", "pydantic>=2.0.0"]
     },
-    "installable": True,
+    "installable": False,
 }

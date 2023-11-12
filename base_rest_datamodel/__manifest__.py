@@ -11,5 +11,5 @@
     "website": "https://github.com/OCA/rest-framework",
     "depends": ["base_rest", "datamodel"],
     "external_dependencies": {"python": ["apispec>=4.0.0", "marshmallow"]},
-    "installable": True,
+    "installable": False,
 }
