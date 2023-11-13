@@ -144,7 +144,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
 
 
 class CommonCase(BaseRestCase):
-
     # dummy test method to pass codecov
     def test_04(self):
         self.assertEqual(self.registry.test_cr, self.cr)

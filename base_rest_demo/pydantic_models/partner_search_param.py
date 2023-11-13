@@ -7,6 +7,5 @@ from pydantic import BaseModel
 
 
 class PartnerSearchParam(BaseModel, metaclass=ExtendableModelMeta):
-
     id: int = None
     name: str = None

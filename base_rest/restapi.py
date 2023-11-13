@@ -299,7 +299,7 @@ class CerberusListValidator(CerberusValidator):
                              contain unique items.
                              (Not enforced at validation time)
         """
-        super(CerberusListValidator, self).__init__(schema=schema)
+        super().__init__(schema=schema)
         self._min_items = min_items
         self._max_items = max_items
         self._unique_items = unique_items

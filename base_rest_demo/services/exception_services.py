@@ -88,7 +88,7 @@ class ExceptionService(Component):
         Should be translated into InternalServerError without description into
         the json body
         """
-        raise IOError("My IO error")
+        raise OSError("My IO error")
 
     # Validator
     def _validator_user_error(self):

@@ -5,6 +5,5 @@ from .naive_orm_model import NaiveOrmModel
 
 
 class StateInfo(NaiveOrmModel):
-
     id: int
     name: str

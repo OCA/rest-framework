@@ -13,7 +13,7 @@ from .. import restapi
 
 class TestDataModel(common.DatamodelRegistryCase):
     def setUp(self):
-        super(TestDataModel, self).setUp()
+        super().setUp()
 
         class Datamodel1(Datamodel):
             _name = "datamodel1"

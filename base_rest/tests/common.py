@@ -29,7 +29,7 @@ from ..core import (
 from ..tools import ROUTING_DECORATOR_ATTR, _inspect_methods
 
 
-class RegistryMixin(object):
+class RegistryMixin:
     @classmethod
     def setUpRegistry(cls):
         with new_rollbacked_env() as env:
@@ -53,7 +53,6 @@ class RegistryMixin(object):
 
 
 class RestServiceRegistryCase(ComponentRegistryCase):
-
     # pylint: disable=W8106
     @staticmethod
     def _setup_registry(class_or_instance):
@@ -223,7 +222,7 @@ class TransactionRestServiceRegistryCase(TransactionCase, RestServiceRegistryCas
     class MyTestCase(TransactionRestServiceRegistryCase):
         @classmethod
         def setUpClass(cls):
-            super().setUpClass()
+            super()setUpClass()
             cls._setup_registry(cls)
 
         @classmethod
