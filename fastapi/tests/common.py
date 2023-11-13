@@ -98,7 +98,13 @@ class FastAPITransactionCase(TransactionCase):
             or self.default_fastapi_authenticated_partner
             or self.env["res.partner"]
         )
-        dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
+        if partner and authenticated_partner_impl in dependencies:
+            raise ValueError(
+                "You cannot provide an override for the authenticated_partner_impl "
+                "dependency when creating a test client with a partner."
+            )
+        if partner or authenticated_partner_impl not in dependencies:
+            dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
         app = app or self.default_fastapi_app or FastAPI()
         router = router or self.default_fastapi_router
         if router:
