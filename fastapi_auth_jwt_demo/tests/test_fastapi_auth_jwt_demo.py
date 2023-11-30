@@ -52,6 +52,14 @@ class TestEndToEnd(tests.HttpCase):
         self.assertEqual(whoami.get("email"), partner.email)
         self.assertEqual(whoami.get("uid"), self.env.ref("base.user_demo").id)
 
+    def test_whoami_no_partner(self):
+        """A end-to-end test with positive authentication but no partner retrieved."""
+        token = self._get_token()
+        resp = self.url_open(
+            "/fastapi_auth_jwt_demo/whoami", headers={"Authorization": token}
+        )
+        self.assertEqual(resp.status_code, 401)
+
     def test_whoami_cookie(self):
         """A end-to-end test with positive authentication and cookie."""
         partner = self.env["res.users"].search([("email", "!=", False)])[0]
@@ -104,6 +112,28 @@ class TestEndToEnd(tests.HttpCase):
         self.assertEqual(whoami.get("name"), partner.name)
         self.assertEqual(whoami.get("email"), partner.email)
         self.assertEqual(whoami.get("uid"), self.env.ref("base.user_demo").id)
+
+    def test_public_no_partner(self):
+        """A end-to-end test for anonymous/public access without partner."""
+        token = self._get_token()
+        resp = self.url_open(
+            "/fastapi_auth_jwt_demo/whoami-public-or-jwt",
+            headers={"Authorization": token},
+        )
+        resp.raise_for_status()
+        whoami = resp.json()
+        self.assertFalse(whoami.get("name"))
+        self.assertFalse(whoami.get("email"))
+        self.assertEqual(whoami.get("uid"), self.env.ref("base.user_demo").id)
+        # now with partner required on validator
+        self.env["auth.jwt.validator"].search(
+            [("name", "=", "demo")]
+        ).partner_id_required = True
+        resp = self.url_open(
+            "/fastapi_auth_jwt_demo/whoami-public-or-jwt",
+            headers={"Authorization": token},
+        )
+        self.assertEqual(resp.status_code, 401)
 
     def test_public_cookie_mode(self):
         """A end-to-end test for anonymous/public access with cookie."""
