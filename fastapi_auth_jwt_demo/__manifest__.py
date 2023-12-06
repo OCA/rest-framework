@@ -5,7 +5,7 @@
     "name": "FastAPI Auth JWT Test",
     "summary": """
         Test/demo module for fastapi_auth_jwt.""",
-    "version": "16.0.2.0.0",
+    "version": "16.0.2.0.1",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "maintainers": ["sbidoul"],
