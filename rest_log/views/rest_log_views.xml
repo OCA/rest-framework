@@ -63,7 +63,7 @@
                         attrs="{'invisible': [('state', '!=', 'success')]}"
                     >
                         <group>
-                            <field name="result" nolabel="1" widget="ace" />
+                            <field name="result" nolabel="1" widget="ace" colspan="2" />
                         </group>
                     </group>
                     <group

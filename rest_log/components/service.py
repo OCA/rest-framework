@@ -74,7 +74,7 @@ class BaseRESTService(AbstractComponent):
         try:
             with self.env.cr.savepoint():
                 log_entry = self._log_call_in_db(
-                    self.env, request, method_name, *args, params
+                    self.env, request, method_name, *args, params, result=result
                 )
                 if log_entry and not isinstance(result, Response):
                     log_entry_url = self._get_log_entry_url(log_entry)
