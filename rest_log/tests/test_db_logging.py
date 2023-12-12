@@ -2,10 +2,10 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 # from urllib.parse import urlparse
 import json
-
-import mock
+from unittest import mock
 
 from odoo import exceptions
+from odoo.http import Response
 from odoo.tools import mute_logger
 
 from odoo.addons.base_rest.controllers.main import _PseudoCollection
@@ -229,6 +229,54 @@ class TestDBLogging(TransactionRestServiceRegistryCase, TestDBLoggingMixin):
         expected = self.log_model.EXCEPTION_SEVERITY_MAPPING.copy()
         expected["ValueError"] = "warning"
         self.assertEqual(mapping, expected)
+
+    def test_log_entry_values_success_with_response(self):
+        with self._get_mocked_request() as mocked_request:
+            res = Response(
+                b"A test .pdf file to download",
+                headers=[
+                    ("Content-Type", "application/pdf"),
+                    ("X-Content-Type-Options", "nosniff"),
+                    ("Content-Disposition", "attachment; filename*=UTF-8''test.pdf"),
+                    ("Content-Length", 28),
+                ],
+            )
+            res.status_code = 200
+            entry = self.service._log_call_in_db(
+                self.env, mocked_request, "method", result=res
+            )
+        self.assertEqual(entry.state, "success")
+        self.assertEqual(
+            json.loads(entry.result),
+            {
+                "headers": {
+                    "Content-Disposition": "attachment; filename*=UTF-8''test.pdf",
+                    "Content-Length": "28",
+                    "Content-Type": "application/pdf",
+                    "X-Content-Type-Options": "nosniff",
+                },
+                "status": 200,
+            },
+        )
+
+    def test_log_entry_values_failure_with_response(self):
+        with self._get_mocked_request() as mocked_request:
+            res = Response(b"", headers=[])
+            res.status_code = 418
+            entry = self.service._log_call_in_db(
+                self.env, mocked_request, "method", result=res
+            )
+        self.assertEqual(entry.state, "failed")
+        self.assertEqual(
+            json.loads(entry.result),
+            {
+                "headers": {
+                    "Content-Length": "0",
+                    "Content-Type": "text/html; charset=utf-8",
+                },
+                "status": 418,
+            },
+        )
 
 
 class TestDBLoggingExceptionBase(

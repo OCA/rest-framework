@@ -4,12 +4,13 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
 import json
+import logging
 import traceback
 
 from werkzeug.urls import url_encode, url_join
 
 from odoo import exceptions, registry
-from odoo.http import request
+from odoo.http import Response, request
 
 from odoo.addons.base_rest.http import JSONEncoder
 from odoo.addons.component.core import AbstractComponent
@@ -20,10 +21,12 @@ from ..exceptions import (
     RESTServiceValidationErrorException,
 )
 
+_logger = logging.getLogger(__name__)
+
 
 def json_dump(data):
     """Encode data to JSON as we like."""
-    return json.dumps(data, cls=JSONEncoder, indent=4, sort_keys=True)
+    return json.dumps(data, cls=JSONEncoder, indent=4, sort_keys=True, default=str)
 
 
 class BaseRESTService(AbstractComponent):
@@ -37,10 +40,9 @@ class BaseRESTService(AbstractComponent):
         return self._dispatch_with_db_logging(method_name, *args, params=params)
 
     def _dispatch_with_db_logging(self, method_name, *args, params=None):
-        # TODO: consider refactoring thi using a savepoint as described here
-        # https://github.com/OCA/rest-framework/pull/106#pullrequestreview-582099258
         try:
-            result = super().dispatch(method_name, *args, params=params)
+            with self.env.cr.savepoint():
+                result = super().dispatch(method_name, *args, params=params)
         except exceptions.ValidationError as orig_exception:
             self._dispatch_exception(
                 method_name,
@@ -65,34 +67,41 @@ class BaseRESTService(AbstractComponent):
                 *args,
                 params=params,
             )
-        log_entry = self._log_call_in_db(
-            self.env, request, method_name, *args, params=params, result=result
-        )
-        if log_entry and isinstance(result, dict):
-            log_entry_url = self._get_log_entry_url(log_entry)
-            result["log_entry_url"] = log_entry_url
+        self._log_dispatch_success(method_name, result, *args, params)
         return result
+
+    def _log_dispatch_success(self, method_name, result, *args, params=None):
+        try:
+            with self.env.cr.savepoint():
+                log_entry = self._log_call_in_db(
+                    self.env, request, method_name, *args, params, result=result
+                )
+                if log_entry and not isinstance(result, Response):
+                    log_entry_url = self._get_log_entry_url(log_entry)
+                    result["log_entry_url"] = log_entry_url
+        except Exception as e:
+            _logger.exception("Rest Log Error Creation: %s", e)
 
     def _dispatch_exception(
         self, method_name, exception_klass, orig_exception, *args, params=None
     ):
-        tb = traceback.format_exc()
-        # TODO: how to test this? Cannot rollback nor use another cursor
-        self.env.cr.rollback()
-        with registry(self.env.cr.dbname).cursor() as cr:
-            env = self.env(cr=cr)
-            log_entry = self._log_call_in_db(
-                env,
-                request,
-                method_name,
-                *args,
-                params=params,
-                traceback=tb,
-                orig_exception=orig_exception,
-            )
-            log_entry_url = self._get_log_entry_url(log_entry)
-        # UserError and alike have `name` attribute to store the msg
-        exc_msg = self._get_exception_message(orig_exception)
+        exc_msg, log_entry_url = None, None  # in case it fails below
+        try:
+            exc_msg = self._get_exception_message(orig_exception)
+            tb = traceback.format_exc()
+            with registry(self.env.cr.dbname).cursor() as cr:
+                log_entry = self._log_call_in_db(
+                    self.env(cr=cr),
+                    request,
+                    method_name,
+                    *args,
+                    params=params,
+                    traceback=tb,
+                    orig_exception=orig_exception,
+                )
+                log_entry_url = self._get_log_entry_url(log_entry)
+        except Exception as e:
+            _logger.exception("Rest Log Error Creation: %s", e)
         raise exception_klass(exc_msg, log_entry_url) from orig_exception
 
     def _get_exception_message(self, exception):
@@ -115,16 +124,44 @@ class BaseRESTService(AbstractComponent):
 
     def _log_call_in_db_values(self, _request, *args, params=None, **kw):
         httprequest = _request.httprequest
-        headers = dict(httprequest.headers)
-        for header_key in self._log_call_header_strip:
-            if header_key in headers:
-                headers[header_key] = "<redacted>"
+        headers = self._log_call_sanitize_headers(dict(httprequest.headers or []))
+        params = dict(params or {})
         if args:
-            params = dict(params or {}, args=args)
+            params.update(args=args)
+        params = self._log_call_sanitize_params(params)
+        error, exception_name, exception_message = self._log_call_prepare_error(**kw)
+        result, state = self._log_call_prepare_result(kw.get("result"))
+        collection = self.work.collection
+        return {
+            "collection": collection._name,
+            "collection_id": collection.id,
+            "request_url": httprequest.url,
+            "request_method": httprequest.method,
+            "params": params,
+            "headers": headers,
+            "result": result,
+            "error": error,
+            "exception_name": exception_name,
+            "exception_message": exception_message,
+            "state": state,
+        }
 
-        result = kw.get("result")
-        error = kw.get("traceback")
-        orig_exception = kw.get("orig_exception")
+    def _log_call_prepare_result(self, result):
+        # NB: ``result`` might be an object of class ``odoo.http.Response``,
+        # for example when you try to download a file. In this case, we need to
+        # handle it properly, without the assumption that ``result`` is a dict.
+        if isinstance(result, Response):
+            status_code = result.status_code
+            result = {
+                "status": status_code,
+                "headers": self._log_call_sanitize_headers(dict(result.headers or [])),
+            }
+            state = "success" if status_code in range(200, 300) else "failed"
+        else:
+            state = "success" if result else "failed"
+        return result, state
+
+    def _log_call_prepare_error(self, traceback=None, orig_exception=None, **kw):
         exception_name = None
         exception_message = None
         if orig_exception:
@@ -132,27 +169,29 @@ class BaseRESTService(AbstractComponent):
             if hasattr(orig_exception, "__module__"):
                 exception_name = orig_exception.__module__ + "." + exception_name
             exception_message = self._get_exception_message(orig_exception)
-        collection = self.work.collection
-        return {
-            "collection": collection._name,
-            "collection_id": collection.id,
-            "request_url": httprequest.url,
-            "request_method": httprequest.method,
-            "params": json_dump(params),
-            "headers": json_dump(headers),
-            "result": json_dump(result),
-            "error": error,
-            "exception_name": exception_name,
-            "exception_message": exception_message,
-            "state": "success" if result else "failed",
-        }
+        return traceback, exception_name, exception_message
+
+    _log_call_in_db_keys_to_serialize = ("params", "headers", "result")
 
     def _log_call_in_db(self, env, _request, method_name, *args, params=None, **kw):
         values = self._log_call_in_db_values(_request, *args, params=params, **kw)
+        for k in self._log_call_in_db_keys_to_serialize:
+            values[k] = json_dump(values[k])
         enabled_states = self._get_matching_active_conf(method_name)
         if not values or enabled_states and values["state"] not in enabled_states:
             return
         return env["rest.log"].sudo().create(values)
+
+    def _log_call_sanitize_params(self, params: dict) -> dict:
+        if "password" in params:
+            params["password"] = "<redacted>"
+        return params
+
+    def _log_call_sanitize_headers(self, headers: dict) -> dict:
+        for header_key in self._log_call_header_strip:
+            if header_key in headers:
+                headers[header_key] = "<redacted>"
+        return headers
 
     def _db_logging_active(self, method_name):
         enabled = self._log_calls_in_db
