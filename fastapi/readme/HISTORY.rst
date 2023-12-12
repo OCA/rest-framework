@@ -1,3 +1,19 @@
+16.0.1.2.2 (2023-12-12)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- When using the 'FastAPITransactionCase' class, allows to specify a specific
+  override of the 'authenticated_partner_impl' method into the list of
+  overrides to apply. Before this change, the 'authenticated_partner_impl'
+  override given in the 'overrides' parameter was always overridden in the
+  '_create_test_client' method of the 'FastAPITransactionCase' class. It's now
+  only overridden if the 'authenticated_partner_impl' method is not already
+  present in the list of overrides to apply and no specific partner is given.
+  If a specific partner is given at same time of an override for the
+  'authenticated_partner_impl' method, an error is raised. (`#396 <https://github.com/OCA/rest-framework/issues/396>`_)
+
+
 16.0.1.2.1 (2023-11-03)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
