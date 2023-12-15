@@ -29,7 +29,7 @@ class WizardPartnerAuthResetPassword(models.Model):
         domain=[("model_id", "=", "fastapi.auth.partner")],
     )
     date_validity = fields.Datetime(
-        "Date Validity", compute="_compute_date_validity", store=True, readonly=False
+        compute="_compute_date_validity", store=True, readonly=False
     )
 
     @api.depends("delay")

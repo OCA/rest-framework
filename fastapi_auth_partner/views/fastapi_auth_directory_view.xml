@@ -4,7 +4,7 @@
     <record id="fastapi_auth_directory_view_tree" model="ir.ui.view">
         <field name="model">fastapi.auth.directory</field>
         <field name="arch" type="xml">
-            <tree string="Directory Auth">
+            <tree>
                 <field name="name" />
             </tree>
         </field>
