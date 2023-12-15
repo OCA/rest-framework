@@ -5,14 +5,13 @@
     "name": "Partner Auth",
     "summary": """
         Implements the base features for a authenticable partner""",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "author": "Akretion,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/rest-framework",
     "depends": [
         "extendable_fastapi",
         "mail",
-        "base_future_response",
         "queue_job",
     ],
     "data": [

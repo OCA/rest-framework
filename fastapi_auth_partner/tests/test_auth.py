@@ -82,7 +82,7 @@ class TestAuth(CommonTestAuth):
             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             mail = self.env["mail.mail"].search([], limit=1, order="id desc")
-            token = mail.body.split("token=")[1].split('" targe')[0]
+            token = str(mail.body).split("token=")[1].split('">')[0]
             response: Response = test_client.post(
                 "/auth/set_password",
                 content=json.dumps(
