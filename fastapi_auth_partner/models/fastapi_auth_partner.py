@@ -185,15 +185,16 @@ class FastApiAuthPartner(models.Model):
         self.nbr_pending_reset_sent += 1
         return "Instruction sent by email"
 
-    def request_reset_password(self, directory, login):
+    def request_reset_password(self, directory_id, login):
         # request_reset_password is called from a job so we return the result as a string
         auth = self.search(
             [
-                ("directory_id", "=", directory.id),
+                ("directory_id", "=", directory_id),
                 ("login", "=", login),
             ]
         )
         if auth:
+            directory = self.env["fastapi.auth.directory"].browse(directory_id)
             template = self._get_template_request_reset_password(directory)
             if not template:
                 raise UserError(
