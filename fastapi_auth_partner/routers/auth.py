@@ -10,7 +10,7 @@ if sys.version_info >= (3, 9):
 else:
     from typing_extensions import Annotated
 
-from odoo import _, fields, models
+from odoo import SUPERUSER_ID, _, fields, models
 from odoo.api import Environment
 
 from odoo.addons.base.models.res_partner import Partner
@@ -76,8 +76,9 @@ def request_reset_password(
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
 ):
     env["fastapi.auth.service"].sudo()._request_reset_password(
-        endpoint.directory_id, data
+        endpoint.directory_id.id, data
     )
+    return {}
 
 
 @auth_router.post("/auth/set_password")
@@ -157,6 +158,6 @@ class AuthService(models.AbstractModel):
         return partner_auth
 
     def _request_reset_password(self, directory, data):
-        self.env["fastapi.auth.partner"].sudo().with_delay().request_reset_password(
-            directory, data.login
-        )
+        self.env["fastapi.auth.partner"].with_user(
+            SUPERUSER_ID
+        ).with_delay().request_reset_password(directory, data.login)
