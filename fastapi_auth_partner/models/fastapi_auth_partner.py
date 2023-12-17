@@ -179,7 +179,7 @@ class FastApiAuthPartner(models.Model):
     def send_reset_password(self, template, force_expiration=None):
         self.ensure_one()
         token = self._generate_token(force_expiration=force_expiration)
-        template.sudo().with_context(token=token).send_mail(self.id)
+        template.sudo().with_context(token=token).send_mail(self.id, force_send=True)
         self.date_last_request_reset_pwd = fields.Datetime.now()
         self.date_last_sucessfull_reset_pwd = None
         self.nbr_pending_reset_sent += 1
