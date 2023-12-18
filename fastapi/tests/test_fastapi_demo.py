@@ -47,7 +47,9 @@ class FastAPIDemoCase(FastAPITransactionCase):
             demo_app._get_app(), raise_server_exceptions=False
         ) as test_client, mock.patch.object(
             self.env.cr.__class__, "rollback"
-        ) as mock_rollback:
+        ) as mock_rollback, mock.patch.object(
+            self.env.cr.__class__, "close"
+        ) as mock_close:
             response: Response = test_client.get(
                 "/demo/exception",
                 params={
@@ -56,6 +58,7 @@ class FastAPIDemoCase(FastAPITransactionCase):
                 },
             )
             mock_rollback.assert_called_once()
+            mock_close.assert_called_once()
         self.assertEqual(response.status_code, expected_status_code)
         self.assertDictEqual(
             response.json(),
