@@ -1,0 +1,4 @@
+In case of exception in endpoint execution, close the database cursor after rollback.
+
+This is to ensure that the *retrying* method in *service/model.py* does not try
+to flush data to the database.
