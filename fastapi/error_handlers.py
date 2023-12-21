@@ -23,10 +23,15 @@ _logger = logging.getLogger(__name__)
 
 
 def _rollback(request: Request, reason: str) -> None:
-    cr = odoo_env_ctx.get().cr
+    env = odoo_env_ctx.get()
+    cr = env.cr
     if cr is not None:
         _logger.debug("rollback on %s", reason)
         cr.rollback()
+        # Also close the cursor, so `retrying` in service/model.py does not attempt to
+        # flush.
+        if not (env.registry.in_test_mode()):
+            cr.close()
 
 
 async def _odoo_user_error_handler(
