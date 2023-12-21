@@ -1,3 +1,14 @@
+16.0.1.2.3 (2023-12-21)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- In case of exception in endpoint execution, close the database cursor after rollback.
+
+  This is to ensure that the *retrying* method in *service/model.py* does not try
+  to flush data to the database. (`#405 <https://github.com/OCA/rest-framework/issues/405>`_)
+
+
 16.0.1.2.2 (2023-12-12)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
