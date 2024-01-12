@@ -49,10 +49,6 @@ class FastApiDispatcher(Dispatcher):
     @contextmanager
     def _manage_odoo_env(self, uid=None):
         env = request.env
-        # add authenticated_partner_id=False in the context
-        # to ensure that the ir.rule defined for user's endpoint can be
-        # evaluated even if not authenticated partner is set
-        env = env(context=dict(env.context, authenticated_partner_id=False))
         accept_language = request.httprequest.headers.get("Accept-language")
         context = env.context
         if accept_language:
