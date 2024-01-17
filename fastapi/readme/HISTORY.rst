@@ -1,3 +1,15 @@
+16.0.1.2.5 (2024-01-17)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- Odoo has done an update and now, it checks domains of ir.rule on creation and modification.
+
+  The ir.rule 'Fastapi: Running user rule' uses a field (authenticate_partner_id) that comes from the context.
+  This field wasn't always set and this caused an error when Odoo checked the domain.
+  So now it is set to *False* by default. (`#410 <https://github.com/OCA/rest-framework/issues/410>`_)
+
+
 16.0.1.2.3 (2023-12-21)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
