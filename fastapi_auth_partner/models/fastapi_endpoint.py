@@ -18,9 +18,7 @@ class FastapiEndpoint(models.Model):
         selection_add=[("demo", "Demo Endpoint")], ondelete={"demo": "cascade"}
     )
     demo_auth_method = fields.Selection(
-        selection=[
-            ("api_key", "Api Key"),
-            ("http_basic", "HTTP Basic"),
+        selection_add=[
             ("auth_partner", "Partner Auth"),
         ],
         string="Authenciation method",
