@@ -14,7 +14,7 @@
 
     <record model="ir.rule" id="fastapi_auth_partner_api_rule">
         <field name="name">Fast API auth API (fastapi_partner_auth)</field>
-        <field name="model_id" ref="base.model_res_partner" />
+        <field name="model_id" ref="fastapi_auth_partner.model_fastapi_auth_partner" />
         <field name="groups" eval="[(4, ref('group_partner_auth_api'))]" />
         <field
             name="domain_force"
