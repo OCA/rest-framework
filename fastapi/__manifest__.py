@@ -10,7 +10,10 @@
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
     "website": "https://github.com/OCA/rest-framework",
-    "depends": ["endpoint_route_handler"],
+    "depends": [
+        "base_rest",
+        "endpoint_route_handler",
+    ],
     "data": [
         "security/res_groups.xml",
         "security/fastapi_endpoint.xml",
