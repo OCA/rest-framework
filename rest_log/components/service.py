@@ -16,6 +16,7 @@ from odoo.addons.component.core import AbstractComponent
 
 from ..exceptions import (
     RESTServiceDispatchException,
+    RESTServiceMissingErrorException,
     RESTServiceUserErrorException,
     RESTServiceValidationErrorException,
 )
@@ -41,6 +42,14 @@ class BaseRESTService(AbstractComponent):
         # https://github.com/OCA/rest-framework/pull/106#pullrequestreview-582099258
         try:
             result = super().dispatch(method_name, *args, params=params)
+        except exceptions.MissingError as orig_exception:
+            self._dispatch_exception(
+                method_name,
+                RESTServiceMissingErrorException,
+                orig_exception,
+                *args,
+                params=params,
+            )
         except exceptions.ValidationError as orig_exception:
             self._dispatch_exception(
                 method_name,
