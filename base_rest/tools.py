@@ -71,6 +71,7 @@ def _get_field_props(spec):  # noqa: C901
     if "allowed" in spec:
         resp["enum"] = spec["allowed"]
 
+    resp["type"] = [] if len(_types) > 1 else ""
     for _type in _types:
         if "minlength" in spec:
             if _type == "string":
@@ -94,7 +95,11 @@ def _get_field_props(spec):  # noqa: C901
 
         json_type = type_map.get(_type, (_type,))
 
-        resp["type"] = json_type[0]
+        if type(resp["type"]) is list:
+            resp["type"].append(json_type[0])
+        else:
+            resp["type"] = json_type[0]
+
         if json_type[0] == "object":
             if "schema" in spec:
                 resp.update(cerberus_to_json(spec["schema"]))
