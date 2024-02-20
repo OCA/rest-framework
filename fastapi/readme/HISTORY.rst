@@ -1,3 +1,16 @@
+16.0.1.2.6 (2024-02-20)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- Fix compatibility issues with the latest Odoo version
+
+  From https://github.com/odoo/odoo/commit/cb1d057dcab28cb0b0487244ba99231ee292502e
+  the original werkzeug HTTPRequest class has been wrapped in a new class to keep
+  under control the attributes developers use. This changes take care of this
+  new implementation but also keep compatibility with the old ones. (`#414 <https://github.com/OCA/rest-framework/issues/414>`_)
+
+
 16.0.1.2.5 (2024-01-17)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
