@@ -42,8 +42,19 @@ class FastApiDispatcher(Dispatcher):
         self.headers = dict(headers_tuple)
 
     def _get_environ(self):
-        environ = self.request.httprequest.environ
-        environ["wsgi.input"] = self.request.httprequest._get_stream_for_parsing()
+        try:
+            # normal case after
+            # https://github.com/odoo/odoo/commit/cb1d057dcab28cb0b0487244ba99231ee292502e
+            httprequest = self.request.httprequest._HTTPRequest__wrapped
+        except AttributeError:
+            # fallback for older odoo versions
+            # The try except is the most efficient way to handle this
+            # as we expect that most of the time the attribute will be there
+            # and this code will no more be executed if it runs on an up to
+            # date odoo version. (EAFP: Easier to Ask for Forgiveness than Permission)
+            httprequest = self.request.httprequest
+        environ = httprequest.environ
+        environ["wsgi.input"] = httprequest._get_stream_for_parsing()
         return environ
 
     @contextmanager
