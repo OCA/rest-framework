@@ -1,6 +1,6 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
-from typing import Annotated, Any, List
+from typing import Annotated, Any
 
 from odoo import _, api, fields, models
 from odoo.api import Environment
@@ -20,7 +20,6 @@ from ..routers import demo_router, demo_router_doc
 
 
 class FastapiEndpoint(models.Model):
-
     _inherit = "fastapi.endpoint"
 
     app: str = fields.Selection(
@@ -31,7 +30,7 @@ class FastapiEndpoint(models.Model):
         string="Authenciation method",
     )
 
-    def _get_fastapi_routers(self) -> List[APIRouter]:
+    def _get_fastapi_routers(self) -> list[APIRouter]:
         if self.app == "demo":
             return [demo_router]
         return super()._get_fastapi_routers()
@@ -48,7 +47,7 @@ class FastapiEndpoint(models.Model):
                 )
 
     @api.model
-    def _fastapi_app_fields(self) -> List[str]:
+    def _fastapi_app_fields(self) -> list[str]:
         fields = super()._fastapi_app_fields()
         fields.append("demo_auth_method")
         return fields

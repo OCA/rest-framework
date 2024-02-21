@@ -17,10 +17,9 @@ class IrRule(models.Model):
     @api.model
     def _eval_context(self):
         ctx = super()._eval_context()
-        if "authenticated_partner_id" in self.env.context:
-            ctx["authenticated_partner_id"] = self.env.context[
-                "authenticated_partner_id"
-            ]
+        ctx["authenticated_partner_id"] = self.env.context.get(
+            "authenticated_partner_id", False
+        )
         return ctx
 
     def _compute_domain_keys(self):

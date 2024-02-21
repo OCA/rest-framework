@@ -20,20 +20,20 @@
                             type="object"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': [('registry_sync', '=', True)]}"
+                            invisible="registry_sync"
                         />
                     </div>
                     <widget
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <widget
                         name="web_ribbon"
                         title="Registry Sync Required"
                         bg_color="bg-warning"
-                        attrs="{'invisible': [('registry_sync', '=', True)]}"
+                        invisible="registry_sync"
                     />
                     <div class="oe_title">
                         <label for="name" />
@@ -87,8 +87,8 @@
         <field name="model">fastapi.endpoint</field>
         <field name="arch" type="xml">
             <tree decoration-warning="not registry_sync" decoration-muted="not active">
-                <field name="active" invisible="1" />
-                <field name="registry_sync" invisible="1" />
+                <field name="active" column_invisible="1" />
+                <field name="registry_sync" column_invisible="1" />
                 <field name="name" />
                 <field name="app" />
                 <field name="root_path" />
@@ -101,7 +101,7 @@
                     type="object"
                     class="oe_highlight"
                     icon="fa-refresh"
-                    attrs="{'invisible': [('registry_sync', '=', True)]}"
+                    invisible="registry_sync"
                 />
             </tree>
         </field>

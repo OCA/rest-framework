@@ -11,7 +11,6 @@ exclude: |
   ^datamodel/|
   ^extendable/|
   ^extendable_fastapi/|
-  ^fastapi/|
   ^fastapi_auth_jwt/|
   ^fastapi_auth_jwt_demo/|
   ^graphql_base/|

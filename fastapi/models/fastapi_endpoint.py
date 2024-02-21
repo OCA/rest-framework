@@ -2,9 +2,10 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
 import logging
+from collections.abc import Awaitable, Callable
 from functools import partial
 from itertools import chain
-from typing import Any, Awaitable, Callable, Dict, List, Tuple, Type, Union
+from typing import Any
 
 from a2wsgi import ASGIMiddleware
 from starlette.middleware import Middleware
@@ -20,7 +21,6 @@ _logger = logging.getLogger(__name__)
 
 
 class FastapiEndpoint(models.Model):
-
     _name = "fastapi.endpoint"
     _inherit = "endpoint.route.sync.mixin"
     _description = "FastAPI Endpoint"
@@ -111,7 +111,7 @@ class FastapiEndpoint(models.Model):
         return tuple(res)
 
     @api.model
-    def _routing_impacting_fields(self) -> Tuple[str]:
+    def _routing_impacting_fields(self) -> tuple[str]:
         """The list of fields requiring to refresh the mount point of the pp
         into odoo if modified"""
         return ("root_path",)
@@ -134,11 +134,11 @@ class FastapiEndpoint(models.Model):
         if refresh_fastapi_app:
             self._reset_app()
         if "user_id" in vals:
-            self.get_uid.clear_cache(self)
+            self.env.registry.clear_cache()
         return False
 
     @api.model
-    def _fastapi_app_fields(self) -> List[str]:
+    def _fastapi_app_fields(self) -> list[str]:
         """The list of fields requiring to refresh the fastapi app if modified"""
         return []
 
@@ -181,13 +181,13 @@ class FastapiEndpoint(models.Model):
             # csrf ?????
         }
 
-    def _endpoint_registry_route_unique_key(self, routing: Dict[str, Any]):
+    def _endpoint_registry_route_unique_key(self, routing: dict[str, Any]):
         route = "|".join(routing["routes"])
         path = route.replace(self.root_path, "")
         return f"{self._name}:{self.id}:{path}"
 
     def _reset_app(self):
-        self.get_app.clear_cache(self)
+        self.env.registry.clear_cache()
 
     @api.model
     @tools.ormcache("root_path")
@@ -220,7 +220,7 @@ class FastapiEndpoint(models.Model):
             app.add_exception_handler(exception, handler)
         return app
 
-    def _get_app_dependencies_overrides(self) -> Dict[Callable, Callable]:
+    def _get_app_dependencies_overrides(self) -> dict[Callable, Callable]:
         return {
             dependencies.fastapi_endpoint_id: partial(lambda a: a, self.id),
             dependencies.company_id: partial(lambda a: a, self.company_id.id),
@@ -228,9 +228,9 @@ class FastapiEndpoint(models.Model):
 
     def _get_app_exception_handlers(
         self,
-    ) -> Dict[
-        Union[int, Type[Exception]],
-        Callable[[Request, Exception], Union[Response, Awaitable[Response]]],
+    ) -> dict[
+        (int | type[Exception]),
+        Callable[[Request, Exception], (Response | Awaitable[Response])],
     ]:
         """Return a dict of exception handlers to register on the app
 
@@ -255,10 +255,12 @@ class FastapiEndpoint(models.Model):
             odoo.exceptions.UserError: error_handlers._odoo_user_error_handler,
             odoo.exceptions.AccessError: error_handlers._odoo_access_error_handler,
             odoo.exceptions.MissingError: error_handlers._odoo_missing_error_handler,
-            odoo.exceptions.ValidationError: error_handlers._odoo_validation_error_handler,
+            odoo.exceptions.ValidationError: (
+                error_handlers._odoo_validation_error_handler
+            ),
         }
 
-    def _prepare_fastapi_app_params(self) -> Dict[str, Any]:
+    def _prepare_fastapi_app_params(self) -> dict[str, Any]:
         """Return the params to pass to the Fast API app constructor"""
         return {
             "title": self.name,
@@ -267,17 +269,17 @@ class FastapiEndpoint(models.Model):
             "dependencies": self._get_fastapi_app_dependencies(),
         }
 
-    def _get_fastapi_routers(self) -> List[APIRouter]:
+    def _get_fastapi_routers(self) -> list[APIRouter]:
         """Return the api routers to use for the instance.
 
         This method must be implemented when registering a new api type.
         """
         return []
 
-    def _get_fastapi_app_middlewares(self) -> List[Middleware]:
+    def _get_fastapi_app_middlewares(self) -> list[Middleware]:
         """Return the middlewares to use for the fastapi app."""
         return []
 
-    def _get_fastapi_app_dependencies(self) -> List[Depends]:
+    def _get_fastapi_app_dependencies(self) -> list[Depends]:
         """Return the dependencies to use for the fastapi app."""
         return [Depends(dependencies.accept_language)]

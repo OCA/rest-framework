@@ -1,8 +1,9 @@
 # Copyright 2023 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
+from collections.abc import Callable
 from contextlib import contextmanager
 from functools import partial
-from typing import Any, Callable, Dict
+from typing import Any
 
 from odoo.api import Environment
 from odoo.tests import tagged
@@ -54,7 +55,7 @@ class FastAPITransactionCase(TransactionCase):
         cls.default_fastapi_odoo_env: Environment = cls.env
         cls.default_fastapi_running_user: Users | None = None
         cls.default_fastapi_authenticated_partner: Partner | None = None
-        cls.default_fastapi_dependency_overrides: Dict[
+        cls.default_fastapi_dependency_overrides: dict[
             Callable[..., Any], Callable[..., Any]
         ] = {}
 
@@ -66,7 +67,7 @@ class FastAPITransactionCase(TransactionCase):
         user: Users | None = None,
         partner: Partner | None = None,
         env: Environment = None,
-        dependency_overrides: Dict[Callable[..., Any], Callable[..., Any]] = None,
+        dependency_overrides: dict[Callable[..., Any], Callable[..., Any]] = None,
         raise_server_exceptions: bool = True,
     ):
         """
@@ -98,7 +99,13 @@ class FastAPITransactionCase(TransactionCase):
             or self.default_fastapi_authenticated_partner
             or self.env["res.partner"]
         )
-        dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
+        if partner and authenticated_partner_impl in dependencies:
+            raise ValueError(
+                "You cannot provide an override for the authenticated_partner_impl "
+                "dependency when creating a test client with a partner."
+            )
+        if partner or authenticated_partner_impl not in dependencies:
+            dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
         app = app or self.default_fastapi_app or FastAPI()
         router = router or self.default_fastapi_router
         if router:
