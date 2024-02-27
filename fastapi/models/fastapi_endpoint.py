@@ -214,6 +214,8 @@ class FastapiEndpoint(models.Model):
         app = FastAPI(**self._prepare_fastapi_app_params())
         for router in self._get_fastapi_routers():
             app.include_router(router=router)
+        for middleware, options in self._get_fastapi_app_middlewares():
+            app.add_middleware(middleware, **options)
         app.dependency_overrides[dependencies.fastapi_endpoint_id] = partial(
             lambda a: a, self.id
         )
@@ -258,7 +260,6 @@ class FastapiEndpoint(models.Model):
         return {
             "title": self.name,
             "description": self.description,
-            "middleware": self._get_fastapi_app_middlewares(),
             "dependencies": self._get_fastapi_app_dependencies(),
         }
 
