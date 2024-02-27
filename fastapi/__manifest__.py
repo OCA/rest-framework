@@ -23,6 +23,7 @@
     "external_dependencies": {
         "python": [
             "fastapi",
+            "pydantic<2",
             "python-multipart",
             "ujson",
             "a2wsgi",
