@@ -1,1 +1,2 @@
 httpx
+odoo-addon-auth_api_key_group @ git+https://github.com/OCA/server-auth.git@refs/pull/544/head#subdirectory=setup/auth_api_key_group
