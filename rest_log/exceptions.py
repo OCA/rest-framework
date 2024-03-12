@@ -13,6 +13,12 @@ class RESTServiceDispatchException(Exception):
         self.rest_json_info = {"log_entry_url": log_entry_url}
 
 
+class RESTServiceMissingErrorException(
+    RESTServiceDispatchException, odoo_exceptions.MissingError
+):
+    """Missing error wrapped exception."""
+
+
 class RESTServiceUserErrorException(
     RESTServiceDispatchException, odoo_exceptions.UserError
 ):
