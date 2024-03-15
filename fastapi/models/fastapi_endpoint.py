@@ -7,6 +7,7 @@ from functools import partial
 from itertools import chain
 from typing import Any
 
+import psycopg2.errors
 from a2wsgi import ASGIMiddleware
 from starlette.middleware import Middleware
 
@@ -251,6 +252,7 @@ class FastapiEndpoint(models.Model):
         self.ensure_one()
         return {
             Exception: error_handlers._odoo_exception_handler,
+            psycopg2.errors.IntegrityError: error_handlers._pg_integrity_error_handler,
             HTTPException: error_handlers._odoo_http_exception_handler,
             odoo.exceptions.UserError: error_handlers._odoo_user_error_handler,
             odoo.exceptions.AccessError: error_handlers._odoo_access_error_handler,
