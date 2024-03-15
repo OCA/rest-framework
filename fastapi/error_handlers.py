@@ -3,7 +3,7 @@
 
 import logging
 
-from psycopg2.errors import OperationalError
+from psycopg2.errors import IntegrityError, OperationalError
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.responses import JSONResponse
 from starlette.status import (
@@ -91,6 +91,14 @@ async def _odoo_exception_handler(request: Request, exc: Exception) -> JSONRespo
     return await http_exception_handler(
         request, HTTPException(HTTP_500_INTERNAL_SERVER_ERROR, str(exc))
     )
+
+
+async def _pg_integrity_error_handler(
+    request: Request, exc: IntegrityError
+) -> JSONResponse:
+    """Handle IntegrityError from the database as a ValidationError"""
+    validation_error = _as_validation_error(odoo_env_ctx.get(), exc)
+    return await _odoo_validation_error_handler(request, validation_error)
 
 
 # we need to monkey patch the ServerErrorMiddleware to ensure that the
