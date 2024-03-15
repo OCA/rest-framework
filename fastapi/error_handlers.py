@@ -3,6 +3,8 @@
 
 import logging
 
+from psycopg2.errors import OperationalError
+from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.responses import JSONResponse
 from starlette.status import (
     HTTP_400_BAD_REQUEST,
@@ -12,6 +14,7 @@ from starlette.status import (
 )
 
 import odoo
+from odoo.service.model import PG_CONCURRENCY_ERRORS_TO_RETRY, _as_validation_error
 
 from fastapi import Request
 from fastapi.exception_handlers import http_exception_handler
@@ -73,8 +76,36 @@ async def _odoo_http_exception_handler(
 
 
 async def _odoo_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    # let the OperationalError bubble up to the retrying mechanism
+    # We can't define a specific handler for OperationalError because since we
+    # want to let it bubble up to the retrying mechanism, it will be handled by
+    # the default handler at the end of the chain.
+    if (
+        isinstance(exc, OperationalError)
+        and exc.pgcode in PG_CONCURRENCY_ERRORS_TO_RETRY
+    ):
+        raise exc
+
     _rollback(request, "Exception")
     _logger.exception("Unhandled exception", exc_info=exc)
     return await http_exception_handler(
         request, HTTPException(HTTP_500_INTERNAL_SERVER_ERROR, str(exc))
     )
+
+
+# we need to monkey patch the ServerErrorMiddleware to ensure that the
+# OperationalError is not handled by the default handler but is let to bubble up
+# to the retrying mechanism
+original_error_response_method = ServerErrorMiddleware.error_response
+
+
+def error_response(self, request: Request, exc: Exception) -> JSONResponse:
+    if (
+        isinstance(exc, OperationalError)
+        and exc.pgcode in PG_CONCURRENCY_ERRORS_TO_RETRY
+    ):
+        raise exc
+    return original_error_response_method(self, request, exc)
+
+
+ServerErrorMiddleware.error_response = error_response
