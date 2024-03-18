@@ -38,3 +38,13 @@ class FastAPIHttpCase(HttpCase):
         self._assert_expected_lang("en,fr;q=0.7,en-GB;q=0.3", b'"en_US"')
         self._assert_expected_lang("fr-FR,en;q=0.7,en-GB;q=0.3", b'"fr_BE"')
         self._assert_expected_lang("fr-FR;q=0.1,en;q=1.0,en-GB;q=0.8", b'"en_US"')
+
+    def test_retrying(self):
+        """Test that the retrying mechanism is working as expected with the
+        FastAPI endpoints.
+        """
+        nbr_retries = 3
+        route = f"/fastapi_demo/demo/retrying?nbr_retries={nbr_retries}"
+        response = self.url_open(route, timeout=20)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(int(response.content), nbr_retries)
