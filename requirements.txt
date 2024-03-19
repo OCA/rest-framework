@@ -10,6 +10,7 @@ extendable>=0.0.4
 fastapi
 graphene
 graphql_server
+itsdangerous
 jsondiff
 marshmallow
 marshmallow-objects>=2.0.0
