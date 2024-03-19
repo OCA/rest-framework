@@ -1,15 +1,25 @@
-This change fix an issue that prevented the system to retry a call to the
-application in case of a DB concurrency error if this error is defined as
-retryable.
+This change is a complete rewrite of the way the transactions are managed when
+integrating a fastapi application into Odoo.
 
-By default, any call to the application is retried in case of a DB concurrency
-if retryable. The 'retry' mechanism is implemented at the early stage of the processing
-of a request in case of specific postgreSQL errors. When a call is made to
-a fastapi application, the specific handler for the request is placed further
-down the stack. Before this change, any error that occurred in the specific
-fastapi handler was catch by the Fastapi processing stack and never bubbled up
-to the early stage of the processing where the 'retry' mechanism is implemented.
+In the previous implementation, specifics error handlers were put in place to
+catch exception occurring in the handling of requests made to a fastapi application
+and to rollback the transaction in case of error. This was done by registering
+specifics error handlers methods to the fastapi application using the 'add_exception_handler'
+method of the fastapi application. In this implementation, the transaction was
+rolled back in the error handler method.
 
-This change fix this issue by putting in place a way to make some specific
-exceptions bubble up the fastapi processing stack through the event loop required
-to transform WSGI to ASGI.
+This approach was not working as expected for several reasons:
+
+- The handling of the error at the fastapi level prevented the retry mechanism
+  to be triggered in case of a DB concurrency error. This is because the error
+  was catch at the fastapi level and never bubbled up to the early stage of the
+  processing of the request where the retry mechanism is implemented.
+- The cleanup of the environment and the registry was not properly done in case
+  of error. In the **'odoo.service.model.retrying'** method, you can see that
+  the cleanup process is different in case of error raised by the database
+  and in case of error raised by the application.
+
+This change fix these issues by ensuring that errors are no more catch at the
+fastapi level and bubble up the fastapi processing stack through the event loop
+required to transform WSGI to ASGI. As result the transactional nature of the
+requests to the fastapi applications is now properly managed by the Odoo framework.

@@ -4,9 +4,16 @@
 from contextlib import contextmanager
 from io import BytesIO
 
-from werkzeug.exceptions import InternalServerError
+from starlette import status
+from starlette.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException as WerkzeugHTTPException
 
+from odoo.exceptions import AccessDenied, AccessError, MissingError, UserError
 from odoo.http import Dispatcher, request
+
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError, WebSocketRequestValidationError
+from fastapi.utils import is_body_allowed_for_status_code
 
 from .context import odoo_env_ctx
 
@@ -39,10 +46,38 @@ class FastApiDispatcher(Dispatcher):
             )
 
     def handle_error(self, exc):
-        # At this stage all the normal exceptions are handled by FastAPI
-        # and we should only have InternalServerError occurring after the
-        # FastAPI app has been called.
-        return InternalServerError()  # pragma: no cover
+        headers = getattr(exc, "headers", None)
+        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        details = "Internal Server Error"
+        if isinstance(exc, WerkzeugHTTPException):
+            status_code = exc.code
+            details = exc.description
+        elif isinstance(exc, HTTPException):
+            status_code = exc.status_code
+            details = exc.detail
+        elif isinstance(exc, RequestValidationError):
+            status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+            details = jsonable_encoder(exc.errors())
+        elif isinstance(exc, WebSocketRequestValidationError):
+            status_code = status.WS_1008_POLICY_VIOLATION
+            details = jsonable_encoder(exc.errors())
+        elif isinstance(exc, AccessDenied | AccessError):
+            status_code = status.HTTP_403_FORBIDDEN
+            details = "AccessError"
+        elif isinstance(exc, MissingError):
+            status_code = status.HTTP_404_NOT_FOUND
+            details = "MissingError"
+        elif isinstance(exc, UserError):
+            status_code = status.HTTP_400_BAD_REQUEST
+            details = exc.args[0]
+        body = {}
+        if is_body_allowed_for_status_code(status_code):
+            # use the same format as in
+            # fastapi.exception_handlers.http_exception_handler
+            body = {"detail": details}
+        return self.request.make_json_response(
+            body, status=status_code, headers=headers
+        )
 
     def _make_response(self, status_mapping, headers_tuple, content):
         self.status = status_mapping[:3]

@@ -111,7 +111,8 @@ class FastAPITransactionCase(TransactionCase):
             dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
         if partner and optionally_authenticated_partner_impl in dependencies:
             raise ValueError(
-                "You cannot provide an override for the optionally_authenticated_partner_impl "
+                "You cannot provide an override for the "
+                "optionally_authenticated_partner_impl "
                 "dependency when creating a test client with a partner."
             )
         if partner or optionally_authenticated_partner_impl not in dependencies:

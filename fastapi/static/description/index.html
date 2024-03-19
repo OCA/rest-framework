@@ -428,7 +428,7 @@ functions.</p>
 <li><a class="reference internal" href="#overall-considerations-when-you-develop-an-fastapi-app" id="toc-entry-15">Overall considerations when you develop an fastapi app</a></li>
 <li><a class="reference internal" href="#miscellaneous" id="toc-entry-16">Miscellaneous</a><ul>
 <li><a class="reference internal" href="#development-of-a-search-route-handler" id="toc-entry-17">Development of a search route handler</a></li>
-<li><a class="reference internal" href="#customization-of-the-error-handling" id="toc-entry-18">Customization of the error handling</a></li>
+<li><a class="reference internal" href="#error-handling" id="toc-entry-18">Error handling</a></li>
 <li><a class="reference internal" href="#fastapi-addons-directory-structure" id="toc-entry-19">FastAPI addons directory structure</a></li>
 </ul>
 </li>
@@ -1599,63 +1599,25 @@ count of records.</li>
 not designed to be extended to not introduce a dependency between the
 <strong>‘odoo-addon-fastapi’</strong> module and the <strong>‘odoo-addon-extendable’</strong></p>
 </div>
-<div class="section" id="customization-of-the-error-handling">
-<h3><a class="toc-backref" href="#toc-entry-18">Customization of the error handling</a></h3>
-<p>The error handling a very important topic in the design of the fastapi
-integration with odoo. It must ensure that the error messages are
-properly return to the client and that the transaction is properly roll
-backed. The <strong>‘fastapi’</strong> module provides a way to register custom error
-handlers. The <strong>‘odoo.addons.fastapi.error_handlers’</strong> module provides
-the default error handlers that are registered by default when a new
-instance of the <strong>‘FastAPI’</strong> class is created. When an app is
-initialized in ‘fastapi.endpoint’ model, the method
-_get_app_exception_handlers is called to get a dictionary of error
-handlers. This method is designed to be overridden in a custom module to
-provide custom error handlers. You can override the handler for a
-specific exception class or you can add a new handler for a new
-exception or even replace all the handlers by your own handlers.
-Whatever you do, you must ensure that the transaction is properly roll
-backed.</p>
-<p>Some could argue that the error handling can’t be extended since the
-error handlers are global method not defined in an odoo model. Since the
-method providing the the error handlers definitions is defined on the
-‘fastapi.endpoint’ model, it’s not a problem at all, you just need to
-think another way to do it that by inheritance.</p>
-<p>A solution could be to develop you own error handler to be able to
-process the error and chain the call to the default error handler.</p>
-<pre class="code python literal-block">
-<span class="k">class</span> <span class="nc">MyCustomErrorHandler</span><span class="p">():</span><span class="w">
-</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_handler</span><span class="p">):</span><span class="w">
-</span>        <span class="bp">self</span><span class="o">.</span><span class="n">next_handler</span> <span class="o">=</span> <span class="n">next_handler</span><span class="w">
-
-</span>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span><span class="w">
-</span>        <span class="c1"># do something with the error</span><span class="w">
-</span>        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_handler</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span><span class="w">
-</span>        <span class="c1"># do something with the response</span><span class="w">
-</span>        <span class="k">return</span> <span class="n">response</span>
-</pre>
-<p>With this solution, you can now register your custom error handler by
-overriding the method _get_app_exception_handlers in your custom
-module.</p>
-<pre class="code python literal-block">
-<span class="k">class</span> <span class="nc">FastapiEndpoint</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span><span class="w">
-</span>    <span class="n">_inherit</span> <span class="o">=</span> <span class="s2">&quot;fastapi.endpoint&quot;</span><span class="w">
-
-</span>    <span class="k">def</span> <span class="nf">_get_app_exception_handlers</span><span class="p">(</span><span class="w">
-</span>        <span class="bp">self</span><span class="p">,</span><span class="w">
-</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="w">
-</span>        <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]],</span><span class="w">
-</span>        <span class="n">Callable</span><span class="p">[[</span><span class="n">Request</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">Response</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Response</span><span class="p">]]],</span><span class="w">
-</span>    <span class="p">]:</span><span class="w">
-</span>        <span class="n">handlers</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_app_exception_handlers</span><span class="p">()</span><span class="w">
-</span>        <span class="n">access_error_handler</span> <span class="o">=</span> <span class="n">handlers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">odoo</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">AccessError</span><span class="p">)</span><span class="w">
-</span>        <span class="n">handlers</span><span class="p">[</span><span class="n">odoo</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">AccessError</span><span class="p">]</span> <span class="o">=</span> <span class="n">MyCustomErrorHandler</span><span class="p">(</span><span class="n">access_error_handler</span><span class="p">)</span><span class="w">
-</span>        <span class="k">return</span> <span class="n">handlers</span>
-</pre>
-<p>In the previous example, we extend the error handler for the
-‘AccessError’ exception for all the endpoints. You can do the same for a
-specific app by checking the ‘app’ field of the ‘fastapi.endpoint’
-record before registering your custom error handler.</p>
+<div class="section" id="error-handling">
+<h3><a class="toc-backref" href="#toc-entry-18">Error handling</a></h3>
+<p>The error handling is a very important topic in the design of the
+fastapi integration with odoo. By default, when instantiating the
+fastapi app, the fastapi library declare a default exception handler
+that will catch any exception raised by the route handlers and return a
+proper error response. This is done to ensure that the serving of the
+app is not interrupted by an unhandled exception. If this implementation
+makes sense for a native fastapi app, it’s not the case for the fastapi
+integration with odoo. The transactional nature of the calls to odoo’s
+api is implemented at the root of the request processing by odoo. To
+ensure that the transaction is properly managed, the integration with
+odoo must ensure that the exceptions raised by the route handlers
+properly bubble up to the handling of the request by odoo. This is done
+by the monkey patching of the registered exception handler of the
+fastapi app in the <strong>‘odoo.addons.fastapi.models.error_handlers’</strong>
+module. As a result, it’s no longer possible to define a custom
+exception handler in your fastapi app. If you add a custom exception
+handler in your app, it will be ignored.</p>
 </div>
 <div class="section" id="fastapi-addons-directory-structure">
 <h3><a class="toc-backref" href="#toc-entry-19">FastAPI addons directory structure</a></h3>
