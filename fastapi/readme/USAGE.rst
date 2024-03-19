@@ -1191,66 +1191,25 @@ you be consistent when writing a route handler for a search route.
     dependency between the **'odoo-addon-fastapi'** module and the **'odoo-addon-extendable'**
 
 
-Customization of the error handling
-===================================
+Error handling
+==============
 
-The error handling a very important topic in the design of the fastapi integration
-with odoo. It must ensure that the error messages are properly return to the client
-and that the transaction is properly roll backed. The **'fastapi'** module provides
-a way to register custom error handlers. The **'odoo.addons.fastapi.error_handlers'**
-module provides the default error handlers that are registered by default when
-a new instance of the **'FastAPI'** class is created. When an app is initialized in
-'fastapi.endpoint' model, the method `_get_app_exception_handlers` is called to
-get a dictionary of error handlers. This method is designed to be overridden
-in a custom module to provide custom error handlers. You can override the handler
-for a specific exception class or you can add a new handler for a new exception
-or even replace all the handlers by your own handlers. Whatever you do, you must
-ensure that the transaction is properly roll backed.
+The error handling is a very important topic in the design of the fastapi integration
+with odoo. By default, when instantiating the fastapi app, the fastapi library
+declare a default exception handler that will catch any exception raised by the
+route handlers and return a proper error response. This is done to ensure that
+the serving of the app is not interrupted by an unhandled exception. If this
+implementation makes sense for a native fastapi app, it's not the case for the
+fastapi integration with odoo. The transactional nature of the calls to
+odoo's api is implemented at the root of the request processing by odoo. To ensure
+that the transaction is properly managed, the integration with odoo must ensure
+that the exceptions raised by the route handlers properly bubble up to the
+handling of the request by odoo. This is done by the monkey patching of the
+registered exception handler of the fastapi app in the
+**'odoo.addons.fastapi.models.error_handlers'** module. As a result, it's no
+longer possible to define a custom exception handler in your fastapi app. If you
+add a custom exception handler in your app, it will be ignored.
 
-Some could argue that the error handling can't be extended since the error handlers
-are global method not defined in an odoo model. Since the method providing the
-the error handlers definitions is defined on the 'fastapi.endpoint' model, it's
-not a problem at all, you just need to think another way to do it that by inheritance.
-
-A solution could be to develop you own error handler to be able to process the
-error and chain the call to the default error handler.
-
-.. code-block:: python
-
-    class MyCustomErrorHandler():
-        def __init__(self, next_handler):
-            self.next_handler = next_handler
-
-        def __call__(self, request: Request, exc: Exception) -> JSONResponse:
-            # do something with the error
-            response = self.next_handler(request, exc)
-            # do something with the response
-            return response
-
-
-With this solution, you can now register your custom error handler by overriding
-the method `_get_app_exception_handlers` in your custom module.
-
-.. code-block:: python
-
-    class FastapiEndpoint(models.Model):
-        _inherit = "fastapi.endpoint"
-
-        def _get_app_exception_handlers(
-            self,
-        ) -> Dict[
-            Union[int, Type[Exception]],
-            Callable[[Request, Exception], Union[Response, Awaitable[Response]]],
-        ]:
-            handlers = super()._get_app_exception_handlers()
-            access_error_handler = handlers.get(odoo.exceptions.AccessError)
-            handlers[odoo.exceptions.AccessError] = MyCustomErrorHandler(access_error_handler)
-            return handlers
-
-In the previous example, we extend the error handler for the 'AccessError' exception
-for all the endpoints. You can do the same for a specific app by checking the
-'app' field of the 'fastapi.endpoint' record before registering your custom error
-handler.
 
 FastAPI addons directory structure
 ==================================
