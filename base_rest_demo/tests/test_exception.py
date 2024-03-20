@@ -13,14 +13,14 @@ from odoo.addons.base_rest.tests.common import RegistryMixin
 class TestException(HttpCase, RegistryMixin):
     @classmethod
     def setUpClass(cls):
-        super(TestException, cls).setUpClass()
+        super().setUpClass()
         cls.setUpRegistry()
         host = "127.0.0.1"
         port = odoo.tools.config["http_port"]
-        cls.url = "http://%s:%d/base_rest_demo_api/public/exception" % (host, port)
+        cls.url = f"http://{host}:{port}/base_rest_demo_api/public/exception"
 
     def setUp(self):
-        super(TestException, self).setUp()
+        super().setUp()
         self.opener.headers["Content-Type"] = "application/json"
 
     @odoo.tools.mute_logger("odoo.addons.base_rest.http", "odoo.http")

@@ -10,7 +10,7 @@ class BaseRestService(AbstractComponent):
     _inherit = "base.rest.service"
 
     def _get_api_spec(self, **params):
-        spec = super(BaseRestService, self)._get_api_spec(**params)
+        spec = super()._get_api_spec(**params)
         plugin = RestMethodSecurityPlugin(self)
         plugin.init_spec(spec)
         spec.plugins.append(plugin)

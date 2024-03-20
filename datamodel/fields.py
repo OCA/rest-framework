@@ -25,7 +25,7 @@ except ImportError:
 class NestedModel(Nested):
     def __init__(self, nested, **kwargs):
         self.datamodel_name = nested
-        super(NestedModel, self).__init__(None, **kwargs)
+        super().__init__(None, **kwargs)
 
     @property
     def schema(self):
@@ -42,9 +42,9 @@ class NestedModel(Nested):
                 self.datamodel_name
             ].__schema_class__
             self.nested._env = super_parent._env
-        return super(NestedModel, self).schema
+        return super().schema
 
     def _deserialize(self, value, attr, data, **kwargs):
         if isinstance(value, Datamodel):
             return value
-        return super(NestedModel, self)._deserialize(value, attr, data, **kwargs)
+        return super()._deserialize(value, attr, data, **kwargs)

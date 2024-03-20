@@ -9,7 +9,6 @@ from .state_info import StateInfo
 
 
 class PartnerInfo(PartnerShortInfo):
-
     street: str
     street2: str = None
     zip_code: str = pydantic.Field(..., alias="zip")

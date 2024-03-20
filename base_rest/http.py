@@ -43,7 +43,7 @@ _logger = logging.getLogger(__name__)
 try:
     import pyquerystring
     from accept_language import parse_accept_language
-except (ImportError, IOError) as err:
+except (OSError, ImportError) as err:
     _logger.debug(err)
 
 
@@ -55,7 +55,7 @@ class JSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif isinstance(obj, decimal.Decimal):
             return float(obj)
-        return super(JSONEncoder, self).default(obj)
+        return super().default(obj)
 
 
 BLACKLISTED_LOG_PARAMS = ("password",)
@@ -229,10 +229,10 @@ class RestApiDispatcher(Dispatcher):
         if isinstance(exception, MissingError):
             extra_info = getattr(exception, "rest_json_info", None)
             return wrapJsonException(NotFound(ustr(exception)), extra_info=extra_info)
-        if isinstance(exception, (AccessError, AccessDenied)):
+        if isinstance(exception, AccessError | AccessDenied):
             extra_info = getattr(exception, "rest_json_info", None)
             return wrapJsonException(Forbidden(ustr(exception)), extra_info=extra_info)
-        if isinstance(exception, (UserError, ValidationError)):
+        if isinstance(exception, UserError | ValidationError):
             extra_info = getattr(exception, "rest_json_info", None)
             return wrapJsonException(
                 BadRequest(exception.args[0]),

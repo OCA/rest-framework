@@ -16,7 +16,7 @@ from ..core import _rest_controllers_per_module
 _logger = logging.getLogger(__name__)
 
 
-class _PseudoCollection(object):
+class _PseudoCollection:
     __slots__ = "_name", "env", "id"
 
     def __init__(self, name, env):

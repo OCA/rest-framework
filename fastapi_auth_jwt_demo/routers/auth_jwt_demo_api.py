@@ -1,7 +1,7 @@
 # Copyright 2023 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-from typing import Annotated, Union
+from typing import Annotated
 
 from odoo.addons.base.models.res_partner import Partner
 from odoo.addons.fastapi_auth_jwt.dependencies import AuthJwtPartner
@@ -11,8 +11,8 @@ from pydantic import BaseModel
 
 
 class TestData(BaseModel):
-    name: Union[str, None] = None
-    email: Union[str, None] = None
+    name: str | None = None
+    email: str | None = None
     uid: int
 
 

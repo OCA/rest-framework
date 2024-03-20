@@ -61,9 +61,8 @@ class ApiDocsController(Controller):
             for service in self._get_service_in_collection(collection_name):
                 api_urls.append(
                     {
-                        "name": "{}: {}".format(collection_path, service._usage),
-                        "url": "/api-docs/%s/%s.json"
-                        % (collection_path, service._usage),
+                        "name": f"{collection_path}: {service._usage}",
+                        "url": f"/api-docs/{collection_path}/{service._usage}.json",
                     }
                 )
         api_urls = sorted(api_urls, key=lambda k: k["name"])

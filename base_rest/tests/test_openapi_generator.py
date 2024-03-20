@@ -195,7 +195,7 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
                 return defaults
 
             def _get_openapi_default_responses(self):
-                responses = super()._get_openapi_default_responses().copy()
+                responses = super()._get_openapi_default_responses()
                 responses["999"] = "TEST"
                 return responses
 

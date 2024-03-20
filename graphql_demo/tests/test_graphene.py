@@ -13,7 +13,7 @@ from ..schema import schema
 class TestGraphene(TransactionCase):
     @classmethod
     def setUpClass(cls):
-        super(TestGraphene, cls).setUpClass()
+        super().setUpClass()
         cls.client = Client(schema)
         # disable logging for the graphql executor because we are testing
         # errors and OCA's test runner considers the two errors being logged

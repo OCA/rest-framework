@@ -217,7 +217,7 @@ class TestCerberusListValidator(BaseCase, MetaCase("DummyCase", (object,), {})):
             self.simple_schema_list_validator.to_response(None, result=[{}])
 
     def test_schema_lookup_from_string(self):
-        class MyService(object):
+        class MyService:
             def _get_simple_schema(self):
                 return {"name": {"type": "string", "required": True, "nullable": True}}
 
@@ -233,7 +233,7 @@ class TestCerberusListValidator(BaseCase, MetaCase("DummyCase", (object,), {})):
         )
 
     def test_schema_lookup_from_string_custom_validator(self):
-        class MyService(object):
+        class MyService:
             def _get_simple_schema(self):
                 return Validator(
                     {"name": {"type": "string", "required": False}}, require_all=True

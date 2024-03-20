@@ -9,8 +9,6 @@ Extendale classes Loader
 Load the extendable classes at the build of a registry.
 
 """
-from typing import List, Optional
-
 import odoo
 from odoo import api, models
 
@@ -42,8 +40,8 @@ class ExtendableRegistryLoader(models.AbstractModel):
     def build_registry(
         self,
         registry: ExtendableClassesRegistry,
-        states: Optional[List[str]] = None,
-        exclude_addons: Optional[List[str]] = None,
+        states: list[str] | None = None,
+        exclude_addons: list[str] | None = None,
     ):
         if not states:
             states = ("installed", "to upgrade")
