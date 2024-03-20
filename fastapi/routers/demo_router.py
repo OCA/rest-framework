@@ -6,12 +6,16 @@ integration with odoo.
 """
 from typing import Annotated
 
+from psycopg2 import errorcodes
+from psycopg2.errors import OperationalError
+
 from odoo.api import Environment
 from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
+from odoo.service.model import MAX_TRIES_ON_CONCURRENCY_FAILURE
 
 from odoo.addons.base.models.res_partner import Partner
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from ..dependencies import authenticated_partner, fastapi_endpoint, odoo_env
 from ..models import FastapiEndpoint
@@ -84,3 +88,33 @@ async def endpoint_app_info(
     # It also show you how you can specify a dependency to force the security
     # even if the method doesn't require the authenticated partner as parameter
     return DemoEndpointAppInfo.model_validate(endpoint)
+
+
+_CPT = 0
+
+
+@router.get("/demo/retrying")
+async def retrying(
+    nbr_retries: Annotated[int, Query(gt=1, lt=MAX_TRIES_ON_CONCURRENCY_FAILURE)]
+) -> int:
+    """This method is used in the test suite to check that the retrying
+    functionality in case of concurrency error on the database is working
+    correctly for retryable exceptions.
+
+    The output will be the number of retries that have been done.
+
+    This method is mainly used to test the retrying functionality
+    """
+    global _CPT
+    if _CPT < nbr_retries:
+        _CPT += 1
+        raise FakeConcurrentUpdateError("fake error")
+    tryno = _CPT
+    _CPT = 0
+    return tryno
+
+
+class FakeConcurrentUpdateError(OperationalError):
+    @property
+    def pgcode(self):
+        return errorcodes.SERIALIZATION_FAILURE
