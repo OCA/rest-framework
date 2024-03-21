@@ -47,7 +47,7 @@
                         <field name="company_id" />
                         <field name="description" />
                     </group>
-                    <group name="resoures">
+                    <group name="resources">
                         <field name="docs_url" widget="url" />
                         <field name="redoc_url" widget="url" />
                         <field name="openapi_url" widget="url" />
