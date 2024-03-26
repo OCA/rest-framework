@@ -12,4 +12,6 @@ systems, therefore increasing maintenance costs.
 Once developed, an `OpenApi <https://spec.openapis.org/oas/v3.0.3>`_ documentation
 is generated from the source code and available via a
 `Swagger UI <https://swagger.io/tools/swagger-ui/>`_ served by your odoo server
-at `https://my_odoo_server/api-docs`.
+at `https://my_odoo_server/api-docs`. There is also a convenience menu
+visible by users with permission "Administration: Settings", but the
+docs endpoint itself is public.
