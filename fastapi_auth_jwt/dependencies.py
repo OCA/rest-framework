@@ -236,7 +236,7 @@ class AuthJwtOdooEnv(BaseAuthJwt):
             request, response, authorization_header, validator
         )
         uid = validator._get_and_check_uid(payload)
-        return odoo_env(user=uid)
+        return env(user=uid)
 
 
 auth_jwt_authenticated_payload = AuthJwtPayload()
