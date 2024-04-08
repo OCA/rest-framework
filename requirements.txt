@@ -7,6 +7,7 @@ extendable-pydantic
 extendable-pydantic>=0.0.4
 extendable>=0.0.4
 fastapi
+fastapi>=0.110.1
 graphene
 graphql_server
 jsondiff

@@ -34,6 +34,6 @@ class FastapiEndpoint(models.Model):
     def _get_fastapi_app_middlewares(self) -> List[Middleware]:
         middlewares = super()._get_fastapi_app_middlewares()
         middlewares.append(
-            (ExtendableContextManagerMiddleware, {"dbname": self.env.cr.dbname})
+            (ExtendableContextManagerMiddleware, [], {"dbname": self.env.cr.dbname})
         )
         return middlewares

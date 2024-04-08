@@ -15,6 +15,7 @@
     "demo": [],
     "external_dependencies": {
         "python": [
+            "fastapi>=0.110.1",
             "extendable-pydantic>=0.0.4",
         ],
     },
