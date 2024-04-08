@@ -68,6 +68,7 @@ class FastAPITransactionCase(TransactionCase):
         env: Environment = None,
         dependency_overrides: Dict[Callable[..., Any], Callable[..., Any]] = None,
         raise_server_exceptions: bool = True,
+        testclient_kwargs=None,
     ):
         """
         Create a test client for the given app or router.
@@ -111,7 +112,12 @@ class FastAPITransactionCase(TransactionCase):
             app.include_router(router)
         app.dependency_overrides = dependencies
         ctx_token = odoo_env_ctx.set(env)
+        testclient_kwargs = testclient_kwargs or {}
         try:
-            yield TestClient(app, raise_server_exceptions=raise_server_exceptions)
+            yield TestClient(
+                app,
+                raise_server_exceptions=raise_server_exceptions,
+                **testclient_kwargs
+            )
         finally:
             odoo_env_ctx.reset(ctx_token)
