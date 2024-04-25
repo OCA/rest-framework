@@ -25,6 +25,11 @@ class FastApiAuthDirectory(models.Model):
         "Mail Template New Password",
         required=True,
     )
+    invite_validate_email_template_id = fields.Many2one(
+        "mail.template",
+        "Mail Template Validate Email",
+        required=True,
+    )
     cookie_secret_key = fields.Char(
         required=True,
         groups="base.group_system",

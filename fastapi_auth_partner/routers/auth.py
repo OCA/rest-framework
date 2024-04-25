@@ -28,6 +28,7 @@ from ..schemas import (
     AuthPartnerResponse,
     AuthRegisterInput,
     AuthSetPasswordInput,
+    AuthValidateEmailInput,
 )
 
 auth_router = APIRouter(tags=["auth"])
@@ -70,6 +71,16 @@ def logout(
     env["fastapi.auth.service"].sudo()._logout(endpoint.directory_id, response)
 
 
+@auth_router.post("/auth/validate_email")
+def validate_email(
+    data: AuthValidateEmailInput,
+    env: Annotated[Environment, Depends(odoo_env)],
+    endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
+):
+    env["fastapi.auth.service"].sudo()._validate_email(endpoint.directory_id, data)
+    return {}
+
+
 @auth_router.post("/auth/request_reset_password")
 def request_reset_password(
     data: AuthForgetPasswordInput,
@@ -98,7 +109,6 @@ def set_password(
 
 @auth_router.get("/auth/profile")
 def profile(
-    env: Annotated[Environment, Depends(odoo_env)],
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
     partner: Annotated[Partner, Depends(auth_partner_authenticated_partner)],
 ) -> AuthPartnerResponse:
@@ -151,7 +161,9 @@ class AuthService(models.AbstractModel):
     def _register_auth(self, directory, data):
         vals = self._prepare_partner_register(directory, data)
         partner = self.env["res.partner"].create([vals])
-        return partner.auth_partner_ids
+        auth_partner = partner.auth_partner_ids
+        auth_partner.send_registration_invite()
+        return auth_partner
 
     def _login(self, directory, data):
         partner_auth = (
@@ -189,3 +201,11 @@ class AuthService(models.AbstractModel):
         self.env["fastapi.auth.partner"].with_user(
             SUPERUSER_ID
         ).with_delay().request_reset_password(directory, data.login)
+
+    def _validate_email(self, directory, data):
+        partner_auth = (
+            self.env["fastapi.auth.partner"]
+            .sudo()
+            .validate_email(directory, data.token)
+        )
+        return partner_auth

@@ -8,6 +8,7 @@
                 <field name="directory_id" />
                 <field name="partner_id" />
                 <field name="login" />
+                <field name="mail_verified" />
                 <field name="nbr_pending_reset_sent" />
                 <field name="date_last_request_reset_pwd" />
                 <field name="date_last_sucessfull_reset_pwd" />
@@ -45,6 +46,9 @@
                     <group>
                         <field name="login" />
                         <field name="directory_id" />
+                    </group>
+                    <group>
+                        <field name="mail_verified" />
                     </group>
                 </sheet>
             </form>

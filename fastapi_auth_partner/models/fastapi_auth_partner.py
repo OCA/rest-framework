@@ -70,6 +70,11 @@ class FastApiAuthPartner(models.Model):
         help="Date of the last sucessfull password reset"
     )
 
+    token_mail_validation_encrypted = fields.Char()
+    mail_verified = fields.Boolean(
+        help="This field is set to True when the user has clicked on the link sent by email"
+    )
+
     _sql_constraints = [
         (
             "directory_login_uniq",
@@ -244,6 +249,9 @@ class FastApiAuthPartner(models.Model):
     def _get_template_invite_set_password(self, directory):
         return directory.invite_set_password_template_id
 
+    def _get_template_invite_validate_email(self, directory):
+        return directory.invite_validate_email_template_id
+
     def _generate_token(self, force_expiration=None):
         expiration = force_expiration or (
             datetime.now()
@@ -254,6 +262,15 @@ class FastApiAuthPartner(models.Model):
             {
                 "token_set_password_encrypted": self._encrypt_token(token),
                 "token_expiration": expiration,
+            }
+        )
+        return token
+
+    def _generate_token_mail_validation(self):
+        token = random_token()
+        self.write(
+            {
+                "token_mail_validation_encrypted": self._encrypt_token(token),
             }
         )
         return token
@@ -275,6 +292,7 @@ class FastApiAuthPartner(models.Model):
                     "password": password,
                     "token_set_password_encrypted": False,
                     "token_expiration": False,
+                    "mail_verified": True,
                 }
             )
             return partner_auth
@@ -288,6 +306,12 @@ class FastApiAuthPartner(models.Model):
         self.date_last_request_reset_pwd = fields.Datetime.now()
         self.date_last_sucessfull_reset_pwd = None
         self.nbr_pending_reset_sent += 1
+        return "Instruction sent by email"
+
+    def send_validation_email(self, template, force_expiration=None):
+        self.ensure_one()
+        token = self._generate_token_mail_validation()
+        template.sudo().with_context(token=token).send_mail(self.id, force_send=True)
         return "Instruction sent by email"
 
     def request_reset_password(self, directory_id, login):
@@ -323,6 +347,37 @@ class FastApiAuthPartner(models.Model):
                 ).format(self.directory_id.name)
             )
         return self.send_reset_password(template)
+
+    def send_registration_invite(self):
+        """Use to send an invitation to the user to validate its mail address"""
+        self.ensure_one()
+        template = self._get_template_invite_validate_email(self.directory_id)
+        if not template:
+            raise UserError(
+                _(
+                    "Invitation to Email Validation template is missing for directory {}"
+                ).format(self.directory_id.name)
+            )
+        return self.send_validation_email(template)
+
+    def validate_email(self, directory, token_mail_validation):
+        hashed_token = self._encrypt_token(token_mail_validation)
+        partner_auth = self.search(
+            [
+                ("token_mail_validation_encrypted", "=", hashed_token),
+                ("directory_id", "=", directory.id),
+            ]
+        )
+        if partner_auth:
+            partner_auth.write(
+                {
+                    "token_mail_validation_encrypted": False,
+                    "mail_verified": True,
+                }
+            )
+            return partner_auth
+        else:
+            raise UserError(_("The token is not valid, please request a new one"))
 
     def _prepare_cookie_payload(self):
         # use short key to reduce cookie size

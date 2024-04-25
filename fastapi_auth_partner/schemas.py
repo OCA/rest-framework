@@ -24,9 +24,16 @@ class AuthSetPasswordInput(StrictExtendableBaseModel):
     password: str
 
 
+class AuthValidateEmailInput(StrictExtendableBaseModel):
+    token: str
+
+
 class AuthPartnerResponse(StrictExtendableBaseModel):
     login: str
+    mail_verified: bool
 
     @classmethod
     def from_auth_partner(cls, odoo_rec):
-        return cls.model_construct(login=odoo_rec.login)
+        return cls.model_construct(
+            login=odoo_rec.login, mail_verified=odoo_rec.mail_verified
+        )

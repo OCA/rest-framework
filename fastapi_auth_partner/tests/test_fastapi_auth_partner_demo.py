@@ -63,7 +63,9 @@ class TestEndToEnd(tests.HttpCase):
     def test_register(self):
         response = self._register_partner()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.json(), {"login": "loriot@example.org"})
+        self.assertEqual(
+            response.json(), {"login": "loriot@example.org", "mail_verified": False}
+        )
         self.assertIn("fastapi_auth_partner", response.cookies)
 
     def test_profile(self):
@@ -71,7 +73,10 @@ class TestEndToEnd(tests.HttpCase):
         resp = self.url_open("/fastapi_auth_partner_demo/auth/profile")
         resp.raise_for_status()
         data = resp.json()
-        self.assertEqual(data, {"login": "loriot@example.org"})
+        self.assertEqual(
+            data,
+            {"login": "loriot@example.org", "mail_verified": False},
+        )
 
     def test_profile_forbidden(self):
         """A end-to-end test with negative authentication."""
@@ -82,8 +87,10 @@ class TestEndToEnd(tests.HttpCase):
         """A end-to-end test for anonymous/public access."""
         resp = self.url_open("/fastapi_auth_partner_demo/auth/whoami-public-or-partner")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), {"login": "no-one"})
+        self.assertEqual(resp.json(), {"login": "no-one", "mail_verified": False})
 
         self._register_partner()
         resp = self.url_open("/fastapi_auth_partner_demo/auth/whoami-public-or-partner")
-        self.assertEqual(resp.json(), {"login": "loriot@example.org"})
+        self.assertEqual(
+            resp.json(), {"login": "loriot@example.org", "mail_verified": False}
+        )

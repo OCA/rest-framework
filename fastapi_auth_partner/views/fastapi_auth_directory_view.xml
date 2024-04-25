@@ -38,6 +38,7 @@
                        <group name="main">
                            <field name="request_reset_password_template_id" />
                            <field name="invite_set_password_template_id" />
+                           <field name="invite_validate_email_template_id" />
                            <field name="cookie_secret_key" />
                            <field name="cookie_duration" />
                            <field name="set_password_token_duration" />

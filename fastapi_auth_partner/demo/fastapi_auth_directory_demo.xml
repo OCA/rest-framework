@@ -7,6 +7,10 @@
             ref="email_request_reset_password"
         />
         <field name="invite_set_password_template_id" ref="email_invite_set_password" />
+        <field
+            name="invite_validate_email_template_id"
+            ref="email_invite_validate_email"
+        />
         <field name="cookie_secret_key">SuperSecret</field>
     </record>
 </odoo>
