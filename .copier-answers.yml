@@ -1,7 +1,8 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.17.2
+_commit: v1.21.1
 _src_path: git+https://github.com/oca/oca-addons-repo-template
 ci: GitHub
+convert_readme_fragments_to_markdown: false
 generate_requirements_txt: true
 github_check_license: true
 github_ci_extra_env: {}
@@ -20,4 +21,6 @@ repo_description: This repository has nice modules to interact with Odoo using J
 repo_name: Rest Frameworks
 repo_slug: rest-framework
 repo_website: https://github.com/OCA/rest-framework
+use_pyproject_toml: false
+use_ruff: false
 
