@@ -15,7 +15,10 @@ from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
 
 from ..context import odoo_env_ctx
-from ..dependencies import authenticated_partner_impl
+from ..dependencies import (
+    authenticated_partner_impl,
+    optionally_authenticated_partner_impl,
+)
 
 
 @tagged("post_install", "-at_install")
@@ -106,6 +109,15 @@ class FastAPITransactionCase(TransactionCase):
             )
         if partner or authenticated_partner_impl not in dependencies:
             dependencies[authenticated_partner_impl] = partial(lambda a: a, partner)
+        if partner and optionally_authenticated_partner_impl in dependencies:
+            raise ValueError(
+                "You cannot provide an override for the optionally_authenticated_partner_impl "
+                "dependency when creating a test client with a partner."
+            )
+        if partner or optionally_authenticated_partner_impl not in dependencies:
+            dependencies[optionally_authenticated_partner_impl] = partial(
+                lambda a: a, partner
+            )
         app = app or self.default_fastapi_app or FastAPI()
         router = router or self.default_fastapi_router
         if router:
