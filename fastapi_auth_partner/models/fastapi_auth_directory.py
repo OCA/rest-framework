@@ -18,17 +18,31 @@ class FastApiAuthDirectory(models.Model):
         default=1, help="In minute, default 1 minute", required=True
     )
     request_reset_password_template_id = fields.Many2one(
-        "mail.template", "Mail Template Forget Password", required=True
+        "mail.template",
+        "Mail Template Forget Password",
+        required=True,
+        default=lambda self: self.env.ref(
+            "fastapi_auth_partner.email_request_reset_password",
+            raise_if_not_found=False,
+        ),
     )
     invite_set_password_template_id = fields.Many2one(
         "mail.template",
         "Mail Template New Password",
         required=True,
+        default=lambda self: self.env.ref(
+            "fastapi_auth_partner.email_invite_set_password",
+            raise_if_not_found=False,
+        ),
     )
     invite_validate_email_template_id = fields.Many2one(
         "mail.template",
         "Mail Template Validate Email",
         required=True,
+        default=lambda self: self.env.ref(
+            "fastapi_auth_partner.email_invite_validate_email",
+            raise_if_not_found=False,
+        ),
     )
     cookie_secret_key = fields.Char(
         required=True,
