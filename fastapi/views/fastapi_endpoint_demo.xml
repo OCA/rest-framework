@@ -12,7 +12,7 @@
                     <group
                     name="demo_app_configuration"
                     title="Configuration"
-                    attrs="{'invisible': [('app', '!=', 'demo')]}"
+                    invisible="app != 'demo'"
                 >
                         <field name="demo_auth_method" />
                     </group>
