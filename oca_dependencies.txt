@@ -1,0 +1,1 @@
+odoo15-addon-endpoint-route-handler @ git+https://github.com/OCA/web-api.git@refs/pull/44/head#subdirectory=setup/endpoint_route_handler
