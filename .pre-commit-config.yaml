@@ -119,7 +119,13 @@ repos:
     rev: v2.29.0
     hooks:
       - id: pyupgrade
+        name: pyupgrade (exclude files)
         args: ["--keep-percent-format"]
+        exclude: fastapi/tests/common\.py|^fastapi/models/fastapi_endpoint_demo\.py
+      - id: pyupgrade
+        name: pyupgrade (include files)
+        args: ["--keep-percent-format", "--keep-runtime-typing"]
+        files: fastapi/tests/common\.py|^fastapi/models/fastapi_endpoint_demo\.py
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
