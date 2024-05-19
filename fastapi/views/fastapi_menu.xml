@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+    <record id="menu_fastapi_root" model="ir.ui.menu">
+        <field name="name">FastAPI</field>
+        <field name="sequence" eval="400" />
+        <field name="web_icon">fastapi,static/description/icon.png</field>
+        <field name="groups_id" eval="[(4, ref('group_fastapi_user'))]" />
+    </record>
+</odoo>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+  <!-- This is the user that will be used to run the demo app -->
+  <record
+        id="my_demo_app_user"
+        model="res.users"
+        context="{'no_reset_password': True, 'no_reset_password': True}"
+    >
+    <field name="name">My Demo Endpoint User</field>
+    <field name="login">my_demo_app_user</field>
+    <field name="groups_id" eval="[(6, 0, [])]" />
+  </record>
+
+  <!-- This is the group that will be used to run the demo app
+  This group will only depend on the "group_fastapi_endpoint_runner" group
+  that provides the minimal access rights to retrieve the user running the
+  endpoint handlers and performs authentication.
+  -->
+  <record id="my_demo_app_group" model="res.groups">
+    <field name="name">My Demo Endpoint Group</field>
+    <field name="users" eval="[(4, ref('my_demo_app_user'))]" />
+    <field name="implied_ids" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
+  </record>
+
+  <!-- This is the endpoint that will be used to run the demo app
+  This endpoint will be registered on the "/fastapi_demo" path
+  -->
+
+  <record model="fastapi.endpoint" id="fastapi_endpoint_demo">
+    <field name="name">Fastapi Demo Endpoint</field>
+    <field
+            name="description"
+        ><![CDATA[
+# A Dummy FastApi Demo
+
+This demo endpoint has been created by inhering from "fastapi.endpoint", registering
+a new app into the app selection field and implementing the `_get_fastapi_routers`
+methods. See documentation to learn more about how to create a new app.
+]]></field>
+    <field name="app">demo</field>
+    <field name="root_path">/fastapi_demo</field>
+    <field name="demo_auth_method">http_basic</field>
+      <field name="user_id" ref="my_demo_app_user" />
+  </record>
+</odoo>
