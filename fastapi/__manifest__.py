@@ -5,12 +5,12 @@
     "name": "Odoo FastAPI",
     "summary": """
         Odoo FastAPI endpoint""",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1.0.0",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
     "website": "https://github.com/OCA/rest-framework",
-    "depends": ["endpoint_route_handler", "base_contextvars"],
+    "depends": ["endpoint_route_handler"],
     "data": [
         "security/res_groups.xml",
         "security/fastapi_endpoint.xml",
