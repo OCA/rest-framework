@@ -3,7 +3,7 @@
 
 {
     "name": "Fastapi Auth Api Key",
-    "version": "16.0.1.0.0",
+    "version": "17.0.1.0.0",
     "category": "Others",
     "website": "https://github.com/OCA/rest-framework",
     "author": "Camptocamp, Odoo Community Association (OCA)",
