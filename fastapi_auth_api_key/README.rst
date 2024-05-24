@@ -17,18 +17,18 @@ Fastapi Auth Api Key
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
-    :target: https://github.com/OCA/rest-framework/tree/16.0/fastapi_auth_api_key
+    :target: https://github.com/OCA/rest-framework/tree/17.0/fastapi_auth_api_key
     :alt: OCA/rest-framework
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/rest-framework-16-0/rest-framework-16-0-fastapi_auth_api_key
+    :target: https://translation.odoo-community.org/projects/rest-framework-17-0/rest-framework-17-0-fastapi_auth_api_key
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=16.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=17.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-Provides `FastAPI` dependencies for Api Key authentication.
+Provides FastAPI dependencies for Api Key authentication.
 
 **Table of contents**
 
@@ -39,38 +39,40 @@ Usage
 =====
 
 Getting an odoo environment
-===========================
+---------------------------
 
-If you need to get an odoo env based on the provided api key, you can use `authenticated_env_by_auth_api_key`.
+If you need to get an odoo env based on the provided api key, you can
+use authenticated_env_by_auth_api_key.
 
-.. code-block:: python
+.. code:: python
 
-    @router.get("/example_with_authenticated_env")
-    def example_with_authenticated_env(
-        env: Annotated[Environment, Depends(authenticated_env_by_auth_api_key)],
-    ) -> None:
-        # env.user is the user attached to the provided key
-        pass
+   @router.get("/example_with_authenticated_env")
+   def example_with_authenticated_env(
+       env: Annotated[Environment, Depends(authenticated_env_by_auth_api_key)],
+   ) -> None:
+       # env.user is the user attached to the provided key
+       pass
 
 Getting the authenticated partner
-=================================
+---------------------------------
 
-If want to get the partned related to the the provided api key, you can use `authenticated_partner_by_api_key`
+If want to get the partned related to the the provided api key, you can
+use authenticated_partner_by_api_key
 
-.. code-block:: python
+.. code:: python
 
-    @router.get("/example_with_authenticated_partner")
-    def example_with_authenticated_partner(
-        partner: Annotated[Partner, Depends(authenticated_partner_by_api_key)],
-    ) -> None:
-        # partner is the partner related to the provided key key.user_id.partner_id
-        pass
+   @router.get("/example_with_authenticated_partner")
+   def example_with_authenticated_partner(
+       partner: Annotated[Partner, Depends(authenticated_partner_by_api_key)],
+   ) -> None:
+       # partner is the partner related to the provided key key.user_id.partner_id
+       pass
 
 Configuration
-=============
+-------------
 
-For this to work, the api key must be defined on the `Endpoint`.
-A new field `auth_api_key_group_id` has been added to the `Endpoint` model.
+For this to work, the api key must be defined on the Endpoint. A new
+field auth_api_key_group_id has been added to the Endpoint model.
 
 Bug Tracker
 ===========
@@ -78,7 +80,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/rest-framework/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20fastapi_auth_api_key%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20fastapi_auth_api_key%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -86,17 +88,24 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Camptocamp
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Matthieu Méquignon <matthieu.mequignon@camptocamp.com>
+-  Matthieu Méquignon <matthieu.mequignon@camptocamp.com>
+-  Son Ho <sonhd@trobz.com>
+
+Other credits
+-------------
+
+The migration of this module from 16.0 to 17.0 was financially supported
+by Camptocamp
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
@@ -116,6 +125,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-mmequignon| 
 
-This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/16.0/fastapi_auth_api_key>`_ project on GitHub.
+This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/17.0/fastapi_auth_api_key>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

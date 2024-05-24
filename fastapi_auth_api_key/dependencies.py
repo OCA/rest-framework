@@ -1,7 +1,7 @@
 # Copyright 2024 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-from typing_extensions import Annotated
+from typing import Annotated
 
 from odoo import SUPERUSER_ID
 from odoo.api import Environment
@@ -34,7 +34,7 @@ def authenticated_auth_api_key(
     except ValidationError as error:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=error.name,
+            detail=error.args,
             headers={"WWW-Authenticate": "HTTP-API-KEY"},
         ) from error
     # Ensure the api key is authorized for the current endpoint.
