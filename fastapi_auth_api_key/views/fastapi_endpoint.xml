@@ -8,7 +8,7 @@
       <field name="model">fastapi.endpoint</field>
       <field name="inherit_id" ref="fastapi.fastapi_endpoint_form_view" />
       <field name="arch" type="xml">
-        <group name="resources" position="inside">
+        <group name="resoures" position="inside">
             <field name="auth_api_key_group_id" />
         </group>
       </field>
