@@ -1,1 +1,6 @@
 # generated from manifests external_dependencies
+a2wsgi
+fastapi
+parse-accept-language
+python-multipart
+ujson
