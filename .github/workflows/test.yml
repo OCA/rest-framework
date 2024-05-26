@@ -3,11 +3,11 @@ name: tests
 on:
   pull_request:
     branches:
-      - "16.0*"
+      - "17.0*"
   push:
     branches:
-      - "16.0"
-      - "16.0-ocabot-*"
+      - "17.0"
+      - "17.0-ocabot-*"
 
 jobs:
   unreleased-deps:
@@ -35,9 +35,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - container: ghcr.io/oca/oca-ci/py3.10-odoo16.0:latest
+          - container: ghcr.io/oca/oca-ci/py3.10-odoo17.0:latest
             name: test with Odoo
-          - container: ghcr.io/oca/oca-ci/py3.10-ocb16.0:latest
+          - container: ghcr.io/oca/oca-ci/py3.10-ocb17.0:latest
             name: test with OCB
             makepot: "true"
     services:

@@ -1,8 +1,9 @@
 # Do NOT update manually; changes here will be overwritten by Copier
 _commit: v1.21.1
 _src_path: git+https://github.com/oca/oca-addons-repo-template
+additional_ruff_rules: []
 ci: GitHub
-convert_readme_fragments_to_markdown: false
+convert_readme_fragments_to_markdown: true
 generate_requirements_txt: true
 github_check_license: true
 github_ci_extra_env: {}
@@ -12,7 +13,7 @@ github_enable_stale_action: true
 github_enforce_dev_status_compatibility: true
 include_wkhtmltopdf: false
 odoo_test_flavor: Both
-odoo_version: 16.0
+odoo_version: 17.0
 org_name: Odoo Community Association (OCA)
 org_slug: OCA
 rebel_module_groups: []
@@ -21,6 +22,6 @@ repo_description: This repository has nice modules to interact with Odoo using J
 repo_name: Rest Frameworks
 repo_slug: rest-framework
 repo_website: https://github.com/OCA/rest-framework
-use_pyproject_toml: false
-use_ruff: false
+use_pyproject_toml: true
+use_ruff: true
 
