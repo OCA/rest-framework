@@ -17,23 +17,25 @@ Pydantic
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
-    :target: https://github.com/OCA/rest-framework/tree/16.0/pydantic
+    :target: https://github.com/OCA/rest-framework/tree/17.0/pydantic
     :alt: OCA/rest-framework
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/rest-framework-16-0/rest-framework-16-0-pydantic
+    :target: https://translation.odoo-community.org/projects/rest-framework-17-0/rest-framework-17-0-pydantic
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=16.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=17.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
 This addon provides a utility method that can be used to map odoo record
-to a `Pydantic model <https://pydantic-docs.helpmanual.io/>`_.
+to a `Pydantic model <https://pydantic-docs.helpmanual.io/>`__.
 
-If you need to make your Pydantic models extendable at runtime, takes a look
-at the python package `extendable-pydantic <https://pypi.org/project/extendable_pydantic/>`_
-and the odoo addon `extendable <https://github.com/acsone/odoo-addon-extendable>`_
+If you need to make your Pydantic models extendable at runtime, takes a
+look at the python package
+`extendable-pydantic <https://pypi.org/project/extendable_pydantic/>`__
+and the odoo addon
+`extendable <https://github.com/acsone/odoo-addon-extendable>`__
 
 **Table of contents**
 
@@ -43,44 +45,47 @@ and the odoo addon `extendable <https://github.com/acsone/odoo-addon-extendable>
 Usage
 =====
 
-To support pydantic models that map to Odoo models, Pydantic model instances can
-be created from arbitrary odoo model instances by mapping fields from odoo
-models to fields defined by the pydantic model. To ease the mapping, the addon
-provide a utility class `odoo.addons.pydantic.utils.GenericOdooGetter`.
+To support pydantic models that map to Odoo models, Pydantic model
+instances can be created from arbitrary odoo model instances by mapping
+fields from odoo models to fields defined by the pydantic model. To ease
+the mapping, the addon provide a utility class
+odoo.addons.pydantic.utils.GenericOdooGetter.
 
-.. code-block:: python
+.. code:: python
 
-    import pydantic
-    from odoo.addons.pydantic import utils
+   import pydantic
+   from odoo.addons.pydantic import utils
 
-    class Group(pydantic.BaseModel):
-        name: str
+   class Group(pydantic.BaseModel):
+       name: str
 
-        class Config:
-            orm_mode = True
-            getter_dict = utils.GenericOdooGetter
+       class Config:
+           orm_mode = True
+           getter_dict = utils.GenericOdooGetter
 
-    class UserInfo(pydantic.BaseModel):
-        name: str
-        groups: List[Group] = pydantic.Field(alias="groups_id")
+   class UserInfo(pydantic.BaseModel):
+       name: str
+       groups: List[Group] = pydantic.Field(alias="groups_id")
 
-        class Config:
-            orm_mode = True
-            getter_dict = utils.GenericOdooGetter
+       class Config:
+           orm_mode = True
+           getter_dict = utils.GenericOdooGetter
 
-    user = self.env.user
-    user_info = UserInfo.from_orm(user)
+   user = self.env.user
+   user_info = UserInfo.from_orm(user)
 
-See the official `Pydantic documentation`_ to discover all the available functionalities.
-
-.. _`Pydantic documentation`: https://pydantic-docs.helpmanual.io/
+See the official `Pydantic
+documentation <https://pydantic-docs.helpmanual.io/>`__ to discover all
+the available functionalities.
 
 Known issues / Roadmap
 ======================
 
-The `roadmap <https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement+label%3Apydantic>`_
-and `known issues <https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Abug+label%3Apydantic>`_ can
-be found on GitHub.
+The
+`roadmap <https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement+label%3Apydantic>`__
+and `known
+issues <https://github.com/OCA/rest-framework/issues?q=is%3Aopen+is%3Aissue+label%3Abug+label%3Apydantic>`__
+can be found on GitHub.
 
 Bug Tracker
 ===========
@@ -88,7 +93,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/rest-framework/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20pydantic%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20pydantic%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -96,17 +101,18 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * ACSONE SA/NV
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Laurent Mignon <laurent.mignon@acsone.eu>
+-  Laurent Mignon <laurent.mignon@acsone.eu>
+-  Tris Doan <tridm@trobz.com>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
@@ -126,6 +132,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-lmignon| 
 
-This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/16.0/pydantic>`_ project on GitHub.
+This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/17.0/pydantic>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
