@@ -173,7 +173,7 @@ class FastapiEndpoint(models.Model):
         return {
             "type": "fastapi",
             "auth": "public",
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
+            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
             "routes": [
                 f"{self.root_path}/",
                 f"{self.root_path}/<path:application_path>",
