@@ -1,1 +1,3 @@
 httpx
+odoo-addon-fastapi @ git+https://github.com/OCA/rest-framework.git@refs/pull/409/head#subdirectory=fastapi
+odoo-addon-auth_api_key_group @ git+https://github.com/OCA/server-auth.git@refs/pull/654/head#subdirectory=auth_api_key_group
