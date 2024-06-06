@@ -5,7 +5,7 @@
     "name": "Odoo FastAPI",
     "summary": """
         Odoo FastAPI endpoint""",
-    "version": "16.0.1.2.1",
+    "version": "17.0.1.0.0",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
@@ -30,5 +30,5 @@
         ]
     },
     "development_status": "Beta",
-    "installable": False,
+    "installable": True,
 }

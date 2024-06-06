@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import warnings
 from enum import Enum
-from typing import Annotated, Generic, List, Optional, TypeVar
+from typing import Annotated, Generic, TypeVar
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, computed_field
 
@@ -19,7 +19,7 @@ class PagedCollection(BaseModel, Generic[T]):
             validation_alias=AliasChoices("count", "total"),
         ),
     ]
-    items: List[T]
+    items: list[T]
 
     @computed_field()
     @property
@@ -37,8 +37,8 @@ class PagedCollection(BaseModel, Generic[T]):
 
 
 class Paging(BaseModel):
-    limit: Optional[int] = None
-    offset: Optional[int] = None
+    limit: int | None
+    offset: int | None
 
 
 #############################################################
