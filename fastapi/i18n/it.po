@@ -137,11 +137,6 @@ msgid "Languages"
 msgstr "Lingue"
 
 #. module: fastapi
-#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint____last_update
-msgid "Last Modified on"
-msgstr "Ultima modifica il"
-
-#. module: fastapi
 #: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__write_uid
 msgid "Last Updated by"
 msgstr "Ultimo aggiornamento di"
@@ -241,3 +236,6 @@ msgstr "Utente"
 #, python-format
 msgid "`%(name)s` uses a blacklisted root_path = `%(root_path)s`"
 msgstr "`%(name)s` utilizza un root_path bloccato = `%(root_path)s`"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"
