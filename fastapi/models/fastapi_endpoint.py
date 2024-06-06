@@ -4,17 +4,17 @@
 import logging
 from functools import partial
 from itertools import chain
-from typing import Any, Awaitable, Callable, Dict, List, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Tuple
 
 from a2wsgi import ASGIMiddleware
 from starlette.middleware import Middleware
+from starlette.routing import Mount
 
-import odoo
 from odoo import _, api, exceptions, fields, models, tools
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, FastAPI
 
-from .. import dependencies, error_handlers
+from .. import dependencies
 
 _logger = logging.getLogger(__name__)
 
@@ -201,7 +201,23 @@ class FastapiEndpoint(models.Model):
             return None
         app = FastAPI()
         app.mount(record.root_path, record._get_app())
+        self._clear_fastapi_exception_handlers(app)
         return ASGIMiddleware(app)
+
+    def _clear_fastapi_exception_handlers(self, app: FastAPI) -> None:
+        """
+        Clear the exception handlers of the given fastapi app.
+
+        This method is used to ensure that the exception handlers are handled
+        by odoo and not by fastapi. We therefore need to remove all the handlers
+        added by default when instantiating a FastAPI app. Since apps can be
+        mounted recursively, we need to apply this method to all the apps in the
+        mounted tree.
+        """
+        app.exception_handlers = {}
+        for route in app.routes:
+            if isinstance(route, Mount):
+                self._clear_fastapi_exception_handlers(route.app)
 
     @api.model
     @tools.ormcache("root_path")
@@ -216,46 +232,12 @@ class FastapiEndpoint(models.Model):
         for router in self._get_fastapi_routers():
             app.include_router(router=router)
         app.dependency_overrides.update(self._get_app_dependencies_overrides())
-        for exception, handler in self._get_app_exception_handlers().items():
-            app.add_exception_handler(exception, handler)
         return app
 
     def _get_app_dependencies_overrides(self) -> Dict[Callable, Callable]:
         return {
             dependencies.fastapi_endpoint_id: partial(lambda a: a, self.id),
             dependencies.company_id: partial(lambda a: a, self.company_id.id),
-        }
-
-    def _get_app_exception_handlers(
-        self,
-    ) -> Dict[
-        Union[int, Type[Exception]],
-        Callable[[Request, Exception], Union[Response, Awaitable[Response]]],
-    ]:
-        """Return a dict of exception handlers to register on the app
-
-        The key is the exception class or status code to handle.
-        The value is the handler function.
-
-        If you need to register your own handler, you can do it by overriding
-        this method and calling super(). Changes done in this way will be applied
-        to all the endpoints. If you need to register a handler only for a specific
-        endpoint, you can do it by overriding the _get_app_exception_handlers method
-        and conditionally returning your specific handlers only for the endpoint
-        you want according to the self.app value.
-
-        Be careful to not forget to roll back the transaction when you implement
-        your own error handler. If you don't, the transaction will be committed
-        and the changes will be applied to the database.
-        """
-        self.ensure_one()
-        return {
-            Exception: error_handlers._odoo_exception_handler,
-            HTTPException: error_handlers._odoo_http_exception_handler,
-            odoo.exceptions.UserError: error_handlers._odoo_user_error_handler,
-            odoo.exceptions.AccessError: error_handlers._odoo_access_error_handler,
-            odoo.exceptions.MissingError: error_handlers._odoo_missing_error_handler,
-            odoo.exceptions.ValidationError: error_handlers._odoo_validation_error_handler,
         }
 
     def _prepare_fastapi_app_params(self) -> Dict[str, Any]:

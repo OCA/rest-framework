@@ -4,9 +4,16 @@
 from contextlib import contextmanager
 from io import BytesIO
 
-from werkzeug.exceptions import InternalServerError
+from starlette import status
+from starlette.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException as WerkzeugHTTPException
 
+from odoo.exceptions import AccessDenied, AccessError, MissingError, UserError
 from odoo.http import Dispatcher, request
+
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError, WebSocketRequestValidationError
+from fastapi.utils import is_body_allowed_for_status_code
 
 from .context import odoo_env_ctx
 
@@ -32,19 +39,65 @@ class FastApiDispatcher(Dispatcher):
         with self._manage_odoo_env(uid):
             for r in app(environ, self._make_response):
                 data.write(r)
+            if self.inner_exception:
+                raise self.inner_exception
             return self.request.make_response(
                 data.getvalue(), headers=self.headers, status=self.status
             )
 
     def handle_error(self, exc):
-        # At this stage all the normal exceptions are handled by FastAPI
-        # and we should only have InternalServerError occurring after the
-        # FastAPI app has been called.
-        return InternalServerError()  # pragma: no cover
+        headers = getattr(exc, "headers", None)
+        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        details = "Internal Server Error"
+        if isinstance(exc, WerkzeugHTTPException):
+            status_code = exc.code
+            details = exc.description
+        elif isinstance(exc, HTTPException):
+            status_code = exc.status_code
+            details = exc.detail
+        elif isinstance(exc, RequestValidationError):
+            status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+            details = jsonable_encoder(exc.errors())
+        elif isinstance(exc, WebSocketRequestValidationError):
+            status_code = status.WS_1008_POLICY_VIOLATION
+            details = jsonable_encoder(exc.errors())
+        elif isinstance(exc, (AccessDenied, AccessError)):
+            status_code = status.HTTP_403_FORBIDDEN
+            details = "AccessError"
+        elif isinstance(exc, MissingError):
+            status_code = status.HTTP_404_NOT_FOUND
+            details = "MissingError"
+        elif isinstance(exc, UserError):
+            status_code = status.HTTP_400_BAD_REQUEST
+            details = exc.args[0]
+        body = {}
+        if is_body_allowed_for_status_code(status_code):
+            # use the same format as in
+            # fastapi.exception_handlers.http_exception_handler
+            body = {"detail": details}
+        return self.request.make_json_response(
+            body, status=status_code, headers=headers
+        )
 
     def _make_response(self, status_mapping, headers_tuple, content):
         self.status = status_mapping[:3]
         self.headers = dict(headers_tuple)
+        self.inner_exception = None
+        # in case of exception, the method asgi_done_callback of the
+        # ASGIResponder will trigger an "a2wsgi.error" event with the exception
+        # instance stored in a tuple with the type of the exception and the traceback.
+        # The event loop will then be notified and then call the `error_response`
+        # method of the ASGIResponder. This method will then call the
+        # `_make_response` method provided as callback to the app with the tuple
+        # of the exception as content. In this case, we store the exception
+        # instance in the `inner_exception` attribute to be able to raise it
+        # in the `dispatch` method.
+        if (
+            isinstance(content, tuple)
+            and len(content) == 3
+            and isinstance(content[1], Exception)
+        ):
+            self.inner_exception = content[1]
 
     def _get_environ(self):
         try:
