@@ -1,3 +1,35 @@
+16.0.1.4.0 (2024-06-06)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- This change is a complete rewrite of the way the transactions are managed when
+  integrating a fastapi application into Odoo.
+
+  In the previous implementation, specifics error handlers were put in place to
+  catch exception occurring in the handling of requests made to a fastapi application
+  and to rollback the transaction in case of error. This was done by registering
+  specifics error handlers methods to the fastapi application using the 'add_exception_handler'
+  method of the fastapi application. In this implementation, the transaction was
+  rolled back in the error handler method.
+
+  This approach was not working as expected for several reasons:
+
+  - The handling of the error at the fastapi level prevented the retry mechanism
+    to be triggered in case of a DB concurrency error. This is because the error
+    was catch at the fastapi level and never bubbled up to the early stage of the
+    processing of the request where the retry mechanism is implemented.
+  - The cleanup of the environment and the registry was not properly done in case
+    of error. In the **'odoo.service.model.retrying'** method, you can see that
+    the cleanup process is different in case of error raised by the database
+    and in case of error raised by the application.
+
+  This change fix these issues by ensuring that errors are no more catch at the
+  fastapi level and bubble up the fastapi processing stack through the event loop
+  required to transform WSGI to ASGI. As result the transactional nature of the
+  requests to the fastapi applications is now properly managed by the Odoo framework. (`#422 <https://github.com/OCA/rest-framework/issues/422>`_)
+
+
 16.0.1.2.6 (2024-02-20)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
