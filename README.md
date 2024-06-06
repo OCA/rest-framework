@@ -17,6 +17,13 @@ This repository has nice modules to interact with Odoo using JSON and HTTP reque
 
 [//]: # (addons)
 
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[fastapi](fastapi/) | 17.0.1.0.0 | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Odoo FastAPI endpoint
+
+
 Unported addons
 ---------------
 addon | version | maintainers | summary
@@ -31,7 +38,6 @@ addon | version | maintainers | summary
 [datamodel](datamodel/) | 16.0.1.0.1 (unported) | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | This addon allows you to define simple data models supporting serialization/deserialization
 [extendable](extendable/) | 16.0.1.0.1 (unported) | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Extendable classes registry loader for Odoo
 [extendable_fastapi](extendable_fastapi/) | 16.0.2.1.1 (unported) | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Allows the use of extendable into fastapi apps
-[fastapi](fastapi/) | 16.0.1.2.1 (unported) | [![lmignon](https://github.com/lmignon.png?size=30px)](https://github.com/lmignon) | Odoo FastAPI endpoint
 [fastapi_auth_jwt](fastapi_auth_jwt/) | 16.0.1.0.1 (unported) | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | JWT bearer token authentication for FastAPI.
 [fastapi_auth_jwt_demo](fastapi_auth_jwt_demo/) | 16.0.2.0.0 (unported) | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | Test/demo module for fastapi_auth_jwt.
 [graphql_base](graphql_base/) | 16.0.1.0.1 (unported) | [![sbidoul](https://github.com/sbidoul.png?size=30px)](https://github.com/sbidoul) | Base GraphQL/GraphiQL controller
