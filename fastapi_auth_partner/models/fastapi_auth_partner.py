@@ -8,6 +8,7 @@ from itsdangerous import URLSafeTimedSerializer
 
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import AccessDenied, UserError, ValidationError
+from odoo.http import request
 
 from odoo.addons.auth_signup.models.res_partner import random_token
 
@@ -15,6 +16,7 @@ from odoo.addons.auth_signup.models.res_partner import random_token
 # https://passlib.readthedocs.io
 # https://passlib.readthedocs.io/en/stable/narr/quickstart.html#choosing-a-hash
 # be carefull odoo requirements use an old version of passlib
+# TODO: replace with a JWT token
 DEFAULT_CRYPT_CONTEXT = passlib.context.CryptContext(["pbkdf2_sha512"])
 DEFAULT_CRYPT_CONTEXT_TOKEN = passlib.context.CryptContext(
     ["pbkdf2_sha512"], pbkdf2_sha512__salt_size=0
@@ -38,11 +40,20 @@ class FastApiAuthPartner(models.Model):
     directory_id = fields.Many2one(
         "fastapi.auth.directory", "Directory", required=True, index=True
     )
+    user_can_impersonate = fields.Boolean(
+        compute="_compute_user_can_impersonate",
+        help="Technical field to check if the user can impersonate",
+    )
+    impersonating_user_ids = fields.Many2many(
+        related="directory_id.impersonating_user_ids",
+    )
     login = fields.Char(compute="_compute_login", store=True, required=True, index=True)
     password = fields.Char(compute="_compute_password", inverse="_inverse_password")
     encrypted_password = fields.Char(index=True)
     token_set_password_encrypted = fields.Char()
     token_expiration = fields.Datetime()
+    token_impersonating_encrypted = fields.Char()
+    token_impersonating_expiration = fields.Datetime()
     nbr_pending_reset_sent = fields.Integer(
         index=True,
         help=(
@@ -132,6 +143,100 @@ class FastApiAuthPartner(models.Model):
         if not valid:
             raise AccessDenied()
         return self.browse(_id)
+
+    def local_impersonate(self):
+        """Local impersonate for dev mode"""
+        self.ensure_one()
+        if not self.env.user._is_admin():
+            raise AccessDenied(_("Only admin can impersonate locally"))
+
+        if not hasattr(request, "future_response"):
+            raise UserError(
+                _("Please install base_future_response for local impersonate to work")
+            )
+        self._set_auth_cookie(request.future_response)
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Impersonation successful"),
+                "message": _("You are now impersonating %s\n%%s") % self.login,
+                "links": [
+                    {
+                        "label": f"{endpoint.app.title()} api docs",
+                        "url": endpoint.docs_url,
+                    }
+                    for endpoint in self.directory_id.fastapi_endpoint_ids
+                ],
+                "type": "success",
+                "sticky": False,
+            },
+        }
+
+    def impersonate(self):
+        self.ensure_one()
+        if self.env.user not in self.impersonating_user_ids:
+            raise AccessDenied(_("You are not allowed to impersonate this user"))
+
+        endpoint_id = self.env.context.get("fastapi_endpoint_id")
+        if endpoint_id:
+            endpoint = self.env["fastapi.endpoint"].browse(endpoint_id)
+            if not endpoint:
+                return
+        else:
+            endpoints = self.directory_id.fastapi_endpoint_ids
+            if len(endpoints) == 1:
+                endpoint = endpoints
+            else:
+                wizard = self.env["ir.actions.act_window"]._for_xml_id(
+                    "fastapi_auth_partner.fastapi_auth_partner_action_impersonate"
+                )
+                wizard["context"] = {"default_fastapi_auth_partner_id": self.id}
+                return wizard
+
+        base = endpoint.public_url or (
+            self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+            + endpoint.root_path
+        )
+
+        token = random_token()
+        expiration = datetime.now() + timedelta(
+            minutes=self.directory_id.impersonating_token_duration
+        )
+        self.write(
+            {
+                "token_impersonating_encrypted": self._encrypt_token(token),
+                "token_impersonating_expiration": expiration,
+            }
+        )
+        url = f"{base}/auth/impersonate/{self.id}/{token}"
+        return {
+            "type": "ir.actions.act_url",
+            "url": url,
+            "target": "self",
+        }
+
+    @api.depends_context("uid")
+    def _compute_user_can_impersonate(self):
+        for record in self:
+            record.user_can_impersonate = self.env.user in record.impersonating_user_ids
+
+    def impersonating(self, directory, fastapi_partner_id, token):
+        hashed_token = self._encrypt_token(token)
+        partner_auth = self.search(
+            [
+                ("id", "=", fastapi_partner_id),
+                ("token_impersonating_encrypted", "=", hashed_token),
+                ("directory_id", "=", directory.id),
+            ]
+        )
+        if (
+            partner_auth
+            and partner_auth.token_impersonating_expiration > datetime.now()
+        ):
+            return partner_auth
+        else:
+            raise UserError(_("The token is not valid, please request a new one"))
 
     def _get_template_request_reset_password(self, directory):
         return directory.request_reset_password_template_id

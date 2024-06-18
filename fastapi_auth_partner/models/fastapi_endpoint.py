@@ -21,12 +21,21 @@ class FastapiEndpoint(models.Model):
         selection_add=[
             ("auth_partner", "Partner Auth"),
         ],
-        string="Authenciation method",
+        string="Authentication method",
     )
     directory_id = fields.Many2one("fastapi.auth.directory")
 
+    is_partner_auth = fields.Boolean(
+        compute="_compute_is_partner_auth",
+        help="Technical field to know if the auth method is partner",
+    )
+
     def _get_fastapi_routers(self) -> List[APIRouter]:
         routers = super()._get_fastapi_routers()
-        if self.app == "demo":
+        if self.app == "demo" and self.demo_auth_method == "auth_partner":
             routers.append(auth_router)
         return routers
+
+    def _compute_is_partner_auth(self):
+        for rec in self:
+            rec.is_partner_auth = auth_router in rec._get_fastapi_routers()

@@ -14,6 +14,9 @@ class FastApiAuthDirectory(models.Model):
     set_password_token_duration = fields.Integer(
         default=1440, help="In minute, default 1440 minutes => 24h", required=True
     )
+    impersonating_token_duration = fields.Integer(
+        default=1, help="In minute, default 1 minute", required=True
+    )
     request_reset_password_template_id = fields.Many2one(
         "mail.template", "Mail Template Forget Password", required=True
     )
@@ -32,6 +35,24 @@ class FastApiAuthDirectory(models.Model):
         required=True,
     )
     count_partner = fields.Integer(compute="_compute_count_partner")
+
+    fastapi_endpoint_ids = fields.One2many(
+        "fastapi.endpoint",
+        "directory_id",
+        string="FastAPI Endpoints",
+    )
+    impersonating_user_ids = fields.Many2many(
+        "res.users",
+        "fastapi_auth_directory_impersonating_user_rel",
+        "directory_id",
+        "user_id",
+        string="Impersonating Users",
+        help="These odoo users can impersonate any partner of this directory",
+        default=lambda self: (
+            self.env.ref("base.user_root") | self.env.ref("base.user_admin")
+        ).ids,
+        groups="fastapi_auth_partner.group_partner_auth_manager",
+    )
 
     def _compute_count_partner(self):
         data = self.env["fastapi.auth.partner"].read_group(

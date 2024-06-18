@@ -18,6 +18,7 @@ from odoo.addons.fastapi.dependencies import fastapi_endpoint, odoo_env
 from odoo.addons.fastapi.models import FastapiEndpoint
 
 from fastapi import APIRouter, Depends, Response
+from fastapi.responses import RedirectResponse
 
 from ..dependencies import auth_partner_authenticated_partner
 from ..models.fastapi_auth_partner import COOKIE_AUTH_NAME
@@ -107,6 +108,23 @@ def profile(
     return AuthPartnerResponse.from_auth_partner(partner_auth)
 
 
+@auth_router.get("/auth/impersonate/{fastapi_partner_id}/{token}")
+def impersonate(
+    fastapi_partner_id: int,
+    token: str,
+    env: Annotated[Environment, Depends(odoo_env)],
+    endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
+) -> RedirectResponse:
+    partner_auth = (
+        env["fastapi.auth.service"]
+        .sudo()
+        ._impersonate(endpoint.directory_id, fastapi_partner_id, token)
+    )
+    response = RedirectResponse(url="/")
+    partner_auth._set_auth_cookie(response)
+    return response
+
+
 class AuthService(models.AbstractModel):
     _name = "fastapi.auth.service"
     _description = "Fastapi Auth Service"
@@ -142,6 +160,13 @@ class AuthService(models.AbstractModel):
             return partner_auth
         else:
             raise AccessError(_("Invalid Login or Password"))
+
+    def _impersonate(self, directory, fastapi_partner_id, token):
+        return (
+            self.env["fastapi.auth.partner"]
+            .sudo()
+            .impersonating(directory, fastapi_partner_id, token)
+        )
 
     def _logout(self, directory, response):
         response.set_cookie(COOKIE_AUTH_NAME, max_age=0)

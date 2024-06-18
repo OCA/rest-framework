@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from odoo import api, fields, models
 
 
-class WizardPartnerAuthResetPassword(models.Model):
+class WizardPartnerAuthResetPassword(models.TransientModel):
     _name = "wizard.partner.auth.reset.password"
     _description = "Wizard Partner Auth Reset Password"
 

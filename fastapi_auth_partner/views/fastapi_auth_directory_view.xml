@@ -42,6 +42,16 @@
                            <field name="cookie_duration" />
                            <field name="set_password_token_duration" />
                         </group>
+                       <group
+                            name="impersonate"
+                            groups="fastapi_auth_partner.group_partner_auth_manager"
+                        >
+                           <field
+                                name="impersonating_user_ids"
+                                widget="many2many_tags"
+                            />
+                           <field name="impersonating_token_duration" />
+                        </group>
                    </group>
                 </sheet>
             </form>

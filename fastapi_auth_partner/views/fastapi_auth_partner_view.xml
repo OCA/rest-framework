@@ -19,10 +19,26 @@
         <field name="model">fastapi.auth.partner</field>
         <field name="arch" type="xml">
             <form string="Auth Partner">
-                <header />
+                <header>
+                    <button
+                        name="local_impersonate"
+                        type="object"
+                        string="Local Impersonate"
+                        class="btn-secondary"
+                        groups="base.group_no_one"
+                    />
+                    <button
+                        name="impersonate"
+                        type="object"
+                        string="Impersonate"
+                        class="btn-info"
+                        attrs="{'invisible': [('user_can_impersonate', '=', False)]}"
+                    />
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
+                            <field name="user_can_impersonate" invisible="1" />
                             <field name="partner_id" />
                         </h1>
                     </div>
