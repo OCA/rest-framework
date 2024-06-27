@@ -62,6 +62,8 @@ class AuthPartner:
                         lambda s: s.directory_id == directory
                     )
                     if auth:
+                        if directory.sliding_session:
+                            auth._set_auth_cookie(response)
                         return partner
         _logger.info("Could not determine partner from 'fastapi_auth_partner' cookie.")
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED)

@@ -72,6 +72,7 @@ class FastApiAuthDirectory(models.Model):
         ).ids,
         groups="fastapi_auth_partner.group_partner_auth_manager",
     )
+    sliding_session = fields.Boolean()
 
     def _compute_count_partner(self):
         data = self.env["fastapi.auth.partner"].read_group(

@@ -41,6 +41,7 @@
                            <field name="invite_validate_email_template_id" />
                            <field name="cookie_secret_key" />
                            <field name="cookie_duration" />
+                           <field name="sliding_session" />
                            <field name="set_password_token_duration" />
                         </group>
                        <group
