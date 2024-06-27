@@ -48,9 +48,13 @@ class AuthPartner:
 
         elif fastapi_auth_partner:
             directory = endpoint.sudo().directory_id
-            vals = URLSafeTimedSerializer(directory.cookie_secret_key).loads(
-                fastapi_auth_partner, max_age=directory.cookie_duration * 60
-            )
+            try:
+                vals = URLSafeTimedSerializer(directory.cookie_secret_key).loads(
+                    fastapi_auth_partner, max_age=directory.cookie_duration * 60
+                )
+            except Exception as e:
+                _logger.error("Invalid cookies error %s", e)
+                raise HTTPException(status_code=HTTP_401_UNAUTHORIZED) from e
             if vals["did"] == directory.id and vals["pid"]:
                 partner = env["res.partner"].browse(vals["pid"]).exists()
                 if partner:
