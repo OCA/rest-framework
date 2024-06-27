@@ -1,5 +1,5 @@
 # generated from manifests external_dependencies
-a2wsgi
+a2wsgi>=1.10.6
 apispec
 apispec>=4.0.0
 cerberus
@@ -7,7 +7,7 @@ contextvars
 extendable-pydantic
 extendable-pydantic>=1.2.0
 extendable>=0.0.4
-fastapi
+fastapi>=0.110.0
 graphene
 graphql_server
 jsondiff
