@@ -16,7 +16,6 @@ from fastapi.exceptions import RequestValidationError, WebSocketRequestValidatio
 from fastapi.utils import is_body_allowed_for_status_code
 
 from .context import odoo_env_ctx
-from .seekable_stream import SeekableStream
 
 
 class FastApiDispatcher(Dispatcher):
@@ -121,11 +120,10 @@ class FastApiDispatcher(Dispatcher):
             stream.seek(0)
         else:
             # If the stream does not support seeking, we need wrap it
-            # in a SeekableStream object that will buffer the data read
-            # from the stream. This way we can seek back to the beginning
+            # in a BytesIO object. This way we can seek back to the beginning
             # of the stream to read the data again if needed.
             if not hasattr(httprequest, "_cached_stream"):
-                httprequest._cached_stream = SeekableStream(stream)
+                httprequest._cached_stream = BytesIO(stream.read())
             stream = httprequest._cached_stream
             stream.seek(0)
         environ["wsgi.input"] = stream
