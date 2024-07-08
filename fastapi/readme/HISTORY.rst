@@ -1,3 +1,16 @@
+16.0.1.4.1 (2024-07-08)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- Fix issue with the retry of a POST request with a body content.
+
+  Prior to this fix the retry of a POST request with a body content would
+  stuck in a loop and never complete. This was due to the fact that the
+  request input stream was not reset after a failed attempt to process the
+  request. (`#440 <https://github.com/OCA/rest-framework/issues/440>`_)
+
+
 16.0.1.4.0 (2024-06-06)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
