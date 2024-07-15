@@ -22,7 +22,7 @@ class BaseRestServiceAPISpec(APISpec):
         super(BaseRestServiceAPISpec, self).__init__(
             title="%s REST services" % self._service._usage,
             version="",
-            openapi_version="3.0.0",
+            openapi_version="3.1.0",
             info={
                 "description": textwrap.dedent(
                     getattr(self._service, "_description", "") or ""

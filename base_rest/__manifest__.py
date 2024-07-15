@@ -24,7 +24,7 @@
             "cerberus",
             "pyquerystring",
             "parse-accept-language",
-            "apispec>=4.0.0",
+            "apispec",
         ]
     },
     "installable": True,
