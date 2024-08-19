@@ -38,6 +38,6 @@ class OdooObjectType(graphene.ObjectType):
         if default_resolver is None:
             default_resolver = odoo_attr_resolver
 
-        return super(OdooObjectType, cls).__init_subclass_with_meta__(
+        return super().__init_subclass_with_meta__(
             default_resolver=default_resolver, **options
         )

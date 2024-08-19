@@ -15,7 +15,7 @@ from graphql_server import (
 from odoo import http
 
 
-class GraphQLControllerMixin(object):
+class GraphQLControllerMixin:
     def _parse_body(self):
         req = http.request.httprequest
         # We use mimetype here since we don't need the other
