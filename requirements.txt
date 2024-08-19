@@ -2,6 +2,8 @@
 a2wsgi>=1.10.6
 contextvars
 fastapi>=0.110.0
+graphene
+graphql_server
 parse-accept-language
 pydantic
 python-multipart
