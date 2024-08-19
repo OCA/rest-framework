@@ -17,23 +17,22 @@ Graphql Base
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
-    :target: https://github.com/OCA/rest-framework/tree/16.0/graphql_base
+    :target: https://github.com/OCA/rest-framework/tree/17.0/graphql_base
     :alt: OCA/rest-framework
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/rest-framework-16-0/rest-framework-16-0-graphql_base
+    :target: https://translation.odoo-community.org/projects/rest-framework-17-0/rest-framework-17-0-graphql_base
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=16.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=17.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This modules enables the creation of `GraphQL <https://graphql.org/>`__ endpoints.
-In itself, it does nothing and must be used by a developer to
+This modules enables the creation of `GraphQL <https://graphql.org/>`__
+endpoints. In itself, it does nothing and must be used by a developer to
 create the GraphQL schema and resolvers using
-`graphene <https://graphene-python.org/>`__,
-and expose them through a controller.
-An example is available in the ``graphql_demo`` module.
+`graphene <https://graphene-python.org/>`__, and expose them through a
+controller. An example is available in the ``graphql_demo`` module.
 
 **Table of contents**
 
@@ -45,66 +44,67 @@ Usage
 
 To use this module, you need to
 
-- create your graphene schema
-- create your controller to expose your GraphQL endpoint,
-  and optionally a GraphiQL IDE.
+-  create your graphene schema
+-  create your controller to expose your GraphQL endpoint, and
+   optionally a GraphiQL IDE.
 
-This module does not attempt to expose the whole Odoo object model.
-This could be the purpose of another module based on this one.
-We believe however that it is preferable to expose a specific well tested
-endpoint for each customer, so as to reduce coupling by knowing precisely
-what is exposed and needs to be tested when upgrading Odoo.
+This module does not attempt to expose the whole Odoo object model. This
+could be the purpose of another module based on this one. We believe
+however that it is preferable to expose a specific well tested endpoint
+for each customer, so as to reduce coupling by knowing precisely what is
+exposed and needs to be tested when upgrading Odoo.
 
 To start working with this module, we recommend the following approach:
 
-- Learn `GraphQL basics <https://graphql.org/learn/>`__
-- Learn `graphene <https://graphene-python.org/>`__, the python library
-  used to create GraphQL schemas and resolvers.
-- Examine the ``graphql_demo`` module in this repo, copy it,
-  adapt the controller to suit your needs (routes, authentication methods).
-- Start building your own schema and resolver.
+-  Learn `GraphQL basics <https://graphql.org/learn/>`__
+-  Learn `graphene <https://graphene-python.org/>`__, the python library
+   used to create GraphQL schemas and resolvers.
+-  Examine the ``graphql_demo`` module in this repo, copy it, adapt the
+   controller to suit your needs (routes, authentication methods).
+-  Start building your own schema and resolver.
 
 Building your schema
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
-The schema can be built using native graphene types.
-An ``odoo.addons.graphql_base.types.OdooObjectType``
-is provided as a convenience. It is a graphene ``ObjectType`` with a
-default attribute resolver which:
+The schema can be built using native graphene types. An
+``odoo.addons.graphql_base.types.OdooObjectType`` is provided as a
+convenience. It is a graphene ``ObjectType`` with a default attribute
+resolver which:
 
-- converts False to None (except for Boolean types), to avoid Odoo's weird
-  ``False`` strings being rendered as json ``"false"``;
-- adds the user timezone to Datetime fields;
-- raises an error if an attribute is absent to avoid field name typing errors.
+-  converts False to None (except for Boolean types), to avoid Odoo's
+   weird ``False`` strings being rendered as json ``"false"``;
+-  adds the user timezone to Datetime fields;
+-  raises an error if an attribute is absent to avoid field name typing
+   errors.
 
 Creating GraphQL controllers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------
 
-The module provides an ``odoo.addons.graphql_base.GraphQLControllerMixin``
-class to help you build GraphQL controllers providing GraphiQL and/or GraphQL
-endpoints.
+The module provides an
+``odoo.addons.graphql_base.GraphQLControllerMixin`` class to help you
+build GraphQL controllers providing GraphiQL and/or GraphQL endpoints.
 
-.. code-block:: python
+.. code:: python
 
-    from odoo import http
-    from odoo.addons.graphql_base import GraphQLControllerMixin
+   from odoo import http
+   from odoo.addons.graphql_base import GraphQLControllerMixin
 
-    from ..schema import schema
+   from ..schema import schema
 
 
-    class GraphQLController(http.Controller, GraphQLControllerMixin):
+   class GraphQLController(http.Controller, GraphQLControllerMixin):
 
-        # The GraphiQL route, providing an IDE for developers
-        @http.route("/graphiql/demo", auth="user")
-        def graphiql(self, **kwargs):
-            return self._handle_graphiql_request(schema)
+       # The GraphiQL route, providing an IDE for developers
+       @http.route("/graphiql/demo", auth="user")
+       def graphiql(self, **kwargs):
+           return self._handle_graphiql_request(schema)
 
-        # The graphql route, for applications.
-        # Note csrf=False: you may want to apply extra security
-        # (such as origin restrictions) to this route.
-        @http.route("/graphql/demo", auth="user", csrf=False)
-        def graphql(self, **kwargs):
-            return self._handle_graphql_request(schema)
+       # The graphql route, for applications.
+       # Note csrf=False: you may want to apply extra security
+       # (such as origin restrictions) to this route.
+       @http.route("/graphql/demo", auth="user", csrf=False)
+       def graphql(self, **kwargs):
+           return self._handle_graphql_request(schema)
 
 Bug Tracker
 ===========
@@ -112,7 +112,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/rest-framework/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20graphql_base%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20graphql_base%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -120,12 +120,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * ACSONE SA/NV
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
@@ -145,6 +145,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-sbidoul| 
 
-This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/16.0/graphql_base>`_ project on GitHub.
+This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/17.0/graphql_base>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
