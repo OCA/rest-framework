@@ -13,8 +13,6 @@ exclude: |
   ^extendable_fastapi/|
   ^fastapi_auth_jwt/|
   ^fastapi_auth_jwt_demo/|
-  ^graphql_base/|
-  ^graphql_demo/|
   ^model_serializer/|
   ^pydantic/|
   ^rest_log/|
