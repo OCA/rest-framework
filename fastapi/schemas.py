@@ -1,5 +1,5 @@
 # Copyright 2022 ACSONE SA/NV
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 import warnings
 from enum import Enum
 from typing import Annotated, Generic, List, Optional, TypeVar
