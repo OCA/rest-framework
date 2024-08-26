@@ -101,7 +101,7 @@ def optionally_authenticated_partner(
 
 
 def paging(
-    page: Annotated[int, Query(gte=1)] = 1, page_size: Annotated[int, Query(gte=1)] = 80
+    page: Annotated[int, Query(ge=1)] = 1, page_size: Annotated[int, Query(ge=1)] = 80
 ) -> Paging:
     """Return a Paging object from the page and page_size parameters"""
     return Paging(limit=page_size, offset=(page - 1) * page_size)
