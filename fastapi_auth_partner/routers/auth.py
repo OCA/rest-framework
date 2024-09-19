@@ -120,7 +120,10 @@ def impersonate(
         .sudo()
         ._impersonate(endpoint.directory_id, fastapi_partner_id, token)
     )
-    response = RedirectResponse(url="/")
+    base = endpoint.public_url or (
+        env["ir.config_parameter"].sudo().get_param("web.base.url") + endpoint.root_path
+    )
+    response = RedirectResponse(url=base)
     partner_auth._set_auth_cookie(response)
     return response
 
