@@ -28,7 +28,7 @@ class FastapiEndpoint(models.Model):
     )
     demo_auth_method = fields.Selection(
         selection=[("api_key", "Api Key"), ("http_basic", "HTTP Basic")],
-        string="Authenciation method",
+        string="Authentication method",
     )
 
     def _get_fastapi_routers(self) -> List[APIRouter]:

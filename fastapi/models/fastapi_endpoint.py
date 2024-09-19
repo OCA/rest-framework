@@ -48,6 +48,11 @@ class FastapiEndpoint(models.Model):
     docs_url: str = fields.Char(compute="_compute_urls")
     redoc_url: str = fields.Char(compute="_compute_urls")
     openapi_url: str = fields.Char(compute="_compute_urls")
+    public_url: str = fields.Char(
+        help="The public URL of the API.\n"
+        "This is an informative data item that can be used by "
+        "other modules, for example, to construct URLs in mails."
+    )
     company_id = fields.Many2one(
         "res.company",
         compute="_compute_company_id",
