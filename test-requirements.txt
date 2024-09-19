@@ -1,1 +1,2 @@
 httpx
+extendable-pydantic @ git+https://github.com/lmignon/extendable-pydantic@master-fastapi-compatibility
