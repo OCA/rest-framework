@@ -31,7 +31,7 @@ def whoami_public_or_partner(
 ) -> AuthPartnerResponse:
     if partner:
         return AuthPartnerResponse.from_auth_partner(partner.auth_partner_ids)
-    return AuthPartnerResponse(login="no-one")
+    return AuthPartnerResponse(login="no-one", mail_verified=False)
 
 
 @tests.tagged("post_install", "-at_install")
