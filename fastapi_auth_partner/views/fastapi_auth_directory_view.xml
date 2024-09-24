@@ -43,6 +43,7 @@
                            <field name="cookie_duration" />
                            <field name="sliding_session" />
                            <field name="set_password_token_duration" />
+                            <field name="force_verified_email" />
                         </group>
                        <group
                             name="impersonate"

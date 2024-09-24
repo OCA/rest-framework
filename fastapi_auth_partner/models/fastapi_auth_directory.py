@@ -73,6 +73,9 @@ class FastApiAuthDirectory(models.Model):
         groups="fastapi_auth_partner.group_partner_auth_manager",
     )
     sliding_session = fields.Boolean()
+    force_verified_email = fields.Boolean(
+        help="If checked, email must be verified to be able to log in"
+    )
 
     def _compute_count_partner(self):
         data = self.env["fastapi.auth.partner"].read_group(
