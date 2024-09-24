@@ -145,7 +145,7 @@ class AuthService(models.AbstractModel):
     def _prepare_partner_register(self, directory, data):
         return {
             "name": data.name,
-            "email": data.login,
+            "email": data.login.lower(),
             "auth_partner_ids": [
                 (0, 0, self._prepare_partner_auth_register(directory, data))
             ],
@@ -153,7 +153,7 @@ class AuthService(models.AbstractModel):
 
     def _prepare_partner_auth_register(self, directory, data):
         return {
-            "login": data.login,
+            "login": data.login.lower(),
             "password": data.password,
             "directory_id": directory.id,
         }
@@ -169,7 +169,7 @@ class AuthService(models.AbstractModel):
         partner_auth = (
             self.env["fastapi.auth.partner"]
             .sudo()
-            .log_in(directory, data.login, data.password)
+            .log_in(directory, data.login.lower(), data.password)
         )
         if partner_auth:
             return partner_auth
@@ -200,7 +200,7 @@ class AuthService(models.AbstractModel):
     def _request_reset_password(self, directory, data):
         self.env["fastapi.auth.partner"].with_user(
             SUPERUSER_ID
-        ).with_delay().request_reset_password(directory, data.login)
+        ).with_delay().request_reset_password(directory, data.login.lower())
 
     def _validate_email(self, directory, data):
         partner_auth = (
