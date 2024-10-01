@@ -8,10 +8,11 @@
 
 /*
 :Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 8954 2022-01-20 10:10:25Z milde $
+:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
 :Copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
+Despite the name, some widely supported CSS2 features are used.
 
 See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
 customize this style sheet.
@@ -274,7 +275,7 @@ pre.literal-block, pre.doctest-block, pre.math, pre.code {
   margin-left: 2em ;
   margin-right: 2em }
 
-pre.code .ln { color: grey; } /* line numbers */
+pre.code .ln { color: gray; } /* line numbers */
 pre.code, code { background-color: #eeeeee }
 pre.code .comment, code .comment { color: #5C6576 }
 pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
@@ -300,7 +301,7 @@ span.option {
 span.pre {
   white-space: pre }
 
-span.problematic {
+span.problematic, pre.problematic {
   color: red }
 
 span.section-subtitle {
@@ -436,18 +437,33 @@ functions.</p>
 </li>
 <li><a class="reference internal" href="#known-issues-roadmap" id="toc-entry-21">Known issues / Roadmap</a></li>
 <li><a class="reference internal" href="#changelog" id="toc-entry-22">Changelog</a><ul>
-<li><a class="reference internal" href="#section-1" id="toc-entry-23">16.0.1.2.5 (2024-01-17)</a></li>
-<li><a class="reference internal" href="#section-2" id="toc-entry-24">16.0.1.2.3 (2023-12-21)</a></li>
-<li><a class="reference internal" href="#section-3" id="toc-entry-25">16.0.1.2.2 (2023-12-12)</a></li>
-<li><a class="reference internal" href="#section-4" id="toc-entry-26">16.0.1.2.1 (2023-11-03)</a></li>
-<li><a class="reference internal" href="#section-5" id="toc-entry-27">16.0.1.2.0 (2023-10-13)</a></li>
+<li><a class="reference internal" href="#section-1" id="toc-entry-23">16.0.1.2.5 (2024-01-17)</a><ul>
+<li><a class="reference internal" href="#bugfixes" id="toc-entry-24">Bugfixes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-28">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-29">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-30">Authors</a></li>
-<li><a class="reference internal" href="#contributors" id="toc-entry-31">Contributors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-32">Maintainers</a></li>
+<li><a class="reference internal" href="#section-2" id="toc-entry-25">16.0.1.2.3 (2023-12-21)</a><ul>
+<li><a class="reference internal" href="#bugfixes-1" id="toc-entry-26">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#section-3" id="toc-entry-27">16.0.1.2.2 (2023-12-12)</a><ul>
+<li><a class="reference internal" href="#bugfixes-2" id="toc-entry-28">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#section-4" id="toc-entry-29">16.0.1.2.1 (2023-11-03)</a><ul>
+<li><a class="reference internal" href="#bugfixes-3" id="toc-entry-30">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#section-5" id="toc-entry-31">16.0.1.2.0 (2023-10-13)</a><ul>
+<li><a class="reference internal" href="#features" id="toc-entry-32">Features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-33">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-34">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-35">Authors</a></li>
+<li><a class="reference internal" href="#contributors" id="toc-entry-36">Contributors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-37">Maintainers</a></li>
 </ul>
 </li>
 </ul>
@@ -1774,21 +1790,24 @@ WebSockets and to stream large responses.</p>
 <h1><a class="toc-backref" href="#toc-entry-22">Changelog</a></h1>
 <div class="section" id="section-1">
 <h2><a class="toc-backref" href="#toc-entry-23">16.0.1.2.5 (2024-01-17)</a></h2>
-<p><strong>Bugfixes</strong></p>
+<div class="section" id="bugfixes">
+<h3><a class="toc-backref" href="#toc-entry-24">Bugfixes</a></h3>
 <ul>
 <li><p class="first">Odoo has done an update and now, it checks domains of ir.rule on
 creation and modification.</p>
 <p>The ir.rule ‘Fastapi: Running user rule’ uses a field
-(authenticate_partner_id) that comes from the context. This field
+(authenticate<em>partner_id) that comes from the context. This field
 wasn’t always set and this caused an error when Odoo checked the
-domain. So now it is set to <em>False</em> by default.
-(<tt class="docutils literal">#410 <span class="pre">&lt;https://github.com/OCA/rest-framework/issues/410&gt;</span></tt>_)</p>
+domain. So now it is set to False by default.
+(``#410 &lt;https://github.com/OCA/rest-framework/issues/410&gt;``</em>)</p>
 </li>
 </ul>
 </div>
+</div>
 <div class="section" id="section-2">
-<h2><a class="toc-backref" href="#toc-entry-24">16.0.1.2.3 (2023-12-21)</a></h2>
-<p><strong>Bugfixes</strong></p>
+<h2><a class="toc-backref" href="#toc-entry-25">16.0.1.2.3 (2023-12-21)</a></h2>
+<div class="section" id="bugfixes-1">
+<h3><a class="toc-backref" href="#toc-entry-26">Bugfixes</a></h3>
 <ul>
 <li><p class="first">In case of exception in endpoint execution, close the database cursor
 after rollback.</p>
@@ -1798,9 +1817,11 @@ does not try to flush data to the database.
 </li>
 </ul>
 </div>
+</div>
 <div class="section" id="section-3">
-<h2><a class="toc-backref" href="#toc-entry-25">16.0.1.2.2 (2023-12-12)</a></h2>
-<p><strong>Bugfixes</strong></p>
+<h2><a class="toc-backref" href="#toc-entry-27">16.0.1.2.2 (2023-12-12)</a></h2>
+<div class="section" id="bugfixes-2">
+<h3><a class="toc-backref" href="#toc-entry-28">Bugfixes</a></h3>
 <ul class="simple">
 <li>When using the ‘FastAPITransactionCase’ class, allows to specify a
 specific override of the ‘authenticated_partner_impl’ method into the
@@ -1815,9 +1836,11 @@ specific partner is given at same time of an override for the
 (<a class="reference external" href="https://github.com/OCA/rest-framework/issues/396">#396</a>)</li>
 </ul>
 </div>
+</div>
 <div class="section" id="section-4">
-<h2><a class="toc-backref" href="#toc-entry-26">16.0.1.2.1 (2023-11-03)</a></h2>
-<p><strong>Bugfixes</strong></p>
+<h2><a class="toc-backref" href="#toc-entry-29">16.0.1.2.1 (2023-11-03)</a></h2>
+<div class="section" id="bugfixes-3">
+<h3><a class="toc-backref" href="#toc-entry-30">Bugfixes</a></h3>
 <ul>
 <li><p class="first">Fix a typo in the Field declaration of the ‘count’ attribute of the
 ‘PagedCollection’ schema.</p>
@@ -1827,9 +1850,11 @@ versions of Pydantic seeing it as an arbitrary parameter.
 </li>
 </ul>
 </div>
+</div>
 <div class="section" id="section-5">
-<h2><a class="toc-backref" href="#toc-entry-27">16.0.1.2.0 (2023-10-13)</a></h2>
-<p><strong>Features</strong></p>
+<h2><a class="toc-backref" href="#toc-entry-31">16.0.1.2.0 (2023-10-13)</a></h2>
+<div class="section" id="features">
+<h3><a class="toc-backref" href="#toc-entry-32">Features</a></h3>
 <ul class="simple">
 <li>The field <em>total</em> in the <em>PagedCollection</em> schema is replaced by the
 field <em>count</em>. The field <em>total</em> is now deprecated and will be
@@ -1843,8 +1868,9 @@ and adapt your code accordingly.
 </ul>
 </div>
 </div>
+</div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-28">Bug Tracker</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-33">Bug Tracker</a></h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/rest-framework/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -1852,23 +1878,25 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-29">Credits</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-34">Credits</a></h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-30">Authors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-35">Authors</a></h2>
 <ul class="simple">
 <li>ACSONE SA/NV</li>
 </ul>
 </div>
 <div class="section" id="contributors">
-<h2><a class="toc-backref" href="#toc-entry-31">Contributors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-36">Contributors</a></h2>
 <ul class="simple">
 <li>Laurent Mignon &lt;<a class="reference external" href="mailto:laurent.mignon&#64;acsone.eu">laurent.mignon&#64;acsone.eu</a>&gt;</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-32">Maintainers</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-37">Maintainers</a></h2>
 <p>This module is maintained by the OCA.</p>
-<a class="reference external image-reference" href="https://odoo-community.org"><img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" /></a>
+<a class="reference external image-reference" href="https://odoo-community.org">
+<img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" />
+</a>
 <p>OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.</p>

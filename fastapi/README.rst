@@ -1518,21 +1518,23 @@ Changelog
 16.0.1.2.5 (2024-01-17)
 -----------------------
 
-**Bugfixes**
+Bugfixes
+~~~~~~~~
 
 -  Odoo has done an update and now, it checks domains of ir.rule on
    creation and modification.
 
    The ir.rule 'Fastapi: Running user rule' uses a field
-   (authenticate_partner_id) that comes from the context. This field
+   (authenticate\ *partner_id) that comes from the context. This field
    wasn't always set and this caused an error when Odoo checked the
-   domain. So now it is set to *False* by default.
-   (``#410 <https://github.com/OCA/rest-framework/issues/410>``\ \_)
+   domain. So now it is set to False by default.
+   (``#410 <https://github.com/OCA/rest-framework/issues/410>``*)
 
 16.0.1.2.3 (2023-12-21)
 -----------------------
 
-**Bugfixes**
+Bugfixes
+~~~~~~~~
 
 -  In case of exception in endpoint execution, close the database cursor
    after rollback.
@@ -1544,7 +1546,8 @@ Changelog
 16.0.1.2.2 (2023-12-12)
 -----------------------
 
-**Bugfixes**
+Bugfixes
+~~~~~~~~
 
 -  When using the 'FastAPITransactionCase' class, allows to specify a
    specific override of the 'authenticated_partner_impl' method into the
@@ -1561,7 +1564,8 @@ Changelog
 16.0.1.2.1 (2023-11-03)
 -----------------------
 
-**Bugfixes**
+Bugfixes
+~~~~~~~~
 
 -  Fix a typo in the Field declaration of the 'count' attribute of the
    'PagedCollection' schema.
@@ -1573,7 +1577,8 @@ Changelog
 16.0.1.2.0 (2023-10-13)
 -----------------------
 
-**Features**
+Features
+~~~~~~~~
 
 -  The field *total* in the *PagedCollection* schema is replaced by the
    field *count*. The field *total* is now deprecated and will be
