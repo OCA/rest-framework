@@ -46,6 +46,7 @@
                         <field name="user_id" />
                         <field name="company_id" />
                         <field name="description" />
+                        <field name="save_http_session" />
                     </group>
                     <group name="resoures">
                         <field name="docs_url" widget="url" />
