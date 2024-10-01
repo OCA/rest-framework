@@ -198,6 +198,11 @@ msgid "Root Path"
 msgstr ""
 
 #. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__save_http_session
+msgid "Save HTTP Session"
+msgstr ""
+
+#. module: fastapi
 #: model:ir.actions.server,name:fastapi.fastapi_endpoint_action_sync_registry
 #: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_form_view
 #: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_tree_view
@@ -225,6 +230,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__user_id
 #: model:res.groups,name:fastapi.group_fastapi_user
 msgid "User"
+msgstr ""
+
+#. module: fastapi
+#: model:ir.model.fields,help:fastapi.field_fastapi_endpoint__save_http_session
+msgid ""
+"Whether session should be saved into the session store. This is required if "
+"for example you use the Odoo's authentication mechanism. Oherwise chance are"
+" high that you don't need it and could turn off this behaviour. Additionaly "
+"turning off this option will prevent useless IO operation when storing and "
+"reading the session on the disk and prevent unexpecteed disk space "
+"consumption."
 msgstr ""
 
 #. module: fastapi
