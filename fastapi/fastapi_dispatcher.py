@@ -4,6 +4,8 @@
 from contextlib import contextmanager
 from io import BytesIO
 
+from werkzeug.exceptions import InternalServerError
+
 from odoo.http import Dispatcher, request
 
 from .context import odoo_env_ctx
@@ -35,7 +37,10 @@ class FastApiDispatcher(Dispatcher):
             )
 
     def handle_error(self, exc):
-        pass
+        # At this stage all the normal exceptions are handled by FastAPI
+        # and we should only have InternalServerError occurring after the
+        # FastAPI app has been called.
+        return InternalServerError()  # pragma: no cover
 
     def _make_response(self, status_mapping, headers_tuple, content):
         self.status = status_mapping[:3]
