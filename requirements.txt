@@ -1,6 +1,8 @@
 # generated from manifests external_dependencies
 a2wsgi
 fastapi
+graphene
+graphql_server
 parse-accept-language
 python-multipart
 ujson
