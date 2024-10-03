@@ -5,7 +5,7 @@
     "name": "Graphql Base",
     "summary": """
         Base GraphQL/GraphiQL controller""",
-    "version": "16.0.1.0.1",
+    "version": "17.0.1.0.1",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/rest-framework",
@@ -14,5 +14,5 @@
     "external_dependencies": {"python": ["graphene", "graphql_server"]},
     "development_status": "Production/Stable",
     "maintainers": ["sbidoul"],
-    "installable": False,
+    "installable": True,
 }

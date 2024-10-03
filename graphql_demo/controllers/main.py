@@ -9,7 +9,6 @@ from ..schema import schema
 
 
 class GraphQLController(http.Controller, GraphQLControllerMixin):
-
     # The GraphiQL route, providing an IDE for developers
     @http.route("/graphiql/demo", auth="user")
     def graphiql(self, **kwargs):
