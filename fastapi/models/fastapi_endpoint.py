@@ -55,6 +55,16 @@ class FastapiEndpoint(models.Model):
         readonly=False,
         domain="[('user_ids', 'in', user_id)]",
     )
+    save_http_session = fields.Boolean(
+        string="Save HTTP Session",
+        help="Whether session should be saved into the session store. This is "
+        "required if for example you use the Odoo's authentication mechanism. "
+        "Oherwise chance are high that you don't need it and could turn off "
+        "this behaviour. Additionaly turning off this option will prevent useless "
+        "IO operation when storing and reading the session on the disk and prevent "
+        "unexpecteed disk space consumption.",
+        default=True,
+    )
 
     @api.depends("root_path")
     def _compute_root_path(self):
@@ -178,6 +188,7 @@ class FastapiEndpoint(models.Model):
                 f"{self.root_path}/",
                 f"{self.root_path}/<path:application_path>",
             ],
+            "save_session": self.save_http_session,
             # csrf ?????
         }
 

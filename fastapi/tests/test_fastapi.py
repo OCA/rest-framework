@@ -63,6 +63,18 @@ class FastAPIHttpCase(HttpCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(int(response.content), nbr_retries)
 
+    def test_retrying_post(self):
+        """Test that the retrying mechanism is working as expected with the
+        FastAPI endpoints in case of POST request with a file.
+        """
+        nbr_retries = 3
+        route = f"/fastapi_demo/demo/retrying?nbr_retries={nbr_retries}"
+        response = self.url_open(
+            route, timeout=20, files={"file": ("test.txt", b"test")}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.json(), {"retries": nbr_retries, "file": "test"})
+
     @mute_logger("odoo.http")
     def assert_exception_processed(
         self,

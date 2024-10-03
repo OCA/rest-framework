@@ -15,7 +15,8 @@ from odoo.service.model import MAX_TRIES_ON_CONCURRENCY_FAILURE
 
 from odoo.addons.base.models.res_partner import Partner
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, status
+from fastapi.responses import JSONResponse
 
 from ..dependencies import authenticated_partner, fastapi_endpoint, odoo_env
 from ..models import FastapiEndpoint
@@ -95,7 +96,7 @@ _CPT = 0
 
 @router.get("/demo/retrying")
 async def retrying(
-    nbr_retries: Annotated[int, Query(gt=1, lt=MAX_TRIES_ON_CONCURRENCY_FAILURE)]
+    nbr_retries: Annotated[int, Query(gt=1, lt=MAX_TRIES_ON_CONCURRENCY_FAILURE)],
 ) -> int:
     """This method is used in the test suite to check that the retrying
     functionality in case of concurrency error on the database is working
@@ -112,6 +113,28 @@ async def retrying(
     tryno = _CPT
     _CPT = 0
     return tryno
+
+
+@router.post("/demo/retrying")
+async def retrying_post(
+    nbr_retries: Annotated[int, Query(gt=1, lt=MAX_TRIES_ON_CONCURRENCY_FAILURE)],
+    file: Annotated[bytes, File()],
+) -> JSONResponse:
+    """This method is used in the test suite to check that the retrying
+    functionality in case of concurrency error on the database is working
+    correctly for retryable exceptions.
+
+    The output will be the number of retries that have been done.
+
+    This method is mainly used to test the retrying functionality
+    """
+    global _CPT
+    if _CPT < nbr_retries:
+        _CPT += 1
+        raise FakeConcurrentUpdateError("fake error")
+    tryno = _CPT
+    _CPT = 0
+    return JSONResponse(content={"retries": tryno, "file": file.decode("utf-8")})
 
 
 class FakeConcurrentUpdateError(OperationalError):
