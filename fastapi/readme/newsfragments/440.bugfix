@@ -1,6 +1,0 @@
-Fix issue with the retry of a POST request with a body content.
-
-Prior to this fix the retry of a POST request with a body content would
-stuck in a loop and never complete. This was due to the fact that the
-request input stream was not reset after a failed attempt to process the
-request.

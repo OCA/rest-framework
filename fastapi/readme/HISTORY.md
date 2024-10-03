@@ -1,3 +1,19 @@
+## 17.0.3.0.0 (2024-10-03)
+
+### Features
+
+- * A new parameter is now available on the endpoint model to let you disable the creation and the store of session files used by Odoo for calls to your application endpoint. This is usefull to prevent disk space consumption and IO operations if your application doesn't need to use this sessions files which are mainly used by Odoo by to store the session info of logged in users. ([#442](https://github.com/OCA/rest-framework/issues/442))
+
+### Bugfixes
+
+- Fix issue with the retry of a POST request with a body content.
+
+  Prior to this fix the retry of a POST request with a body content would
+  stuck in a loop and never complete. This was due to the fact that the
+  request input stream was not reset after a failed attempt to process the
+  request. ([#440](https://github.com/OCA/rest-framework/issues/440))
+
+
 ## 17.0.2.0.0 (2024-10-03)
 
 ### Bugfixes
