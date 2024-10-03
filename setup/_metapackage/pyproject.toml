@@ -1,8 +1,10 @@
 [project]
 name = "odoo-addons-oca-rest-framework"
-version = "17.0.20241003.0"
+version = "17.0.20241003.1"
 dependencies = [
     "odoo-addon-fastapi>=17.0dev,<17.1dev",
+    "odoo-addon-graphql_base>=17.0dev,<17.1dev",
+    "odoo-addon-graphql_demo>=17.0dev,<17.1dev",
     "odoo-addon-pydantic>=17.0dev,<17.1dev",
 ]
 classifiers=[
