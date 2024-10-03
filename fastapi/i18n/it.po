@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2024-01-15 17:34+0000\n"
+"PO-Revision-Date: 2024-10-03 10:06+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. module: fastapi
 #: model:ir.model.fields,help:fastapi.field_fastapi_endpoint__description
@@ -208,7 +208,7 @@ msgstr "Percorso radice"
 #. module: fastapi
 #: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__save_http_session
 msgid "Save HTTP Session"
-msgstr ""
+msgstr "Salva sessione HTTP"
 
 #. module: fastapi
 #: model:ir.actions.server,name:fastapi.fastapi_endpoint_action_sync_registry
@@ -250,6 +250,13 @@ msgid ""
 "reading the session on the disk and prevent unexpecteed disk space "
 "consumption."
 msgstr ""
+"Se la sessione deve essere salvata nell'archivio sessioni. Questo è "
+"necessario se, ad esempio, si utilizza il meccanismo di autenticazione di "
+"Odoo. In caso contrario, è probabile che non se ne abbia bisogno e si può "
+"disattivare questo comportamento. Inoltre, disattivando questa opzione si "
+"impediranno operazioni di I/O inutili durante l'archiviazione e la lettura "
+"della sessione sul disco e si impedirà un consumo inaspettato di spazio su "
+"disco."
 
 #. module: fastapi
 #. odoo-python
