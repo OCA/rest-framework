@@ -172,7 +172,7 @@ class AuthService(models.AbstractModel):
             .log_in(directory, data.login.lower(), data.password)
         )
         if partner_auth:
-            if directory.force_verified_email and not partner_auth.mail_verified:
+            if directory.sudo().force_verified_email and not partner_auth.mail_verified:
                 raise AccessError(
                     _(
                         "Email address not validated. Validate your email address by "
