@@ -52,6 +52,11 @@
                         <field name="docs_url" widget="url" />
                         <field name="redoc_url" widget="url" />
                         <field name="openapi_url" widget="url" />
+                        <field
+                                name="public_url"
+                                widget="url"
+                                placeholder="https://api.shop.example.com/"
+                            />
                     </group>
                     </group>
                     <span name="configuration" />
@@ -96,6 +101,7 @@
                 <field name="docs_url" widget="url" />
                 <field name="redoc_url" widget="url" />
                 <field name="openapi_url" widget="url" />
+                <field name="public_url" widget="url" />
                 <button
                     name="action_sync_registry"
                     string="Sync Registry"
