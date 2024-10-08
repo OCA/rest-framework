@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_auth_directory,auth_directory_system,model_auth_directory,base.group_system,1,1,1,1
+access_auth_directory_read,auth_directory_manager,model_auth_directory,group_auth_partner_manager,1,0,0,0
+access_auth_partner,auth_partner_manager,model_auth_partner,group_auth_partner_manager,1,1,1,1
+api_access_auth_partner,auth_partner_api,model_auth_partner,group_auth_partner_api,1,1,0,0
+api_access_res_partner,res_partner_api,base.model_res_partner,group_auth_partner_api,1,0,0,0
+api_access_wizard_auth_partner_reset_password,wizard_auth_partner_reset_password,model_wizard_auth_partner_reset_password,group_auth_partner_manager,1,1,1,1

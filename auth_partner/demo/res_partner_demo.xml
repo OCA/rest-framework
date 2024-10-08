@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_partner_auth_demo" model="res.partner">
+        <field name="name">Demo auth partner</field>
+        <field name="email">partner-auth@example.org</field>
+    </record>
+</odoo>

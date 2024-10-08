@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="fastapi_endpoint_view_form" model="ir.ui.view">
+        <field name="model">fastapi.endpoint</field>
+        <field name="inherit_id" ref="fastapi.fastapi_endpoint_form_view" />
+        <field name="arch" type="xml">
+            <field name="demo_auth_method" position="after">
+                <field name="is_auth_partner" invisible="1" />
+                <field
+                    name="directory_id"
+                    attrs="{
+                        'invisible': [('is_auth_partner', '=', False)],
+                        'required': [('is_auth_partner', '=', True)]
+                    }"
+                />
+            </field>
+            <field name="openapi_url" position="after">
+                <field name="public_url" widget="url" />
+                <field name="public_api_url" widget="url" />
+            </field>
+        </field>
+    </record>
+</odoo>

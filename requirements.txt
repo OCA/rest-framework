@@ -10,12 +10,14 @@ extendable>=0.0.4
 fastapi>=0.110.0
 graphene
 graphql_server
+itsdangerous
 jsondiff
 marshmallow
 marshmallow-objects>=2.0.0
 parse-accept-language
 pydantic
 pydantic>=2.0.0
+pyjwt
 pyquerystring
 python-multipart
 typing-extensions

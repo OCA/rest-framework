@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+api_access_fastapi_wizard_auth_partner_impersonate,fastapi_wizard_auth_partner_impersonate,model_wizard_auth_partner_impersonate,auth_partner.group_auth_partner_manager,1,1,1,1

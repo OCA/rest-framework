@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="auth_directory_view_form" model="ir.ui.view">
+        <field name="model">auth.directory</field>
+        <field name="inherit_id" ref="auth_partner.auth_directory_view_form" />
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button
+                    name="action_regenerate_cookie_secret_key"
+                    string="Regenerate cookie secret key"
+                    type="object"
+                    groups="base.group_system"
+                />
+            </header>
+            <field name="secret_key" position="after">
+                <field name="cookie_secret_key" />
+                <field name="cookie_duration" />
+                <field name="sliding_session" />
+            </field>
+        </field>
+    </record>
+
+    <menuitem
+        id="auth_directory_menu"
+        parent="fastapi_auth"
+        sequence="10"
+        action="auth_partner.auth_directory_action"
+    />
+</odoo>

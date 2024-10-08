@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="email_reset_password" model="mail.template">
+        <field name="name">Auth Directory: Reset Password</field>
+        <field name="email_from">noreply@example.org</field>
+        <field name="subject">Reset Password</field>
+        <field name="partner_to">{{object.partner_id.id}}</field>
+        <field name="model_id" ref="model_auth_partner" />
+        <field name="auto_delete" eval="True" />
+        <field name="lang">${object.partner_id.lang}</field>
+        <field name="body_html" type="html">
+            <div>
+            Hi <t t-out="object.partner_id.name or ''" />
+            Click on the following link to reset your password
+            <a
+                    t-attf-href="https://example.org/password/reset?token={{ object.env.context['token']}}"
+                    target="_blank"
+                    style="color:#FFFFFF; text-decoration:none;"
+                >Reset Password</a>
+            </div>
+        </field>
+    </record>
+
+    <record id="email_set_password" model="mail.template">
+        <field name="name">Auth Directory: Set Password</field>
+        <field name="email_from">noreply@example.org</field>
+        <field name="subject">Welcome</field>
+        <field name="partner_to">{{object.partner_id.id}}</field>
+        <field name="model_id" ref="model_auth_partner" />
+        <field name="auto_delete" eval="True" />
+        <field name="lang">{{object.partner_id.lang}}</field>
+        <field name="body_html" type="html">
+            <div>
+            Hi <t t-out="object.partner_id.name or ''" />
+            Welcome, your account have been created
+            Click on the following link to set your password
+            <a
+                    t-attf-href="https://example.org/password/reset?token={{ object.env.context['token']}}"
+                    target="_blank"
+                    style="color:#FFFFFF; text-decoration:none;"
+                >Set Password</a>
+            </div>
+        </field>
+    </record>
+
+    <record id="email_validate_email" model="mail.template">
+        <field name="name">Auth Directory: Validate Email</field>
+        <field name="email_from">noreply@example.org</field>
+        <field name="subject">Welcome</field>
+        <field name="partner_to">{{object.partner_id.id}}</field>
+        <field name="model_id" ref="model_auth_partner" />
+        <field name="auto_delete" eval="True" />
+        <field name="lang">{{object.partner_id.lang}}</field>
+        <field name="body_html" type="html">
+            <div>
+            Hi <t t-out="object.partner_id.name or ''" />
+            Welcome to the site, please click on the following link to verify your email
+            <a
+                    t-attf-href="https://example.org/email/validate?token={{ object.env.context['token']}}"
+                    target="_blank"
+                    style="color:#FFFFFF; text-decoration:none;"
+                >Validate Email</a>
+            </div>
+        </field>
+    </record>
+
+</odoo>

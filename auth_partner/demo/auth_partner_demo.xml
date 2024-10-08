@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="auth_partner_demo" model="auth.partner">
+        <field name="partner_id" ref="res_partner_auth_demo" />
+        <field name="directory_id" ref="demo_directory" />
+        <field name="password">Super-secret$1</field>
+    </record>
+</odoo>
