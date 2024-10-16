@@ -1,8 +1,13 @@
 # Copyright 2023 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
+import logging
 from contextlib import contextmanager
 from functools import partial
 from typing import Any, Callable, Dict
+
+from starlette import status
+from starlette.requests import Request
+from starlette.responses import JSONResponse, Response
 
 from odoo.api import Environment
 from odoo.tests import tagged
@@ -19,6 +24,25 @@ from ..dependencies import (
     authenticated_partner_impl,
     optionally_authenticated_partner_impl,
 )
+from ..error_handlers import convert_exception_to_status_body
+
+_logger = logging.getLogger(__name__)
+
+
+def default_exception_handler(request: Request, exc: Exception) -> Response:
+    """
+    Default exception handler that returns a response with the exception details.
+    """
+    status_code, body = convert_exception_to_status_body(exc)
+
+    if status_code == status.HTTP_500_INTERNAL_SERVER_ERROR:
+        # In testing we want to see the exception details of 500 errors
+        _logger.error("[%d] Error occurred: %s", exc_info=exc)
+
+    return JSONResponse(
+        status_code=status_code,
+        content=body,
+    )
 
 
 @tagged("post_install", "-at_install")
@@ -123,6 +147,11 @@ class FastAPITransactionCase(TransactionCase):
         if router:
             app.include_router(router)
         app.dependency_overrides = dependencies
+
+        if not raise_server_exceptions:
+            # Handle exceptions as in FastAPIDispatcher
+            app.exception_handlers.setdefault(Exception, default_exception_handler)
+
         ctx_token = odoo_env_ctx.set(env)
         testclient_kwargs = testclient_kwargs or {}
         try:

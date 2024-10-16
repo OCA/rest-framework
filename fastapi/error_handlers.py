@@ -1,14 +1,56 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
+from typing import Tuple
 
-
-from starlette.exceptions import WebSocketException
+from starlette import status
+from starlette.exceptions import HTTPException, WebSocketException
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.middleware.exceptions import ExceptionMiddleware
 from starlette.responses import JSONResponse
 from starlette.websockets import WebSocket
+from werkzeug.exceptions import HTTPException as WerkzeugHTTPException
+
+from odoo.exceptions import AccessDenied, AccessError, MissingError, UserError
 
 from fastapi import Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError, WebSocketRequestValidationError
+from fastapi.utils import is_body_allowed_for_status_code
+
+
+def convert_exception_to_status_body(exc: Exception) -> Tuple[int, dict]:
+    body = {}
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    details = "Internal Server Error"
+
+    if isinstance(exc, WerkzeugHTTPException):
+        status_code = exc.code
+        details = exc.description
+    elif isinstance(exc, HTTPException):
+        status_code = exc.status_code
+        details = exc.detail
+    elif isinstance(exc, RequestValidationError):
+        status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        details = jsonable_encoder(exc.errors())
+    elif isinstance(exc, WebSocketRequestValidationError):
+        status_code = status.WS_1008_POLICY_VIOLATION
+        details = jsonable_encoder(exc.errors())
+    elif isinstance(exc, (AccessDenied, AccessError)):
+        status_code = status.HTTP_403_FORBIDDEN
+        details = "AccessError"
+    elif isinstance(exc, MissingError):
+        status_code = status.HTTP_404_NOT_FOUND
+        details = "MissingError"
+    elif isinstance(exc, UserError):
+        status_code = status.HTTP_400_BAD_REQUEST
+        details = exc.args[0]
+
+    if is_body_allowed_for_status_code(status_code):
+        # use the same format as in
+        # fastapi.exception_handlers.http_exception_handler
+        body = {"detail": details}
+    return status_code, body
+
 
 # we need to monkey patch the ServerErrorMiddleware and ExceptionMiddleware classes
 # to ensure that all the exceptions that are handled by these specific
