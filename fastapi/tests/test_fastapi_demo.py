@@ -5,11 +5,13 @@ from functools import partial
 
 from requests import Response
 
+from odoo.exceptions import UserError
+
 from fastapi import status
 
 from ..dependencies import fastapi_endpoint
 from ..routers import demo_router
-from ..schemas import DemoEndpointAppInfo
+from ..schemas import DemoEndpointAppInfo, DemoExceptionType
 from .common import FastAPITransactionCase
 
 
@@ -61,3 +63,46 @@ class FastAPIDemoCase(FastAPITransactionCase):
             response.json(),
             DemoEndpointAppInfo.model_validate(demo_app).model_dump(by_alias=True),
         )
+
+    def test_exception_raised(self) -> None:
+        with self.assertRaisesRegex(UserError, "User Error"):
+            with self._create_test_client() as test_client:
+                test_client.get(
+                    "/demo/exception",
+                    params={
+                        "exception_type": DemoExceptionType.user_error.value,
+                        "error_message": "User Error",
+                    },
+                )
+        with self.assertRaisesRegex(NotImplementedError, "Bare Exception"):
+            with self._create_test_client() as test_client:
+                test_client.get(
+                    "/demo/exception",
+                    params={
+                        "exception_type": DemoExceptionType.bare_exception.value,
+                        "error_message": "Bare Exception",
+                    },
+                )
+
+    def test_exception_not_raised(self) -> None:
+        with self._create_test_client(raise_server_exceptions=False) as test_client:
+            response: Response = test_client.get(
+                "/demo/exception",
+                params={
+                    "exception_type": DemoExceptionType.user_error.value,
+                    "error_message": "User Error",
+                },
+            )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertDictEqual(response.json(), {"detail": "User Error"})
+
+        with self._create_test_client(raise_server_exceptions=False) as test_client:
+            response: Response = test_client.get(
+                "/demo/exception",
+                params={
+                    "exception_type": DemoExceptionType.bare_exception.value,
+                    "error_message": "Bare Exception",
+                },
+            )
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertDictEqual(response.json(), {"detail": "Internal Server Error"})
