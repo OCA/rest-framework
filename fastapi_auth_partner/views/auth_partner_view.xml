@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="auth_partner_view_form" model="ir.ui.view">
+        <field name="model">auth.partner</field>
+        <field name="inherit_id" ref="auth_partner.auth_partner_view_form" />
+        <field name="arch" type="xml">
+            <button name="impersonate" position="before">
+                <button
+                    name="local_impersonate"
+                    type="object"
+                    string="Local Impersonate"
+                    class="btn-secondary"
+                    groups="base.group_no_one"
+                />
+            </button>
+        </field>
+    </record>
+
+    <menuitem
+        id="fastapi_auth"
+        parent="fastapi.menu_fastapi_root"
+        sequence="50"
+        name="Authentication"
+    />
+    <menuitem
+        id="auth_partner_menu"
+        parent="fastapi_auth"
+        sequence="10"
+        action="auth_partner.auth_partner_action"
+    />
+</odoo>

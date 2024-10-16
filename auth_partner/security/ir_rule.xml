@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record model="ir.rule" id="res_partner_api_rule">
+        <field name="name">Auth API (res_partner)</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="groups" eval="[(4, ref('group_auth_partner_api'))]" />
+        <field name="domain_force">[('id','=', authenticated_partner_id)]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record model="ir.rule" id="auth_partner_api_rule">
+        <field name="name">Auth API (auth_partner)</field>
+        <field name="model_id" ref="auth_partner.model_auth_partner" />
+        <field name="groups" eval="[(4, ref('group_auth_partner_api'))]" />
+        <field
+            name="domain_force"
+        >[('partner_id','=', authenticated_partner_id)]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+</odoo>

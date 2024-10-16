@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="auth_directory_view_tree" model="ir.ui.view">
+        <field name="model">auth.directory</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="auth_directory_view_form" model="ir.ui.view">
+        <field name="model">auth.directory</field>
+        <field name="arch" type="xml">
+            <form string="Directory Auth">
+                <header>
+                    <button
+                        name="action_regenerate_secret_key"
+                        string="Regenerate secret key"
+                        type="object"
+                        groups="base.group_system"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            class="oe_stat_button"
+                            name="%(auth_partner_action)d"
+                            icon="fa-user"
+                            type="action"
+                            context="{'default_directory_id': active_id, 'search_default_directory_id': active_id}"
+                        >
+                            <field name="count_partner" />
+                            Account
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group name="config">
+                        <group name="main">
+                            <field name="secret_key" />
+                            <field name="reset_password_template_id" />
+                            <field name="set_password_template_id" />
+                            <field name="validate_email_template_id" />
+                            <field name="set_password_token_duration" />
+                            <field name="force_verified_email" />
+                        </group>
+                        <group
+                            name="impersonate"
+                            groups="auth_partner.group_auth_partner_manager"
+                        >
+                            <field
+                                name="impersonating_user_ids"
+                                widget="many2many_tags"
+                            />
+                            <field name="impersonating_token_duration" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="auth_directory_view_search" model="ir.ui.view">
+        <field name="model">auth.directory</field>
+        <field name="arch" type="xml">
+            <search string="Directory Auth">
+                <field name="name" />
+            </search>
+        </field>
+    </record>
+
+    <record id="auth_directory_action" model="ir.actions.act_window">
+        <field name="name">Directory</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">auth.directory</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="auth_directory_view_search" />
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem
+        id="auth_directory_menu"
+        parent="auth"
+        sequence="10"
+        action="auth_directory_action"
+    />
+</odoo>

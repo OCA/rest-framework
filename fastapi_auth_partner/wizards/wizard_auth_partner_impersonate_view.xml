@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="wizard_auth_partner_impersonate_view_form" model="ir.ui.view">
+        <field name="model">wizard.auth.partner.impersonate</field>
+        <field name="arch" type="xml">
+            <form string="Label">
+              Please choose an endpoint:
+                <group>
+                    <field name="auth_partner_id" readonly="1" />
+                    <field name="auth_directory_id" invisible="1" />
+                    <field
+                        name="fastapi_endpoint_id"
+                        domain="[('directory_id', '=', auth_directory_id)]"
+                    />
+                </group>
+                <footer>
+                    <button
+                        name="action_impersonate"
+                        string="Impersonate"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="auth_partner_action_impersonate" model="ir.actions.act_window">
+        <field name="name">Impersonate</field>
+        <field name="res_model">wizard.auth.partner.impersonate</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field
+            name="groups_id"
+            eval="[(4, ref('auth_partner.group_auth_partner_manager'))]"
+        />
+    </record>
+
+</odoo>

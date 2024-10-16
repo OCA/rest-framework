@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="auth_partner.group_auth_partner_api" model="res.groups">
+        <field
+            name="implied_ids"
+            eval="[
+        (4, ref('fastapi.group_fastapi_endpoint_runner')),
+        ]"
+        />
+    </record>
+
+</odoo>

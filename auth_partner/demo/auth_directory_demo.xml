@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="demo_directory" model="auth.directory">
+        <field name="name">Demo Auth Directory</field>
+        <field name="reset_password_template_id" ref="email_reset_password" />
+        <field name="set_password_template_id" ref="email_set_password" />
+        <field name="validate_email_template_id" ref="email_validate_email" />
+    </record>
+</odoo>
