@@ -1,7 +1,9 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
+import asyncio
 import logging
+import threading
 from functools import partial
 from itertools import chain
 from typing import Any, Callable, Dict, List, Tuple
@@ -17,6 +19,8 @@ from fastapi import APIRouter, Depends, FastAPI
 from .. import dependencies
 
 _logger = logging.getLogger(__name__)
+
+event_loop = asyncio.new_event_loop()
 
 
 class FastapiEndpoint(models.Model):
@@ -213,7 +217,12 @@ class FastapiEndpoint(models.Model):
         app = FastAPI()
         app.mount(record.root_path, record._get_app())
         self._clear_fastapi_exception_handlers(app)
-        return ASGIMiddleware(app)
+        if not event_loop.is_running():
+            loop_threading = threading.Thread(
+                target=event_loop.run_forever, daemon=True
+            )
+            loop_threading.start()
+        return ASGIMiddleware(app, loop=event_loop)
 
     def _clear_fastapi_exception_handlers(self, app: FastAPI) -> None:
         """
