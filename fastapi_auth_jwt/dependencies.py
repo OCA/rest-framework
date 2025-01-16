@@ -4,6 +4,8 @@
 import logging
 from typing import Annotated, Any
 
+from fastapi import Depends, HTTPException, Request, Response
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette.status import HTTP_401_UNAUTHORIZED
 
 from odoo.api import Environment
@@ -18,9 +20,6 @@ from odoo.addons.auth_jwt.exceptions import (
 from odoo.addons.auth_jwt.models.auth_jwt_validator import AuthJwtValidator
 from odoo.addons.base.models.res_partner import Partner
 from odoo.addons.fastapi.dependencies import odoo_env
-
-from fastapi import Depends, HTTPException, Request, Response
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 _logger = logging.getLogger(__name__)
 
