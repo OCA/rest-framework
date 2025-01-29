@@ -6,7 +6,7 @@ import mock
 
 from odoo.tests.common import SavepointCase
 
-from pydantic import BaseModel
+from pydantic.v1 import BaseModel
 
 from .. import restapi
 
