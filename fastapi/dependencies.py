@@ -57,7 +57,9 @@ def authenticated_partner_env(
 
 
 def optionally_authenticated_partner_env(
-    partner: Annotated[Optional[Partner], Depends(optionally_authenticated_partner_impl)],
+    partner: Annotated[
+        Optional[Partner], Depends(optionally_authenticated_partner_impl)
+    ],
     env: Annotated[Environment, Depends(odoo_env)],
 ) -> Environment:
     """Return an environment with the authenticated partner id in the context if
@@ -85,7 +87,9 @@ def authenticated_partner(
 
 
 def optionally_authenticated_partner(
-    partner: Annotated[Optional[Partner], Depends(optionally_authenticated_partner_impl)],
+    partner: Annotated[
+        Optional[Partner], Depends(optionally_authenticated_partner_impl)
+    ],
     partner_env: Annotated[Environment, Depends(optionally_authenticated_partner_env)],
 ) -> Optional[Partner]:
     """If you need to get access to the authenticated partner if the call is
