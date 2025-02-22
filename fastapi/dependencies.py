@@ -1,7 +1,7 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Optional
 
 from odoo.api import Environment
 from odoo.exceptions import AccessDenied
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from .models.fastapi_endpoint import FastapiEndpoint
 
 
-def company_id() -> int | None:
+def company_id() -> Optional[int]:
     """This method may be overriden by the FastAPI app to set the allowed company
     in the Odoo env of the endpoint. By default, the company defined on the
     endpoint record is used.
@@ -27,7 +27,7 @@ def company_id() -> int | None:
     return None
 
 
-def odoo_env(company_id: Annotated[int | None, Depends(company_id)]) -> Environment:
+def odoo_env(company_id: Annotated[Optional[int], Depends(company_id)]) -> Environment:
     env = odoo_env_ctx.get()
     if company_id is not None:
         env = env(context=dict(env.context, allowed_company_ids=[company_id]))
@@ -43,7 +43,7 @@ def authenticated_partner_impl() -> Partner:
     See the fastapi_endpoint_demo for an example"""
 
 
-def optionally_authenticated_partner_impl() -> Partner | None:
+def optionally_authenticated_partner_impl() -> Optional[Partner]:
     """This method has to be overriden when you create your fastapi app
     and you need to get an optional authenticated partner into your endpoint.
     """
@@ -57,7 +57,7 @@ def authenticated_partner_env(
 
 
 def optionally_authenticated_partner_env(
-    partner: Annotated[Partner | None, Depends(optionally_authenticated_partner_impl)],
+    partner: Annotated[Optional[Partner], Depends(optionally_authenticated_partner_impl)],
     env: Annotated[Environment, Depends(odoo_env)],
 ) -> Environment:
     """Return an environment with the authenticated partner id in the context if
@@ -85,9 +85,9 @@ def authenticated_partner(
 
 
 def optionally_authenticated_partner(
-    partner: Annotated[Partner | None, Depends(optionally_authenticated_partner_impl)],
+    partner: Annotated[Optional[Partner], Depends(optionally_authenticated_partner_impl)],
     partner_env: Annotated[Environment, Depends(optionally_authenticated_partner_env)],
-) -> Partner | None:
+) -> Optional[Partner]:
     """If you need to get access to the authenticated partner if the call is
     authenticated, you can add a dependency into the endpoint definition on this
     method.
@@ -155,7 +155,7 @@ def fastapi_endpoint(
 
 def accept_language(
     accept_language: Annotated[
-        str | None,
+        Optional[str],
         Header(
             alias="Accept-Language",
             description="The Accept-Language header is used to specify the language "
