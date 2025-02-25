@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+
+    <record id="fastapi_endpoint_form_view" model="ir.ui.view">
+        <field name="model">fastapi.endpoint</field>
+        <field name="inherit_id" ref="fastapi.fastapi_endpoint_form_view" />
+        <field name="arch" type="xml">
+            <field name="save_http_session" position="after">
+                <field name="encrypt_errors" />
+                <div class="o_row" colspan="2">
+                    <label for="encrypted_errors_secret_key" />
+                    <field
+                        name="encrypted_errors_secret_key"
+                        attrs="{'invisible': [('encrypt_errors', '=', False)]}"
+                        groups="fastapi.group_fastapi_manager"
+                    />
+                    <button
+                        name="action_generate_encrypted_errors_secret_key"
+                        attrs="{'invisible': [('encrypt_errors', '=', False)]}"
+                        type="object"
+                        icon="fa-refresh"
+                        title="Generate Secret Key"
+                        groups="fastapi.group_fastapi_manager"
+                    />
+                </div>
+            </field>
+        </field>
+    </record>
+</odoo>
