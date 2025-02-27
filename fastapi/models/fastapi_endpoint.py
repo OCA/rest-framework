@@ -124,7 +124,7 @@ class FastapiEndpoint(models.Model):
     def _routing_impacting_fields(self) -> Tuple[str]:
         """The list of fields requiring to refresh the mount point of the pp
         into odoo if modified"""
-        return ("root_path",)
+        return ("root_path", "save_http_session")
 
     #
     # end of endpoint.route.sync.mixin methods implementation
