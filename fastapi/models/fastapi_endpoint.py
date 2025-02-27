@@ -211,8 +211,15 @@ class FastapiEndpoint(models.Model):
         """
 
     @api.model
-    def get_app(self, root_path):
-        record = self.search([("root_path", "=", root_path)])
+    @tools.ormcache("path")
+    def get_endpoint(self, path):
+        root_path = "/" + path.split("/")[1]
+        endpoint = self.search([("root_path", "=", root_path)])[:1] or False
+        return endpoint
+
+    @api.model
+    def get_app(self, path):
+        record = self.get_endpoint(path)
         if not record:
             return None
         app = FastAPI()
@@ -236,9 +243,9 @@ class FastapiEndpoint(models.Model):
                 self._clear_fastapi_exception_handlers(route.app)
 
     @api.model
-    @tools.ormcache("root_path")
-    def get_uid(self, root_path):
-        record = self.search([("root_path", "=", root_path)])
+    @tools.ormcache("path")
+    def get_uid(self, path):
+        record = self.get_endpoint(path)
         if not record:
             return None
         return record.user_id.id
