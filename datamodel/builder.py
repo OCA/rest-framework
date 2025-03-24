@@ -10,6 +10,7 @@ Datamodels Builder
 Build the datamodels at the build of a registry.
 
 """
+
 from odoo import models, modules
 
 from .core import DEFAULT_CACHE_SIZE, DatamodelRegistry, _datamodel_databases

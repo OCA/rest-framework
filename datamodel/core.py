@@ -15,7 +15,8 @@ _logger = logging.getLogger(__name__)
 
 try:
     import marshmallow
-    from marshmallow_objects.models import Model as MarshmallowModel, ModelMeta
+    from marshmallow_objects.models import Model as MarshmallowModel
+    from marshmallow_objects.models import ModelMeta
 except ImportError:
     _logger.debug("Cannot import 'marshmallow_objects'.")
 
@@ -54,7 +55,7 @@ class DatamodelDatabases(dict):
     """Holds a registry of datamodels for each database"""
 
 
-class DatamodelRegistry(object):
+class DatamodelRegistry:
     """Store all the datamodel and allow to retrieve them by name
 
     The key is the ``_name`` of the datamodels.
@@ -117,10 +118,9 @@ class MetaDatamodel(ModelMeta):
     _modules_datamodels = defaultdict(list)
 
     def __init__(self, name, bases, attrs):
-
         if not self._register:
             self._register = True
-            super(MetaDatamodel, self).__init__(name, bases, attrs)
+            super().__init__(name, bases, attrs)
 
             return
 
@@ -304,16 +304,15 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 
         if cls._name in registry and not parents:
             raise TypeError(
-                "Datamodel %r (in class %r) already exists. "
-                "Consider using _inherit instead of _name "
-                "or using a different _name." % (cls._name, cls)
+                f"Datamodel {cls._name!r} (in class {cls!r}) already exists. "
+                "Consider using _inherit instead of _name or using a different _name."
             )
 
         # determine the datamodel's name
         name = cls._name or (len(parents) == 1 and parents[0])
 
         if not name:
-            raise TypeError("Datamodel %r must have a _name" % cls)
+            raise TypeError(f"Datamodel {cls!r} must have a _name")
 
         # all datamodels except 'base' implicitly inherit from 'base'
         if name != "base":
@@ -322,15 +321,15 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
         # create or retrieve the datamodel's class
         if name in parents:
             if name not in registry:
-                raise TypeError("Datamodel %r does not exist in registry." % name)
+                raise TypeError(f"Datamodel {name!r} does not exist in registry.")
 
         # determine all the classes the datamodel should inherit from
         bases = LastOrderedSet([cls])
         for parent in parents:
             if parent not in registry:
                 raise TypeError(
-                    "Datamodel %r inherits from non-existing datamodel %r."
-                    % (name, parent)
+                    f"Datamodel {name!r} inherits from non-existing datamodel "
+                    f"{parent!r}."
                 )
             parent_class = registry[parent]
             if parent == name:
@@ -390,7 +389,7 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 # makes the datamodels registry available on env
 
 
-class DataModelFactory(object):
+class DataModelFactory:
     """Factory for datamodels
 
     This factory ensures the propagation of the environment to the

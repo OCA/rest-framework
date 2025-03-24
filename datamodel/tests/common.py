@@ -29,7 +29,7 @@ def new_rollbacked_env():
         cr.close()
 
 
-class DatamodelMixin(object):
+class DatamodelMixin:
     @classmethod
     def setUpDatamodel(cls):
         with new_rollbacked_env() as env:
