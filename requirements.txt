@@ -3,6 +3,8 @@ a2wsgi>=1.10.6
 apispec
 cerberus
 fastapi>=0.110.0
+marshmallow
+marshmallow-objects>=2.0.0
 parse-accept-language
 pyquerystring
 python-multipart
