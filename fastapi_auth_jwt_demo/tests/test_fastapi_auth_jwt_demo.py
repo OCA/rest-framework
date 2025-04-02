@@ -6,6 +6,7 @@ import time
 import jwt
 
 from odoo import tests
+from odoo.tools import mute_logger
 
 
 @tests.tagged("post_install", "-at_install")
@@ -79,6 +80,7 @@ class TestEndToEnd(tests.HttpCase):
         cookie = resp.cookies.get("demo_auth")
         self.assertTrue(cookie)
 
+    @mute_logger('odoo.http')
     def test_forbidden(self):
         """A end-to-end test with negative authentication."""
         token = self._get_token(aud="invalid")
