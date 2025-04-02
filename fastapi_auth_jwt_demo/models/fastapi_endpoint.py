@@ -9,7 +9,6 @@ APP_NAME = "auth_jwt_demo"
 
 
 class FastapiEndpoint(models.Model):
-
     _inherit = "fastapi.endpoint"
 
     app: str = fields.Selection(
