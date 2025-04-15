@@ -8,10 +8,10 @@
 
     <record id="fastapi_log_action_from_endpoint" model="ir.actions.act_window">
         <field name="name">Fastapi Log</field>
-        <field name="res_model">fastapi.log</field>
+        <field name="res_model">api.log</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('endpoint_id', '=', active_id)]</field>
-        <field name="context">{'default_endpoint_id': active_id}</field>
+        <field name="domain">[('fastapi_endpoint_id', '=', active_id)]</field>
+        <field name="context">{'default_fastapi_endpoint_id': active_id}</field>
     </record>
 
 
@@ -25,7 +25,7 @@
                     type="action"
                     name="%(fastapi_log.fastapi_log_action_from_endpoint)s"
                     icon="fa-book"
-                    groups="fastapi_log.group_fastapi_log"
+                    groups="api_log.group_api_log"
                     attrs="{'invisible': [('fastapi_log_count', '=', 0)]}"
                 >
                     <field string="Logs" name="fastapi_log_count" widget="statinfo" />
@@ -34,7 +34,7 @@
 
 
             <field name="save_http_session" position="after">
-                <field name="log_requests" groups="fastapi_log.group_fastapi_log" />
+                <field name="log_requests" groups="api_log.group_api_log" />
             </field>
         </field>
     </record>

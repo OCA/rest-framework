@@ -6,8 +6,8 @@
 -->
 <odoo>
 
-    <record id="group_fastapi_log" model="res.groups">
-        <field name="name">Fastapi Log Access</field>
+    <record id="group_api_log" model="res.groups">
+        <field name="name">API Log Access</field>
         <field
             name="users"
             eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"

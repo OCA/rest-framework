@@ -13,8 +13,8 @@ class FastapiEndpoint(models.Model):
     )
 
     fastapi_log_ids = fields.One2many(
-        "fastapi.log",
-        "endpoint_id",
+        comodel_name="api.log",
+        inverse_name="fastapi_endpoint_id",
         string="Logs",
     )
 
@@ -25,11 +25,13 @@ class FastapiEndpoint(models.Model):
 
     @api.depends("fastapi_log_ids")
     def _compute_fastapi_log_count(self):
-        data = self.env["fastapi.log"].read_group(
-            [("endpoint_id", "in", self.ids)],
-            ["endpoint_id"],
-            ["endpoint_id"],
+        groups = self.env["api.log"].read_group(
+            [("fastapi_endpoint_id", "in", self.ids)],
+            ["fastapi_endpoint_id"],
+            ["fastapi_endpoint_id"],
         )
-        mapped_data = {m["endpoint_id"][0]: m["endpoint_id_count"] for m in data}
-        for record in self:
-            record.fastapi_log_count = mapped_data.get(record.id, 0)
+        mapped_data = {
+            g["fastapi_endpoint_id"][0]: g["fastapi_endpoint_id_count"] for g in groups
+        }
+        for endpoint in self:
+            endpoint.fastapi_log_count = mapped_data.get(endpoint.id, 0)

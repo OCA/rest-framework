@@ -8,11 +8,12 @@
     "author": "Akretion, Odoo Community Association (OCA)",
     "summary": "Log Fastapi requests in database",
     "category": "Tools",
-    "depends": ["fastapi"],
+    "depends": [
+        "api_log",
+        "fastapi",
+    ],
     "website": "https://github.com/OCA/rest-framework",
     "data": [
-        "security/res_groups.xml",
-        "security/ir_model_access.xml",
         "views/fastapi_endpoint_views.xml",
         "views/fastapi_log_views.xml",
     ],

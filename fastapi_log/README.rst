@@ -71,7 +71,7 @@ Authors
 Contributors
 ------------
 
--  Florian Mounier florian.mounier@akretion.com
+- Florian Mounier florian.mounier@akretion.com
 
 Maintainers
 -----------

@@ -28,37 +28,30 @@ class FastApiDispatcher(_dispatchers.get("fastapi", BaseFastApiDispatcher)):
             .search([("root_path", "=", root_path)])
         )
         if fastapi_endpoint.log_requests:
-            log = None
-            try:
-                if tools.config["test_enable"]:
-                    cr = getattr(
-                        self.request.env.registry, "test_log_cr", self.request.env.cr
-                    )
-                else:
-                    # Create an independent cursor
-                    cr = registry(self.request.env.cr.dbname).cursor()
-
-                env = self.request.env(cr=cr, su=True)
-                try:
-                    # cf fastapi _get_environ
-                    request = self.request.httprequest._HTTPRequest__wrapped
-                except AttributeError:
-                    request = self.request.httprequest
-
-                log = env["fastapi.log"].log_request(
-                    request, environ, fastapi_endpoint.id
+            if tools.config["test_enable"]:
+                cr = getattr(
+                    self.request.env.registry, "test_log_cr", self.request.env.cr
                 )
+            else:
+                # Create an independent cursor
+                cr = registry(self.request.env.cr.dbname).cursor()
+
+            env = self.request.env(cr=cr, su=True)
+            request = self.request
+            try:
+                log = env["api.log"].log_request(request)
             except Exception as e:
                 _logger.warning("Failed to log request", exc_info=e)
+                log = None
 
             try:
                 response = super().dispatch(endpoint, args)
-            except Exception as e:
+            except Exception as response_exc:
                 try:
-                    log and log.log_exception(e)
+                    log and log.log_exception(response_exc)
                 except Exception as e:
                     _logger.warning("Failed to log exception", exc_info=e)
-                raise e
+                raise response_exc
             else:
                 try:
                     log and log.log_response(response)
@@ -71,6 +64,5 @@ class FastApiDispatcher(_dispatchers.get("fastapi", BaseFastApiDispatcher)):
                     finally:
                         cr.close()
             return response
-
         else:
             return super().dispatch(endpoint, args)
