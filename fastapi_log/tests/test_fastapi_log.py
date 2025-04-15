@@ -7,15 +7,16 @@ import unittest
 from contextlib import contextmanager
 
 from odoo.sql_db import TestCursor
-from odoo.tests.common import HttpCase, RecordCapturer
+from odoo.tests.common import RecordCapturer
 
+from odoo.addons.api_log.tests.common import CommonAPILog
 from odoo.addons.fastapi.schemas import DemoExceptionType
 
 from fastapi import status
 
 
 @unittest.skipIf(os.getenv("SKIP_HTTP_CASE"), "FastAPIEncryptedErrorsCase skipped")
-class FastAPIEncryptedErrorsCase(HttpCase):
+class FastAPIEncryptedErrorsCase(CommonAPILog):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -47,8 +48,8 @@ class FastAPIEncryptedErrorsCase(HttpCase):
     @contextmanager
     def log_capturer(self):
         with RecordCapturer(
-            self.env(cr=self.env.registry.test_log_cr)["fastapi.log"],
-            [("endpoint_id", "=", self.fastapi_demo_app.id)],
+            self.env(cr=self.env.registry.test_log_cr)[self.log_model._name],
+            [("fastapi_endpoint_id", "=", self.fastapi_demo_app.id)],
         ) as capturer:
             yield capturer
 
@@ -128,6 +129,18 @@ class FastAPIEncryptedErrorsCase(HttpCase):
             )
 
         self.assertEqual(len(capturer.records), 3)
+        for log in capturer.records[1:]:
+            self.assertIn("/fastapi_demo/demo/retrying", log.request_url)
+            self.assertEqual(log.request_method, "POST")
+            self.assertEqual(log.response_status_code, 500)
+            self.assertTrue(log.time > 0)
+            self.assertTrue(log.response_body)
+            self.assertIn(b"fake error", log.response_body)
+            self.assertIn(
+                "odoo.addons.fastapi.routers.demo_router.FakeConcurrentUpdateError: fake error",
+                log.stack_trace,
+            )
+
         log = capturer.records[0]
         self.assertIn("/fastapi_demo/demo/retrying", log.request_url)
         self.assertEqual(log.request_method, "POST")
@@ -137,25 +150,3 @@ class FastAPIEncryptedErrorsCase(HttpCase):
         self.assertIn(b'"retries":2', log.response_body)
         self.assertIn(b'"file":"test"', log.response_body)
         self.assertFalse(log.stack_trace)
-        log = capturer.records[1]
-        self.assertIn("/fastapi_demo/demo/retrying", log.request_url)
-        self.assertEqual(log.request_method, "POST")
-        self.assertEqual(log.response_status_code, 500)
-        self.assertTrue(log.time > 0)
-        self.assertTrue(log.response_body)
-        self.assertIn(b'{"detail": "Internal Server Error"}', log.response_body)
-        self.assertIn(
-            "odoo.addons.fastapi.routers.demo_router.FakeConcurrentUpdateError: fake error",
-            log.stack_trace,
-        )
-        log = capturer.records[2]
-        self.assertIn("/fastapi_demo/demo/retrying", log.request_url)
-        self.assertEqual(log.request_method, "POST")
-        self.assertEqual(log.response_status_code, 500)
-        self.assertTrue(log.time > 0)
-        self.assertTrue(log.response_body)
-        self.assertIn(b'{"detail": "Internal Server Error"}', log.response_body)
-        self.assertIn(
-            "odoo.addons.fastapi.routers.demo_router.FakeConcurrentUpdateError: fake error",
-            log.stack_trace,
-        )

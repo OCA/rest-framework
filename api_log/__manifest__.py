@@ -3,22 +3,18 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
-    "name": "Fastapi Log",
+    "name": "API Log",
     "version": "16.0.1.0.0",
     "author": "Akretion, Odoo Community Association (OCA)",
-    "summary": "Log Fastapi requests in database",
+    "license": "AGPL-3",
+    "summary": "Log API requests in database",
     "category": "Tools",
-    "depends": [
-        "api_log",
-        "fastapi",
-    ],
+    "depends": ["web"],
     "website": "https://github.com/OCA/rest-framework",
     "data": [
-        "views/fastapi_endpoint_views.xml",
-        "views/fastapi_log_views.xml",
+        "security/res_groups.xml",
+        "security/ir_model_access.xml",
+        "views/api_log_views.xml",
     ],
     "maintainers": ["paradoxxxzero"],
-    "demo": [],
-    "installable": True,
-    "license": "AGPL-3",
 }
