@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    ~ Copyright 2025 Simone Rubino - PyTech
+    ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="fastapi_endpoint_form_view" model="ir.ui.view">
+        <field name="model">fastapi.endpoint</field>
+        <field name="inherit_id" ref="fastapi_log.fastapi_endpoint_form_view" />
+        <field name="arch" type="xml">
+            <field name="log_requests" position="after">
+                <field
+                    name="fastapi_log_mail_template_id"
+                    groups="api_log.group_api_log"
+                    attrs="{
+                        'invisible': [
+                            ('log_requests', '=', False),
+                        ],
+                    }"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>
