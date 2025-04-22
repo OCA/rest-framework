@@ -1,0 +1,1 @@
+In any endpoint that has logging enabled, insert an email template in "Error E-mail Template".
