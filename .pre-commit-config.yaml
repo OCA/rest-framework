@@ -5,7 +5,6 @@ exclude: |
   ^base_rest_auth_api_key/|
   ^base_rest_auth_jwt/|
   ^base_rest_auth_user_service/|
-  ^base_rest_datamodel/|
   ^base_rest_demo/|
   ^base_rest_pydantic/|
   ^datamodel/|
