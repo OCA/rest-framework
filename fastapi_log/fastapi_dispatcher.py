@@ -21,11 +21,10 @@ class FastApiDispatcher(_dispatchers.get("fastapi", BaseFastApiDispatcher)):
     def dispatch(self, endpoint, args):
         self.request.params = {}
         environ = self._get_environ()
-        root_path = "/" + environ["PATH_INFO"].split("/")[1]
         fastapi_endpoint = (
             self.request.env["fastapi.endpoint"]
             .sudo()
-            .search([("root_path", "=", root_path)])
+            ._get_endpoint(environ["PATH_INFO"])
         )
         if fastapi_endpoint.log_requests:
             if tools.config["test_enable"]:
