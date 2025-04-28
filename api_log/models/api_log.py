@@ -62,8 +62,29 @@ class APILog(models.Model):
         compute="_compute_response_headers_derived", store=True
     )
 
+    @api.model
+    def _headers_hidden_keys(self):
+        """Header keys that should not be logged.
+
+        They might contains sensitive data.
+        """
+        return (
+            "Api-Key",
+            "Cookie",
+        )
+
+    @api.model
+    def _sanitize_headers_dict(self, headers_dict):
+        keys_to_hide = self._headers_hidden_keys()
+        for key in headers_dict:
+            if key in keys_to_hide:
+                headers_dict[key] = "<redacted>"
+        return headers_dict
+
+    @api.model
     def _headers_to_dict(self, headers):
-        return {key.lower(): value for key, value in headers.items()}
+        headers_dict = {key: value for key, value in headers.items()}
+        return self._sanitize_headers_dict(headers_dict)
 
     def _current_time(self):
         return time.time_ns() / 1e9
