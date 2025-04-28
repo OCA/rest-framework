@@ -21,6 +21,7 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
     def setUpClass(cls):
         super().setUpClass()
         cls.fastapi_demo_app = cls.env.ref("fastapi.fastapi_endpoint_demo")
+        cls.fastapi_demo_app.root_path += "/test"
         cls.fastapi_demo_app._handle_registry_sync()
         cls.fastapi_demo_app.write({"log_requests": True})
         lang = (
@@ -57,19 +58,19 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
         self.fastapi_demo_app.write({"log_requests": False})
 
         with self.log_capturer() as capturer:
-            response = self.url_open("/fastapi_demo/demo", timeout=200)
+            response = self.url_open("/fastapi_demo/test/demo", timeout=200)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertFalse(capturer.records)
 
     def test_log_simple(self):
         with self.log_capturer() as capturer:
-            response = self.url_open("/fastapi_demo/demo", timeout=200)
+            response = self.url_open("/fastapi_demo/test/demo", timeout=200)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertEqual(len(capturer.records), 1)
         log = capturer.records[0]
-        self.assertTrue(log.request_url.endswith("/fastapi_demo/demo"))
+        self.assertTrue(log.request_url.endswith("/fastapi_demo/test/demo"))
         self.assertEqual(log.request_method, "GET")
         self.assertEqual(log.response_status_code, 200)
         self.assertTrue(log.time > 0)
@@ -77,7 +78,7 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
     def test_log_exception(self):
         with self.log_capturer() as capturer:
             route = (
-                "/fastapi_demo/demo/exception?"
+                "/fastapi_demo/test/demo/exception?"
                 f"exception_type={DemoExceptionType.user_error.value}"
                 "&error_message=User Error"
             )
@@ -86,7 +87,7 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
 
         self.assertEqual(len(capturer.records), 1)
         log = capturer.records[0]
-        self.assertIn("/fastapi_demo/demo/exception", log.request_url)
+        self.assertIn("/fastapi_demo/test/demo/exception", log.request_url)
         self.assertEqual(log.request_method, "GET")
         self.assertEqual(log.response_status_code, 400)
         self.assertTrue(log.time > 0)
@@ -97,7 +98,7 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
     def test_log_bare_exception(self):
         with self.log_capturer() as capturer:
             route = (
-                "/fastapi_demo/demo/exception?"
+                "/fastapi_demo/test/demo/exception?"
                 f"exception_type={DemoExceptionType.bare_exception.value}"
                 "&error_message=Internal Server Error"
             )
@@ -108,7 +109,7 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
 
         self.assertEqual(len(capturer.records), 1)
         log = capturer.records[0]
-        self.assertIn("/fastapi_demo/demo/exception", log.request_url)
+        self.assertIn("/fastapi_demo/test/demo/exception", log.request_url)
         self.assertEqual(log.request_method, "GET")
         self.assertEqual(log.response_status_code, 500)
         self.assertTrue(log.time > 0)
@@ -119,7 +120,7 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
     def test_log_retrying_post(self):
         with self.log_capturer() as capturer:
             nbr_retries = 2
-            route = f"/fastapi_demo/demo/retrying?nbr_retries={nbr_retries}"
+            route = f"/fastapi_demo/test/demo/retrying?nbr_retries={nbr_retries}"
             response = self.url_open(
                 route, timeout=20, files={"file": ("test.txt", b"test")}
             )
@@ -130,7 +131,7 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
 
         self.assertEqual(len(capturer.records), 3)
         for log in capturer.records[1:]:
-            self.assertIn("/fastapi_demo/demo/retrying", log.request_url)
+            self.assertIn("/fastapi_demo/test/demo/retrying", log.request_url)
             self.assertEqual(log.request_method, "POST")
             self.assertEqual(log.response_status_code, 500)
             self.assertTrue(log.time > 0)
@@ -142,7 +143,7 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
             )
 
         log = capturer.records[0]
-        self.assertIn("/fastapi_demo/demo/retrying", log.request_url)
+        self.assertIn("/fastapi_demo/test/demo/retrying", log.request_url)
         self.assertEqual(log.request_method, "POST")
         self.assertEqual(log.response_status_code, 200)
         self.assertTrue(log.time > 0)
