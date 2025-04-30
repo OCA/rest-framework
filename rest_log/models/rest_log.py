@@ -85,7 +85,7 @@ class RESTLog(models.Model):
                 continue
             exc_name = severity = None
             try:
-                exc_name, severity = [x.strip() for x in rule.split(":")]
+                exc_name, severity = (x.strip() for x in rule.split(":"))
                 if not exc_name or not severity:
                     raise ValueError
             except ValueError:
