@@ -144,9 +144,7 @@ repos:
         args:
           - --rcfile=.pylintrc
           - --exit-zero
-          - --disable=manifest-version-format
         verbose: true
       - id: pylint_odoo
         args:
           - --rcfile=.pylintrc-mandatory
-          - --disable=manifest-version-format

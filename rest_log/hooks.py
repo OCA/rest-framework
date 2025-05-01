@@ -5,15 +5,15 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def post_init_hook(cr, version):
+def post_init_hook(env):
     """Preserve log entries from old implementation in shopfloor."""
-    cr.execute("SELECT 1 FROM pg_class WHERE relname = 'shopfloor_log'")
-    if not cr.fetchone():
+    env.cr.execute("SELECT 1 FROM pg_class WHERE relname = 'shopfloor_log'")
+    if not env.cr.fetchone():
         # shopfloor_log was already removed
         return
 
     _logger.info("Copy shopfloor.log records to rest.log")
-    cr.execute(
+    env.cr.execute(
         """
     INSERT INTO rest_log (
         request_url,
@@ -50,4 +50,4 @@ def post_init_hook(cr, version):
     """
     )
     _logger.info("Delete legacy records in shopfloor_log")
-    cr.execute("""DELETE FROM shopfloor_log""")
+    env.cr.execute("""DELETE FROM shopfloor_log""")
