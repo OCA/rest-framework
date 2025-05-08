@@ -8,7 +8,7 @@ else:
     from typing_extensions import Annotated
 from typing import TYPE_CHECKING, Optional
 
-from odoo.api import Environment
+from odoo.api import Environment, Environments
 from odoo.exceptions import AccessDenied
 
 from odoo.addons.base.models.res_partner import Partner
@@ -25,7 +25,18 @@ if TYPE_CHECKING:
 
 
 def odoo_env() -> Environment:
-    yield odoo_env_ctx.get()
+    env = odoo_env_ctx.get()
+    has_environments = hasattr(env._local, "environments")
+    if not has_environments:
+        # in testing mode at update and install the envs is not set
+        # on the werkzeuk local
+        envs = Environments()
+        envs.add(env)
+        env._local.environments = envs
+        with Environment.manage():
+            yield env
+    else:
+        yield env
 
 
 def authenticated_partner_impl() -> Partner:
