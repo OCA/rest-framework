@@ -136,7 +136,14 @@ class FastapiEndpoint(models.Model):
         return res
 
     def action_sync_registry(self):
-        self.filtered(lambda e: not e.registry_sync).write({"registry_sync": True})
+        endpoints = self.filtered(lambda e: not e.registry_sync)
+        endpoints.write({"registry_sync": True})
+        # This ugly thing solves https://github.com/OCA/rest-framework/issues/391
+        # Basically the first endpoint to be synched cannot be accessed until another
+        # endpoint is synched too
+        if len(endpoints) == 1:
+            endpoints.registry_sync = False
+            endpoints.registry_sync = True
 
     def _handle_route_updates(self, vals):
         observed_fields = [self._routing_impacting_fields(), self._fastapi_app_fields()]
