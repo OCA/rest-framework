@@ -5,7 +5,7 @@
 {
     "name": "FastAPI Encrypted Errors",
     "summary": "Adds encrypted error messages to FastAPI error responses.",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "license": "AGPL-3",
     "author": "Akretion,Odoo Community Association (OCA)",
     "maintainers": ["paradoxxxzero"],
