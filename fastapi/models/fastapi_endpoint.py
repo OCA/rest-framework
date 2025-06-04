@@ -7,7 +7,6 @@ from functools import partial
 from itertools import chain
 from typing import Any
 
-from a2wsgi import ASGIMiddleware
 from starlette.middleware import Middleware
 from starlette.routing import Mount
 
@@ -16,6 +15,7 @@ from odoo import _, api, exceptions, fields, models, tools
 from fastapi import APIRouter, Depends, FastAPI
 
 from .. import dependencies
+from ..middleware import ASGIMiddleware
 
 _logger = logging.getLogger(__name__)
 
@@ -121,10 +121,10 @@ class FastapiEndpoint(models.Model):
         return tuple(res)
 
     @api.model
-    def _routing_impacting_fields(self) -> tuple[str]:
+    def _routing_impacting_fields(self) -> tuple[str, ...]:
         """The list of fields requiring to refresh the mount point of the pp
         into odoo if modified"""
-        return ("root_path",)
+        return ("root_path", "save_http_session")
 
     #
     # end of endpoint.route.sync.mixin methods implementation
@@ -198,14 +198,14 @@ class FastapiEndpoint(models.Model):
         return f"{self._name}:{self.id}:{path}"
 
     def _reset_app(self):
+        """When the app is reset we clear the cache, the system will signal to
+        others instances that the cache is not up to date and that they should
+        invalidate their cache as well. This is required to ensure that any change
+        requiring a reset of the app is propagated to all the running instances.
+        """
         self.env.registry.clear_cache()
 
     @api.model
-    @tools.ormcache("root_path")
-    # TODO cache on thread local by db to enable to get 1 middelware by
-    # thread when odoo runs in multi threads mode and to allows invalidate
-    # specific entries in place og the overall cache as we have to do into
-    # the _rest_app method
     def get_app(self, root_path):
         record = self.search([("root_path", "=", root_path)])
         if not record:
