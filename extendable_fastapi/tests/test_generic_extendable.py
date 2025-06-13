@@ -166,9 +166,10 @@ class TestUser(FastAPITransactionCase):
                 "login": "michel",
             }
         )
-        with self._create_test_client(
-            router=demo_pydantic_router
-        ) as test_client, self.assertRaises(ResponseValidationError):
+        with (
+            self._create_test_client(router=demo_pydantic_router) as test_client,
+            self.assertRaises(ResponseValidationError),
+        ):
             test_client.get(f"/{user.id}")
 
     def test_get_user_failed_no_pwd(self):
@@ -200,9 +201,10 @@ class TestUser(FastAPITransactionCase):
         password = "dummy123"
         pydantic_data = PrivateCustomer(name=name, address=address, password=password)
 
-        with self.assertRaises(ResponseValidationError), self._create_test_client(
-            router=demo_pydantic_router
-        ) as test_client:
+        with (
+            self.assertRaises(ResponseValidationError),
+            self._create_test_client(router=demo_pydantic_router) as test_client,
+        ):
             test_client.post(
                 "/post_private_customer", content=pydantic_data.model_dump_json()
             )
