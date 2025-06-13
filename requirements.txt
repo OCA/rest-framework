@@ -4,6 +4,7 @@ apispec
 cerberus
 contextvars
 extendable>=0.0.4
+extendable-pydantic>=1.2.0
 fastapi>=0.110.0
 parse-accept-language
 pydantic>=2.0.0
