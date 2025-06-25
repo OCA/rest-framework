@@ -1,24 +1,32 @@
 # Copyright 2025 Akretion (http://www.akretion.com).
 # @author Florian Mounier <florian.mounier@akretion.com>
+# Copyright 2025 Simone Rubino - PyTech
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 import os
 import unittest
 
-from odoo.addons.api_log.tests.common import CommonAPILog
 from odoo.addons.fastapi.schemas import DemoExceptionType
+from odoo.addons.fastapi_log.tests.common import Common
 from odoo.addons.mail.tests.common import MailCase
 
+from fastapi import status
 
-@unittest.skipIf(os.getenv("SKIP_HTTP_CASE"), "FastAPIEncryptedErrorsCase skipped")
-class FastAPIEncryptedErrorsCase(CommonAPILog, MailCase):
+
+@unittest.skipIf(os.getenv("SKIP_HTTP_CASE"), "TestFastapiLogMail skipped")
+class TestFastapiLogMail(Common, MailCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.fastapi_demo_app = cls.env.ref("fastapi.fastapi_endpoint_demo")
-
-        cls.fastapi_demo_app._handle_registry_sync()
-        cls.fastapi_demo_app.log_requests = True
-        cls.fastapi_demo_app.fastapi_log_mail_template_id = cls.env[
+        cls.fastapi_demo_app.api_log_mail_exception_activity_type_id = cls.env[
+            "mail.activity.type"
+        ].create(
+            {
+                "name": "Test exception activity type",
+                "res_model": "api.log",
+            }
+        )
+        cls.fastapi_demo_app.api_log_mail_exception_template_id = cls.env[
             "mail.template"
         ].create(
             {
@@ -27,16 +35,42 @@ class FastAPIEncryptedErrorsCase(CommonAPILog, MailCase):
             }
         )
 
+    def test_endpoint_exception_create_activity(self):
+        """If an endpoint has an activity type,
+        when an exception occurs an activity of the configured type is created.
+        """
+        # Arrange
+        app = self.fastapi_demo_app
+        activity_type = app.api_log_mail_exception_activity_type_id
+        route = (
+            "/fastapi_demo/test/demo/exception?"
+            f"exception_type={DemoExceptionType.user_error.value}"
+            "&error_message=An error happened"
+        )
+        # pre-condition
+        self.assertTrue(activity_type)
+
+        # Act
+        with self.log_capturer() as capturer:
+            response = self.url_open(route, timeout=200)
+
+        # Assert
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        log = capturer.records
+        self.assertEqual(len(log), 1)
+        self.assertTrue(log.activity_ids)
+
     def test_endpoint_exception_send_email(self):
         """If an endpoint has an email template,
         when an exception occurs an email is sent using the configured template.
         """
         # Arrange
-        mail_template = self.fastapi_demo_app.fastapi_log_mail_template_id
+        app = self.fastapi_demo_app
+        mail_template = app.api_log_mail_exception_template_id
         route = (
-            "/fastapi_demo/demo/exception?"
+            "/fastapi_demo/test/demo/exception?"
             f"exception_type={DemoExceptionType.user_error.value}"
-            "&error_message=User Error"
+            "&error_message=An error happened"
         )
         # pre-condition
         self.assertTrue(mail_template)

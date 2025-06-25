@@ -1,1 +1,1 @@
-This module allows to send an email when an exception occurs in an endpoint.
+This module allows to create an activity when an exception is logged in a fastapi endpoint.

@@ -1,6 +1,6 @@
-===========
-Fastapi Log
-===========
+========================
+FastAPI Log notification
+========================
 
 .. 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -28,8 +28,8 @@ Fastapi Log
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module allows to send an email when an exception occurs in an
-endpoint.
+This module allows to create an activity when an exception is logged in
+a fastapi endpoint.
 
 **Table of contents**
 
@@ -39,8 +39,7 @@ endpoint.
 Configuration
 =============
 
-In any endpoint that has logging enabled, insert an email template in
-"Error E-mail Template".
+Configure a fastapi endpoint as explained in ``api_log_mail``.
 
 Bug Tracker
 ===========

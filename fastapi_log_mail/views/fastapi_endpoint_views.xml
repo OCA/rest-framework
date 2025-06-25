@@ -5,12 +5,22 @@
 -->
 <odoo>
     <record id="fastapi_endpoint_form_view" model="ir.ui.view">
+        <field name="name">Add log mail fields to endpoint form view</field>
         <field name="model">fastapi.endpoint</field>
         <field name="inherit_id" ref="fastapi_log.fastapi_endpoint_form_view" />
         <field name="arch" type="xml">
             <field name="log_requests" position="after">
                 <field
-                    name="fastapi_log_mail_template_id"
+                    name="api_log_mail_exception_activity_type_id"
+                    groups="api_log.group_api_log"
+                    attrs="{
+                        'invisible': [
+                            ('log_requests', '=', False),
+                        ],
+                    }"
+                />
+                <field
+                    name="api_log_mail_exception_template_id"
                     groups="api_log.group_api_log"
                     attrs="{
                         'invisible': [

@@ -2,19 +2,19 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
-    "name": "Fastapi Log",
-    "version": "16.0.1.0.0",
+    "name": "FastAPI Log notification",
+    "version": "16.0.1.1.0",
     "license": "AGPL-3",
     "author": "PyTech, Odoo Community Association (OCA)",
     "maintainers": [
         "SirPyTech",
     ],
     "website": "https://github.com/OCA/rest-framework",
-    "summary": "Email exceptions of Endpoints.",
+    "summary": "Notify logged exceptions.",
     "category": "Tools",
     "depends": [
         "fastapi_log",
-        "mail",
+        "api_log_mail",
     ],
     "data": [
         "views/fastapi_endpoint_views.xml",
