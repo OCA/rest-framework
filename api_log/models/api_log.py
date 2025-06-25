@@ -1,5 +1,6 @@
 # Copyright 2025 Akretion (http://www.akretion.com).
 # @author Florian Mounier <florian.mounier@akretion.com>
+# Copyright 2025 Simone Rubino - PyTech
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import base64
@@ -16,6 +17,20 @@ class APILog(models.Model):
     _name = "api.log"
     _description = "Log for API"
     _order = "id desc"
+
+    collection_ref = fields.Reference(
+        selection="_selection_collection_ref",
+    )
+    collection_model = fields.Char(
+        compute="_compute_collection",
+        store=True,
+        index=True,
+    )
+    collection_id = fields.Integer(
+        compute="_compute_collection",
+        store=True,
+        index=True,
+    )
 
     # Request
     request_url = fields.Char()
@@ -61,6 +76,25 @@ class APILog(models.Model):
     response_content_length = fields.Integer(
         compute="_compute_response_headers_derived", store=True
     )
+
+    @api.model
+    def _selection_collection_ref(self):
+        return []
+
+    @api.depends(
+        "collection_ref",
+    )
+    def _compute_collection(self):
+        for log in self:
+            collection = log.collection_ref
+            if collection:
+                collection_model = collection._name
+                collection_id = collection.id
+            else:
+                collection_model = False
+                collection_id = False
+            log.collection_model = collection_model
+            log.collection_id = collection_id
 
     @api.model
     def _headers_hidden_keys(self):

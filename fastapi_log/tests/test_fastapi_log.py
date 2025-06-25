@@ -151,3 +151,19 @@ class FastAPIEncryptedErrorsCase(CommonAPILog):
         self.assertIn(b'"retries":2', log.response_body)
         self.assertIn(b'"file":"test"', log.response_body)
         self.assertFalse(log.stack_trace)
+
+    def test_collection_ref(self):
+        """The created log holds a reference to its endpoint and viceversa."""
+        # Arrange
+        endpoint = self.fastapi_demo_app
+        # pre-condition
+        self.assertFalse(endpoint.log_ids)
+
+        # Act
+        with self.log_capturer() as capturer:
+            self.url_open("/fastapi_demo/test/demo", timeout=200)
+
+        # Assert
+        log = capturer.records[-1]
+        self.assertEqual(log.collection_ref, endpoint)
+        self.assertIn(log, endpoint.log_ids)

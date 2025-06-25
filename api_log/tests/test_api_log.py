@@ -1,15 +1,16 @@
 # Copyright 2025 Akretion (http://www.akretion.com).
 # @author Florian Mounier <florian.mounier@akretion.com>
+# Copyright 2025 Simone Rubino - PyTech
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import requests
 
 from odoo.http import Request, Response
 
-from odoo.addons.api_log.tests.common import CommonAPILog
+from odoo.addons.api_log.tests.common import Common
 
 
-class TestAPILog(CommonAPILog):
+class TestAPILog(Common):
     def test_log_request(self):
         base_url = self.base_url()
         secret_api_key = "my-secret-api-key"
