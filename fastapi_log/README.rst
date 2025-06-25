@@ -72,6 +72,9 @@ Contributors
 ------------
 
 - Florian Mounier florian.mounier@akretion.com
+- `PyTech <https://www.pytech.it>`__:
+
+  - Simone Rubino <simone.rubino@pytech.it>
 
 Maintainers
 -----------

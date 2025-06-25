@@ -1,21 +1,24 @@
 # Copyright 2025 Akretion (http://www.akretion.com).
 # @author Florian Mounier <florian.mounier@akretion.com>
+# Copyright 2025 Simone Rubino - PyTech
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from odoo import api, fields, models
+from odoo import api, models
 
 
 class FastapiLog(models.Model):
     _inherit = "api.log"
 
-    fastapi_endpoint_id = fields.Many2one(
-        comodel_name="fastapi.endpoint",
-        string="Endpoint",
-        ondelete="cascade",
-        index=True,
-    )
+    @api.model
+    def _selection_collection_ref(self):
+        collections = super()._selection_collection_ref()
+        fastapi_endpoint_model = self.env["fastapi.endpoint"]
+        collections.append(
+            (fastapi_endpoint_model._name, fastapi_endpoint_model._description)
+        )
+        return collections
 
     @api.model
     def _get_request_body(self, request):
@@ -42,7 +45,11 @@ class FastapiLog(models.Model):
                 .sudo()
                 ._get_endpoint(environ["PATH_INFO"])
             )
-            log_request_values["fastapi_endpoint_id"] = endpoint.id
+            log_request_values["collection_ref"] = "%s,%s" % (
+                endpoint._name,
+                endpoint.id,
+            )
+
         return log_request_values
 
     def _prepare_log_exception(self, exception):
