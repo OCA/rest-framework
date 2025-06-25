@@ -45,6 +45,7 @@
                             <field name="response_date" />
                         </group>
                         <group name="misc">
+                            <field name="collection_ref" />
                             <field
                                 name="stack_trace"
                                 attrs="{'invisible': [('stack_trace', '=', False)]}"
@@ -61,6 +62,7 @@
         <field name="model">api.log</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="collection_ref" optional="hide" />
                 <field name="request_date" />
                 <field name="request_method" />
                 <field name="request_url" />
@@ -78,6 +80,7 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name" />
+                <field name="collection_ref" />
                 <separator />
                 <filter
                     string="Success"
@@ -91,6 +94,11 @@
                 />
 
                 <group name="groupby">
+                    <filter
+                        name="collection_groupby"
+                        string="Collection"
+                        context="{'group_by': 'collection_ref'}"
+                    />
                     <filter
                         name="method_groupby"
                         string="Method"
