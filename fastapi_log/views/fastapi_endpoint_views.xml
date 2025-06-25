@@ -2,18 +2,10 @@
 <!--
     Copyright 2025 Akretion (http://www.akretion.com).
     @author Florian Mounier <florian.mounier@akretion.com>
+    Copyright 2025 Simone Rubino - PyTech
     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 -->
 <odoo>
-
-    <record id="fastapi_log_action_from_endpoint" model="ir.actions.act_window">
-        <field name="name">Fastapi Log</field>
-        <field name="res_model">api.log</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('fastapi_endpoint_id', '=', active_id)]</field>
-        <field name="context">{'default_fastapi_endpoint_id': active_id}</field>
-    </record>
-
 
     <record id="fastapi_endpoint_form_view" model="ir.ui.view">
         <field name="model">fastapi.endpoint</field>
@@ -21,14 +13,21 @@
         <field name="arch" type="xml">
 
             <div class="oe_button_box" name="button_box" position="inside">
+                <field name="log_ids" invisible="True" />
                 <button
-                    type="action"
-                    name="%(fastapi_log.fastapi_log_action_from_endpoint)s"
+                    type="object"
+                    name="action_logs"
                     icon="fa-book"
+                    attrs="{
+                        'invisible': [
+                            ('log_ids', '=', []),
+                        ],
+                    }"
                     groups="api_log.group_api_log"
-                    attrs="{'invisible': [('fastapi_log_count', '=', 0)]}"
                 >
-                    <field string="Logs" name="fastapi_log_count" widget="statinfo" />
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Logs</span>
+                    </div>
                 </button>
             </div>
 

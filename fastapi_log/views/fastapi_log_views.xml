@@ -2,54 +2,15 @@
 <!--
     Copyright 2025 Akretion (http://www.akretion.com).
     @author Florian Mounier <florian.mounier@akretion.com>
+    Copyright 2025 Simone Rubino - PyTech
     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 -->
 <odoo>
-    <record id="api_log_view_form" model="ir.ui.view">
-        <field name="name">Add Fastapi fields to API log form view</field>
-        <field name="model">api.log</field>
-        <field name="inherit_id" ref="api_log.api_log_view_form" />
-        <field name="arch" type="xml">
-            <group name="misc" position="inside">
-                <field name="fastapi_endpoint_id" />
-            </group>
-        </field>
-    </record>
-
-    <record id="api_log_view_tree" model="ir.ui.view">
-        <field name="name">Add Fastapi fields to API log tree view</field>
-        <field name="model">api.log</field>
-        <field name="inherit_id" ref="api_log.api_log_view_tree" />
-        <field name="arch" type="xml">
-            <tree position="inside">
-                <field name="fastapi_endpoint_id" optional="hide" />
-            </tree>
-        </field>
-    </record>
-
-    <record id="api_log_view_search" model="ir.ui.view">
-        <field name="name">Add Fastapi fields to API log search view</field>
-        <field name="model">api.log</field>
-        <field name="inherit_id" ref="api_log.api_log_view_search" />
-        <field name="arch" type="xml">
-            <search position="inside">
-                <field name="fastapi_endpoint_id" />
-            </search>
-            <group name="groupby" position="inside">
-                <filter
-                    name="fastapi_endpoint_groupby"
-                    string="Fastapi Endpoint"
-                    context="{'group_by': 'fastapi_endpoint_id'}"
-                />
-            </group>
-        </field>
-    </record>
-
     <record id="fastapi_log_action" model="ir.actions.act_window">
         <field name="name">Fastapi Logs</field>
         <field name="res_model">api.log</field>
         <field name="domain">[
-            ("fastapi_endpoint_id", "!=", False)
+            ("collection_model", "=", "fastapi.endpoint"),
         ]</field>
         <field name="view_mode">tree,form</field>
     </record>
