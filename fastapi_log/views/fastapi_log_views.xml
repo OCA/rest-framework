@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Copyright 2025 Akretion (http://www.akretion.com).
+    @author Florian Mounier <florian.mounier@akretion.com>
+    License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="fastapi_log_action" model="ir.actions.act_window">
+        <field name="name">Fastapi Log</field>
+        <field name="res_model">fastapi.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="fastapi_log_view_form" model="ir.ui.view">
+        <field name="name">fastapi.log.form</field>
+        <field name="model">fastapi.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title" attrs="{'invisible': [('name', '=', False)]}">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group name="main">
+                        <group name="request">
+                            <field name="request_url" />
+                            <field name="request_method" />
+                            <field name="request_headers_preview" />
+                            <field name="request_b64" />
+                            <field
+                                name="request_preview"
+                                attrs="{'invisible': [('request_preview', '=', False)]}"
+                            />
+                            <field name="request_date" />
+                        </group>
+                        <group name="response">
+                            <field name="response_status_code" />
+                            <field name="response_headers_preview" />
+                            <field name="response_b64" />
+                            <field
+                                name="response_preview"
+                                attrs="{'invisible': [('response_preview', '=', False)]}"
+                            />
+                            <field name="response_date" />
+                        </group>
+                        <group name="misc">
+                            <field name="endpoint_id" />
+                            <field
+                                name="stack_trace"
+                                attrs="{'invisible': [('stack_trace', '=', False)]}"
+                            />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="fastapi_log_view_tree" model="ir.ui.view">
+        <field name="name">fastapi.log.tree</field>
+        <field name="model">fastapi.log</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="request_date" />
+                <field name="request_method" />
+                <field name="request_url" />
+                <field name="response_status_code" />
+                <field name="request_content_type" optional="hide" />
+                <field name="response_content_type" optional="hide" />
+                <field name="time" />
+                <field name="endpoint_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="fastapi_log_view_search" model="ir.ui.view">
+        <field name="name">fastapi.log.search</field>
+        <field name="model">fastapi.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="endpoint_id" />
+                <separator />
+                <filter
+                    string="Success"
+                    name="success"
+                    domain="[('response_status_code', '&gt;=', 200), ('response_status_code', '&lt;', 300)]"
+                />
+                <filter
+                    string="Error"
+                    name="error"
+                    domain="[('response_status_code', '>=', 400)]"
+                />
+
+                <group name="groupby">
+                    <filter
+                        name="endpoint_groupby"
+                        string="Endpoint"
+                        context="{'group_by': 'endpoint_id'}"
+                    />
+                    <filter
+                        name="method_groupby"
+                        string="Method"
+                        context="{'group_by': 'request_method'}"
+                    />
+                    <filter
+                        name="url_groupby"
+                        string="Url"
+                        context="{'group_by': 'request_url'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_fastapi_log"
+        name="Fastapi Logs"
+        sequence="100"
+        parent="fastapi.menu_fastapi_root"
+        action="fastapi_log_action"
+    />
+</odoo>
