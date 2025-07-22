@@ -70,7 +70,10 @@ def _get_jwt_payload(
             validator.cookie_name,
         )
         raise UnauthorizedMissingCookie()
-    return validator._decode(cookie_token, secret=validator._get_jwt_cookie_secret())
+    secret = None
+    if validator.renew_cookie_on_response:
+        secret = validator._get_jwt_cookie_secret()
+    return validator._decode(cookie_token, secret=secret)
 
 
 def _get_jwt_payload_and_validator(
@@ -95,7 +98,7 @@ def _get_jwt_payload_and_validator(
                 raise list(exceptions.values())[0]
             raise UnauthorizedCompositeJwtError(exceptions)
 
-        if validator.cookie_enabled:
+        if validator.cookie_enabled and validator.renew_cookie_on_response:
             if not validator.cookie_name:
                 _logger.info("Cookie name not set for validator %s", validator.name)
                 raise ConfigurationError()
