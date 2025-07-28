@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ========
 Pydantic
 ========
@@ -17,7 +13,7 @@ Pydantic
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-LGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
@@ -33,13 +29,13 @@ Pydantic
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
 This addon provides a utility method that can be used to map odoo record
-to a `Pydantic model <https://pydantic-docs.helpmanual.io/>`__.
+to a `Pydantic model <https://docs.pydantic.dev/>`__.
 
 If you need to make your Pydantic models extendable at runtime, takes a
 look at the python package
 `extendable-pydantic <https://pypi.org/project/extendable_pydantic/>`__
-and the odoo addon
-`extendable <https://github.com/acsone/odoo-addon-extendable>`__
+and the `odoo addon
+extendable <https://pypi.org/project/odoo-addon-extendable>`__
 
 **Table of contents**
 
@@ -51,9 +47,30 @@ Usage
 
 To support pydantic models that map to Odoo models, Pydantic model
 instances can be created from arbitrary odoo model instances by mapping
-fields from odoo models to fields defined by the pydantic model. To ease
-the mapping, the addon provide a utility class
-odoo.addons.pydantic.utils.GenericOdooGetter.
+fields from odoo models to fields defined by the pydantic model.
+
+To ease the mapping, the addon provide 2 utility classes:
+
+-  Using ``pydantic>2.0``,
+   ``odoo.addons.pydantic.utils.PydanticOdooBaseModel``:
+
+.. code:: python
+
+   from odoo.addons.pydantic.utils import PydanticOdooBaseModel
+
+
+   class Group(PydanticOdooBaseModel):
+       name: str
+
+   class UserInfo(PydanticOdooBaseModel):
+       name: str
+       groups: List[Group] = pydantic.Field(alias="groups_id")
+
+   user = self.env.user
+   user_info = UserInfo.from_orm(user)
+
+-  Using ``pydantic<2.0``,
+   ``odoo.addons.pydantic.utils.GenericOdooGetter``:
 
 .. code:: python
 
@@ -78,9 +95,8 @@ odoo.addons.pydantic.utils.GenericOdooGetter.
    user = self.env.user
    user_info = UserInfo.from_orm(user)
 
-See the official `Pydantic
-documentation <https://pydantic-docs.helpmanual.io/>`__ to discover all
-the available functionalities.
+See the official `Pydantic documentation <https://docs.pydantic.dev/>`__
+to discover all the available functionalities.
 
 Known issues / Roadmap
 ======================
@@ -112,8 +128,9 @@ Authors
 Contributors
 ------------
 
-- Laurent Mignon <laurent.mignon@acsone.eu>
-- Tris Doan <tridm@trobz.com>
+-  Laurent Mignon <laurent.mignon@acsone.eu>
+-  Tris Doan <tridm@trobz.com>
+-  Pierre Verkest <pierre@verkest.fr>
 
 Maintainers
 -----------
