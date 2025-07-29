@@ -1,13 +1,13 @@
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
-from fastapi.exceptions import HTTPException
-
-from ..dependencies import (
+from odoo.addons.fastapi_auth_api_key.dependencies import (
     authenticated_auth_api_key,
     authenticated_env_by_auth_api_key,
     authenticated_partner_by_api_key,
 )
+
+from fastapi.exceptions import HTTPException
 
 
 @tagged("-at_install", "post_install")
@@ -78,11 +78,11 @@ class TestFastapiAuthApiKey(TransactionCase):
         with self.assertRaises(HTTPException) as error:
             authenticated_auth_api_key("404", self.demo_env, self.demo_endpoint)
         self.assertEqual(error.exception.detail, ("The key 404 is not allowed",))
-        # TODO enable this when we know how to filter keys based
-        # on endpoint's api key group.
         # An exception is raised when unauthorized api key record is found
-        # with self.assertRaises(HTTPException) as error:
-        # authenticated_auth_api_key("not_authorized", self.demo_env)
+        with self.assertRaises(HTTPException) as error:
+            authenticated_auth_api_key(
+                "not_authorized", self.demo_env, self.demo_endpoint
+            )
         self.demo_endpoint.auth_api_key_group_id = (
             self.authorized_api_key.auth_api_key_group_ids[0]
         )

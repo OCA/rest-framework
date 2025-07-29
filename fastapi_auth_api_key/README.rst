@@ -1,5 +1,5 @@
 ====================
-Fastapi Auth Api Key
+Fastapi Auth API Key
 ====================
 
 .. 
@@ -95,8 +95,8 @@ Authors
 Contributors
 ------------
 
--  Matthieu Méquignon <matthieu.mequignon@camptocamp.com>
--  Son Ho <sonhd@trobz.com>
+- Matthieu Méquignon <matthieu.mequignon@camptocamp.com>
+- Son Ho <sonhd@trobz.com>
 
 Other credits
 -------------
