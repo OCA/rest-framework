@@ -1,5 +1,5 @@
 This addon provides a utility method that can be used to map odoo record
-to a [Pydantic model](https://docs.pydantic.dev/).
+to a [Pydantic model (>= v2)](https://docs.pydantic.dev/).
 
 If you need to make your Pydantic models extendable at runtime, takes a
 look at the python package

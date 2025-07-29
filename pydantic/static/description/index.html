@@ -371,7 +371,7 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img alt="License: LGPL-3" src="https://img.shields.io/badge/licence-LGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/rest-framework/tree/18.0/pydantic"><img alt="OCA/rest-framework" src="https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/rest-framework-18-0/rest-framework-18-0-pydantic"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&amp;target_branch=18.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
 <p>This addon provides a utility method that can be used to map odoo record
-to a <a class="reference external" href="https://docs.pydantic.dev/">Pydantic model</a>.</p>
+to a <a class="reference external" href="https://docs.pydantic.dev/">Pydantic model (&gt;= v2)</a>.</p>
 <p>If you need to make your Pydantic models extendable at runtime, takes a
 look at the python package
 <a class="reference external" href="https://pypi.org/project/extendable_pydantic/">extendable-pydantic</a>
@@ -396,11 +396,8 @@ extendable</a></p>
 <p>To support pydantic models that map to Odoo models, Pydantic model
 instances can be created from arbitrary odoo model instances by mapping
 fields from odoo models to fields defined by the pydantic model.</p>
-<p>To ease the mapping, the addon provide 2 utility classes:</p>
-<ul class="simple">
-<li>Using <tt class="docutils literal">pydantic&gt;2.0</tt>,
-<tt class="docutils literal">odoo.addons.pydantic.utils.PydanticOdooBaseModel</tt>:</li>
-</ul>
+<p>To ease the mapping, the addon provide an utility class (using
+<tt class="docutils literal">pydantic&gt;2.0</tt>) <tt class="docutils literal">odoo.addons.pydantic.utils.PydanticOdooBaseModel</tt>:</p>
 <pre class="code python literal-block">
 <span class="kn">from</span><span class="w"> </span><span class="nn">odoo.addons.pydantic.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticOdooBaseModel</span><span class="w">
 
@@ -411,32 +408,6 @@ fields from odoo models to fields defined by the pydantic model.</p>
 </span><span class="k">class</span><span class="w"> </span><span class="nc">UserInfo</span><span class="p">(</span><span class="n">PydanticOdooBaseModel</span><span class="p">):</span><span class="w">
 </span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="w">
 </span>    <span class="n">groups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Group</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;groups_id&quot;</span><span class="p">)</span><span class="w">
-
-</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">user</span><span class="w">
-</span><span class="n">user_info</span> <span class="o">=</span> <span class="n">UserInfo</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-</pre>
-<ul class="simple">
-<li>Using <tt class="docutils literal">pydantic&lt;2.0</tt>,
-<tt class="docutils literal">odoo.addons.pydantic.utils.GenericOdooGetter</tt>:</li>
-</ul>
-<pre class="code python literal-block">
-<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span><span class="w">
-</span><span class="kn">from</span><span class="w"> </span><span class="nn">odoo.addons.pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span><span class="w">
-
-</span><span class="k">class</span><span class="w"> </span><span class="nc">Group</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span><span class="w">
-</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="w">
-
-</span>    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span><span class="w">
-</span>        <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="w">
-</span>        <span class="n">getter_dict</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">GenericOdooGetter</span><span class="w">
-
-</span><span class="k">class</span><span class="w"> </span><span class="nc">UserInfo</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span><span class="w">
-</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="w">
-</span>    <span class="n">groups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Group</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;groups_id&quot;</span><span class="p">)</span><span class="w">
-
-</span>    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span><span class="w">
-</span>        <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span><span class="w">
-</span>        <span class="n">getter_dict</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">GenericOdooGetter</span><span class="w">
 
 </span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">user</span><span class="w">
 </span><span class="n">user_info</span> <span class="o">=</span> <span class="n">UserInfo</span><span class="o">.</span><span class="n">from_orm</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
