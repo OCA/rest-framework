@@ -1,9 +1,9 @@
 # Copyright 2024 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-
+import os
 from typing import Annotated
 
-from odoo import SUPERUSER_ID
+from odoo import SUPERUSER_ID, _
 from odoo.api import Environment
 from odoo.exceptions import ValidationError
 
@@ -16,17 +16,20 @@ from fastapi import Depends, status
 from fastapi.exceptions import HTTPException
 from fastapi.security import APIKeyHeader
 
+HTTP_API_KEY_HEADER = os.environ.get("FASTAPI_AUTH_HTTP_API_KEY_HEADER", "HTTP-API-KEY")
+
 
 def authenticated_auth_api_key(
-    key: Annotated[str, Depends(APIKeyHeader(name="HTTP-API-KEY"))],
+    key: Annotated[str, Depends(APIKeyHeader(name=HTTP_API_KEY_HEADER))],
     env: Annotated[Environment, Depends(odoo_env)],
     endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
 ) -> AuthApiKey:
     if not key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No HTTP-API-KEY provided",
-            headers={"WWW-Authenticate": "HTTP-API-KEY"},
+            detail=_("Missing %(HTTP_API_KEY_HEADER)s header")
+            % {"HTTP_API_KEY_HEADER": HTTP_API_KEY_HEADER},
+            headers={"WWW-Authenticate": HTTP_API_KEY_HEADER},
         )
     admin_env = Environment(env.cr, SUPERUSER_ID, {})
     try:
@@ -35,14 +38,17 @@ def authenticated_auth_api_key(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=error.args,
-            headers={"WWW-Authenticate": "HTTP-API-KEY"},
+            headers={"WWW-Authenticate": HTTP_API_KEY_HEADER},
         ) from error
     # Ensure the api key is authorized for the current endpoint.
-    if auth_api_key not in endpoint.sudo().auth_api_key_group_id.auth_api_key_ids:
+    if (
+        endpoint.sudo().auth_api_key_group_id
+        and auth_api_key not in endpoint.sudo().auth_api_key_group_id.auth_api_key_ids
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-            headers={"WWW-Authenticate": "HTTP-API-KEY"},
+            detail=_("Unauthorized"),
+            headers={"WWW-Authenticate": HTTP_API_KEY_HEADER},
         )
     return auth_api_key
 

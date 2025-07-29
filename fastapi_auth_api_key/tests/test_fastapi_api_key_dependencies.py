@@ -1,13 +1,13 @@
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
-from fastapi.exceptions import HTTPException
-
-from ..dependencies import (
+from odoo.addons.fastapi_auth_api_key.dependencies import (
     authenticated_auth_api_key,
     authenticated_env_by_auth_api_key,
     authenticated_partner_by_api_key,
 )
+
+from fastapi.exceptions import HTTPException
 
 
 @tagged("-at_install", "post_install")
@@ -16,7 +16,6 @@ class TestFastapiAuthApiKey(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
-        # Is it valid? We need an env without superpowers
         demo_user = cls.env.ref("base.user_demo")
         cls.demo_env = demo_user.with_user(demo_user).env
         cls.demo_endpoint = cls.env["fastapi.endpoint"].create(
@@ -68,28 +67,40 @@ class TestFastapiAuthApiKey(TransactionCase):
                 "auth_api_key_ids": [(6, 0, cls.authorized_api_key.ids)],
             }
         )
+        cls.demo_endpoint.auth_api_key_group_id = cls.authorized_api_key_group
 
-    def test_authenticated_auth_api_key(self):
+    def test_authenticated_auth_api_key_no_api_key(self):
         # An exception is raised when no api key is used
         with self.assertRaises(HTTPException) as error:
             authenticated_auth_api_key(False, self.demo_env, self.demo_endpoint)
-        self.assertEqual(error.exception.detail, "No HTTP-API-KEY provided")
+        self.assertEqual(error.exception.detail, "Missing HTTP-API-KEY header")
+
+    def test_authenticated_auth_api_key_no_api_key_found(self):
         # An exception is raised when no api key record is found
         with self.assertRaises(HTTPException) as error:
             authenticated_auth_api_key("404", self.demo_env, self.demo_endpoint)
         self.assertEqual(error.exception.detail, ("The key 404 is not allowed",))
-        # TODO enable this when we know how to filter keys based
-        # on endpoint's api key group.
+
+    def test_authenticated_auth_api_key_unauthorized_key(self):
         # An exception is raised when unauthorized api key record is found
-        # with self.assertRaises(HTTPException) as error:
-        # authenticated_auth_api_key("not_authorized", self.demo_env)
-        self.demo_endpoint.auth_api_key_group_id = (
-            self.authorized_api_key.auth_api_key_group_ids[0]
-        )
+        with self.assertRaisesRegex(HTTPException, r"Unauthorized"):
+            authenticated_auth_api_key(
+                "unauthorized_key", self.demo_env, self.demo_endpoint
+            )
+
+    def test_authenticated_auth_api_key(self):
         result_key = authenticated_auth_api_key(
-            self.authorized_api_key.key, self.demo_env, self.demo_endpoint
+            "authorized_key", self.demo_env, self.demo_endpoint
         )
         self.assertEqual(result_key, self.authorized_api_key)
+
+    def test_authenticated_auth_api_key_without_group(self):
+        # test with no group set unauthorized is allow to access
+        self.demo_endpoint.auth_api_key_group_id = False
+        result_key = authenticated_auth_api_key(
+            "unauthorized_key", self.demo_env, self.demo_endpoint
+        )
+        self.assertEqual(result_key, self.unauthorized_api_key)
 
     def test_authenticated_partner_by_api_key(self):
         result_partner = authenticated_partner_by_api_key(self.authorized_api_key)

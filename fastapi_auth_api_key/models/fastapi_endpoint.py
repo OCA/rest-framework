@@ -7,4 +7,7 @@ from odoo import fields, models
 class FastapiEndpoint(models.Model):
     _inherit = "fastapi.endpoint"
 
-    auth_api_key_group_id = fields.Many2one("auth.api.key.group")
+    auth_api_key_group_id = fields.Many2one(
+        "auth.api.key.group",
+        help="If not set, all 'auth.api.key' are allowed to access to endpoints",
+    )
