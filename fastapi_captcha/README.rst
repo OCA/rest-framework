@@ -31,7 +31,7 @@ Fastapi Captcha
 This module provides a simple way to protect several fastapi endpoints
 routes with a captcha.
 
-It curreently supports the following captcha providers:
+It currently supports the following captcha providers:
 
 - `Google reCAPTCHA <https://www.google.com/recaptcha>`__
 - `hCaptcha <https://www.hcaptcha.com/>`__
@@ -48,6 +48,9 @@ Usage
 Check the ``Use Captcha`` checkbox in your FastAPI endpoint to enable
 captcha validation, then enter your captcha provider, secret key and an
 array of route url regex.
+
+Every matching route will now require a valid captcha token in the
+X-Captcha-Token header.
 
 Bug Tracker
 ===========
