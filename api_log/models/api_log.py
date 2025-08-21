@@ -152,10 +152,16 @@ class APILog(models.Model):
         log_request_values.update(override_log_values or {})
         return self.sudo().create(log_request_values)
 
+    def _inject_log_entry(self, values_dict):
+        values_dict["API-Log-Entry-ID"] = str(self.id)
+        return values_dict
+
     def _prepare_log_response(self, response):
+        self._inject_log_entry(response.headers)
+        headers_dict = self._headers_to_dict(response.headers)
         return {
             "response_status_code": response.status_code,
-            "response_headers": self._headers_to_dict(response.headers),
+            "response_headers": headers_dict,
             "response_body": response.data,
             "response_date": fields.Datetime.now(),
             "response_time": self._current_time(),
@@ -166,8 +172,10 @@ class APILog(models.Model):
         return self.sudo().write(log_response_values)
 
     def _prepare_log_exception(self, exception):
+        exception.headers = getattr(exception, "headers", {})
         values = {
             "stack_trace": "".join(format_exception(exception)),
+            "response_headers": self._inject_log_entry(exception.headers),
             "response_body": str(exception),
             "response_date": fields.Datetime.now(),
             "response_time": self._current_time(),

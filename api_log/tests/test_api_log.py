@@ -41,3 +41,11 @@ class TestAPILog(Common):
         log.log_response(response)
 
         self.assertEqual(log.response_status_code, 200)
+        self.assertEqual(log.response_headers["API-Log-Entry-ID"], str(log.id))
+        self.assertEqual(response.headers["API-Log-Entry-ID"], str(log.id))
+
+    def test_log_exception(self):
+        log = self.log_model.create({})
+        log.log_exception(Exception())
+
+        self.assertEqual(log.response_headers["API-Log-Entry-ID"], str(log.id))
