@@ -48,6 +48,10 @@ class FastapiEndpoint(models.Model):
         "captcha service.",
     )
 
+    captcha_custom_verify_url = fields.Char(
+        help="Custom URL to use for the captcha verification",
+    )
+
     @property
     def _server_env_fields(self):
         fields = getattr(super(), "_server_env_fields", None) or {}
@@ -180,16 +184,19 @@ class FastapiEndpoint(models.Model):
             "apiKey": secret_key,
             "payload": captcha_response,
         }
-        response = requests.post(
-            "https://eu.altcha.org/api/v1/challenge/verify",
-            data=data,
-            timeout=10,
+        url = (
+            self.captcha_custom_verify_url
+            or "https://eu.altcha.org/api/v1/challenge/verify"
         )
+        response = requests.post(url, data=data, timeout=10)
         result = response.json()
         success = result.get("verified", False)
         if not success:
             error = result.get("error", "?")
-            raise AccessError(_("Altcha validation failed: %s") % error)
+            raise AccessError(
+                _("Altcha (%(url)s) validation failed: %(error)s")
+                % {"url": url, "error": error}
+            )
 
     @api.model
     def _fastapi_app_fields(self):

@@ -31,6 +31,13 @@ class CaptchaMiddleware(BaseHTTPMiddleware):
             raise AccessError(
                 _("Captcha token not found in headers"),
             )
-        endpoint.validate_captcha(token)
+        try:
+            endpoint.validate_captcha(token)
+        except AccessError as e:
+            raise e
+        except IOError as e:
+            raise AccessError(
+                _("Captcha validation failed: %s") % str(e),
+            ) from e
         response = await call_next(request)
         return response
