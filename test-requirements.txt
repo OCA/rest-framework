@@ -1,2 +1,4 @@
 odoo_test_helper
 httpx
+odoo-addon-fastapi_auth_jwt@git+https://github.com/OCA/rest-framework.git@refs/pull/490/head#subdirectory=fastapi_auth_jwt
+odoo-addon-auth_jwt_demo@git+https://github.com/OCA/server-auth.git@refs/pull/780/head#subdirectory=auth_jwt_demo
