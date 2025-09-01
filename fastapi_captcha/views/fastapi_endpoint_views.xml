@@ -28,6 +28,10 @@
                         attrs="{'required': [('use_captcha', '=', True)]}"
                     />
                     <field name="captcha_routes_regex" />
+                    <field
+                        name="captcha_custom_verify_url"
+                        attrs="{'invisible': [('captcha_type', '!=', 'altcha')]}"
+                    />
                     <field name="captcha_minimum_score" />
                 </group>
             </group>

@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import requests
 
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 from odoo.addons.fastapi.tests.common import FastAPITransactionCase
 
@@ -25,6 +25,22 @@ class FastAPICaptcha(FastAPITransactionCase):
         cls.endpoint.captcha_type = "recaptcha"
         cls.endpoint.captcha_secret_key = "test_secret"
         cls.default_fastapi_app = cls.endpoint._get_app()
+
+    def test_no_secret_key(self):
+        self.endpoint.captcha_secret_key = False
+        with self._create_test_client() as test_client:
+            with self.assertRaisesRegex(
+                UserError,
+                "No secret key found for this endpoint",
+            ):
+                test_client.get("/demo/", headers={"X-Captcha-Token": "valid"})
+
+    def test_invalid_regex(self):
+        with self.assertRaisesRegex(
+            ValidationError,
+            r"Invalid regex for captcha routes: /route/\( ",
+        ):
+            self.endpoint.captcha_routes_regex = r"/route/("
 
     def test_missing_header(self):
         with self._create_test_client() as test_client:
@@ -95,6 +111,7 @@ class FastAPICaptcha(FastAPITransactionCase):
 
     def test_invalid_header_hcaptcha(self):
         self.endpoint.captcha_type = "hcaptcha"
+        self.endpoint.captcha_minimum_score = 0.8
         with patch(
             "odoo.addons.fastapi_captcha.models.fastapi_endpoint.requests.post",
             return_value=requests.Response(),
@@ -120,6 +137,7 @@ class FastAPICaptcha(FastAPITransactionCase):
 
     def test_valid_header_hcaptcha(self):
         self.endpoint.captcha_type = "hcaptcha"
+        self.endpoint.captcha_minimum_score = 0.8
         with patch(
             "odoo.addons.fastapi_captcha.models.fastapi_endpoint.requests.post",
             return_value=requests.Response(),
@@ -136,6 +154,132 @@ class FastAPICaptcha(FastAPITransactionCase):
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 self.assertEqual(response.json(), {"Hello": "World"})
 
+                response = test_client.get(
+                    "/demo/who_ami", headers={"X-Captcha-Token": "valid"}
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                partner = self.default_fastapi_authenticated_partner
+                self.assertDictEqual(
+                    response.json(),
+                    {
+                        "name": partner.name,
+                        "display_name": partner.display_name,
+                    },
+                )
+
+    def test_valid_header_low_score_hcaptcha(self):
+        self.endpoint.captcha_type = "hcaptcha"
+        self.endpoint.captcha_minimum_score = 0.8
+        with patch(
+            "odoo.addons.fastapi_captcha.models.fastapi_endpoint.requests.post",
+            return_value=requests.Response(),
+        ) as mock_post:
+            mock_post.return_value.status_code = 200
+            mock_post.return_value.json = lambda: {
+                "success": True,
+                "score": 0.6,
+                "score_reason": "low-confidence",
+            }
+            with self._create_test_client() as test_client:
+                with self.assertRaisesRegex(
+                    AccessError,
+                    r"Hcaptcha validation failed: score 0.6 < 0.8 \(low-confidence\)",
+                ):
+                    test_client.get("/demo/", headers={"X-Captcha-Token": "valid"})
+
+    def test_invalid_header_altcha(self):
+        self.endpoint.captcha_type = "altcha"
+        with patch(
+            "odoo.addons.fastapi_captcha.models.fastapi_endpoint.requests.post",
+            return_value=requests.Response(),
+        ) as mock_post:
+            mock_post.return_value.status_code = 200
+            mock_post.return_value.json = lambda: {
+                "verified": False,
+                "error": "invalid-input-response",
+            }
+            with self._create_test_client() as test_client:
+                with self.assertRaisesRegex(
+                    AccessError,
+                    r"Altcha \(https://eu.altcha.org/api/v1/challenge/verify\) "
+                    "validation failed: invalid-input-response",
+                ):
+                    test_client.get("/demo/", headers={"X-Captcha-Token": "invalid"})
+
+                self.assertGreaterEqual(mock_post.call_count, 1)
+                self.assertEqual(
+                    mock_post.call_args.args[0],
+                    "https://eu.altcha.org/api/v1/challenge/verify",
+                )
+
+                with self.assertRaisesRegex(
+                    AccessError,
+                    r"Altcha \(https://eu.altcha.org/api/v1/challenge/verify\) "
+                    "validation failed: invalid-input-response",
+                ):
+                    test_client.get(
+                        "/demo/who_ami", headers={"X-Captcha-Token": "invalid"}
+                    )
+
+    def test_valid_header_altcha(self):
+        self.endpoint.captcha_type = "altcha"
+        with patch(
+            "odoo.addons.fastapi_captcha.models.fastapi_endpoint.requests.post",
+            return_value=requests.Response(),
+        ) as mock_post:
+            mock_post.return_value.status_code = 200
+            mock_post.return_value.json = lambda: {
+                "verified": True,
+            }
+            with self._create_test_client() as test_client:
+                response = test_client.get(
+                    "/demo/", headers={"X-Captcha-Token": "valid"}
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(response.json(), {"Hello": "World"})
+
+                self.assertGreaterEqual(mock_post.call_count, 1)
+                self.assertEqual(
+                    mock_post.call_args.args[0],
+                    "https://eu.altcha.org/api/v1/challenge/verify",
+                )
+                response = test_client.get(
+                    "/demo/who_ami", headers={"X-Captcha-Token": "valid"}
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                partner = self.default_fastapi_authenticated_partner
+                self.assertDictEqual(
+                    response.json(),
+                    {
+                        "name": partner.name,
+                        "display_name": partner.display_name,
+                    },
+                )
+
+    def test_valid_header_custom_url_altcha(self):
+        self.endpoint.captcha_type = "altcha"
+        self.endpoint.captcha_custom_verify_url = "https://custom.exemple.org/verify"
+
+        with patch(
+            "odoo.addons.fastapi_captcha.models.fastapi_endpoint.requests.post",
+            return_value=requests.Response(),
+        ) as mock_post:
+            mock_post.return_value.status_code = 200
+            mock_post.return_value.json = lambda: {
+                "verified": True,
+            }
+            with self._create_test_client() as test_client:
+                response = test_client.get(
+                    "/demo/", headers={"X-Captcha-Token": "valid"}
+                )
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(response.json(), {"Hello": "World"})
+
+                self.assertGreaterEqual(mock_post.call_count, 1)
+                self.assertEqual(
+                    mock_post.call_args.args[0],
+                    "https://custom.exemple.org/verify",
+                )
                 response = test_client.get(
                     "/demo/who_ami", headers={"X-Captcha-Token": "valid"}
                 )
