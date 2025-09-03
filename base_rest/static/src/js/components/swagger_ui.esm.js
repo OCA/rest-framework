@@ -58,6 +58,7 @@ class SwaggerUI extends Component {
 }
 
 (function () {
+    // eslint-disable-next-line
     "use strict";
 
     whenReady(() => {

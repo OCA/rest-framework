@@ -60,7 +60,7 @@
 
                 <script
                     type="text/javascript"
-                    src="/base_rest/static/src/js/components/swagger_ui.js"
+                    src="/base_rest/static/src/js/components/swagger_ui.esm.js"
                 />
             </t>
             <t t-set="head" t-value="head" />

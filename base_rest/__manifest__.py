@@ -20,8 +20,7 @@
     "assets": {
         "web.assets_frontend": [
             "base_rest/static/src/scss/base_rest.scss",
-            "base_rest/static/src/js/swagger_ui.js",
-            "base_rest/static/src/js/swagger.js",
+            "base_rest/static/src/js/components/swagger_ui.esm.js",
         ],
     },
     "external_dependencies": {
