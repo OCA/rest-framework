@@ -54,13 +54,13 @@ def authenticated_auth_api_key(
 
 
 def authenticated_partner_by_api_key(
-    auth_api_key: Annotated[AuthApiKey, Depends(authenticated_auth_api_key)]
+    auth_api_key: Annotated[AuthApiKey, Depends(authenticated_auth_api_key)],
 ) -> Partner:
     return auth_api_key.user_id.partner_id
 
 
 def authenticated_env_by_auth_api_key(
-    auth_api_key: Annotated[AuthApiKey, Depends(authenticated_auth_api_key)]
+    auth_api_key: Annotated[AuthApiKey, Depends(authenticated_auth_api_key)],
 ) -> Environment:
     # set api key id in context
     return auth_api_key.with_user(auth_api_key.user_id).env
