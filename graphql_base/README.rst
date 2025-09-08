@@ -44,9 +44,9 @@ Usage
 
 To use this module, you need to
 
--  create your graphene schema
--  create your controller to expose your GraphQL endpoint, and
-   optionally a GraphiQL IDE.
+- create your graphene schema
+- create your controller to expose your GraphQL endpoint, and optionally
+  a GraphiQL IDE.
 
 This module does not attempt to expose the whole Odoo object model. This
 could be the purpose of another module based on this one. We believe
@@ -56,12 +56,12 @@ exposed and needs to be tested when upgrading Odoo.
 
 To start working with this module, we recommend the following approach:
 
--  Learn `GraphQL basics <https://graphql.org/learn/>`__
--  Learn `graphene <https://graphene-python.org/>`__, the python library
-   used to create GraphQL schemas and resolvers.
--  Examine the ``graphql_demo`` module in this repo, copy it, adapt the
-   controller to suit your needs (routes, authentication methods).
--  Start building your own schema and resolver.
+- Learn `GraphQL basics <https://graphql.org/learn/>`__
+- Learn `graphene <https://graphene-python.org/>`__, the python library
+  used to create GraphQL schemas and resolvers.
+- Examine the ``graphql_demo`` module in this repo, copy it, adapt the
+  controller to suit your needs (routes, authentication methods).
+- Start building your own schema and resolver.
 
 Building your schema
 --------------------
@@ -71,11 +71,11 @@ The schema can be built using native graphene types. An
 convenience. It is a graphene ``ObjectType`` with a default attribute
 resolver which:
 
--  converts False to None (except for Boolean types), to avoid Odoo's
-   weird ``False`` strings being rendered as json ``"false"``;
--  adds the user timezone to Datetime fields;
--  raises an error if an attribute is absent to avoid field name typing
-   errors.
+- converts False to None (except for Boolean types), to avoid Odoo's
+  weird ``False`` strings being rendered as json ``"false"``;
+- adds the user timezone to Datetime fields;
+- raises an error if an attribute is absent to avoid field name typing
+  errors.
 
 Creating GraphQL controllers
 ----------------------------

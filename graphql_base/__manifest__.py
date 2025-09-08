@@ -11,7 +11,7 @@
     "website": "https://github.com/OCA/rest-framework",
     "depends": ["base"],
     "data": ["views/graphiql.xml"],
-    "external_dependencies": {"python": ["graphene", "graphql_server"]},
+    "external_dependencies": {"python": ["graphene", "graphql_server==3.0.0b7"]},
     "development_status": "Production/Stable",
     "maintainers": ["sbidoul"],
     "installable": True,
