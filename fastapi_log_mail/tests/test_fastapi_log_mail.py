@@ -15,10 +15,8 @@ from fastapi import status
 
 @unittest.skipIf(os.getenv("SKIP_HTTP_CASE"), "TestFastapiLogMail skipped")
 class TestFastapiLogMail(Common, MailCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.fastapi_demo_app.api_log_mail_exception_activity_type_id = cls.env[
+    def _set_mail_exception_activity_type(self, app):
+        app.api_log_mail_exception_activity_type_id = app.env[
             "mail.activity.type"
         ].create(
             {
@@ -26,12 +24,12 @@ class TestFastapiLogMail(Common, MailCase):
                 "res_model": "api.log",
             }
         )
-        cls.fastapi_demo_app.api_log_mail_exception_template_id = cls.env[
-            "mail.template"
-        ].create(
+
+    def _set_mail_exception_template(self, app):
+        app.api_log_mail_exception_template_id = app.env["mail.template"].create(
             {
                 "name": "Test exception email template",
-                "model_id": cls.env.ref("api_log.model_api_log").id,
+                "model_id": app.env.ref("api_log.model_api_log").id,
             }
         )
 
@@ -40,7 +38,8 @@ class TestFastapiLogMail(Common, MailCase):
         when an exception occurs an activity of the configured type is created.
         """
         # Arrange
-        app = self.fastapi_demo_app
+        app = self._get_log_env_records(self.fastapi_demo_app)
+        self._set_mail_exception_activity_type(app)
         activity_type = app.api_log_mail_exception_activity_type_id
         route = (
             "/fastapi_demo/test/demo/exception?"
@@ -65,7 +64,8 @@ class TestFastapiLogMail(Common, MailCase):
         when an exception occurs an email is sent using the configured template.
         """
         # Arrange
-        app = self.fastapi_demo_app
+        app = self._get_log_env_records(self.fastapi_demo_app)
+        self._set_mail_exception_template(app)
         mail_template = app.api_log_mail_exception_template_id
         route = (
             "/fastapi_demo/test/demo/exception?"
