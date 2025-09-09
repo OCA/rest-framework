@@ -126,4 +126,4 @@ class TestFastapiLog(Common):
         # Assert
         log = capturer.records[-1]
         self.assertEqual(log.collection_ref, endpoint)
-        self.assertIn(log, endpoint.log_ids)
+        self.assertIn(log, log.collection_ref.log_ids)
