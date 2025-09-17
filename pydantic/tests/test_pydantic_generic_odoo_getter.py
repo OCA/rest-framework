@@ -14,7 +14,6 @@ class OdooBaseModel(PydanticOrmBaseModel):
 
 class PartnerModel(OdooBaseModel):
     name: str
-    date: datetime.date | None = None
 
 
 class UserFlatModel(OdooBaseModel):
@@ -38,6 +37,11 @@ class UserDetailsModel(UserModel):
     write_date: datetime.datetime
 
 
+class CurrencyRateModel(OdooBaseModel):
+    name: datetime.date | None = None
+    rate: float
+
+
 class CommonPydanticCase(TransactionCase):
     @classmethod
     def setUpClass(cls):
@@ -46,28 +50,29 @@ class CommonPydanticCase(TransactionCase):
         cls.user_demo.action_id = False
         cls.user_demo.signature = False
         cls.user_demo.share = False
+        cls.currency_eur = cls.env.ref("base.USD")
+        cls.currency_rate = cls.env.ref("base.rateUSD")
 
 
 class TestGenericOdooGetterPydanticV2Case(CommonPydanticCase):
     def test_user_model_serialization(self):
-        self.user_demo.partner_id.date = None
+        self.currency_rate.name = None  # name is a date field
         self.assertEqual(
-            UserModel.model_validate(self.user_demo, from_attributes=True).model_dump(),
+            CurrencyRateModel.model_validate(
+                self.currency_rate, from_attributes=True
+            ).model_dump(),
             {
-                "id": self.user_demo.id,
-                "partner": {
-                    "id": self.user_demo.partner_id.id,
-                    "name": self.user_demo.partner_id.name,
-                    "date": None,
-                },
+                "id": self.currency_rate.id,
+                "name": None,
+                "rate": self.currency_rate.rate,
             },
         )
 
     def test_user_model_serialization_date(self):
-        self.user_demo.partner_id.date = fields.Date.today()
+        self.currency_rate.name = fields.Date.today()  # name is a date field
         self.assertEqual(
-            UserModel.model_validate(self.user_demo).partner.date,
-            self.user_demo.partner_id.date,
+            CurrencyRateModel.model_validate(self.currency_rate).name,
+            self.currency_rate.name,
         )
 
     def test_user_model_details_serialization_datetime(self):
@@ -91,7 +96,6 @@ class TestGenericOdooGetterPydanticV2Case(CommonPydanticCase):
                 "partner": {
                     "id": self.user_demo.partner_id.id,
                     "name": self.user_demo.partner_id.name,
-                    "date": None,
                 },
                 "groups": [
                     {
