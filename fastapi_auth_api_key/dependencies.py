@@ -3,7 +3,7 @@
 import os
 from typing import Annotated
 
-from odoo import SUPERUSER_ID, _
+from odoo import SUPERUSER_ID
 from odoo.api import Environment
 from odoo.exceptions import ValidationError
 
@@ -27,7 +27,7 @@ def authenticated_auth_api_key(
     if not key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=_("Missing %(HTTP_API_KEY_HEADER)s header")
+            detail=env._("Missing %(HTTP_API_KEY_HEADER)s header")
             % {"HTTP_API_KEY_HEADER": HTTP_API_KEY_HEADER},
             headers={"WWW-Authenticate": HTTP_API_KEY_HEADER},
         )
@@ -47,7 +47,7 @@ def authenticated_auth_api_key(
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=_("Unauthorized"),
+            detail=env._("Unauthorized"),
             headers={"WWW-Authenticate": HTTP_API_KEY_HEADER},
         )
     return auth_api_key
