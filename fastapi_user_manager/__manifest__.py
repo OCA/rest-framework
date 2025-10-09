@@ -15,8 +15,6 @@
         "pydantic",
     ],
     "data": [
-        "views/users.xml",
-        "views/groups.xml",
         "views/res_users_view.xml",
         "views/fastapi_endpoint_view.xml",
     ],
