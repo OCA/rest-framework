@@ -10,65 +10,72 @@ from odoo.addons.fastapi.dependencies import (
 
 from fastapi import APIRouter, Depends
 
-from ..schemas.schemas import UserSc, UserScUpdate
+from ..schemas.schemas import UserSc, UserScDel, UserScUpdate
 
 # create a router
 user_router = APIRouter(tags=["user"])
 
 
-def create_user(env, data):
-    vals = {
-        "name": data.name,
-        "login": data.email,
-        "phone": data.phone,
-        "mobile": data.mobile,
-    }
-    user = env["res.users"].create(vals)
-    env["api.user.router"]._post_process_user_creation(user, data.misc)
-    return user
-
-
-@user_router.post("/user")
-def update_user_data(
-    data: UserSc,
+@user_router.post("/user/create")
+def create_user_data(
+    data: list[UserSc],
     env: Annotated[api.Environment, Depends(odoo_env)],
     partner: Annotated[api.Environment, Depends(authenticated_partner_env)],
-    # user: Annotated[ResUsers, Depends(odoo_env)],
-) -> UserSc:
+) -> dict:
+    """
+    create user personal data of authenticated user
+    """
+
+    result = {}
+    for d in data:
+        user = env["res.users"].search(
+            ["|", ("login", "=", d.login), ("login", "=", d.email)]
+        )
+        if user:
+            result[f"{user.name}"] = "No_modif"
+        else:
+            user = env["api.user.router"].create_user(d)
+            result[f"{user.name}"] = "New ok"
+
+    return result
+
+
+@user_router.post("/user/update")
+def update_user_data(
+    data: UserScUpdate,
+    env: Annotated[api.Environment, Depends(odoo_env)],
+    partner: Annotated[api.Environment, Depends(authenticated_partner_env)],
+):
     """
     update user personal data of authenticated user
     """
-    ##### /!\ Doit on chercher l'utilisateur via le nom et l'email 
-    ##### ou via le mail seulement ?
-    ##### il me semble que cela est spécifique au projet
-    ##### je pense qu'il vaudrait mieux faire une methode spécifique
-    ##### de recherche à surchager dans le projet
-    user = env["res.users"].search(
-        [("name", "=", data.name), ("email", "=", data.email)]
-    )
-    if user:
-        return UserSc.from_res_user(user)
+    # UserScUpdate.to_user_vals(data)
+    # helper = env["api.user.router"].new({"user": user})
+    updated_user = env["api.user.router"]._update_user(data)
+    if updated_user:
+        return "Update OK"
     else:
-        user = create_user(env, data)
-        return UserSc.from_res_user(user)
-    # helper = env["api.user.router"].new()
-    # user = helper.create(data)
-    # return UserSc.from_res_user(user)
+        return "No update, no user found"
+    #
 
 
-# def update_user_data(
-#     data: UserScUpdate,
-#     env: Annotated[api.Environment, Depends(odoo_env)],
-#     # env: Annotated[api.Environment, Depends(authenticated_partner_env)],
-#     # user: Annotated[ResUsers, Depends(odoo_env)],
-# ) -> ResUsers:
-#     """
-#     update user personal data of authenticated user
-#     """
-#     UserScUpdate.to_user_vals(data)
-#     helper = env["api.user.router"].new({"user": user})
-#     updated_user = helper._update_user(data)
-#     return UserSc.from_res_user(updated_user)
+@user_router.post("/user/archive")
+def archive_user_data(
+    data: UserScDel,
+    env: Annotated[api.Environment, Depends(odoo_env)],
+    partner: Annotated[api.Environment, Depends(authenticated_partner_env)],
+):
+    """ """
+    user_to_del = env["res.users"].search(
+        [
+            ("login", "=", data.login),
+        ]
+    )
+    if user_to_del:
+        user_to_del.active = False
+        return "Archived user ok"
+    else:
+        return "Error"
 
 
 class ApiUserRouter(models.AbstractModel):
@@ -78,66 +85,29 @@ class ApiUserRouter(models.AbstractModel):
     # user = fields.Many2one(comodel_name="res.users")
 
     def _update_user(self, data: UserScUpdate) -> ResUsers:
-        self.ensure_one()
+        user = self.env["res.users"].search([("login", "=", data.login)])
         values = self._get_user_values(data)
-        user = self.user
         user.write(values)
         # self._handle_shopinvader_customer_opt_in(data)
         return user
 
-    def _create_user(self, data: UserSc) -> ResUsers:
-        self.ensure_one()
-        user = self.env["res.users"].search(
-            [("name", "=", data.name), ("email", "=", data.email)]
-        )
-        if user:
-            return user
-        else:
-            user = create_user(self.env, data)
-            return user
+    def create_user(self, data: UserSc):
+        vals = {
+            "name": data.name,
+            "login": data.email,
+            "phone": data.phone,
+            "mobile": data.mobile,
+        }
+        user = self.env["res.users"].create(vals)
+        user = self._post_process_user_creation(user, data.misc)
+        return user
 
     def _post_process_user_creation(self, user, misc):
         """inherit it to adapt to your needs"""
-        pass
+        user = user.write(misc)
+        return user
 
-    # def _get_user_values(self, data: CustomerUpdate) -> dict:
-    #     values = data.to_user_vals()
-    #     lang_id = data.lang_id
-    #     if bool(lang_id):
-    #         values["lang"] = self.env["res.lang"].browse(lang_id).code
-    #     return values
-
-
-# @user_router.get("/users", response_model=list[UserInfo])
-# def get_users(env: Annotated[Environment, Depends(odoo_env)]) -> list[UserInfo]:
-#     return [
-#             UserInfo(name=user.name, email=user.email or "")
-#             for user in env["res.users"].search([])
-#         ]
-
-
-# @customer_router.get("/customer")
-# def get_customer_data(
-#     partner: Annotated[ResPartner, Depends(authenticated_partner)],
-# ) -> Customer:
-#     """
-#     Get customer personal data of authenticated user
-#     """
-#     return Customer.from_res_partner(partner)
-
-
-# @customer_router.post(
-#     "/customer",
-# )
-# def update_customer_data(
-#     data: CustomerUpdate,
-#     env: Annotated[api.Environment, Depends(authenticated_partner_env)],
-#     partner: Annotated[ResPartner, Depends(authenticated_partner)],
-# ) -> Customer:
-#     """
-#     update customer personal data of authenticated user
-#     """
-#     CustomerUpdate.to_res_partner_vals(data)
-#     helper = env["shopinvader_api_customer.router.helper"].new({"partner": partner})
-#     updated_partner = helper._update_shopinvader_customer(data)
-#     return Customer.from_res_partner(updated_partner)
+    def _get_user_values(self, data: UserScUpdate):
+        """inherit it to adapt to your needs"""
+        values = data.misc
+        return values

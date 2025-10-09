@@ -86,7 +86,7 @@ def api_key_based_authenticated_partner_impl(
         env["res.users"]
         .sudo()
         .search([("api_key_user", "=", api_key)], limit=1)
-        .parner_id
+        .partner_id
     )
     if not partner:
         raise HTTPException(
