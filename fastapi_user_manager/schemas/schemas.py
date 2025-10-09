@@ -45,5 +45,4 @@ class UserSc(StrictExtendableBaseModel):
             name=odoo_rec.name or None,
             phone=odoo_rec.phone or None,
             mobile=odoo_rec.mobile or None,
-            misc=odoo_rec.misc or None,
         )
