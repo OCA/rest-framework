@@ -17,5 +17,6 @@
     "data": [
         "views/res_users_view.xml",
         "views/fastapi_endpoint_view.xml",
+        "data/endpoint.xml",
     ],
 }

@@ -23,7 +23,7 @@ class FastapiEndpoint(models.Model):
     _inherit = "fastapi.endpoint"
 
     app: str = fields.Selection(
-        selection_add=[("user_manager", "User manger")],
+        selection_add=[("user_manager", "User manager")],
         ondelete={"user_manager": "cascade"},
     )
 

@@ -1,0 +1,9 @@
+<odoo>
+    <record id="user_manager_endpoint" model="fastapi.endpoint">
+        <field name="name">User Manager</field>
+        <field name="app">user_manager</field>
+        <field name="description">Allow to add, update, delete odoo users from external system</field>
+        <field name="root_path">/user</field>
+        <field name="auth_method">http_basic</field>
+    </record>
+</odoo>

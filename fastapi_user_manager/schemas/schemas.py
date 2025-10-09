@@ -3,7 +3,7 @@ from extendable_pydantic import StrictExtendableBaseModel
 
 class UserScUpdate(StrictExtendableBaseModel, extra="ignore"):
     """
-    used to update customer details
+    used to update user details
     """
 
     name: str | None = None
@@ -27,7 +27,7 @@ class UserScUpdate(StrictExtendableBaseModel, extra="ignore"):
 
 class UserSc(StrictExtendableBaseModel):
     """
-    used to get customer details
+    used to get user details
     """
 
     email: str

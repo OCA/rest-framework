@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends
 from ..schemas.schemas import UserSc, UserScUpdate
 
 # create a router
-user_router = APIRouter(tags=["customer"])
+user_router = APIRouter(tags=["user"])
 
 
 @user_router.post("/user")
