@@ -10,6 +10,7 @@ class UserScUpdate(StrictExtendableBaseModel, extra="ignore"):
     mobile: str | None = None
     opt_in: bool | None = None
     lang_id: int | None = None
+    misc: str | None = None
 
     def to_user_vals(self) -> dict:
         fields = self._get_user_update_fields()
@@ -22,6 +23,7 @@ class UserScUpdate(StrictExtendableBaseModel, extra="ignore"):
             "name",
             "phone",
             "mobile",
+            "misc",
         ]
 
 
@@ -34,6 +36,7 @@ class UserSc(StrictExtendableBaseModel):
     name: str | None = None
     phone: str | None = None
     mobile: str | None = None
+    misc: str | None = None
 
     @classmethod
     def from_res_user(cls, odoo_rec):
@@ -42,4 +45,5 @@ class UserSc(StrictExtendableBaseModel):
             name=odoo_rec.name or None,
             phone=odoo_rec.phone or None,
             mobile=odoo_rec.mobile or None,
+            misc=odoo_rec.misc or None,
         )

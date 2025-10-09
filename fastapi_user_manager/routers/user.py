@@ -23,7 +23,9 @@ def create_user(env, data):
         "phone": data.phone,
         "mobile": data.mobile,
     }
-    return env["res.users"].create(vals)
+    user = env["res.users"].create(vals)
+    env["api.user.router"]._post_process_user_creation(user, data.misc)
+    return user
 
 
 @user_router.post("/user")
@@ -93,6 +95,10 @@ class ApiUserRouter(models.AbstractModel):
         else:
             user = create_user(self.env, data)
             return user
+
+    def _post_process_user_creation(self, user, misc):
+        """inherit it to adapt to your needs"""
+        pass
 
     # def _get_user_values(self, data: CustomerUpdate) -> dict:
     #     values = data.to_user_vals()

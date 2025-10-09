@@ -1,4 +1,4 @@
-<odoo>
+<odoo noupdate="1">
     <record id="user_manager_endpoint" model="fastapi.endpoint">
         <field name="name">User Manager</field>
         <field name="app">user_manager</field>
