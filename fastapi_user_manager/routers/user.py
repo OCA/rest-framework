@@ -16,6 +16,16 @@ from ..schemas.schemas import UserSc, UserScUpdate
 user_router = APIRouter(tags=["user"])
 
 
+def create_user(env, data):
+    vals = {
+        "name": data.name,
+        "login": data.email,
+        "phone": data.phone,
+        "mobile": data.mobile,
+    }
+    return env["res.users"].create(vals)
+
+
 @user_router.post("/user")
 def update_user_data(
     data: UserSc,
@@ -26,19 +36,18 @@ def update_user_data(
     """
     update user personal data of authenticated user
     """
+    ##### /!\ Doit on chercher l'utilisateur via le nom et l'email 
+    ##### ou via le mail seulement ?
+    ##### il me semble que cela est spécifique au projet
+    ##### je pense qu'il vaudrait mieux faire une methode spécifique
+    ##### de recherche à surchager dans le projet
     user = env["res.users"].search(
         [("name", "=", data.name), ("email", "=", data.email)]
     )
     if user:
         return UserSc.from_res_user(user)
     else:
-        vals = {
-            "name": data.name,
-            "login": data.email,
-            "phone": data.phone,
-            "mobile": data.mobile,
-        }
-        user = env["res.users"].create(vals)
+        user = create_user(env, data)
         return UserSc.from_res_user(user)
     # helper = env["api.user.router"].new()
     # user = helper.create(data)
@@ -82,13 +91,7 @@ class ApiUserRouter(models.AbstractModel):
         if user:
             return user
         else:
-            vals = {
-                "name": data.name,
-                "email": data.email,
-                "phone": data.phone,
-                "mobile": data.mobile,
-            }
-            user = self.env["res.users"].create(vals)
+            user = create_user(self.env, data)
             return user
 
     # def _get_user_values(self, data: CustomerUpdate) -> dict:
