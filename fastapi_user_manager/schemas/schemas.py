@@ -29,11 +29,13 @@ class UserSc(StrictExtendableBaseModel):
     used to get user details
     """
 
-    login: str | None = None
-    email: str
+    login: str
+    email: str | None = None
     name: str | None = None
     phone: str | None = None
     mobile: str | None = None
+    company: str | None = None
+    role: list | None = None
     misc: dict | None = None
 
     @classmethod
@@ -43,6 +45,8 @@ class UserSc(StrictExtendableBaseModel):
             name=odoo_rec.name or None,
             phone=odoo_rec.phone or None,
             mobile=odoo_rec.mobile or None,
+            compny=odoo_rec.company_id.name or None,
+            role=odoo_rec.role_id.name or None,
         )
 
 

@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from odoo import api, models
+from odoo.fields import Command
 
 from odoo.addons.base.models.res_users import Users as ResUsers
 from odoo.addons.fastapi.dependencies import (
@@ -94,17 +95,26 @@ class ApiUserRouter(models.AbstractModel):
     def create_user(self, data: UserSc):
         vals = {
             "name": data.name,
-            "login": data.email,
+            "login": data.login,
+            "email": data.email,
             "phone": data.phone,
             "mobile": data.mobile,
         }
+        company_id = self.env["res.company"].search([("name", "=", data.company)])
+        vals["company_id"] = company_id.id
+        if hasattr(self.env["res.users"], "role_ids"):
+            roles = self.env["res.users.role"].search([("name", "in", data.role)])
+            vals["role_line_ids"] = [
+                Command.create({"role_id": rol_id}) for rol_id in roles.ids
+            ]
         user = self.env["res.users"].create(vals)
         user = self._post_process_user_creation(user, data.misc)
         return user
 
     def _post_process_user_creation(self, user, misc):
         """inherit it to adapt to your needs"""
-        user = user.write(misc)
+        if misc:
+            user = user.write(misc)
         return user
 
     def _get_user_values(self, data: UserScUpdate):
