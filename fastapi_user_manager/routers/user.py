@@ -106,7 +106,7 @@ class ApiUserRouter(models.AbstractModel):
             "mobile": data.mobile,
         }
         company_id = self.env["res.company"].search([("name", "=", data.company)])
-        vals["company_id"] = company_id.id if company_id else False
+        vals["company_id"] = company_id.id if company_id else self.env.company.id
         if hasattr(self.env["res.users"], "role_ids"):
             roles = self.env["res.users.role"].search([("name", "in", data.role)])
             vals["role_line_ids"] = [
