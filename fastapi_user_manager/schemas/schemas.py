@@ -6,10 +6,8 @@ class UserScUpdate(StrictExtendableBaseModel, extra="ignore"):
     used to update user details
     """
 
-    name: str | None = None
-    mobile: str | None = None
-    opt_in: bool | None = None
-    lang_id: int | None = None
+    login: str | None = None
+    misc: dict | None = None
 
     def to_user_vals(self) -> dict:
         fields = self._get_user_update_fields()
@@ -22,6 +20,7 @@ class UserScUpdate(StrictExtendableBaseModel, extra="ignore"):
             "name",
             "phone",
             "mobile",
+            "misc",
         ]
 
 
@@ -30,10 +29,14 @@ class UserSc(StrictExtendableBaseModel):
     used to get user details
     """
 
-    email: str
+    login: str
+    email: str | None = None
     name: str | None = None
     phone: str | None = None
     mobile: str | None = None
+    company: str | None = None
+    role: list | None = None
+    misc: dict | None = None
 
     @classmethod
     def from_res_user(cls, odoo_rec):
@@ -42,4 +45,12 @@ class UserSc(StrictExtendableBaseModel):
             name=odoo_rec.name or None,
             phone=odoo_rec.phone or None,
             mobile=odoo_rec.mobile or None,
+            compny=odoo_rec.company_id.name or None,
+            role=odoo_rec.role_id.name or None,
         )
+
+
+class UserScDel(StrictExtendableBaseModel):
+    email: str
+    name: str
+    login: str
