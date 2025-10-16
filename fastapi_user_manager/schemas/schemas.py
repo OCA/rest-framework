@@ -51,6 +51,6 @@ class UserSc(StrictExtendableBaseModel):
 
 
 class UserScDel(StrictExtendableBaseModel):
-    email: str
-    name: str
+    email: str | None = None
+    name: str | None = None
     login: str

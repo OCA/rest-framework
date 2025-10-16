@@ -36,27 +36,16 @@ class FastAPIDemoCase(FastAPITransactionCase):
 
     def test_create_user(self) -> None:
         with self._create_test_client() as test_client:
-            response: Response = test_client.get(
+            response: Response = test_client.post(
                 "/user/create",
                 params=[
-                    {
-                        "name": "Test_one",
-                        "login": "Test_one",
-                        "company": "YourCompany",
-                    },
-                    # {
-                    #     "name": "Test_two",
-                    #     "login": "Test_two",
-                    #     "company": "YourCompany",
-                    # },
+                    {"name": "Test_one", "login": "Test_one", "company": "YourCompany"},
+                    {"name": "Test_two", "login": "Test_two", "company": "YourCompany"},
                 ],
             )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(
-            response.json(),
-            """Test_one = New ok
-                             Test_two = New ok
-                             """,
+            response.json(), {"Test_one": "New ok", "Test_two": "New ok"}
         )
 
 

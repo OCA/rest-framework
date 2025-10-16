@@ -43,7 +43,7 @@ def create_user_data(
 
 @user_router.post("/user/update")
 def update_user_data(
-    data: UserScUpdate,
+    data: list[UserScUpdate],
     env: Annotated[api.Environment, Depends(odoo_env)],
     partner: Annotated[api.Environment, Depends(authenticated_partner_env)],
 ):
@@ -52,31 +52,36 @@ def update_user_data(
     """
     # UserScUpdate.to_user_vals(data)
     # helper = env["api.user.router"].new({"user": user})
-    updated_user = env["api.user.router"]._update_user(data)
-    if updated_user:
-        return "Update OK"
-    else:
-        return "No update, no user found"
-    #
+    result = {}
+    for d in data:
+        updated_user = env["api.user.router"]._update_user(d)
+        if updated_user:
+            result[f"{updated_user.login}"] = "Update ok"
+        else:
+            result[f"{d.login}"] = "No_modif"
+    return result
 
 
 @user_router.post("/user/archive")
 def archive_user_data(
-    data: UserScDel,
+    data: list[UserScDel],
     env: Annotated[api.Environment, Depends(odoo_env)],
     partner: Annotated[api.Environment, Depends(authenticated_partner_env)],
 ):
     """ """
-    user_to_del = env["res.users"].search(
-        [
-            ("login", "=", data.login),
-        ]
-    )
-    if user_to_del:
-        user_to_del.active = False
-        return "Archived user ok"
-    else:
-        return "Error"
+    result = {}
+    for d in data:
+        user_to_del = env["res.users"].search(
+            [
+                ("login", "=", data.login),
+            ]
+        )
+        if user_to_del:
+            user_to_del.active = False
+            result[f"{user_to_del.login}"] = "Archived user ok"
+        else:
+            result[f"{d.login}"] = "ERROR No login"
+    return result
 
 
 class ApiUserRouter(models.AbstractModel):
@@ -101,7 +106,7 @@ class ApiUserRouter(models.AbstractModel):
             "mobile": data.mobile,
         }
         company_id = self.env["res.company"].search([("name", "=", data.company)])
-        vals["company_id"] = company_id.id
+        vals["company_id"] = company_id.id if company_id else False
         if hasattr(self.env["res.users"], "role_ids"):
             roles = self.env["res.users.role"].search([("name", "in", data.role)])
             vals["role_line_ids"] = [
