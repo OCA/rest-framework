@@ -39,7 +39,7 @@
         <field name="model_id" ref="base.model_res_partner" />
         <field
             name="domain_force"
-        > ['|', ('user_id', '=', user.id), ('id', '=', authenticated_partner_id)]</field>
+        > ['|', ('user_ids', '=', user.id), ('id', '=', authenticated_partner_id)]</field>
         <field name="groups" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
     </record>
 

@@ -27,11 +27,11 @@ class FastApiDispatcher(Dispatcher):
         # don't parse the httprequest let starlette parse the stream
         self.request.params = {}  # dict(self.request.get_http_params(), **args)
         environ = self._get_environ()
-        root_path = "/" + environ["PATH_INFO"].split("/")[1]
+        path = environ["PATH_INFO"]
         # TODO store the env into contextvar to be used by the odoo_env
         # depends method
-        with fastapi_app_pool.get_app(env=request.env, root_path=root_path) as app:
-            uid = request.env["fastapi.endpoint"].sudo().get_uid(root_path)
+        with fastapi_app_pool.get_app(env=request.env, root_path=path) as app:
+            uid = request.env["fastapi.endpoint"].sudo().get_uid(path)
             data = BytesIO()
             with self._manage_odoo_env(uid):
                 for r in app(environ, self._make_response):

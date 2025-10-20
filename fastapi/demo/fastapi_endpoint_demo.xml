@@ -44,4 +44,15 @@ methods. See documentation to learn more about how to create a new app.
         <field name="demo_auth_method">http_basic</field>
         <field name="user_id" ref="my_demo_app_user" />
     </record>
+
+    <record id="fastapi_endpoint_multislash_demo" model="fastapi.endpoint">
+        <field name="name">Fastapi Multi-Slash Demo Endpoint</field>
+        <field name="description">
+            Like the other demo endpoint but with multi-slash
+        </field>
+        <field name="app">demo</field>
+        <field name="root_path">/fastapi/demo-multi</field>
+        <field name="demo_auth_method">http_basic</field>
+        <field name="user_id" ref="my_demo_app_user" />
+    </record>
 </odoo>
