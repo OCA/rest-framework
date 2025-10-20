@@ -47,6 +47,8 @@ class TestFastapiLog(Common):
 
         self.assertEqual(len(capturer.records), 1)
         log = capturer.records[0]
+        self.assertEqual(response.headers["API-Log-Entry-ID"], str(log.id))
+
         self.assertIn("/fastapi_demo/test/demo/exception", log.request_url)
         self.assertEqual(log.request_method, "GET")
         self.assertEqual(log.response_status_code, 400)
