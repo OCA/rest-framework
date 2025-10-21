@@ -72,13 +72,11 @@
                     name="inactive"
                     domain="[('active','=',False)]"
                 />
-                <group expand='0' string='Group by...'>
-                    <filter
-                        string='App'
-                        name="groupby_app"
-                        context="{'group_by': 'app'}"
-                    />
-                </group>
+                <filter
+                    string='App'
+                    name="groupby_app"
+                    context="{'group_by': 'app'}"
+                />
             </search>
         </field>
     </record>
