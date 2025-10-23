@@ -32,6 +32,17 @@ class FastapiEndpoint(models.Model):
         string="Authenciation method for user manager",
     )
 
+    @api.onchange("app")
+    def _compute_description(self):
+        if self.app == "user_manager":
+            self.description = """Api for user manager.
+                data are list of two fiels.
+                The fields are 'login': 'str' and 'misc': {vals}
+                [{'login': 'one', 'misc': {'active': 0, 'name': 'One'},
+                {'login': 'two', 'misc':
+                  {'email': 'example@ex.com', 'roles': ['Admin', 'tech']}}
+                """
+
     def _get_fastapi_routers(self):
         if self.app == "user_manager":
             return [user_router]

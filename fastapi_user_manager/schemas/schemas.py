@@ -30,24 +30,18 @@ class UserSc(StrictExtendableBaseModel):
     """
 
     login: str
-    email: str | None = None
-    name: str | None = None
-    phone: str | None = None
-    mobile: str | None = None
-    company: str | None = None
-    role: list | None = None
     misc: dict | None = None
 
-    @classmethod
-    def from_res_user(cls, odoo_rec):
-        return cls.model_construct(
-            email=odoo_rec.login or None,
-            name=odoo_rec.name or None,
-            phone=odoo_rec.phone or None,
-            mobile=odoo_rec.mobile or None,
-            compny=odoo_rec.company_id.name or None,
-            role=odoo_rec.role_id.name or None,
-        )
+    # @classmethod
+    # def from_res_user(cls, odoo_rec):
+    #     return cls.model_construct(
+    #         email=odoo_rec.login or None,
+    #         name=odoo_rec.name or None,
+    #         phone=odoo_rec.phone or None,
+    #         mobile=odoo_rec.mobile or None,
+    #         compny=odoo_rec.company_id.name or None,
+    #         role=odoo_rec.role_id.name or None,
+    #     )
 
 
 class UserScDel(StrictExtendableBaseModel):
