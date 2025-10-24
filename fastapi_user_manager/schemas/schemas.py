@@ -1,29 +1,29 @@
 from extendable_pydantic import StrictExtendableBaseModel
 
 
-class UserScUpdate(StrictExtendableBaseModel, extra="ignore"):
-    """
-    used to update user details
-    """
-
-    login: str | None = None
-    misc: dict | None = None
-
-    def to_user_vals(self) -> dict:
-        fields = self._get_user_update_fields()
-        values = self.model_dump(exclude_unset=True)
-        values = {f: values[f] for f in fields if f in values}
-        return values
-
-    def _get_user_update_fields(self):
-        return [
-            "name",
-            "phone",
-            "mobile",
-            "misc",
-        ]
-
-
+# class UserScUpdate(StrictExtendableBaseModel, extra="ignore"):
+#     """
+#     used to update user details
+#     """
+#
+#     login: str | None = None
+#     misc: dict | None = None
+#
+#     def to_user_vals(self) -> dict:
+#         fields = self._get_user_update_fields()
+#         values = self.model_dump(exclude_unset=True)
+#         values = {f: values[f] for f in fields if f in values}
+#         return values
+#
+#     def _get_user_update_fields(self):
+#         return [
+#             "name",
+#             "phone",
+#             "mobile",
+#             "misc",
+#         ]
+#
+#
 class UserSc(StrictExtendableBaseModel):
     """
     used to get user details

@@ -10,7 +10,7 @@ from odoo.addons.fastapi.dependencies import (
 
 from fastapi import APIRouter, Depends
 
-from ..schemas.schemas import UserSc, UserScUpdate
+from ..schemas.schemas import UserSc
 
 # create a router
 user_router = APIRouter(tags=["user"])
@@ -103,16 +103,19 @@ class ApiUserRouter(models.AbstractModel):
         """inherit it to adapt to your needs"""
         return user
 
-    def _get_user_values(self, data: UserScUpdate):
+    def _get_user_values(self, data: UserSc):
         """inherit it to adapt to your needs"""
-        vals = data.misc
+        vals = data.misc.copy()
         if "login" not in vals:
             vals["login"] = data.login
         if "company" in vals:
             vals_company = vals.pop("company")
-            company_id = self.env["res.company"].search([("name", "in", vals_company)])
+            company_id = self.env["res.company"].search(
+                [("company_registry", "in", vals_company)]
+            )
             if company_id:
                 vals["company_ids"] = [Command.link(comp) for comp in company_id.ids]
+                vals["company_id"] = company_id[0].id
             else:
                 vals["company_id"] = self.env.company.id
         if "roles" in vals:
@@ -125,5 +128,6 @@ class ApiUserRouter(models.AbstractModel):
             else:
                 raise NotImplementedError
         if "group" in vals:
+            vals.pop("group")
             raise NotImplementedError
         return vals
