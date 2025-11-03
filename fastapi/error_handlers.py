@@ -36,10 +36,10 @@ def convert_exception_to_status_body(exc: Exception) -> tuple[int, dict]:
         details = jsonable_encoder(exc.errors())
     elif isinstance(exc, AccessDenied | AccessError):
         status_code = status.HTTP_403_FORBIDDEN
-        details = "AccessError"
+        details = exc.args[0]
     elif isinstance(exc, MissingError):
         status_code = status.HTTP_404_NOT_FOUND
-        details = "MissingError"
+        details = exc.args[0]
     elif isinstance(exc, UserError):
         status_code = status.HTTP_400_BAD_REQUEST
         details = exc.args[0]

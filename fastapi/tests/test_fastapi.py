@@ -130,7 +130,7 @@ class FastAPIHttpCase(HttpCase):
         self.assert_exception_processed(
             exception_type=DemoExceptionType.access_error,
             error_message="test",
-            expected_message="AccessError",
+            expected_message="test",
             expected_status_code=status.HTTP_403_FORBIDDEN,
         )
 
@@ -138,7 +138,7 @@ class FastAPIHttpCase(HttpCase):
         self.assert_exception_processed(
             exception_type=DemoExceptionType.missing_error,
             error_message="test",
-            expected_message="MissingError",
+            expected_message="test",
             expected_status_code=status.HTTP_404_NOT_FOUND,
         )
 
