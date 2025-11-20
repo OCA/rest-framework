@@ -115,14 +115,12 @@ class ApiUserRouter(models.AbstractModel):
             vals["login"] = data.login
         if "company" in vals:
             vals_company = vals.pop("company")
-            company_id = self.env["res.company"].search(
-                [("company_registry", "in", vals_company)]
-            )
+            company_id = self.env["res.company"].search([("code", "in", vals_company)])
             if company_id:
                 if len(vals_company) != len(company_id):
                     list_company_id = []
                     for x in company_id:
-                        list_company_id.append(x.company_registry)
+                        list_company_id.append(x.code)
                     error["company"] = f"{list_company_id} for {vals_company}"
                 vals["company_ids"] = [Command.link(comp) for comp in company_id.ids]
                 vals["company_id"] = company_id[0].id
