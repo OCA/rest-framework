@@ -83,7 +83,7 @@ async def who_ami(
     dependencies=[Depends(authenticated_partner)],
 )
 async def endpoint_app_info(
-    endpoint: Annotated[FastapiEndpoint, Depends(fastapi_endpoint)],
+    endpoint: Annotated["FastapiEndpoint", Depends(fastapi_endpoint)],
 ) -> DemoEndpointAppInfo:
     """Returns the current endpoint configuration"""
     # This method show you how to get access to current endpoint configuration

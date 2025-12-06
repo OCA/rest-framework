@@ -11,12 +11,17 @@ from odoo.addons.base.models.res_partner import Partner
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
 
+
 from ..dependencies import (
     authenticated_partner_from_basic_auth_user,
     authenticated_partner_impl,
     odoo_env,
 )
-from ..routers import demo_router, demo_router_doc
+
+# Add imports for TYPE_CHECKING
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..routers import demo_router, demo_router_doc
 
 
 class FastapiEndpoint(models.Model):
@@ -32,6 +37,8 @@ class FastapiEndpoint(models.Model):
 
     def _get_fastapi_routers(self) -> list[APIRouter]:
         if self.app == "demo":
+            # Import here to avoid circular import
+            from ..routers import demo_router
             return [demo_router]
         return super()._get_fastapi_routers()
 
@@ -73,6 +80,8 @@ class FastapiEndpoint(models.Model):
     def _prepare_fastapi_app_params(self) -> dict[str, Any]:
         params = super()._prepare_fastapi_app_params()
         if self.app == "demo":
+            # Import here to avoid circular import
+            from ..routers import demo_router_doc
             tags_metadata = params.get("openapi_tags", []) or []
             tags_metadata.append({"name": "demo", "description": demo_router_doc})
             params["openapi_tags"] = tags_metadata
