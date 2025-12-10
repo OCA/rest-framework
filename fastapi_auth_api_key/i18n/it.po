@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-11-06 09:42+0000\n"
+"PO-Revision-Date: 2025-12-10 11:43+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -24,7 +24,7 @@ msgstr "Gruppo chiave API autorizzazione"
 #. module: fastapi_auth_api_key
 #: model:ir.model,name:fastapi_auth_api_key.model_fastapi_endpoint
 msgid "FastAPI Endpoint"
-msgstr "Endopoint FastAPI"
+msgstr "Endpoint FastAPI"
 
 #. module: fastapi_auth_api_key
 #: model:ir.model.fields,help:fastapi_auth_api_key.field_fastapi_endpoint__auth_api_key_group_id
