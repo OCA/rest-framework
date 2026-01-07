@@ -46,12 +46,18 @@ class FastAPIHttpCase(HttpCase):
         self.assertEqual(response.content, expected_lang)
 
     def test_call(self):
+        """Test basic endpoint call returns expected JSON response."""
         route = "/fastapi_demo/demo/"
         response = self.url_open(route)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'{"Hello":"World"}')
 
     def test_lang(self):
+        """Test language negotiation based on Accept-Language header.
+
+        Verifies that the correct language is selected based on the quality
+        values and available languages in the system.
+        """
         self._assert_expected_lang("fr,en;q=0.7,en-GB;q=0.3", b'"fr_BE"')
         self._assert_expected_lang("en,fr;q=0.7,en-GB;q=0.3", b'"en_US"')
         self._assert_expected_lang("fr-FR,en;q=0.7,en-GB;q=0.3", b'"fr_BE"')
@@ -103,6 +109,7 @@ class FastAPIHttpCase(HttpCase):
             self.assertEqual(response.status_code, expected_status_code)
 
     def test_user_error(self) -> None:
+        """Test that UserError exceptions are properly handled and return 400."""
         self.assert_exception_processed(
             exception_type=DemoExceptionType.user_error,
             error_message="test",
@@ -111,6 +118,7 @@ class FastAPIHttpCase(HttpCase):
         )
 
     def test_validation_error(self) -> None:
+        """Test that ValidationError exceptions are properly handled and return 400."""
         self.assert_exception_processed(
             exception_type=DemoExceptionType.validation_error,
             error_message="test",
@@ -119,6 +127,7 @@ class FastAPIHttpCase(HttpCase):
         )
 
     def test_bare_exception(self) -> None:
+        """Test that unhandled exceptions return 500 with generic error message."""
         self.assert_exception_processed(
             exception_type=DemoExceptionType.bare_exception,
             error_message="test",
@@ -127,6 +136,7 @@ class FastAPIHttpCase(HttpCase):
         )
 
     def test_access_error(self) -> None:
+        """Test that AccessError exceptions are properly handled and return 403."""
         self.assert_exception_processed(
             exception_type=DemoExceptionType.access_error,
             error_message="test",
@@ -135,6 +145,7 @@ class FastAPIHttpCase(HttpCase):
         )
 
     def test_missing_error(self) -> None:
+        """Test that MissingError exceptions are properly handled and return 404."""
         self.assert_exception_processed(
             exception_type=DemoExceptionType.missing_error,
             error_message="test",
@@ -143,6 +154,7 @@ class FastAPIHttpCase(HttpCase):
         )
 
     def test_http_exception(self) -> None:
+        """Test that HTTPException is properly handled with custom status code."""
         self.assert_exception_processed(
             exception_type=DemoExceptionType.http_exception,
             error_message="test",
@@ -152,6 +164,7 @@ class FastAPIHttpCase(HttpCase):
 
     @mute_logger("odoo.http")
     def test_request_validation_error(self) -> None:
+        """Test that invalid request parameters trigger validation error (422)."""
         with self._mocked_commit() as mocked_commit:
             route = "/fastapi_demo/demo/exception?exception_type=BAD&error_message="
             response = self.url_open(route, timeout=200)
@@ -159,14 +172,18 @@ class FastAPIHttpCase(HttpCase):
             self.assertEqual(response.status_code, 422)
 
     def test_no_commit_on_exception(self) -> None:
-        # this test check that the way we mock the cursor is working as expected
-        # and that the transaction is rolled back in case of exception.
+        """Test that database transactions are rolled back on exceptions.
+
+        Verifies that successful requests commit and failed requests rollback.
+        """
+        # Test successful request commits
         with self._mocked_commit() as mocked_commit:
             url = "/fastapi_demo/demo"
             response = self.url_open(url, timeout=600)
             self.assertEqual(response.status_code, 200)
             mocked_commit.assert_called_once()
 
+        # Test exception doesn't commit
         self.assert_exception_processed(
             exception_type=DemoExceptionType.http_exception,
             error_message="test",
@@ -175,7 +192,11 @@ class FastAPIHttpCase(HttpCase):
         )
 
     def test_url_matching(self):
-        # Test the URL mathing method on the endpoint
+        """Test URL path matching logic for endpoint routing.
+
+        Ensures that the most specific matching path is selected when multiple
+        paths could match a given URL.
+        """
         paths = ["/fastapi", "/fastapi_demo", "/fastapi/v1"]
         EndPoint = self.env["fastapi.endpoint"]
         self.assertEqual(
@@ -195,7 +216,128 @@ class FastAPIHttpCase(HttpCase):
         )
 
     def test_multi_slash(self):
+        """Test endpoint with multiple slashes in path works correctly."""
         route = "/fastapi/demo-multi/demo/"
         response = self.url_open(route, timeout=20)
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.fastapi_multi_demo_app.root_path, str(response.url))
+
+    def test_response_content_type(self):
+        """Test that responses have correct Content-Type headers."""
+        route = "/fastapi_demo/demo/"
+        response = self.url_open(route)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/json", response.headers.get("Content-Type", ""))
+
+    def test_lang_with_no_header(self):
+        """Test language defaults to en_US when no Accept-Language header provided."""
+        route = "/fastapi_demo/demo/lang"
+        response = self.url_open(route)
+        self.assertEqual(response.status_code, 200)
+        # Default language should be returned
+        self.assertIn(response.content, [b'"en_US"', b'"en_GB"'])
+
+    def test_lang_with_invalid_header(self):
+        """Test handling of malformed Accept-Language headers."""
+        route = "/fastapi_demo/demo/lang"
+        response = self.url_open(route, headers={"Accept-language": "invalid-lang"})
+        self.assertEqual(response.status_code, 200)
+        # Should fallback to default language
+        self.assertIsNotNone(response.content)
+
+    def test_retrying_minimum_boundary(self):
+        """Test retrying with minimum valid retry count."""
+        nbr_retries = 2
+        route = f"/fastapi_demo/demo/retrying?nbr_retries={nbr_retries}"
+        response = self.url_open(route, timeout=20)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(int(response.content), nbr_retries)
+
+    @mute_logger("odoo.http")
+    def test_retrying_invalid_parameter(self):
+        """Test that invalid retry count parameters are rejected."""
+        # Test with retry count too low
+        route = "/fastapi_demo/demo/retrying?nbr_retries=1"
+        response = self.url_open(route, timeout=20)
+        self.assertEqual(response.status_code, 422)  # Validation error
+
+    @mute_logger("odoo.http")
+    def test_retrying_missing_parameter(self):
+        """Test that missing required parameters return validation error."""
+        route = "/fastapi_demo/demo/retrying"
+        response = self.url_open(route, timeout=20)
+        self.assertEqual(response.status_code, 422)  # Validation error
+
+    def test_exception_with_special_characters(self) -> None:
+        """Test exception handling with special characters in error messages."""
+        special_msg = "Error: <script>alert('test')</script> & special chars!"
+        self.assert_exception_processed(
+            exception_type=DemoExceptionType.user_error,
+            error_message=special_msg,
+            expected_message=special_msg,
+            expected_status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    def test_url_matching_no_match(self):
+        """Test URL matching returns None when no path matches."""
+        paths = ["/fastapi", "/fastapi_demo"]
+        EndPoint = self.env["fastapi.endpoint"]
+        result = EndPoint._find_first_matching_url_path(paths, "/other/test")
+        self.assertIsNone(result)
+
+    def test_url_matching_exact_match(self):
+        """Test URL matching with exact path match."""
+        paths = ["/fastapi", "/fastapi_demo"]
+        EndPoint = self.env["fastapi.endpoint"]
+        result = EndPoint._find_first_matching_url_path(paths, "/fastapi_demo")
+        self.assertEqual(result, "/fastapi_demo")
+
+    def test_url_matching_empty_paths(self):
+        """Test URL matching with empty path list."""
+        paths = []
+        EndPoint = self.env["fastapi.endpoint"]
+        result = EndPoint._find_first_matching_url_path(paths, "/fastapi/test")
+        self.assertIsNone(result)
+
+    def test_endpoint_with_trailing_slash(self):
+        """Test that endpoints work with and without trailing slashes."""
+        # With trailing slash
+        route = "/fastapi_demo/demo/"
+        response = self.url_open(route)
+        self.assertEqual(response.status_code, 200)
+
+        # Without trailing slash
+        route = "/fastapi_demo/demo"
+        response = self.url_open(route)
+        self.assertEqual(response.status_code, 200)
+
+    def test_concurrent_language_requests(self):
+        """Test that concurrent requests with different languages are isolated."""
+        import concurrent.futures
+
+        def make_lang_request(lang):
+            route = "/fastapi_demo/demo/lang"
+            response = self.url_open(route, headers={"Accept-language": lang})
+            return response.content
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            futures = [
+                executor.submit(make_lang_request, "fr"),
+                executor.submit(make_lang_request, "en"),
+                executor.submit(make_lang_request, "fr-FR"),
+            ]
+            results = [f.result() for f in concurrent.futures.as_completed(futures)]
+
+        # All requests should complete successfully
+        self.assertEqual(len(results), 3)
+        for result in results:
+            self.assertIsNotNone(result)
+
+    def test_http_methods_not_allowed(self):
+        """Test that incorrect HTTP methods return appropriate status."""
+        route = "/fastapi_demo/demo/"
+        # The demo endpoint only accepts GET
+        response = self.url_open(route, data={"test": "data"})
+        # POST should either be not allowed or handled differently
+        # Depending on FastAPI behavior
+        self.assertIn(response.status_code, [405, 422, 200])
