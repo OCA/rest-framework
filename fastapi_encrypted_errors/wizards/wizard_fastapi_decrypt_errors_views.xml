@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-
     <record id="wizard_fastapi_decrypt_errors_view_form" model="ir.ui.view">
         <field name="model">wizard.fastapi.decrypt.errors</field>
         <field name="arch" type="xml">
@@ -19,7 +18,6 @@
                     />
                     <button string="Close" class="oe_link" special="cancel" />
                 </footer>
-
             </form>
         </field>
     </record>
@@ -43,5 +41,4 @@
         action="wizard_fastapi_decrypt_errors_action_decrypt_error"
         sequence="100"
     />
-
 </odoo>
