@@ -18,7 +18,6 @@ class FastapiEndpoint(models.Model):
     encrypted_errors_secret_key = fields.Char(
         help="The secret key used to encrypt errors before sending them to the client.",
         default=lambda _: Fernet.generate_key(),
-        readonly=True,
     )
 
     def action_generate_encrypted_errors_secret_key(self):

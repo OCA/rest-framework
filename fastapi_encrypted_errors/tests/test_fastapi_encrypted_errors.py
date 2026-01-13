@@ -6,6 +6,7 @@ import os
 import unittest
 
 from odoo.tests.common import HttpCase
+from odoo.tools import mute_logger
 
 from odoo.addons.fastapi.schemas import DemoExceptionType
 
@@ -17,6 +18,7 @@ class FastAPIEncryptedErrorsCase(HttpCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.fastapi_demo_app = cls.env.ref("fastapi.fastapi_endpoint_demo")
         cls.fastapi_demo_app._handle_registry_sync()
         cls.fastapi_demo_app.write({"encrypt_errors": True})
@@ -27,6 +29,7 @@ class FastAPIEncryptedErrorsCase(HttpCase):
         )
         lang.active = True
 
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
     def test_encrypted_errors_in_response(self):
         route = (
             "/fastapi_demo/demo/exception?"
@@ -51,6 +54,7 @@ class FastAPIEncryptedErrorsCase(HttpCase):
         self.assertEqual(res["detail"], "Internal Server Error")
         self.assertIn("ref", res)
 
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
     def test_encrypted_errors_decrypt(self):
         route = (
             "/fastapi_demo/demo/exception?"

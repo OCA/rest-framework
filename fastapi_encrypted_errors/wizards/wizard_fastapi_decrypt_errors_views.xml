@@ -7,7 +7,7 @@
                 <group>
                     <field name="fastapi_endpoint_id" />
                     <field name="error" />
-                    <field name="decrypted_error" />
+                    <field name="decrypted_error" readonly="True" />
                 </group>
                 <footer>
                     <button

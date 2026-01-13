@@ -17,7 +17,7 @@ class WizardFastapiDecryptErrors(models.TransientModel):
         required=True,
         default=lambda self: self.env["fastapi.endpoint"].search([], limit=1),
     )
-    decrypted_error = fields.Text(readonly=True)
+    decrypted_error = fields.Text()
 
     def action_decrypt_error(self):
         self.ensure_one()

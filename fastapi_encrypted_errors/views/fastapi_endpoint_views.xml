@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version='1.0' encoding='utf-8' ?>
 <!-- Copyright 2022 ACSONE SA/NV
      License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
 <odoo>
@@ -12,12 +12,13 @@
                     <label for="encrypted_errors_secret_key" />
                     <field
                         name="encrypted_errors_secret_key"
-                        attrs="{'invisible': [('encrypt_errors', '=', False)]}"
+                        invisible="not encrypt_errors"
                         groups="fastapi.group_fastapi_manager"
+                        readonly="True"
                     />
                     <button
                         name="action_generate_encrypted_errors_secret_key"
-                        attrs="{'invisible': [('encrypt_errors', '=', False)]}"
+                        invisible="not encrypt_errors"
                         type="object"
                         icon="fa-refresh"
                         title="Generate Secret Key"
