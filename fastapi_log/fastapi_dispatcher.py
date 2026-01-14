@@ -6,8 +6,8 @@
 import logging
 from contextlib import contextmanager
 
-from odoo import registry
 from odoo.http import _dispatchers
+from odoo.modules.registry import Registry
 
 from odoo.addons.fastapi.fastapi_dispatcher import (
     FastApiDispatcher as BaseFastApiDispatcher,
@@ -30,7 +30,7 @@ class FastApiDispatcher(_dispatchers.get("fastapi", BaseFastApiDispatcher)):
         else:
             # Create an independent cursor
             # so the logs are committed despite any endpoint's exceptions
-            cr = registry(request_registry.db_name).cursor()
+            cr = Registry(request_registry.db_name).cursor()
 
         try:
             yield request_env(cr=cr, su=True)

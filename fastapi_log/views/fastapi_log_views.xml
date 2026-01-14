@@ -12,7 +12,7 @@
         <field name="domain">[
             ("collection_model", "=", "fastapi.endpoint"),
         ]</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem
