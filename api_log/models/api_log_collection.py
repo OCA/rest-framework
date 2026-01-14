@@ -48,7 +48,7 @@ class APILogCollection(models.AbstractModel):
             "res_model": "api.log",
             "name": "Logs",
             "view_type": "form",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "target": "current",
             "domain": self._get_logs_domain(),
             "context": dict(self.env.context),
