@@ -6,6 +6,8 @@
 import os
 import unittest
 
+from odoo.tools import mute_logger
+
 from odoo.addons.fastapi.schemas import DemoExceptionType
 from odoo.addons.fastapi_log.tests.common import Common
 from odoo.addons.mail.tests.common import MailCase
@@ -33,6 +35,7 @@ class TestFastapiLogMail(Common, MailCase):
             }
         )
 
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
     def test_endpoint_exception_create_activity(self):
         """If an endpoint has an activity type,
         when an exception occurs an activity of the configured type is created.
@@ -59,6 +62,7 @@ class TestFastapiLogMail(Common, MailCase):
         self.assertEqual(len(log), 1)
         self.assertTrue(log.activity_ids)
 
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
     def test_endpoint_exception_send_email(self):
         """If an endpoint has an email template,
         when an exception occurs an email is sent using the configured template.

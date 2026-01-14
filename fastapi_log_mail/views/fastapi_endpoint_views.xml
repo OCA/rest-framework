@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version='1.0' encoding='utf-8' ?>
 <!--
     ~ Copyright 2025 Simone Rubino - PyTech
     ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
@@ -13,20 +13,12 @@
                 <field
                     name="api_log_mail_exception_activity_type_id"
                     groups="api_log.group_api_log"
-                    attrs="{
-                        'invisible': [
-                            ('log_requests', '=', False),
-                        ],
-                    }"
+                    invisible="not log_requests"
                 />
                 <field
                     name="api_log_mail_exception_template_id"
                     groups="api_log.group_api_log"
-                    attrs="{
-                        'invisible': [
-                            ('log_requests', '=', False),
-                        ],
-                    }"
+                    invisible="not log_requests"
                 />
             </field>
         </field>
