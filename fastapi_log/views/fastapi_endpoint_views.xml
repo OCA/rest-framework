@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version='1.0' encoding='utf-8' ?>
 <!--
     Copyright 2025 Akretion (http://www.akretion.com).
     @author Florian Mounier <florian.mounier@akretion.com>
@@ -6,23 +6,16 @@
     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 -->
 <odoo>
-
     <record id="fastapi_endpoint_form_view" model="ir.ui.view">
         <field name="model">fastapi.endpoint</field>
         <field name="inherit_id" ref="fastapi.fastapi_endpoint_form_view" />
         <field name="arch" type="xml">
-
             <div class="oe_button_box" name="button_box" position="inside">
-                <field name="log_ids" invisible="True" />
                 <button
                     type="object"
                     name="action_logs"
                     icon="fa-book"
-                    attrs="{
-                        'invisible': [
-                            ('log_ids', '=', []),
-                        ],
-                    }"
+                    invisible="not log_ids"
                     groups="api_log.group_api_log"
                 >
                     <div class="o_stat_info">
@@ -31,11 +24,9 @@
                 </button>
             </div>
 
-
             <field name="save_http_session" position="after">
                 <field name="log_requests" groups="api_log.group_api_log" />
             </field>
         </field>
     </record>
-
 </odoo>

@@ -45,10 +45,7 @@ class FastapiLog(models.Model):
                 .sudo()
                 ._get_endpoint(environ["PATH_INFO"])
             )
-            log_request_values["collection_ref"] = "%s,%s" % (
-                endpoint._name,
-                endpoint.id,
-            )
+            log_request_values["collection_ref"] = f"{endpoint._name},{endpoint.id}"
 
         return log_request_values
 
