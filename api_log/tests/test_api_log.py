@@ -25,6 +25,8 @@ class TestAPILog(Common):
             url=base_url,
             method="GET",
         )
+        # Fix missing now required attribute
+        httprequest.remote_addr = "127.0.0.1"
         request = Request(httprequest)
         log = self.log_model.log_request(request)
 

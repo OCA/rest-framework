@@ -5,7 +5,6 @@
     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 -->
 <odoo>
-
     <record id="group_api_log" model="res.groups">
         <field name="name">API Log Access</field>
         <field
@@ -13,5 +12,4 @@
             eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
         />
     </record>
-
 </odoo>
