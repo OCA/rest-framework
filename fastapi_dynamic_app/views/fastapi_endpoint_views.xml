@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Copyright 2024 Akretion (http://www.akretion.com).
+  @author Florian Mounier <florian.mounier@akretion.com>
+  License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record model="ir.ui.view" id="fastapi_endpoint_form_view">
+        <field name="model">fastapi.endpoint</field>
+        <field name="inherit_id" ref="fastapi.fastapi_endpoint_form_view" />
+        <field name="arch" type="xml">
+            <field name="app" position="after">
+                <field
+                    name="router_ids"
+                    widget="many2many_tags"
+                    invisible="app != 'dynamic'"
+                />
+                <field name="dynamic_auth_method" invisible="app != 'dynamic'" />
+                <field
+                    name="dynamic_specific_partner_id"
+                    invisible="app != 'dynamic' or dynamic_auth_method != 'demo_specific_partner'"
+                />
+            </field>
+            <span name="configuration" position="after">
+                <notebook invisible="app != 'dynamic'">
+                    <page string="Dynamic Router Options" name="dynamic">
+                        <field name="router_option_ids">
+                            <list editable="bottom" create="0" delete="0">
+                                <field name="router_id" />
+                                <field name="prefix" />
+                                <field name="auth_method" invisible="not prefix" />
+                                <field
+                                    name="specific_partner_id"
+                                    invisible="not auth_method"
+                                />
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+            </span>
+        </field>
+    </record>
+</odoo>
