@@ -132,7 +132,10 @@ class RESTLog(models.Model):
         return True
 
     def _get_log_active_param(self):
-        param = self.env["ir.config_parameter"].sudo().get_param("rest.log.active")
+        return self._get_log_param("rest.log.active")
+
+    def _get_log_param(self, config_parameter):
+        param = self.env["ir.config_parameter"].sudo().get_param(config_parameter)
         return param.strip() if param else ""
 
     @tools.ormcache("self._get_log_active_param()")
@@ -150,7 +153,11 @@ class RESTLog(models.Model):
 
         :return: mapping by matching key / enabled states
         """
-        param = self._get_log_active_param()
+        # TODO: Deprecate in favour of _get_log_param
+        config_param = self._get_log_active_param()
+        return self._get_conf_from_param_value(config_param)
+
+    def _get_conf_from_param_value(self, param):
         conf = {}
         lines = [x.strip() for x in param.split(",") if x.strip()]
         for line in lines:
@@ -169,7 +176,16 @@ class RESTLog(models.Model):
     @api.model
     def _get_matching_active_conf(self, collection, usage, method_name):
         """Retrieve conf matching current service and method."""
+        # TODO: Deprecate in favour of _get_matching_conf_from_param
         conf = self._get_log_active_conf()
+        return self._get_matching_conf(conf, collection, usage, method_name)
+
+    def _get_matching_conf_from_param(self, param, collection, usage, method_name):
+        config_param = self._get_log_param(param)
+        conf = self._get_conf_from_param_value(config_param)
+        return self._get_matching_conf(conf, collection, usage, method_name)
+
+    def _get_matching_conf(self, conf, collection, usage, method_name):
         candidates = (
             collection + "." + usage + "." + method_name,
             collection + "." + usage,
