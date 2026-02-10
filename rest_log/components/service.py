@@ -39,6 +39,8 @@ class BaseRESTService(AbstractComponent):
     _log_calls_in_db = False
 
     def dispatch(self, method_name, *args, params=None):
+        if self._start_profiling(method_name):
+            self.env["ir.profile"].set_profiling(profile=True)
         if not self._db_logging_active(method_name):
             return super().dispatch(method_name, *args, params=params)
         return self._dispatch_with_db_logging(method_name, *args, params=params)
@@ -224,3 +226,44 @@ class BaseRESTService(AbstractComponent):
         return self.env["rest.log"]._get_matching_active_conf(
             self._collection, self._usage, method_name
         )
+
+    def _start_profiling(self, method_name):
+        if request.session.profile_session and request.db:
+            return None
+        profiling_uid = 0
+        try:
+            profiling_uid = int(
+                self.env["ir.config_parameter"]
+                .sudo()
+                .get_param("rest.log.profiling.uid")
+            )
+        except ValueError as err:
+            _logger.warning(
+                "Cannot get uid from system parameter rest.log.profiling.uid: %s",
+                str(err),
+            )
+        res = (
+            self.env["rest.log"]._get_matching_conf_from_param(
+                "rest.log.profiling.conf", self._collection, self._usage, method_name
+            )
+            and self.env.uid == profiling_uid
+        )
+        if res:
+            profiling_duration = 10
+            try:
+                profiling_duration = int(
+                    self.env["ir.config_parameter"]
+                    .sudo()
+                    .get_param("rest.log.profiling.duration")
+                )
+            except ValueError:
+                _logger.warning(
+                    "System parameter rest.log.profiling.duration is not defined. Profiling will be active for the next 10 minutes"
+                )
+            profiling_enabled_until = fields.Datetime.now() + relativedelta(
+                minutes=profiling_duration
+            )
+            self.env["ir.config_parameter"].sudo().set_param(
+                "base.profiling_enabled_until", profiling_enabled_until
+            )
+        return res
