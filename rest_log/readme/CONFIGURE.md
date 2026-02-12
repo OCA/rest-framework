@@ -30,3 +30,16 @@ In the 2nd case you can set `rest.log.active` param as:
     `collection_name.usage`  # enable for specific endpoints
     `collection_name.usage.endpoint`  # enable for specific endpoints
     `collection_name*:state`  # enable only for specific state (success, failed)
+
+## Profiling
+
+Profiling is enabled per endpoint and per user via system parameters:
+
+- `rest.log.profiling.conf`: same matching syntax as `rest.log.active`
+- `rest.log.profiling.uid`: comma-separated list of user ids allowed to profile
+
+When both parameters match, the request execution is wrapped in Odoo's
+profiler and the results are stored in `ir_profile`.
+
+`base.profiling_enabled_until` is only needed to view speedscope output
+in the UI. It is not required to record profiles.
