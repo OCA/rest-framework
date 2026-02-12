@@ -274,3 +274,45 @@ class TestDBLogging(TransactionRestServiceRegistryCase, TestDBLoggingMixin):
                 "status": 418,
             },
         )
+
+    def test_start_profiling(self):
+        with self._get_mocked_request() as mocked_request:
+            config_param = self.env["ir.config_parameter"].sudo()
+            config_param.set_param(
+                "rest.log.profiling.conf",
+                f"{self.service._collection}.{self.service._usage}.avg_endpoint",
+            )
+            config_param.set_param("rest.log.profiling.uids", str(self.env.uid))
+            with self.assertLogs("odoo.addons.rest_log.components.service") as logs:
+                self.assertTrue(self.service._start_profiling("avg_endpoint"))
+                self.assertEqual(
+                    logs.output[0],
+                    f"INFO:odoo.addons.rest_log.components.service:"
+                    f"Profiling enabled for uids=[{self.env.uid}] "
+                    "base.rest.test.logmycalls.avg_endpoint",
+                )
+
+            config_param.set_param("rest.log.profiling.uids", "99999")
+            self.assertFalse(self.service._start_profiling("avg_endpoint"))
+
+            mocked_request.session.profile_session = "rest-log-test"
+            self.assertIsNone(self.service._start_profiling("avg_endpoint"))
+
+    def test_get_profiling_uids(self):
+        config_param = self.env["ir.config_parameter"].sudo()
+        with self._get_mocked_request():
+            self.assertEqual(self.service._profiling_get_uids(), [])
+            config_param.set_param("rest.log.profiling.uids", f"{self.env.uid}, 99999")
+            self.assertEqual(self.service._profiling_get_uids(), [self.env.uid, 99999])
+
+    def test_get_profiler(self):
+        with self._get_mocked_request():
+            profiler = self.service._profiling_get_profiler("avg_endpoint")
+            self.assertEqual(
+                profiler.description,
+                f"REST LOG {self.service._collection}"
+                f".{self.service._usage}.avg_endpoint",
+            )
+            self.assertEqual(
+                profiler.profile_session, f"{self.env.user.name} (uid={self.env.uid})"
+            )

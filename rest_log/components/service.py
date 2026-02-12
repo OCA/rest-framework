@@ -43,8 +43,7 @@ class BaseRESTService(AbstractComponent):
         if not self._db_logging_active(method_name):
             return super().dispatch(method_name, *args, params=params)
         if self._start_profiling(method_name):
-            call_name = f"{self._collection}.{self._usage}.{method_name}"
-            with Profiler(description=f"REST LOG {call_name}"):
+            with self._profiling_get_profiler(method_name):
                 return self._dispatch_with_db_logging(method_name, *args, params=params)
         return self._dispatch_with_db_logging(method_name, *args, params=params)
 
@@ -233,26 +232,9 @@ class BaseRESTService(AbstractComponent):
     def _start_profiling(self, method_name):
         if request.session.profile_session and request.db:
             return None
-        profiling_uids = 0
-        try:
-            profiling_uids = [
-                int(x)
-                for x in self.env["ir.config_parameter"]
-                .sudo()
-                .get_param("rest.log.profiling.uid", "")
-                .split(",")
-            ]
-        except ValueError as err:
-            _logger.warning(
-                "Cannot get uid from system parameter rest.log.profiling.uid: %s",
-                str(err),
-            )
-        res = (
-            self.env["rest.log"]._get_matching_conf_from_param(
-                "rest.log.profiling.conf", self._collection, self._usage, method_name
-            )
-            and self.env.uid in profiling_uids
-        )
+        profiling_uids = self._profiling_get_uids()
+        profiling_conf_match = self._profiling_get_matching_conf(method_name)
+        res = profiling_conf_match and self.env.uid in profiling_uids
         if res:
             _logger.info(
                 "Profiling enabled for uids=%s %s",
@@ -260,3 +242,32 @@ class BaseRESTService(AbstractComponent):
                 f"{self._collection}.{self._usage}.{method_name}",
             )
         return res
+
+    def _profiling_get_uids(self):
+        try:
+            param = (
+                self.env["ir.config_parameter"]
+                .sudo()
+                .get_param("rest.log.profiling.uids", "")
+            )
+            if not param.strip():
+                return []
+            return [int(x.strip()) for x in param.strip().split(",") if x.strip()]
+        except ValueError as err:
+            _logger.warning(
+                "Cannot get uid from system parameter rest.log.profiling.uid: %s",
+                str(err),
+            )
+            return []
+
+    def _profiling_get_matching_conf(self, method_name):
+        return self.env["rest.log"]._get_matching_conf_from_param(
+            "rest.log.profiling.conf", self._collection, self._usage, method_name
+        )
+
+    def _profiling_get_profiler(self, method_name):
+        call_name = f"{self._collection}.{self._usage}.{method_name}"
+        return Profiler(
+            description=f"REST LOG {call_name}",
+            profile_session=f"{self.env.user.name} (uid={self.env.uid})",
+        )
