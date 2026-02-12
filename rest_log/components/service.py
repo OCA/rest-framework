@@ -252,21 +252,9 @@ class BaseRESTService(AbstractComponent):
             and self.env.uid == profiling_uid
         )
         if res:
-            profiling_duration = 10
-            try:
-                profiling_duration = int(
-                    self.env["ir.config_parameter"]
-                    .sudo()
-                    .get_param("rest.log.profiling.duration")
-                )
-            except ValueError:
-                _logger.warning(
-                    "System parameter rest.log.profiling.duration is not defined. Profiling will be active for the next 10 minutes"
-                )
-            profiling_enabled_until = fields.Datetime.now() + relativedelta(
-                minutes=profiling_duration
-            )
-            self.env["ir.config_parameter"].sudo().set_param(
-                "base.profiling_enabled_until", profiling_enabled_until
+            _logger.info(
+                "Profiling enabled for uid=%s %s",
+                profiling_uid,
+                f"{self._collection}.{self._usage}.{method_name}",
             )
         return res
