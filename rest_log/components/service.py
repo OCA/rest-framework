@@ -14,6 +14,7 @@ from odoo import exceptions
 from odoo.http import Response, request
 from odoo.modules.registry import Registry
 from odoo.service.model import PG_CONCURRENCY_ERRORS_TO_RETRY
+from odoo.tools.profiler import Profiler
 
 from odoo.addons.base_rest.http import JSONEncoder
 from odoo.addons.component.core import AbstractComponent
@@ -39,10 +40,12 @@ class BaseRESTService(AbstractComponent):
     _log_calls_in_db = False
 
     def dispatch(self, method_name, *args, params=None):
-        if self._start_profiling(method_name):
-            self.env["ir.profile"].set_profiling(profile=True)
         if not self._db_logging_active(method_name):
             return super().dispatch(method_name, *args, params=params)
+        if self._start_profiling(method_name):
+            call_name = f"{self._collection}.{self._usage}.{method_name}"
+            with Profiler(description=f"REST LOG {call_name}"):
+                return self._dispatch_with_db_logging(method_name, *args, params=params)
         return self._dispatch_with_db_logging(method_name, *args, params=params)
 
     def _dispatch_with_db_logging(self, method_name, *args, params=None):
