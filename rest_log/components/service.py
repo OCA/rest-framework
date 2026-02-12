@@ -233,13 +233,15 @@ class BaseRESTService(AbstractComponent):
     def _start_profiling(self, method_name):
         if request.session.profile_session and request.db:
             return None
-        profiling_uid = 0
+        profiling_uids = 0
         try:
-            profiling_uid = int(
-                self.env["ir.config_parameter"]
+            profiling_uids = [
+                int(x)
+                for x in self.env["ir.config_parameter"]
                 .sudo()
-                .get_param("rest.log.profiling.uid")
-            )
+                .get_param("rest.log.profiling.uid", "")
+                .split(",")
+            ]
         except ValueError as err:
             _logger.warning(
                 "Cannot get uid from system parameter rest.log.profiling.uid: %s",
@@ -249,12 +251,12 @@ class BaseRESTService(AbstractComponent):
             self.env["rest.log"]._get_matching_conf_from_param(
                 "rest.log.profiling.conf", self._collection, self._usage, method_name
             )
-            and self.env.uid == profiling_uid
+            and self.env.uid in profiling_uids
         )
         if res:
             _logger.info(
-                "Profiling enabled for uid=%s %s",
-                profiling_uid,
+                "Profiling enabled for uids=%s %s",
+                str(profiling_uids),
                 f"{self._collection}.{self._usage}.{method_name}",
             )
         return res
