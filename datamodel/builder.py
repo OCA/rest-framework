@@ -10,6 +10,7 @@ Datamodels Builder
 Build the datamodels at the build of a registry.
 
 """
+
 from odoo import models, modules
 
 from .core import DEFAULT_CACHE_SIZE, DatamodelRegistry, _datamodel_databases
@@ -65,7 +66,7 @@ class DatamodelBuilder(models.AbstractModel):
         graph = modules.graph.Graph()
         graph.add_module(self.env.cr, "base")
 
-        query = "SELECT name " "FROM ir_module_module " "WHERE state IN %s "
+        query = "SELECT name FROM ir_module_module WHERE state IN %s "
         params = [tuple(states)]
         if exclude_addons:
             query += " AND name NOT IN %s "

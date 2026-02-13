@@ -15,7 +15,8 @@ _logger = logging.getLogger(__name__)
 
 try:
     import marshmallow
-    from marshmallow_objects.models import Model as MarshmallowModel, ModelMeta
+    from marshmallow_objects.models import Model as MarshmallowModel
+    from marshmallow_objects.models import ModelMeta
 except ImportError:
     _logger.debug("Cannot import 'marshmallow_objects'.")
 
@@ -54,7 +55,7 @@ class DatamodelDatabases(dict):
     """Holds a registry of datamodels for each database"""
 
 
-class DatamodelRegistry(object):
+class DatamodelRegistry:
     """Store all the datamodel and allow to retrieve them by name
 
     The key is the ``_name`` of the datamodels.
@@ -117,10 +118,9 @@ class MetaDatamodel(ModelMeta):
     _modules_datamodels = defaultdict(list)
 
     def __init__(self, name, bases, attrs):
-
         if not self._register:
             self._register = True
-            super(MetaDatamodel, self).__init__(name, bases, attrs)
+            super().__init__(name, bases, attrs)
 
             return
 
@@ -391,7 +391,7 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 # makes the datamodels registry available on env
 
 
-class DataModelFactory(object):
+class DataModelFactory:
     """Factory for datamodels
 
     This factory ensures the propagation of the environment to the

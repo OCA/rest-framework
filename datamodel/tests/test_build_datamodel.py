@@ -226,7 +226,7 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             msg = "pong"
 
             def say(self):
-                return super(Datamodel2, self).say() + " bar"
+                return super().say() + " bar"
 
         Datamodel1._build_datamodel(self.datamodel_registry)
         Datamodel2._build_datamodel(self.datamodel_registry)
