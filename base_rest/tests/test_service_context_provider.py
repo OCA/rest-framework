@@ -28,7 +28,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         no authenticated_partner_id
         """
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -61,7 +60,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         authenticated_partner_id
         """
 
-        # pylint: disable=R7880
         class TestComponentContextprovider(Component):
             _name = "test.component.context.provider"
             _inherit = [
@@ -74,7 +72,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             "test_component_context_provider"
         )
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -109,7 +106,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         changes the authenticated_partner_id provided by the service context provider
         """
 
-        # pylint: disable=R7880
         class TestComponentContextprovider(Component):
             _name = "test.component.context.provider"
             _inherit = "base.rest.service.context.provider"
@@ -122,7 +118,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             "test_component_context_provider"
         )
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"

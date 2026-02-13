@@ -6,10 +6,10 @@
     "summary": """
         Develop your own high level REST APIs for Odoo thanks to this addon.
         """,
-    "version": "18.0.1.1.1",
+    "version": "19.0.1.0.0",
     "development_status": "Beta",
     "license": "LGPL-3",
-    "author": "ACSONE SA/NV, " "Odoo Community Association (OCA)",
+    "author": "ACSONE SA/NV, Odoo Community Association (OCA)",
     "maintainers": [],
     "website": "https://github.com/OCA/rest-framework",
     "depends": ["component", "web"],
@@ -33,5 +33,5 @@
             "apispec",
         ]
     },
-    "installable": False,
+    "installable": True,
 }
