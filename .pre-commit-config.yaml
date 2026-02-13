@@ -4,7 +4,6 @@ exclude: |
   ^base_rest/|
   ^base_rest_auth_api_key/|
   ^base_rest_pydantic/|
-  ^datamodel/|
   ^extendable/|
   ^fastapi/|
   ^pydantic/|

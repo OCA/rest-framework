@@ -69,7 +69,6 @@ class TestBuildDatamodel(DatamodelRegistryCase):
             ["base", "datamodel1", "datamodel2"], list(self.datamodel_registry)
         )
 
-    # pylint: disable=R7980
     def test_inherit_bases(self):
         """Check __bases__ of Datamodel with _inherit"""
 

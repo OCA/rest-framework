@@ -63,8 +63,8 @@ class DatamodelBuilder(models.AbstractModel):
         # lookup all the installed (or about to be) addons and generate
         # the graph, so we can load the datamodels following the order
         # of the addons' dependencies
-        graph = modules.graph.Graph()
-        graph.add_module(self.env.cr, "base")
+        graph = modules.module_graph.ModuleGraph(self.env.cr)
+        graph.extend(["base"])
 
         query = "SELECT name FROM ir_module_module WHERE state IN %s "
         params = [tuple(states)]
@@ -74,7 +74,7 @@ class DatamodelBuilder(models.AbstractModel):
         self.env.cr.execute(query, params)
 
         module_list = [name for (name,) in self.env.cr.fetchall() if name not in graph]
-        graph.add_modules(self.env.cr, module_list)
+        graph.extend(module_list)
 
         for module in graph:
             self.load_datamodels(module.name, datamodels_registry=datamodels_registry)

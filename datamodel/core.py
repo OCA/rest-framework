@@ -305,16 +305,16 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
 
         if cls._name in registry and not parents:
             raise TypeError(
-                "Datamodel %r (in class %r) already exists. "
+                f"Datamodel {cls._name} (in class {cls}) already exists. "
                 "Consider using _inherit instead of _name "
-                "or using a different _name." % (cls._name, cls)
+                "or using a different _name."
             )
 
         # determine the datamodel's name
         name = cls._name or (len(parents) == 1 and parents[0])
 
         if not name:
-            raise TypeError("Datamodel %r must have a _name" % cls)
+            raise TypeError(f"Datamodel {cls} must have a _name")
 
         # all datamodels except 'base' implicitly inherit from 'base'
         if name != "base":
@@ -323,15 +323,14 @@ class Datamodel(MarshmallowModel, metaclass=MetaDatamodel):
         # create or retrieve the datamodel's class
         if name in parents:
             if name not in registry:
-                raise TypeError("Datamodel %r does not exist in registry." % name)
+                raise TypeError(f"Datamodel {name} does not exist in registry.")
 
         # determine all the classes the datamodel should inherit from
         bases = LastOrderedSet([cls])
         for parent in parents:
             if parent not in registry:
                 raise TypeError(
-                    "Datamodel %r inherits from non-existing datamodel %r."
-                    % (name, parent)
+                    f"Datamodel {name} inherits from non-existing datamodel {parent}."
                 )
             parent_class = registry[parent]
             if parent == name:
