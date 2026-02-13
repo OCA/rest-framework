@@ -1,7 +1,10 @@
 # generated from manifests external_dependencies
 a2wsgi>=1.10.6
+apispec
+cerberus
 fastapi
 fastapi-openapi-overrides
 parse-accept-language
+pyquerystring
 python-multipart
 ujson

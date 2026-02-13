@@ -29,8 +29,8 @@ from odoo.exceptions import (
     ValidationError,
 )
 from odoo.http import (
-    CSRF_FREE_METHODS,
     MISSING_CSRF_WARNING,
+    SAFE_HTTP_METHODS,
     Dispatcher,
     SessionExpiredException,
     request,
@@ -162,7 +162,7 @@ class RestApiDispatcher(Dispatcher):
 
         # Check for CSRF token for relevant requests
         if (
-            self.request.httprequest.method not in CSRF_FREE_METHODS
+            self.request.httprequest.method not in SAFE_HTTP_METHODS
             and endpoint.routing.get("csrf", True)
         ):
             token = params.pop("csrf_token", None)
