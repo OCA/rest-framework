@@ -1,3 +1,18 @@
 # generated from manifests external_dependencies
 graphene
 graphql_server
+a2wsgi>=1.10.6
+apispec
+cerberus
+contextvars
+cryptography
+extendable-pydantic>=1.2.0
+extendable>=0.0.4
+fastapi>=0.110.0
+parse-accept-language
+pydantic>=2.0.0
+pyjwt
+pyquerystring
+python-multipart
+typing-extensions
+ujson

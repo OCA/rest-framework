@@ -1,0 +1,20 @@
+[project]
+name = "odoo-addons-oca-rest-framework"
+version = "18.0.20260121.0"
+dependencies = [
+    "odoo-addon-base_rest==18.0.*",
+    "odoo-addon-base_rest_auth_api_key==18.0.*",
+    "odoo-addon-base_rest_pydantic==18.0.*",
+    "odoo-addon-extendable==18.0.*",
+    "odoo-addon-extendable_fastapi==18.0.*",
+    "odoo-addon-fastapi==18.0.*",
+    "odoo-addon-fastapi_auth_api_key==18.0.*",
+    "odoo-addon-fastapi_auth_jwt==18.0.*",
+    "odoo-addon-pydantic==18.0.*",
+    "odoo-addon-rest_log==18.0.*",
+]
+classifiers=[
+    "Programming Language :: Python",
+    "Framework :: Odoo",
+    "Framework :: Odoo :: 18.0",
+]

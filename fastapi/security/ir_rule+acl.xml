@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+    <!-- give access to the user running the demo app to the res.user model -->
+    <record id="res_user_fastapi_running_user" model="ir.model.access">
+        <field name="name">Fastapi: Running user read users</field>
+        <field name="model_id" ref="base.model_res_users" />
+        <field name="group_id" ref="group_fastapi_endpoint_runner" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <!-- restrict the access by the user running the demo app to its own user -->
+    <record id="res_user_fastapi_running_user_rule" model="ir.rule">
+        <field name="name">Fastapi: Running user rule</field>
+        <field name="model_id" ref="base.model_res_users" />
+        <field name="domain_force"> [('id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
+    </record>
+
+    <!-- give access to the user running the demo app to the res.partner model -->
+    <record id="res_partner_fastapi_running_user" model="ir.model.access">
+        <field name="name">Fastapi: Running user read partners</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field name="group_id" ref="group_fastapi_endpoint_runner" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <!-- restrict the access by the user running the demo app to its own partner
+    and the authenticated one-->
+    <record id="res_partner_fastapi_running_user_rule" model="ir.rule">
+        <field name="name">Fastapi: Running user rule</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field
+            name="domain_force"
+        > ['|', ('user_ids', '=', user.id), ('id', '=', authenticated_partner_id)]</field>
+        <field name="groups" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
+    </record>
+
+    <!-- give access by the user running the demo app to the fastapi.enddoint model -->
+    <record id="fastapi_endpoint_fastapi_running_user" model="ir.model.access">
+        <field name="name">Fastapi: Running user read endpoints</field>
+        <field name="model_id" ref="fastapi.model_fastapi_endpoint" />
+        <field name="group_id" ref="group_fastapi_endpoint_runner" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <!-- restrict the access by the user running the demo app to its own endpoints -->
+    <record id="fastapi_endpoint_fastapi_running_user_rule" model="ir.rule">
+        <field name="name">Fastapi: Running user rule</field>
+        <field name="model_id" ref="fastapi.model_fastapi_endpoint" />
+        <field name="domain_force"> [('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
+    </record>
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+    <record model="ir.ui.view" id="fastapi_endpoint_demo_form_view">
+        <field name="name">fastapi.endpoint.demo.form (in fastapi)</field>
+        <field name="model">fastapi.endpoint</field>
+        <field name="inherit_id" ref="fastapi_endpoint_form_view" />
+        <field name="arch" type="xml">
+            <span name="configuration" position="after">
+                <group
+                    name="demo_app_configuration"
+                    title="Configuration"
+                    invisible="app != 'demo'"
+                >
+                    <field name="demo_auth_method" />
+                </group>
+            </span>
+        </field>
+    </record>
+</odoo>

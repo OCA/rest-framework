@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2018 ACSONE SA/NV
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="menu_rest_api_root" model="ir.ui.menu">
+        <field name="name">REST API</field>
+        <field name="sequence" eval="400" />
+        <field name="web_icon">base_rest,static/description/icon.png</field>
+    </record>
+
+    <record id="action_rest_api_docs" model="ir.actions.act_url">
+        <field name="name">REST API</field>
+        <field name="url">/api-docs</field>
+        <field name="target">self</field>
+    </record>
+
+    <record id="menu_rest_api_docs" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_rest_api_root" />
+        <field name="name">Docs</field>
+        <field name="sequence" eval="100" />
+        <field name="action" ref="action_rest_api_docs" />
+    </record>
+</odoo>

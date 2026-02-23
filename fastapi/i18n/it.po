@@ -1,0 +1,262 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* fastapi
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-05-20 10:26+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.4\n"
+
+#. module: fastapi
+#: model:ir.model.fields,help:fastapi.field_fastapi_endpoint__description
+msgid "A short description of the API. It can use Markdown"
+msgstr "Una breve descrizione dell'API. Può contenere Markdown"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__active
+msgid "Active"
+msgstr "Attivo"
+
+#. module: fastapi
+#: model:res.groups,name:fastapi.group_fastapi_manager
+msgid "Administrator"
+msgstr "Amministratore"
+
+#. module: fastapi
+#: model:ir.model.fields.selection,name:fastapi.selection__fastapi_endpoint__demo_auth_method__api_key
+msgid "Api Key"
+msgstr "Chiave API"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__app
+#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_search_view
+msgid "App"
+msgstr "Applicazione"
+
+#. module: fastapi
+#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_form_view
+#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_search_view
+msgid "Archived"
+msgstr "In archivio"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__demo_auth_method
+msgid "Authenciation method"
+msgstr "Metodo autenticazione"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__company_id
+msgid "Company"
+msgstr "Azienda"
+
+#. module: fastapi
+#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_demo_form_view
+msgid "Configuration"
+msgstr "Configurazione"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: fastapi
+#: model:ir.model.fields.selection,name:fastapi.selection__fastapi_endpoint__app__demo
+msgid "Demo Endpoint"
+msgstr "Endpoint esempio"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__description
+msgid "Description"
+msgstr "Descrizione"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__docs_url
+msgid "Docs Url"
+msgstr "URL documenti"
+
+#. module: fastapi
+#: model:ir.module.category,name:fastapi.module_category_fastapi
+#: model:ir.ui.menu,name:fastapi.menu_fastapi_root
+msgid "FastAPI"
+msgstr "FastAPI"
+
+#. module: fastapi
+#: model:ir.actions.act_window,name:fastapi.fastapi_endpoint_act_window
+#: model:ir.model,name:fastapi.model_fastapi_endpoint
+#: model:ir.ui.menu,name:fastapi.fastapi_endpoint_menu
+msgid "FastAPI Endpoint"
+msgstr "Endpoint FastAPI"
+
+#. module: fastapi
+#: model:res.groups,name:fastapi.group_fastapi_endpoint_runner
+msgid "FastAPI Endpoint Runner"
+msgstr "Esecutore endopoint FastAPI"
+
+#. module: fastapi
+#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_search_view
+msgid "Group by..."
+msgstr "Raggruppa per..."
+
+#. module: fastapi
+#: model:ir.model.fields.selection,name:fastapi.selection__fastapi_endpoint__demo_auth_method__http_basic
+msgid "HTTP Basic"
+msgstr "Base HTTP"
+
+#. module: fastapi
+#: model:ir.module.category,description:fastapi.module_category_fastapi
+msgid "Helps you manage your Fastapi Endpoints"
+msgstr "Aiuta nella gestione degli endpoint FastAPI"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__id
+msgid "ID"
+msgstr "ID"
+
+#. module: fastapi
+#: model:ir.model,name:fastapi.model_res_lang
+msgid "Languages"
+msgstr "Lingue"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: fastapi
+#: model:res.groups,name:fastapi.my_demo_app_group
+msgid "My Demo Endpoint Group"
+msgstr "Il mio gruppo endpoint esempio"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__name
+msgid "Name"
+msgstr "Nome"
+
+#. module: fastapi
+#: model:ir.model.fields,help:fastapi.field_fastapi_endpoint__registry_sync
+msgid ""
+"ON: the record has been modified and registry was not notified.\n"
+"No change will be active until this flag is set to false via proper action.\n"
+"\n"
+"OFF: record in line with the registry, nothing to do."
+msgstr ""
+"Acceso: il record è stato modificato e il registro non è stato notificato.\n"
+"Nessuna modifica sarà attiva finchè questa opzione è impostata a falso "
+"attraverso un'azione opportuna.\n"
+"\n"
+"Spento: record allineato con il registro, non c'è niente da fare."
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__openapi_url
+msgid "Openapi Url"
+msgstr "URL OpenAPI"
+
+#. module: fastapi
+#: model:ir.model,name:fastapi.model_ir_rule
+msgid "Record Rule"
+msgstr "Regola su record"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__redoc_url
+msgid "Redoc Url"
+msgstr "URL record"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__registry_sync
+msgid "Registry Sync"
+msgstr "Sincro registro"
+
+#. module: fastapi
+#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_form_view
+msgid "Registry Sync Required"
+msgstr "Sincro registro richiesto"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__root_path
+msgid "Root Path"
+msgstr "Percorso radice"
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__save_http_session
+msgid "Save HTTP Session"
+msgstr "Salva sessione HTTP"
+
+#. module: fastapi
+#: model:ir.actions.server,name:fastapi.fastapi_endpoint_action_sync_registry
+#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_form_view
+#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_tree_view
+msgid "Sync Registry"
+msgstr "Sincronizza registro"
+
+#. module: fastapi
+#. odoo-python
+#: code:addons/fastapi/models/fastapi_endpoint_demo.py:0
+msgid "The authentication method is required for app %(app)s"
+msgstr "Il metodo di autenticazione è richiesto per l'app %(app)s"
+
+#. module: fastapi
+#: model:ir.model.fields,help:fastapi.field_fastapi_endpoint__name
+msgid "The title of the API."
+msgstr "Titolo dell'API."
+
+#. module: fastapi
+#: model:ir.model.fields,help:fastapi.field_fastapi_endpoint__user_id
+msgid "The user to use to execute the API calls."
+msgstr "Utente da utilizzare per eseguire la chiamata API."
+
+#. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__user_id
+#: model:res.groups,name:fastapi.group_fastapi_user
+msgid "User"
+msgstr "Utente"
+
+#. module: fastapi
+#: model:ir.model.fields,help:fastapi.field_fastapi_endpoint__save_http_session
+msgid ""
+"Whether session should be saved into the session store. This is required if "
+"for example you use the Odoo's authentication mechanism. Oherwise chance are "
+"high that you don't need it and could turn off this behaviour. Additionaly "
+"turning off this option will prevent useless IO operation when storing and "
+"reading the session on the disk and prevent unexpecteed disk space "
+"consumption."
+msgstr ""
+"Se la sessione deve essere salvata nell'archivio sessioni. Questo è "
+"necessario se, ad esempio, si utilizza il meccanismo di autenticazione di "
+"Odoo. In caso contrario, è probabile che non se ne abbia bisogno e si può "
+"disattivare questo comportamento. Inoltre, disattivando questa opzione si "
+"impediranno operazioni di I/O inutili durante l'archiviazione e la lettura "
+"della sessione sul disco e si impedirà un consumo inaspettato di spazio su "
+"disco."
+
+#. module: fastapi
+#. odoo-python
+#: code:addons/fastapi/models/fastapi_endpoint.py:0
+msgid "`%(name)s` uses a blacklisted root_path = `%(root_path)s`"
+msgstr "`%(name)s` utilizza un root_path bloccato = `%(root_path)s`"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"

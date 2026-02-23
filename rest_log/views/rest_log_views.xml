@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="rest_log_tree_view" model="ir.ui.view">
+        <field name="name">rest.log tree</field>
+        <field name="model">rest.log</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'failed'">
+                <field name="collection" optional="hide" />
+                <field name="collection_id" optional="hide" />
+                <field name="create_uid" />
+                <field name="create_date" />
+                <field name="request_method" />
+                <field name="request_url" />
+                <field name="state" />
+                <field name="exception_name" />
+                <field name="exception_message" />
+                <field name="severity" />
+            </list>
+        </field>
+    </record>
+    <record id="rest_log_form_view" model="ir.ui.view">
+        <field name="name">rest.log form</field>
+        <field name="model">rest.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div
+                        class="oe_button_box"
+                        name="button_box"
+                        invisible="['|', ('id','=',False), ('collection_id', '=', False)]"
+                    >
+                        <button
+                            type="object"
+                            name="action_view_collection"
+                            icon="fa-eye"
+                            invisible="[('collection_id', '=', False)]"
+                        >
+                            View collection
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="collection" />
+                            <field name="request_url" />
+                            <field name="request_method" />
+                        </group>
+                        <group>
+                            <field name="create_uid" />
+                            <field name="create_date" />
+                        </group>
+                    </group>
+                    <group string="Parameters" name="parameters">
+                        <field name="params" widget="ace" />
+                        <field name="headers" widget="ace" />
+                    </group>
+                    <group
+                        string="Result"
+                        name="result"
+                        invisible="[('state', '!=', 'success')]"
+                    >
+                        <group>
+                            <field name="result" nolabel="1" widget="ace" colspan="2" />
+                        </group>
+                    </group>
+                    <group
+                        string="Error"
+                        name="error"
+                        invisible="[('state', '!=', 'failed')]"
+                    >
+                        <group colspan="2">
+                            <field name="exception_name" />
+                            <field name="exception_message" />
+                            <field name="severity" />
+                        </group>
+                        <group colspan="4">
+                            <field
+                                name="error"
+                                nolabel="1"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                                colspan="2"
+                            />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="rest_log_search_view" model="ir.ui.view">
+        <field name="name">rest.log search</field>
+        <field name="model">rest.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="collection" />
+                <field name="collection_id" />
+                <field name="state" />
+                <field name="request_url" />
+                <field name="request_method" />
+                <field name="params" />
+                <field name="headers" />
+                <field name="exception_name" />
+                <field name="severity" />
+                <filter
+                    string="Today"
+                    name="today"
+                    date="create_date"
+                    help="Logs generated today"
+                />
+                <separator />
+                <filter
+                    string="Failed"
+                    name="filter_status_failed"
+                    domain="[('state', '=', 'failed')]"
+                />
+                <filter
+                    string="Severe errors"
+                    name="filter_severity_severe"
+                    domain="[('severity', '=', 'severe')]"
+                />
+                <filter
+                    string="Warning errors"
+                    name="filter_severity_warning"
+                    domain="[('severity', '=', 'warning')]"
+                />
+                <filter
+                    string="Functional errors"
+                    name="filter_severity_functional"
+                    domain="[('severity', '=', 'functional')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Collection"
+                        name="by_collection"
+                        domain="[]"
+                        context="{'group_by': 'collection'}"
+                    />
+                    <filter
+                        string="User"
+                        name="by_user"
+                        domain="[]"
+                        context="{'group_by': 'create_uid'}"
+                    />
+                    <filter
+                        string="Request URL"
+                        name="groupby_request_url"
+                        domain="[]"
+                        context="{'group_by': 'request_url'}"
+                    />
+                    <filter
+                        string="Status"
+                        name="status"
+                        domain="[]"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        string="Exception"
+                        name="exception_name"
+                        domain="[]"
+                        context="{'group_by': 'exception_name'}"
+                    />
+                    <filter
+                        string="Exception message"
+                        name="exception_message"
+                        domain="[]"
+                        context="{'group_by': 'exception_message'}"
+                    />
+                    <filter
+                        string="Severity"
+                        name="severity"
+                        domain="[]"
+                        context="{'group_by': 'severity'}"
+                    />
+                    <filter
+                        string="Date"
+                        name="groupby_create_date"
+                        domain="[]"
+                        context="{'group_by': 'create_date'}"
+                        groups="base.group_no_one"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_rest_log" model="ir.actions.act_window">
+        <field name="name">REST Logs</field>
+        <field name="res_model">rest.log</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="rest_log_search_view" />
+    </record>
+</odoo>

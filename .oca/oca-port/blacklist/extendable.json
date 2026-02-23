@@ -1,0 +1,7 @@
+{
+  "pull_requests": {
+    "orphaned_commits": "(auto) Nothing to port from PR #",
+    "OCA/rest-framework#313": "Already ported",
+    "OCA/rest-framework#348": "(auto) Nothing to port from PR #348"
+  }
+}

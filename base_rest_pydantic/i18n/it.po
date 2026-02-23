@@ -1,0 +1,29 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* base_rest_pydantic
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-06-05 14:57+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.4\n"
+
+#. module: base_rest_pydantic
+#. odoo-python
+#: code:addons/base_rest_pydantic/restapi.py:0
+msgid "BadRequest %s"
+msgstr "Richiesta errata %s"
+
+#. module: base_rest_pydantic
+#. odoo-python
+#: code:addons/base_rest_pydantic/restapi.py:0
+msgid "Invalid Response"
+msgstr "Risposta non valida"

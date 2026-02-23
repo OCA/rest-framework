@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+    <record model="ir.model.access" id="fastapi_endpoint_access_view">
+        <field name="name">fastapi.endpoint view</field>
+        <field name="model_id" ref="model_fastapi_endpoint" />
+        <field name="group_id" ref="group_fastapi_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record model="ir.model.access" id="fastapi_endpoint_access_manage">
+        <field name="name">fastapi.endpoint manage</field>
+        <field name="model_id" ref="model_fastapi_endpoint" />
+        <field name="group_id" ref="group_fastapi_manager" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+</odoo>

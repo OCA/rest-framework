@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 ACSONE SA/NV
+     License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
+<odoo>
+    <record model="ir.ui.view" id="fastapi_endpoint_form_view">
+        <field name="name">fastapi.endpoint.form (in fastapi)</field>
+        <field name="model">fastapi.endpoint</field>
+        <field name="arch" type="xml">
+            <form>
+                <header />
+                <sheet>
+                    <field name="active" invisible="1" />
+                    <field name="registry_sync" invisible="1" />
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_sync_registry"
+                            string="Sync Registry"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            invisible="registry_sync"
+                        />
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Registry Sync Required"
+                        bg_color="bg-warning"
+                        invisible="registry_sync"
+                    />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="app" />
+                            <field name="root_path" />
+                            <field name="user_id" />
+                            <field name="company_id" />
+                            <field name="description" />
+                            <field name="save_http_session" />
+                        </group>
+                        <group name="resoures">
+                            <field name="docs_url" widget="url" />
+                            <field name="redoc_url" widget="url" />
+                            <field name="openapi_url" widget="url" />
+                        </group>
+                    </group>
+                    <span name="configuration" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="fastapi_endpoint_search_view">
+        <field name="name">fastapi.endpoint.search (in fastapi)</field>
+        <field name="model">fastapi.endpoint</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="app" />
+                <filter
+                    string="Archived"
+                    name="inactive"
+                    domain="[('active','=',False)]"
+                />
+                <group expand='0' string='Group by...'>
+                    <filter
+                        string='App'
+                        name="groupby_app"
+                        context="{'group_by': 'app'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="fastapi_endpoint_tree_view">
+        <field name="name">fastapi.endpoint.tree (in fastapi)</field>
+        <field name="model">fastapi.endpoint</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="not registry_sync" decoration-muted="not active">
+                <field name="active" column_invisible="1" />
+                <field name="registry_sync" column_invisible="1" />
+                <field name="name" />
+                <field name="app" />
+                <field name="root_path" />
+                <field name="docs_url" widget="url" />
+                <field name="redoc_url" widget="url" />
+                <field name="openapi_url" widget="url" />
+                <button
+                    name="action_sync_registry"
+                    string="Sync Registry"
+                    type="object"
+                    class="oe_highlight"
+                    icon="fa-refresh"
+                    invisible="registry_sync"
+                />
+            </list>
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="fastapi_endpoint_action_sync_registry">
+        <field name="name">Sync Registry</field>
+        <field name="model_id" ref="model_fastapi_endpoint" />
+        <field name="binding_model_id" ref="model_fastapi_endpoint" />
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">
+            records.action_sync_registry()
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="fastapi_endpoint_act_window">
+        <field name="name">FastAPI Endpoint</field>
+        <field name="res_model">fastapi.endpoint</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record model="ir.ui.menu" id="fastapi_endpoint_menu">
+        <field name="name">FastAPI Endpoint</field>
+        <field name="parent_id" ref="menu_fastapi_root" />
+        <field name="action" ref="fastapi_endpoint_act_window" />
+        <field name="sequence" eval="16" />
+    </record>
+</odoo>

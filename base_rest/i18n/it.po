@@ -1,0 +1,81 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* base_rest
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-04-11 11:24+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.4\n"
+
+#. module: base_rest
+#. odoo-python
+#: code:addons/base_rest/restapi.py:0
+msgid "BadRequest %s"
+msgstr "Richiesta errata %s"
+
+#. module: base_rest
+#. odoo-python
+#: code:addons/base_rest/restapi.py:0
+msgid "BadRequest item %(idx)s :%(errors)s"
+msgstr "Elemento richiesta errata %(idx)s :%(errors)s"
+
+#. module: base_rest
+#. odoo-python
+#: code:addons/base_rest/restapi.py:0
+msgid "BadRequest: Not enough items in the list (%(current)s < %(expected)s)"
+msgstr ""
+"Richiesta errata: non ci sono sufficienti elementi nella lista (%(current)s "
+"< %(expected)s)"
+
+#. module: base_rest
+#. odoo-python
+#: code:addons/base_rest/restapi.py:0
+msgid "BadRequest: Too many items in the list (%(current)s > %(expected)s)"
+msgstr ""
+"Richiesta errata: ci sono troppi elementi nella lista (%(current)s > "
+"%(expected)s)"
+
+#. module: base_rest
+#: model:ir.ui.menu,name:base_rest.menu_rest_api_docs
+msgid "Docs"
+msgstr "Documenti"
+
+#. module: base_rest
+#. odoo-python
+#: code:addons/base_rest/restapi.py:0
+msgid "Invalid Response %s"
+msgstr "Risposta non valida %s"
+
+#. module: base_rest
+#: model:ir.actions.act_url,name:base_rest.action_rest_api_docs
+#: model:ir.ui.menu,name:base_rest.menu_rest_api_root
+msgid "REST API"
+msgstr "API REST"
+
+#. module: base_rest
+#: model:ir.model,name:base_rest.model_rest_service_registration
+msgid "REST Services Registration Model"
+msgstr "Modello registrazione servizio REST"
+
+#. module: base_rest
+#: model:ir.model,name:base_rest.model_ir_rule
+msgid "Record Rule"
+msgstr "Regola su record"
+
+#. module: base_rest
+#. odoo-python
+#: code:addons/base_rest/restapi.py:0
+msgid "Unable to get cerberus schema from %s"
+msgstr "Impossibile ottenere lo schema Cerberus da %s"
+
+#~ msgid "You must provide a dict of RestMethodParam"
+#~ msgstr "Bisogna fornire un dizionario del parametro metodo REST"
