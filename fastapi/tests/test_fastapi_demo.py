@@ -29,7 +29,17 @@ class FastAPIDemoCase(FastAPITransactionCase):
     def setUpClass(cls) -> None:
         super().setUpClass()
         cls.default_fastapi_router = demo_router
-        cls.default_fastapi_running_user = cls.env.ref("fastapi.my_demo_app_user")
+        cls.default_fastapi_running_user = (
+            cls.env["res.users"]
+            .with_context(no_reset_password=True)
+            .create(
+                {
+                    "name": "My Demo Endpoint User",
+                    "login": "my_demo_app_user_test",
+                    "groups_id": [(6, 0, [])],
+                }
+            )
+        )
         cls.default_fastapi_authenticated_partner = cls.env["res.partner"].create(
             {"name": "FastAPI Demo"}
         )
@@ -54,7 +64,15 @@ class FastAPIDemoCase(FastAPITransactionCase):
         )
 
     def test_endpoint_info(self) -> None:
-        demo_app = self.env.ref("fastapi.fastapi_endpoint_demo")
+        demo_app = self.env["fastapi.endpoint"].create(
+            {
+                "name": "Fastapi Demo Endpoint",
+                "app": "demo",
+                "root_path": "/fastapi_demo_test",
+                "demo_auth_method": "http_basic",
+                "user_id": self.default_fastapi_running_user.id,
+            }
+        )
         with self._create_test_client(
             dependency_overrides={fastapi_endpoint: partial(lambda a: a, demo_app)}
         ) as test_client:

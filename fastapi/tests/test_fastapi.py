@@ -19,9 +19,34 @@ class FastAPIHttpCase(HttpCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.fastapi_demo_app = cls.env.ref("fastapi.fastapi_endpoint_demo")
-        cls.fastapi_multi_demo_app = cls.env.ref(
-            "fastapi.fastapi_endpoint_multislash_demo"
+        demo_user = (
+            cls.env["res.users"]
+            .with_context(no_reset_password=True)
+            .create(
+                {
+                    "name": "My Demo Endpoint User",
+                    "login": "my_demo_app_user_http_test",
+                    "groups_id": [(6, 0, [])],
+                }
+            )
+        )
+        cls.fastapi_demo_app = cls.env["fastapi.endpoint"].create(
+            {
+                "name": "Fastapi Demo Endpoint",
+                "app": "demo",
+                "root_path": "/fastapi_demo",
+                "demo_auth_method": "http_basic",
+                "user_id": demo_user.id,
+            }
+        )
+        cls.fastapi_multi_demo_app = cls.env["fastapi.endpoint"].create(
+            {
+                "name": "Fastapi Multi-Slash Demo Endpoint",
+                "app": "demo",
+                "root_path": "/fastapi/demo-multi",
+                "demo_auth_method": "http_basic",
+                "user_id": demo_user.id,
+            }
         )
         cls.fastapi_apps = cls.fastapi_demo_app + cls.fastapi_multi_demo_app
         cls.fastapi_apps._handle_registry_sync()
