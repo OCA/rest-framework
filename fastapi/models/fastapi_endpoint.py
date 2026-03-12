@@ -10,7 +10,7 @@ from typing import Any
 from starlette.middleware import Middleware
 from starlette.routing import Mount
 
-from odoo import _, api, exceptions, fields, models, tools
+from odoo import api, exceptions, fields, models, tools
 
 from fastapi import APIRouter, Depends, FastAPI
 
@@ -88,7 +88,7 @@ class FastapiEndpoint(models.Model):
         for rec in self:
             if rec.root_path in self._blacklist_root_paths:
                 raise exceptions.UserError(
-                    _(
+                    self.env._(
                         "`%(name)s` uses a blacklisted root_path = `%(root_path)s`",
                         name=rec.name,
                         root_path=rec.root_path,

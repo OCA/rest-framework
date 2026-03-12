@@ -374,7 +374,7 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:ef181029fc269ba5b6364530192a725c5f3392bc026ef9d5fcf47f9e43ec888a
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img alt="License: LGPL-3" src="https://img.shields.io/badge/license-LGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/rest-framework/tree/18.0/fastapi"><img alt="OCA/rest-framework" src="https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/rest-framework-18-0/rest-framework-18-0-fastapi"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&amp;target_branch=18.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img alt="License: LGPL-3" src="https://img.shields.io/badge/license-LGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/rest-framework/tree/19.0/fastapi"><img alt="OCA/rest-framework" src="https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/rest-framework-19-0/rest-framework-19-0-fastapi"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&amp;target_branch=19.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
 <p>This addon provides the basis to smoothly integrate the
 <a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a> framework into Odoo.</p>
 <p>This integration allows you to use all the goodies from
@@ -818,7 +818,7 @@ dependency.</p>
 <strong>‘authenticated_partner’</strong> dependency as a parameter of your route
 handler.</p>
 <pre class="code python literal-block">
-<span class="kn">from</span><span class="w"> </span><span class="nn">odoo.addons.base.models.res_partner</span><span class="w"> </span><span class="kn">import</span> <span class="n">Partner</span><span class="w">
+<span class="kn">from</span><span class="w"> </span><span class="nn">odoo.addons.base.models.res_partner</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResPartner</span> <span class="k">as</span> <span class="n">Partner</span><span class="w">
 
 
 </span><span class="nd">&#64;demo_api_router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/partners&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="n">PartnerInfo</span><span class="p">])</span><span class="w">
@@ -1937,7 +1937,7 @@ code accordingly.
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/rest-framework/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/OCA/rest-framework/issues/new?body=module:%20fastapi%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/OCA/rest-framework/issues/new?body=module:%20fastapi%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
@@ -1965,7 +1965,7 @@ mission is to support the collaborative development of Odoo features and
 promote its widespread use.</p>
 <p>Current <a class="reference external" href="https://odoo-community.org/page/maintainer-role">maintainer</a>:</p>
 <p><a class="reference external image-reference" href="https://github.com/lmignon"><img alt="lmignon" src="https://github.com/lmignon.png?size=40px" /></a></p>
-<p>This module is part of the <a class="reference external" href="https://github.com/OCA/rest-framework/tree/18.0/fastapi">OCA/rest-framework</a> project on GitHub.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/OCA/rest-framework/tree/19.0/fastapi">OCA/rest-framework</a> project on GitHub.</p>
 <p>You are welcome to contribute. To learn how please visit <a class="reference external" href="https://odoo-community.org/page/Contribute">https://odoo-community.org/page/Contribute</a>.</p>
 </div>
 </div>

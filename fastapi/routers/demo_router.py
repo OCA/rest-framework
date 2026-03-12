@@ -14,7 +14,7 @@ from odoo.api import Environment
 from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
 from odoo.service.model import MAX_TRIES_ON_CONCURRENCY_FAILURE
 
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner as Partner
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, status
 from fastapi.responses import JSONResponse

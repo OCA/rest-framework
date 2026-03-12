@@ -360,7 +360,7 @@ When you define a route handler, you can inject the
 handler.
 
 ``` python
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner as Partner
 
 
 @demo_api_router.get("/partners", response_model=list[PartnerInfo])

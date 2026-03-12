@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Annotated
 from odoo.api import Environment
 from odoo.exceptions import AccessDenied
 
-from odoo.addons.base.models.res_partner import Partner
-from odoo.addons.base.models.res_users import Users
+from odoo.addons.base.models.res_partner import ResPartner as Partner
+from odoo.addons.base.models.res_users import ResUsers as Users
 
 from fastapi import Depends, Header, HTTPException, Query, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials

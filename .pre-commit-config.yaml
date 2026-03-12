@@ -5,7 +5,6 @@ exclude: |
   ^base_rest_auth_api_key/|
   ^base_rest_pydantic/|
   ^extendable/|
-  ^fastapi/|
   ^pydantic/|
   ^rest_log/|
   # END NOT INSTALLABLE ADDONS

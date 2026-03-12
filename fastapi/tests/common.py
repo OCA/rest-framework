@@ -14,8 +14,8 @@ from odoo.api import Environment
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
-from odoo.addons.base.models.res_partner import Partner
-from odoo.addons.base.models.res_users import Users
+from odoo.addons.base.models.res_partner import ResPartner as Partner
+from odoo.addons.base.models.res_users import ResUsers as Users
 
 from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
