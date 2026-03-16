@@ -8,7 +8,7 @@ from typing import Annotated
 import requests
 from starlette.middleware import Middleware
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 from fastapi import Depends, Header
@@ -72,8 +72,9 @@ class FastapiEndpoint(models.Model):
                         re.compile(rex)
                     except re.error as e:
                         raise ValidationError(
-                            _(
-                                "Invalid regex for captcha routes: %(regex)s (error: %(error)s)"
+                            self.env._(
+                                "Invalid regex for captcha routes: %(regex)s "
+                                "(error: %(error)s)"
                             )
                             % {
                                 "regex": rex,
@@ -111,7 +112,7 @@ class FastapiEndpoint(models.Model):
         """Validate the captcha response."""
         secret_key = self.captcha_secret_key
         if not secret_key:
-            raise UserError(_("No secret key found for this endpoint"))
+            raise UserError(self.env._("No secret key found for this endpoint"))
 
         if self.captcha_type == "recaptcha":
             return self._validate_recaptcha(captcha_response, secret_key)
@@ -136,12 +137,14 @@ class FastapiEndpoint(models.Model):
         if not success:
             error_codes = result.get("error-codes", ["?"])
             raise AccessError(
-                _("Recaptcha validation failed: %s") % ", ".join(error_codes)
+                self.env._("Recaptcha validation failed: %s") % ", ".join(error_codes)
             )
         score = result.get("score", 1)
         if score < self.captcha_minimum_score:
             raise AccessError(
-                _("Recaptcha validation failed: score %(score)s < %(min_score)s")
+                self.env._(
+                    "Recaptcha validation failed: score %(score)s < %(min_score)s"
+                )
                 % {
                     "score": score,
                     "min_score": self.captcha_minimum_score,
@@ -163,13 +166,14 @@ class FastapiEndpoint(models.Model):
         if not success:
             error_codes = result.get("error-codes", ["?"])
             raise AccessError(
-                _("Hcaptcha validation failed: %s") % ", ".join(error_codes)
+                self.env._("Hcaptcha validation failed: %s") % ", ".join(error_codes)
             )
         score = result.get("score", 1)
         if score < self.captcha_minimum_score:
             raise AccessError(
-                _(
-                    "Hcaptcha validation failed: score %(score)s < %(min_score)s (%(reason)s)"
+                self.env._(
+                    "Hcaptcha validation failed: score %(score)s < %(min_score)s "
+                    "(%(reason)s)"
                 )
                 % {
                     "score": score,
@@ -194,7 +198,7 @@ class FastapiEndpoint(models.Model):
         if not success:
             error = result.get("error", "?")
             raise AccessError(
-                _("Altcha (%(url)s) validation failed: %(error)s")
+                self.env._("Altcha (%(url)s) validation failed: %(error)s")
                 % {"url": url, "error": error}
             )
 

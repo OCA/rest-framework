@@ -4,7 +4,6 @@
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from odoo import _
 from odoo.exceptions import AccessError
 
 from odoo.addons.fastapi.context import odoo_env_ctx
@@ -29,15 +28,15 @@ class CaptchaMiddleware(BaseHTTPMiddleware):
         token = request.headers.get("X-Captcha-Token")
         if not token:
             raise AccessError(
-                _("Captcha token not found in headers"),
+                env._("Captcha token not found in headers"),
             )
         try:
             endpoint.validate_captcha(token)
         except AccessError as e:
             raise e
-        except IOError as e:
+        except OSError as e:
             raise AccessError(
-                _("Captcha validation failed: %s") % str(e),
+                env._("Captcha validation failed: %s") % str(e),
             ) from e
         response = await call_next(request)
         return response

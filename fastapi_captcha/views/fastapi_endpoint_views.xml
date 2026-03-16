@@ -5,8 +5,6 @@
     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 -->
 <odoo>
-
-
     <record id="fastapi_endpoint_form_view" model="ir.ui.view">
         <field name="model">fastapi.endpoint</field>
         <field name="inherit_id" ref="fastapi.fastapi_endpoint_form_view" />
@@ -15,27 +13,17 @@
                 <field name="use_captcha" />
             </field>
             <group name="resoures" position="after">
-                <group
-                    name="captcha"
-                    attrs="{'invisible': [('use_captcha', '=', False)]}"
-                >
-                    <field
-                        name="captcha_type"
-                        attrs="{'required': [('use_captcha', '=', True)]}"
-                    />
-                    <field
-                        name="captcha_secret_key"
-                        attrs="{'required': [('use_captcha', '=', True)]}"
-                    />
+                <group name="captcha" invisible="not use_captcha">
+                    <field name="captcha_type" required="use_captcha" />
+                    <field name="captcha_secret_key" required="use_captcha" />
                     <field name="captcha_routes_regex" />
                     <field
                         name="captcha_custom_verify_url"
-                        attrs="{'invisible': [('captcha_type', '!=', 'altcha')]}"
+                        invisible="captcha_type != 'altcha'"
                     />
                     <field name="captcha_minimum_score" />
                 </group>
             </group>
         </field>
     </record>
-
 </odoo>
