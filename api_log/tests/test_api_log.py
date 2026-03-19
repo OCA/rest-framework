@@ -37,6 +37,10 @@ class TestAPILog(Common):
         self.assertNotIn(secret_cookie, headers_values)
         self.assertIn(public_header_value, headers_values)
 
+    def test_name_empty_log(self):
+        log = self.log_model.create({})
+        self.assertEqual("0001-01-01 - [] ", log.name)
+
     def test_log_response(self):
         response = Response()
         log = self.log_model.create({})

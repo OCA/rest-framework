@@ -6,6 +6,7 @@
 import base64
 import json
 import time
+from datetime import date
 from traceback import format_exception
 
 from dateutil.relativedelta import relativedelta
@@ -219,8 +220,8 @@ class APILog(models.Model):
     def _compute_name(self):
         for log in self:
             log.name = (
-                f"{log.request_date.isoformat()} - "
-                f"[{log.request_method}] {log.request_url}"
+                f"{(log.request_date or date.min).isoformat()} - "
+                f"[{log.request_method or ''}] {log.request_url or ''}"
             )
 
     @api.depends("request_time", "response_time")
