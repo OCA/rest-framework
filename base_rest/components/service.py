@@ -145,15 +145,16 @@ class BaseRestService(AbstractComponent):
             return result
         routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
         output_param = routing["output_param"]
-        if not output_param and not DISABLE_DEPRECATE_LOG:
+        if output_param:
+            return output_param.to_response(self, result)
+        elif not output_param and not DISABLE_DEPRECATE_LOG:
             _logger.warning(
                 "DEPRECATED: You must define an output schema for method %s "
                 "in service %s",
                 method_name,
                 self._name,
             )
-            return result
-        return output_param.to_response(self, result)
+        return result
 
     def dispatch(self, method_name, *args, params=None):
         """
