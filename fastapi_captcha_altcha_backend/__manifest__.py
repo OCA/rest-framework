@@ -17,7 +17,7 @@
     "license": "AGPL-3",
     "external_dependencies": {
         "python": [
-            "altcha",
+            "altcha>=2.0.0",
         ]
     },
 }

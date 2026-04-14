@@ -388,8 +388,11 @@ verification as a captcha method.</p>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-1">Usage</a></h1>
 <p>Add the altcha router in your FastAPI application to enable the Altcha
-captcha verification. Get the challenge from the /altcha/challenge
-endpoint. Choose the altcha_local captcha type in your FastAPI endpoint
+captcha verification.</p>
+<p>Get the challenge from the /altcha/v2/challenge endpoint if you are
+using altcha widget v3+ or from /altcha/v1/challenge if you are still
+using altcha widget v2 or less.</p>
+<p>Choose the altcha_local captcha type in your FastAPI endpoint
 configuration.</p>
 </div>
 <div class="section" id="bug-tracker">

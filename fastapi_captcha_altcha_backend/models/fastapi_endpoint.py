@@ -3,11 +3,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, fields, models
-from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.exceptions import AccessError, UserError
 
 try:
     import altcha
-    from altcha import verify_solution
+    from altcha import verify_solution, verify_solution_v1
 except ImportError:
     altcha = None
 
@@ -35,14 +35,17 @@ class FastapiEndpoint(models.Model):
 
         try:
             # Verify the solution
-            verified, err = verify_solution(captcha_response, secret_key, True)
-            if not verified:
-                raise AccessError(
-                    _("Altcha validation failed: %(error)s") % {"error": err}
-                )
+            result = verify_solution(captcha_response, secret_key)
+            if not result.verified:
+                # Check using legacy verification for backward compatibility with old challenges
+                verified, err = verify_solution_v1(captcha_response, secret_key, True)
+                if not verified:
+                    raise AccessError(
+                        _("Altcha validation failed: %(error)s")
+                        % {"error": "\n--\n".join(e for e in (err, result.error) if e)}
+                    )
 
-            return
         except Exception as e:
-            raise ValidationError(
+            raise AccessError(
                 _("Failed to process Altcha payload: %(error)s") % {"error": str(e)}
             ) from e
