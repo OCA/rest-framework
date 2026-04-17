@@ -17,5 +17,5 @@
     "external_dependencies": {
         "python": ["pydantic>=2.0.0", "contextvars", "typing-extensions"]
     },
-    "installable": False,
+    "installable": True,
 }
