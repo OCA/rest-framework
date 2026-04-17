@@ -29,7 +29,7 @@ class UserModel(OdooBaseModel):
 
 
 class UserDetailsModel(UserModel):
-    groups: list[GroupModel] = Field(alias="groups_id")
+    groups: list[GroupModel] = Field(alias="group_ids")
     action_id: OdooBaseModel | None = None
     signature: str | None = None
     active: bool | None = None
@@ -102,7 +102,7 @@ class TestGenericOdooGetterPydanticV2Case(CommonPydanticCase):
                         "id": group.id,
                         "name": group.name,
                     }
-                    for group in self.user_demo.groups_id
+                    for group in self.user_demo.group_ids
                 ],
                 "action_id": None,
                 "signature": None,
@@ -127,7 +127,7 @@ class TestGenericOdooGetterPydanticV2Case(CommonPydanticCase):
         user = UserDetailsModel(
             id=666,
             partner_id={"id": 66, "name": "test"},
-            groups_id=[{"id": 33, "name": "group 1"}],
+            group_ids=[{"id": 33, "name": "group 1"}],
             action_id={"id": 55},
             signature=None,
             active=True,
