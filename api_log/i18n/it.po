@@ -1,0 +1,242 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* api_log
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: api_log
+#: model:ir.actions.act_window,name:api_log.api_log_action
+#: model:ir.ui.menu,name:api_log.menu_api_log
+msgid "API Log"
+msgstr ""
+
+#. module: api_log
+#: model:res.groups,name:api_log.group_api_log
+msgid "API Log Access"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__collection_id
+#: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
+msgid "Collection"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__collection_model
+msgid "Collection Model"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__collection_ref
+msgid "Collection Ref"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model,name:api_log.model_api_log_collection_mixin
+msgid "Collection of API logs"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: api_log
+#: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
+msgid "Error"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__id
+msgid "ID"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log_collection_mixin__log_requests
+msgid "Log Requests"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model,name:api_log.model_api_log
+msgid "Log for API"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,help:api_log.field_api_log_collection_mixin__log_requests
+msgid "Log requests in database."
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log_collection_mixin__log_ids
+msgid "Logs"
+msgstr ""
+
+#. module: api_log
+#: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
+msgid "Method"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__name
+msgid "Name"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__referrer
+msgid "Referrer"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_body
+msgid "Request Body"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_b64
+msgid "Request Content"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_content_length
+msgid "Request Content Length"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_content_type
+msgid "Request Content Type"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_date
+msgid "Request Date"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_headers
+msgid "Request Headers"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_headers_preview
+msgid "Request Headers Preview"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_method
+msgid "Request Method"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_preview
+msgid "Request Preview"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_time
+msgid "Request Time"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__request_url
+msgid "Request Url"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_body
+msgid "Response Body"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_b64
+msgid "Response Content"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_content_length
+msgid "Response Content Length"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_content_type
+msgid "Response Content Type"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_date
+msgid "Response Date"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_headers
+msgid "Response Headers"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_headers_preview
+msgid "Response Headers Preview"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_preview
+msgid "Response Preview"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_status_code
+msgid "Response Status Code"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__response_time
+msgid "Response Time"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__stack_trace
+msgid "Stack Trace"
+msgstr ""
+
+#. module: api_log
+#: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
+msgid "Success"
+msgstr ""
+
+#. module: api_log
+#: model:ir.model.fields,field_description:api_log.field_api_log__time
+msgid "Time"
+msgstr ""
+
+#. module: api_log
+#: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
+msgid "Url"
+msgstr ""
