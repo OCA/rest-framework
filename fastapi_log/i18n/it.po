@@ -6,46 +6,48 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-06-03 09:46+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: fastapi_log
 #: model_terms:ir.ui.view,arch_db:fastapi_log.fastapi_endpoint_form_view
 msgid "<span class=\"o_stat_text\">Logs</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Log</span>"
 
 #. module: fastapi_log
 #: model:ir.model,name:fastapi_log.model_fastapi_endpoint
 msgid "FastAPI Endpoint"
-msgstr ""
+msgstr "Endpoint FastAPI"
 
 #. module: fastapi_log
 #: model:ir.actions.act_window,name:fastapi_log.fastapi_log_action
 #: model:ir.ui.menu,name:fastapi_log.menu_fastapi_log
 msgid "Fastapi Logs"
-msgstr ""
+msgstr "Log Fastapi"
 
 #. module: fastapi_log
 #: model:ir.model.fields,field_description:fastapi_log.field_fastapi_endpoint__log_requests
 msgid "Log Requests"
-msgstr ""
+msgstr "Richieste log"
 
 #. module: fastapi_log
 #: model:ir.model,name:fastapi_log.model_api_log
 msgid "Log for API"
-msgstr ""
+msgstr "Log per API"
 
 #. module: fastapi_log
 #: model:ir.model.fields,help:fastapi_log.field_fastapi_endpoint__log_requests
 msgid "Log requests in database."
-msgstr ""
+msgstr "Richieste log nel database."
 
 #. module: fastapi_log
 #: model:ir.model.fields,field_description:fastapi_log.field_fastapi_endpoint__log_ids
 msgid "Logs"
-msgstr ""
+msgstr "Registri"
