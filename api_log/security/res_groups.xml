@@ -8,7 +8,7 @@
     <record id="group_api_log" model="res.groups">
         <field name="name">API Log Access</field>
         <field
-            name="users"
+            name="user_ids"
             eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
         />
     </record>
