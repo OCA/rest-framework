@@ -24,9 +24,12 @@ class FastApiDispatcher(_dispatchers.get("fastapi", BaseFastApiDispatcher)):
     @contextmanager
     def _create_log_env(self, request_env):
         request_registry = request_env.registry
-        if request_registry.in_test_mode():
+        # `test_log_cr` is set on the registry by the tests (see tests/common.py)
+        # to capture the logs with a dedicated cursor.
+        test_log_cr = getattr(request_registry, "test_log_cr", None)
+        if test_log_cr is not None:
             # During tests, use the dedicated test's cursor
-            cr = request_registry.test_log_cr
+            cr = test_log_cr
         else:
             # Create an independent cursor
             # so the logs are committed despite any endpoint's exceptions
@@ -37,7 +40,7 @@ class FastApiDispatcher(_dispatchers.get("fastapi", BaseFastApiDispatcher)):
         finally:
             # While executing tests,
             # the cursor is already managed in the tests
-            if not request_registry.in_test_mode():
+            if test_log_cr is None:
                 try:
                     cr.commit()  # pylint: disable=invalid-commit
                 finally:
