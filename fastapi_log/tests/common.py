@@ -6,8 +6,11 @@
 import threading
 from contextlib import contextmanager
 
-from odoo.sql_db import TestCursor
-from odoo.tests.common import RecordCapturer
+from odoo import api
+from odoo.api import SUPERUSER_ID
+from odoo.modules.registry import Registry
+from odoo.tests.common import RecordCapturer, get_db_name
+from odoo.tests.test_cursor import TestCursor
 
 from odoo.addons.api_log.tests.common import Common as CommonAPILog
 
@@ -15,6 +18,23 @@ from odoo.addons.api_log.tests.common import Common as CommonAPILog
 class Common(CommonAPILog):
     @classmethod
     def setUpClass(cls):
+        # Request logs are persisted through a dedicated database connection so
+        # they survive endpoint exceptions (see ``setUp``). Odoo cursors use
+        # REPEATABLE READ, so that connection (and the test cursor) only see rows
+        # committed before their snapshot is taken. The fastapi demo endpoint
+        # must therefore be committed *before* ``super().setUpClass()`` opens the
+        # test cursor, otherwise neither the request nor the log cursor can see
+        # it. Since 19.0 it is loaded on demand, so create it here on a
+        # short-lived cursor that the ``with`` block commits on exit.
+        with Registry(get_db_name())._db.cursor() as setup_cr:
+            api.Environment(setup_cr, SUPERUSER_ID, {})[
+                "fastapi.endpoint"
+            ]._load_demo_data()
+        # Registered *before* ``super().setUpClass()`` so it runs last in the LIFO
+        # cleanup order, after the base class closed ``cls.cr``. ``cls.cr`` writes
+        # (and row-locks) the endpoint below; deleting it from another connection
+        # while that lock is held would deadlock.
+        cls.addClassCleanup(cls._remove_demo_endpoint)
         super().setUpClass()
         cls.fastapi_demo_app = cls.env.ref("fastapi.fastapi_endpoint_demo")
         cls.fastapi_demo_app.root_path += "/test"
@@ -26,6 +46,16 @@ class Common(CommonAPILog):
             .search([("code", "=", "fr_BE")])
         )
         lang.active = True
+
+    @classmethod
+    def _remove_demo_endpoint(cls):
+        """Remove the fastapi demo endpoint committed in ``setUpClass``."""
+        with Registry(get_db_name())._db.cursor() as cr:
+            endpoint = api.Environment(cr, SUPERUSER_ID, {}).ref(
+                "fastapi.fastapi_endpoint_demo", raise_if_not_found=False
+            )
+            if endpoint:
+                endpoint.unlink()
 
     def setUp(self):
         super().setUp()
