@@ -1,3 +1,5 @@
+from fastapi.exceptions import HTTPException
+
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -7,8 +9,6 @@ from odoo.addons.fastapi_auth_api_key.dependencies import (
     authenticated_partner_by_api_key,
 )
 
-from fastapi.exceptions import HTTPException
-
 
 @tagged("-at_install", "post_install")
 class TestFastapiAuthApiKey(TransactionCase):
@@ -16,7 +16,13 @@ class TestFastapiAuthApiKey(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
-        demo_user = cls.env.ref("base.user_demo")
+        # Odoo 19 no longer loads demo data by default, so we cannot rely on
+        # ``base.user_demo``; create a dedicated user instead.
+        demo_user = (
+            cls.env["res.users"]
+            .with_context(no_reset_password=True)
+            .create({"name": "Endpoint Demo User", "login": "endpoint_demo_user"})
+        )
         cls.demo_env = demo_user.with_user(demo_user).env
         cls.demo_endpoint = cls.env["fastapi.endpoint"].create(
             {
@@ -79,7 +85,7 @@ class TestFastapiAuthApiKey(TransactionCase):
         # An exception is raised when no api key record is found
         with self.assertRaises(HTTPException) as error:
             authenticated_auth_api_key("404", self.demo_env, self.demo_endpoint)
-        self.assertEqual(error.exception.detail, ("The key 404 is not allowed",))
+        self.assertEqual(error.exception.detail, ("The key '404' is not allowed",))
 
     def test_authenticated_auth_api_key_unauthorized_key(self):
         # An exception is raised when unauthorized api key record is found

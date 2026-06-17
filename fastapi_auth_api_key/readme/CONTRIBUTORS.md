@@ -1,2 +1,3 @@
 - Matthieu Méquignon \<<matthieu.mequignon@camptocamp.com>\>
 - Son Ho \<<sonhd@trobz.com>\>
+- Giuseppe Ardoselli \<<agiuseppe28@gmail.com>\>

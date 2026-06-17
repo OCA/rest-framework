@@ -3,17 +3,18 @@
 import os
 from typing import Annotated
 
+from fastapi.exceptions import HTTPException
+
 from odoo import SUPERUSER_ID
 from odoo.api import Environment
 from odoo.exceptions import ValidationError
 
 from odoo.addons.auth_api_key.models.auth_api_key import AuthApiKey
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner
 from odoo.addons.fastapi.dependencies import fastapi_endpoint, odoo_env
 from odoo.addons.fastapi.models.fastapi_endpoint import FastapiEndpoint
 
 from fastapi import Depends, status
-from fastapi.exceptions import HTTPException
 from fastapi.security import APIKeyHeader
 
 HTTP_API_KEY_HEADER = os.environ.get("FASTAPI_AUTH_HTTP_API_KEY_HEADER", "HTTP-API-KEY")
@@ -27,8 +28,10 @@ def authenticated_auth_api_key(
     if not key:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=env._("Missing %(HTTP_API_KEY_HEADER)s header")
-            % {"HTTP_API_KEY_HEADER": HTTP_API_KEY_HEADER},
+            detail=env._(
+                "Missing %(HTTP_API_KEY_HEADER)s header",
+                HTTP_API_KEY_HEADER=HTTP_API_KEY_HEADER,
+            ),
             headers={"WWW-Authenticate": HTTP_API_KEY_HEADER},
         )
     admin_env = Environment(env.cr, SUPERUSER_ID, {})
@@ -55,7 +58,7 @@ def authenticated_auth_api_key(
 
 def authenticated_partner_by_api_key(
     auth_api_key: Annotated[AuthApiKey, Depends(authenticated_auth_api_key)],
-) -> Partner:
+) -> ResPartner:
     return auth_api_key.user_id.partner_id
 
 
