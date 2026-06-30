@@ -379,6 +379,14 @@ ul.auto-toc {
 <p>When a response is logged, the header <tt class="docutils literal">API_LOG_ENTRY_ID</tt> is injected
 in the response header. This header stores the identifier of the log
 record produced from the response.</p>
+<p>A scheduled action “API Log: Delete old logs” is available to
+automatically delete old API log records. It is <strong>disabled by default</strong>.</p>
+<p>To enable it, go to Settings &gt; Technical &gt; Automation &gt; Scheduled
+Actions and activate “API Log: Delete old logs”.</p>
+<p>The retention period (in days) is configurable through the system
+parameter <tt class="docutils literal">api_log.retention_days</tt>, which defaults to 180 days. Logs
+with a <tt class="docutils literal">request_date</tt> older than this threshold are deleted when the
+cron runs.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -415,6 +423,7 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <li>Simone Orsi <a class="reference external" href="mailto:simahawk&#64;gmail.com">simahawk&#64;gmail.com</a></li>
 <li><a class="reference external" href="https://www.pytech.it">PyTech</a>:<ul>
 <li>Simone Rubino &lt;<a class="reference external" href="mailto:simone.rubino&#64;pytech.it">simone.rubino&#64;pytech.it</a>&gt;</li>
+<li>Alessandro Pecchini &lt;<a class="reference external" href="mailto:alessandro.pecchini&#64;pytech.it">alessandro.pecchini&#64;pytech.it</a>&gt;</li>
 </ul>
 </li>
 </ul>
