@@ -72,7 +72,7 @@
                     name="inactive"
                     domain="[('active','=',False)]"
                 />
-                <group expand='0' string='Group by...'>
+                <group>
                     <filter
                         string='App'
                         name="groupby_app"

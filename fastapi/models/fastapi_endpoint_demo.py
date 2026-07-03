@@ -2,11 +2,11 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 from typing import Annotated, Any
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.api import Environment
 from odoo.exceptions import ValidationError
 
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
@@ -40,7 +40,7 @@ class FastapiEndpoint(models.Model):
         for rec in self:
             if rec.app == "demo" and not rec.demo_auth_method:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The authentication method is required for app %(app)s",
                         app=rec.app,
                     )
@@ -90,7 +90,7 @@ def api_key_based_authenticated_partner_impl(
         ),
     ],
     env: Annotated[Environment, Depends(odoo_env)],
-) -> Partner:
+) -> ResPartner:
     """A dummy implementation that look for a user with the same login
     as the provided api key
     """

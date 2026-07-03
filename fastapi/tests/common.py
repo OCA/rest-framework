@@ -12,10 +12,10 @@ from starlette.responses import JSONResponse, Response
 
 from odoo.api import Environment
 from odoo.tests import tagged
-from odoo.tests.common import TransactionCase
 
-from odoo.addons.base.models.res_partner import Partner
-from odoo.addons.base.models.res_users import Users
+from odoo.addons.base.models.res_partner import ResPartner
+from odoo.addons.base.models.res_users import ResUsers
+from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 
 from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
@@ -47,7 +47,7 @@ def default_exception_handler(request: Request, exc: Exception) -> Response:
 
 
 @tagged("post_install", "-at_install")
-class FastAPITransactionCase(TransactionCase):
+class FastAPITransactionCase(TransactionCaseWithUserDemo):
     """
     This class is a base class for FastAPI tests.
 
@@ -80,8 +80,8 @@ class FastAPITransactionCase(TransactionCase):
         cls.default_fastapi_app: FastAPI | None = None
         cls.default_fastapi_router: APIRouter | None = None
         cls.default_fastapi_odoo_env: Environment = cls.env
-        cls.default_fastapi_running_user: Users | None = None
-        cls.default_fastapi_authenticated_partner: Partner | None = None
+        cls.default_fastapi_running_user: ResUsers | None = None
+        cls.default_fastapi_authenticated_partner: ResPartner | None = None
         cls.default_fastapi_dependency_overrides: dict[
             Callable[..., Any], Callable[..., Any]
         ] = {}
@@ -91,8 +91,8 @@ class FastAPITransactionCase(TransactionCase):
         self,
         app: FastAPI | None = None,
         router: APIRouter | None = None,
-        user: Users | None = None,
-        partner: Partner | None = None,
+        user: ResUsers | None = None,
+        partner: ResPartner | None = None,
         env: Environment = None,
         dependency_overrides: dict[Callable[..., Any], Callable[..., Any]] = None,
         raise_server_exceptions: bool = True,

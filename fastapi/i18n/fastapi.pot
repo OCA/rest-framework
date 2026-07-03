@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -82,6 +82,8 @@ msgstr ""
 
 #. module: fastapi
 #: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__display_name
+#: model:ir.model.fields,field_description:fastapi.field_ir_rule__display_name
+#: model:ir.model.fields,field_description:fastapi.field_res_lang__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -93,6 +95,7 @@ msgstr ""
 #. module: fastapi
 #: model:ir.module.category,name:fastapi.module_category_fastapi
 #: model:ir.ui.menu,name:fastapi.menu_fastapi_root
+#: model:res.groups.privilege,name:fastapi.privilege_fastapi
 msgid "FastAPI"
 msgstr ""
 
@@ -109,11 +112,6 @@ msgid "FastAPI Endpoint Runner"
 msgstr ""
 
 #. module: fastapi
-#: model_terms:ir.ui.view,arch_db:fastapi.fastapi_endpoint_search_view
-msgid "Group by..."
-msgstr ""
-
-#. module: fastapi
 #: model:ir.model.fields.selection,name:fastapi.selection__fastapi_endpoint__demo_auth_method__http_basic
 msgid "HTTP Basic"
 msgstr ""
@@ -125,6 +123,8 @@ msgstr ""
 
 #. module: fastapi
 #: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__id
+#: model:ir.model.fields,field_description:fastapi.field_ir_rule__id
+#: model:ir.model.fields,field_description:fastapi.field_res_lang__id
 msgid "ID"
 msgstr ""
 
@@ -141,11 +141,6 @@ msgstr ""
 #. module: fastapi
 #: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__write_date
 msgid "Last Updated on"
-msgstr ""
-
-#. module: fastapi
-#: model:res.groups,name:fastapi.my_demo_app_group
-msgid "My Demo Endpoint Group"
 msgstr ""
 
 #. module: fastapi

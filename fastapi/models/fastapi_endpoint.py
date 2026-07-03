@@ -10,11 +10,11 @@ from typing import Any
 from starlette.middleware import Middleware
 from starlette.routing import Mount
 
-from odoo import _, api, exceptions, fields, models, tools
+from odoo import api, exceptions, fields, models, tools
+from odoo.tools import convert
 
 from fastapi import APIRouter, Depends, FastAPI
 
-from .. import dependencies
 from ..middleware import ASGIMiddleware
 
 _logger = logging.getLogger(__name__)
@@ -88,7 +88,7 @@ class FastapiEndpoint(models.Model):
         for rec in self:
             if rec.root_path in self._blacklist_root_paths:
                 raise exceptions.UserError(
-                    _(
+                    self.env._(
                         "`%(name)s` uses a blacklisted root_path = `%(root_path)s`",
                         name=rec.name,
                         root_path=rec.root_path,
@@ -310,9 +310,12 @@ class FastapiEndpoint(models.Model):
         return app
 
     def _get_app_dependencies_overrides(self) -> dict[Callable, Callable]:
+        # Import here to avoid circular import while waiting for lazy imports
+        from ..dependencies import company_id, fastapi_endpoint_id
+
         return {
-            dependencies.fastapi_endpoint_id: partial(lambda a: a, self.id),
-            dependencies.company_id: partial(lambda a: a, self.company_id.id),
+            fastapi_endpoint_id: partial(lambda a: a, self.id),
+            company_id: partial(lambda a: a, self.company_id.id),
         }
 
     def _prepare_fastapi_app_params(self) -> dict[str, Any]:
@@ -337,4 +340,23 @@ class FastapiEndpoint(models.Model):
 
     def _get_fastapi_app_dependencies(self) -> list[Depends]:
         """Return the dependencies to use for the fastapi app."""
-        return [Depends(dependencies.accept_language)]
+        # Import here to avoid circular import too
+        from ..dependencies import accept_language
+
+        return [Depends(accept_language)]
+
+    # test utility
+    @api.model
+    def has_demo_data(self):
+        return (
+            self.env.ref("fastapi.fastapi_endpoint_demo", raise_if_not_found=False)
+            is not None
+        )
+
+    def _load_demo_data(self):
+        if self.has_demo_data():
+            return
+        # Load demo data
+        convert.convert_file(
+            self.env, "fastapi", "demo/fastapi_endpoint_demo.xml", None, mode="init"
+        )

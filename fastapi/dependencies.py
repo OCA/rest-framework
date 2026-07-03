@@ -1,22 +1,20 @@
 # Copyright 2022 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL).
 
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 from odoo.api import Environment
 from odoo.exceptions import AccessDenied
 
-from odoo.addons.base.models.res_partner import Partner
-from odoo.addons.base.models.res_users import Users
+from odoo.addons.base.models.res_partner import ResPartner
+from odoo.addons.base.models.res_users import ResUsers
 
 from fastapi import Depends, Header, HTTPException, Query, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from .context import odoo_env_ctx
+from .models.fastapi_endpoint import FastapiEndpoint
 from .schemas import Paging
-
-if TYPE_CHECKING:
-    from .models.fastapi_endpoint import FastapiEndpoint
 
 
 def company_id() -> int | None:
@@ -35,7 +33,7 @@ def odoo_env(company_id: Annotated[int | None, Depends(company_id)]) -> Environm
     yield env
 
 
-def authenticated_partner_impl() -> Partner:
+def authenticated_partner_impl() -> ResPartner:
     """This method has to be overriden when you create your fastapi app
     to declare the way your partner will be provided. In some case, this
     partner will come from the authentication mechanism (ex jwt token) in other cases
@@ -43,21 +41,23 @@ def authenticated_partner_impl() -> Partner:
     See the fastapi_endpoint_demo for an example"""
 
 
-def optionally_authenticated_partner_impl() -> Partner | None:
+def optionally_authenticated_partner_impl() -> ResPartner | None:
     """This method has to be overriden when you create your fastapi app
     and you need to get an optional authenticated partner into your endpoint.
     """
 
 
 def authenticated_partner_env(
-    partner: Annotated[Partner, Depends(authenticated_partner_impl)],
+    partner: Annotated[ResPartner, Depends(authenticated_partner_impl)],
 ) -> Environment:
     """Return an environment with the authenticated partner id in the context"""
     return partner.with_context(authenticated_partner_id=partner.id).env
 
 
 def optionally_authenticated_partner_env(
-    partner: Annotated[Partner | None, Depends(optionally_authenticated_partner_impl)],
+    partner: Annotated[
+        ResPartner | None, Depends(optionally_authenticated_partner_impl)
+    ],
     env: Annotated[Environment, Depends(odoo_env)],
 ) -> Environment:
     """Return an environment with the authenticated partner id in the context if
@@ -69,9 +69,9 @@ def optionally_authenticated_partner_env(
 
 
 def authenticated_partner(
-    partner: Annotated[Partner, Depends(authenticated_partner_impl)],
+    partner: Annotated[ResPartner, Depends(authenticated_partner_impl)],
     partner_env: Annotated[Environment, Depends(authenticated_partner_env)],
-) -> Partner:
+) -> ResPartner:
     """If you need to get access to the authenticated partner into your
     endpoint, you can add a dependency into the endpoint definition on this
     method.
@@ -85,9 +85,11 @@ def authenticated_partner(
 
 
 def optionally_authenticated_partner(
-    partner: Annotated[Partner | None, Depends(optionally_authenticated_partner_impl)],
+    partner: Annotated[
+        ResPartner | None, Depends(optionally_authenticated_partner_impl)
+    ],
     partner_env: Annotated[Environment, Depends(optionally_authenticated_partner_env)],
-) -> Partner | None:
+) -> ResPartner | None:
     """If you need to get access to the authenticated partner if the call is
     authenticated, you can add a dependency into the endpoint definition on this
     method.
@@ -110,7 +112,7 @@ def paging(
 def basic_auth_user(
     credential: Annotated[HTTPBasicCredentials, Depends(HTTPBasic())],
     env: Annotated[Environment, Depends(odoo_env)],
-) -> Users:
+) -> ResUsers:
     username = credential.username
     password = credential.password
     try:
@@ -118,13 +120,12 @@ def basic_auth_user(
             env["res.users"]
             .sudo()
             .authenticate(
-                db=env.cr.dbname,
                 credential={
                     "type": "password",
                     "login": username,
                     "password": password,
                 },
-                user_agent_env=None,
+                user_agent_env={"interactive": False},
             )
         )
         return env["res.users"].browse(response.get("uid"))
@@ -137,9 +138,9 @@ def basic_auth_user(
 
 
 def authenticated_partner_from_basic_auth_user(
-    user: Annotated[Users, Depends(basic_auth_user)],
+    user: Annotated[ResUsers, Depends(basic_auth_user)],
     env: Annotated[Environment, Depends(odoo_env)],
-) -> Partner:
+) -> ResPartner:
     return env["res.partner"].browse(user.sudo().partner_id.id)
 
 

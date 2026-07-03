@@ -10,7 +10,11 @@ from odoo.tools.misc import mute_logger
 
 from fastapi import status
 
-from ..dependencies import fastapi_endpoint
+from ..dependencies import (
+    authenticated_partner_from_basic_auth_user,
+    authenticated_partner_impl,
+    fastapi_endpoint,
+)
 from ..routers import demo_router
 from ..schemas import DemoEndpointAppInfo, DemoExceptionType
 from .common import FastAPITransactionCase
@@ -28,6 +32,7 @@ class FastAPIDemoCase(FastAPITransactionCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.env["fastapi.endpoint"]._load_demo_data()
         cls.default_fastapi_router = demo_router
         cls.default_fastapi_running_user = cls.env.ref("fastapi.my_demo_app_user")
         cls.default_fastapi_authenticated_partner = cls.env["res.partner"].create(
@@ -45,6 +50,25 @@ class FastAPIDemoCase(FastAPITransactionCase):
             response: Response = test_client.get("/demo/who_ami")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         partner = self.default_fastapi_authenticated_partner
+        self.assertDictEqual(
+            response.json(),
+            {
+                "name": partner.name,
+                "display_name": partner.display_name,
+            },
+        )
+
+    def test_who_ami_http_basic(self) -> None:
+        self.default_fastapi_authenticated_partner = self.env["res.partner"]
+        dependency_overrides = {
+            authenticated_partner_impl: authenticated_partner_from_basic_auth_user
+        }
+        with self._create_test_client(
+            dependency_overrides=dependency_overrides
+        ) as test_client:
+            response: Response = test_client.get("/demo/who_ami", auth=("demo", "demo"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        partner = self.partner_demo
         self.assertDictEqual(
             response.json(),
             {

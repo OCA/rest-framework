@@ -5,8 +5,8 @@ import os
 import unittest
 from contextlib import contextmanager
 
-from odoo import sql_db
 from odoo.tests.common import HttpCase
+from odoo.tests.test_cursor import TestCursor
 from odoo.tools import mute_logger
 
 from fastapi import status
@@ -19,6 +19,7 @@ class FastAPIHttpCase(HttpCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.env["fastapi.endpoint"]._load_demo_data()
         cls.fastapi_demo_app = cls.env.ref("fastapi.fastapi_endpoint_demo")
         cls.fastapi_multi_demo_app = cls.env.ref(
             "fastapi.fastapi_endpoint_multislash_demo"
@@ -35,7 +36,7 @@ class FastAPIHttpCase(HttpCase):
     @contextmanager
     def _mocked_commit(self):
         with unittest.mock.patch.object(
-            sql_db.TestCursor, "commit", return_value=None
+            TestCursor, "commit", return_value=None
         ) as mocked_commit:
             yield mocked_commit
 
@@ -130,7 +131,7 @@ class FastAPIHttpCase(HttpCase):
         self.assert_exception_processed(
             exception_type=DemoExceptionType.access_error,
             error_message="test",
-            expected_message="AccessError",
+            expected_message="test",
             expected_status_code=status.HTTP_403_FORBIDDEN,
         )
 
@@ -138,7 +139,7 @@ class FastAPIHttpCase(HttpCase):
         self.assert_exception_processed(
             exception_type=DemoExceptionType.missing_error,
             error_message="test",
-            expected_message="MissingError",
+            expected_message="test",
             expected_status_code=status.HTTP_404_NOT_FOUND,
         )
 
@@ -156,7 +157,7 @@ class FastAPIHttpCase(HttpCase):
             route = "/fastapi_demo/demo/exception?exception_type=BAD&error_message="
             response = self.url_open(route, timeout=200)
             mocked_commit.assert_not_called()
-            self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+            self.assertEqual(response.status_code, 422)
 
     def test_no_commit_on_exception(self) -> None:
         # this test check that the way we mock the cursor is working as expected

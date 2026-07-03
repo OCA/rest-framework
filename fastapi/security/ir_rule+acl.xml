@@ -18,7 +18,10 @@
         <field name="name">Fastapi: Running user rule</field>
         <field name="model_id" ref="base.model_res_users" />
         <field name="domain_force"> [('id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
+        <field
+            name="groups"
+            eval="[Command.link(ref('group_fastapi_endpoint_runner'))]"
+        />
     </record>
 
     <!-- give access to the user running the demo app to the res.partner model -->
@@ -40,7 +43,10 @@
         <field
             name="domain_force"
         > ['|', ('user_ids', '=', user.id), ('id', '=', authenticated_partner_id)]</field>
-        <field name="groups" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
+        <field
+            name="groups"
+            eval="[Command.link(ref('group_fastapi_endpoint_runner'))]"
+        />
     </record>
 
     <!-- give access by the user running the demo app to the fastapi.enddoint model -->
@@ -59,6 +65,9 @@
         <field name="name">Fastapi: Running user rule</field>
         <field name="model_id" ref="fastapi.model_fastapi_endpoint" />
         <field name="domain_force"> [('user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('group_fastapi_endpoint_runner'))]" />
+        <field
+            name="groups"
+            eval="[Command.link(ref('group_fastapi_endpoint_runner'))]"
+        />
     </record>
 </odoo>

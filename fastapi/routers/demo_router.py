@@ -14,7 +14,7 @@ from odoo.api import Environment
 from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
 from odoo.service.model import MAX_TRIES_ON_CONCURRENCY_FAILURE
 
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -67,7 +67,7 @@ async def get_lang(env: Annotated[Environment, Depends(odoo_env)]):
 
 @router.get("/demo/who_ami")
 async def who_ami(
-    partner: Annotated[Partner, Depends(authenticated_partner)],
+    partner: Annotated[ResPartner, Depends(authenticated_partner)],
 ) -> DemoUserInfo:
     """Who am I?
 
