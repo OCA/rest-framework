@@ -37,11 +37,11 @@ class APILog(models.Model):
     request_method = fields.Char()
     request_headers = fields.Json()
     request_body = fields.Binary(attachment=False)
-    request_date = fields.Datetime()
+    request_date = fields.Datetime(index=True)
     request_time = fields.Float()
 
     # Response
-    response_status_code = fields.Integer()
+    response_status_code = fields.Integer(index=True)
     response_headers = fields.Json()
     response_body = fields.Binary(attachment=False)
     response_date = fields.Datetime()
