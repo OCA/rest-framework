@@ -6,11 +6,11 @@ from apispec import BasePlugin
 
 class RestMethodSecurityPlugin(BasePlugin):
     def __init__(self, service):
-        super(RestMethodSecurityPlugin, self).__init__()
+        super().__init__()
         self._service = service
 
     def init_spec(self, spec):
-        super(RestMethodSecurityPlugin, self).init_spec(spec)
+        super().init_spec(spec)
         self.spec = spec
         self.openapi_version = spec.openapi_version
         jwt_scheme = {
@@ -25,9 +25,7 @@ class RestMethodSecurityPlugin(BasePlugin):
     def operation_helper(self, path=None, operations=None, **kwargs):
         routing = kwargs.get("routing")
         if not routing:
-            super(RestMethodSecurityPlugin, self).operation_helper(
-                path, operations, **kwargs
-            )
+            super().operation_helper(path, operations, **kwargs)
         if not operations:
             return
         auth = routing.get("auth", self.spec._params.get("default_auth"))
