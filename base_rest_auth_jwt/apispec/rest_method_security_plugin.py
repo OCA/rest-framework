@@ -3,12 +3,15 @@
 
 from apispec import BasePlugin
 
+from odoo.addons.base_rest.tools import ROUTING_DECORATOR_ATTR
+
 
 class RestMethodSecurityPlugin(BasePlugin):
     def __init__(self, service):
         super().__init__()
         self._service = service
 
+    # pylint: disable=W8110
     def init_spec(self, spec):
         super().init_spec(spec)
         self.spec = spec
@@ -23,13 +26,18 @@ class RestMethodSecurityPlugin(BasePlugin):
         spec.components.security_scheme("jwt", jwt_scheme)
 
     def operation_helper(self, path=None, operations=None, **kwargs):
-        routing = kwargs.get("routing")
+        routing = kwargs.get(ROUTING_DECORATOR_ATTR)
         if not routing:
             super().operation_helper(path, operations, **kwargs)
         if not operations:
             return
-        auth = routing.get("auth", self.spec._params.get("default_auth"))
-        if auth and auth.startswith("jwt"):
+        default_auth = self.spec._params.get("default_auth")
+        auth = routing.get("auth", default_auth)
+        if (auth and auth.startswith("jwt")) or (
+            auth == "public_or_default"
+            and default_auth
+            and default_auth.startswith("jwt")
+        ):
             for _method, params in operations.items():
                 security = params.setdefault("security", [])
                 security.append({"jwt": []})
