@@ -1,0 +1,208 @@
+# Copyright 2017 Camptocamp SA
+# Copyright 2019 ACSONE SA/NV
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html)
+
+import copy
+from contextlib import contextmanager
+
+import odoo
+from odoo import api
+from odoo.modules.registry import Registry
+from odoo.tests import common
+
+from ..core import (
+    DatamodelRegistry,
+    MetaDatamodel,
+    _datamodel_databases,
+    _get_addon_name,
+)
+
+
+@contextmanager
+def new_rollbacked_env():
+    registry = Registry(common.get_db_name())
+    uid = odoo.SUPERUSER_ID
+    cr = registry.cursor()
+    try:
+        yield api.Environment(cr, uid, {})
+    finally:
+        cr.rollback()  # we shouldn't have to commit anything
+        cr.close()
+
+
+class DatamodelMixin:
+    @classmethod
+    def setUpDatamodel(cls):
+        with new_rollbacked_env() as env:
+            builder = env["datamodel.builder"]
+            # build the datamodels of every installed addons
+            datamodel_registry = builder._init_global_registry()
+            cls._datamodels_registry = datamodel_registry
+            # ensure that we load only the datamodels of the 'installed'
+            # modules, not 'to install', which means we load only the
+            # dependencies of the tested addons, not the siblings or
+            # chilren addons
+            builder.build_registry(datamodel_registry, states=("installed",))
+            # build the datamodels of the current tested addon
+            current_addon = _get_addon_name(cls.__module__)
+            env["datamodel.builder"].load_datamodels(current_addon)
+
+    # pylint: disable=W8106
+    def setUp(self):
+        # should be ready only during tests, never during installation
+        # of addons
+        self._datamodels_registry.ready = True
+
+        @self.addCleanup
+        def notready():
+            self._datamodels_registry.ready = False
+
+
+class TransactionDatamodelCase(common.TransactionCase, DatamodelMixin):
+    """A TransactionCase that loads all the datamodels
+
+    It is used like an usual Odoo's TransactionCase, but it ensures
+    that all the datamodels of the current addon and its dependencies
+    are loaded.
+
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.setUpDatamodel()
+
+    # pylint: disable=W8106
+    def setUp(self):
+        # resolve an inheritance issue (common.TransactionCase does not call
+        # super)
+        common.TransactionCase.setUp(self)
+        DatamodelMixin.setUp(self)
+
+
+class DatamodelRegistryCase(common.BaseCase):
+    """This test case can be used as a base for writings tests on datamodels
+
+    This test case is meant to test datamodels in a special datamodel registry,
+    where you want to have maximum control on which datamodels are loaded
+    or not, or when you want to create additional datamodels in your tests.
+
+    If you only want to *use* the datamodels of the tested addon in your tests,
+    then consider using:
+
+    * :class:`TransactionDatamodelCase`
+
+    This test case creates a special
+    :class:`odoo.addons.datamodel.core.DatamodelRegistry` for the purpose of
+    the tests. By default, it loads all the datamodels of the dependencies, but
+    not the datamodels of the current addon (which you have to handle
+    manually). In your tests, you can add more datamodels in 2 manners.
+
+    All the datamodels of an Odoo module::
+
+        self._load_module_datamodels('connector')
+
+    Only specific datamodels::
+
+        self._build_datamodels(MyDatamodel1, MyDatamodel2)
+
+    Note: for the lookups of the datamodels, the default datamodel
+    registry is a global registry for the database. Here, you will
+    need to explicitly pass ``self.datamodel_registry`` in the
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # keep the original classes registered by the metaclass
+        # so we'll restore them at the end of the tests, it avoid
+        # to pollute it with Stub / Test datamodels
+        cls._original_datamodels = copy.deepcopy(MetaDatamodel._modules_datamodels)
+
+        # it will be our temporary datamodel registry for our test session
+        cls.datamodel_registry = DatamodelRegistry()
+
+        # it builds the 'final datamodel' for every datamodel of the
+        # 'datamodel' addon and push them in the datamodel registry
+        cls.datamodel_registry.load_datamodels("datamodel")
+        # build the datamodels of every installed addons already installed
+        # but the current addon (when running with pytest/nosetest, we
+        # simulate the --test-enable behavior by excluding the current addon
+        # which is in 'to install' / 'to upgrade' with --test-enable).
+        current_addon = _get_addon_name(cls.__module__)
+
+        registry = Registry(common.get_db_name())
+        cr = registry.cursor()
+        uid = odoo.SUPERUSER_ID
+        env = api.Environment(cr, uid, {})
+        env["datamodel.builder"].build_registry(
+            cls.datamodel_registry,
+            states=("installed",),
+            exclude_addons=[current_addon],
+        )
+        cls.env = env
+        _datamodel_databases[cls.env.cr.dbname] = cls.datamodel_registry
+
+        def _close_and_rollback():
+            cr.rollback()  # we shouldn't have to commit anything
+            cr.close()
+
+        cls.addClassCleanup(_close_and_rollback)
+
+        # Fake that we are ready to work with the registry
+        # normally, it is set to True and the end of the build
+        # of the datamodels. Here, we'll add datamodels later in
+        # the datamodels registry, but we don't mind for the tests.
+        cls.datamodel_registry.ready = True
+        cls._original_registry_datamodels = copy.deepcopy(
+            cls.datamodel_registry._datamodels
+        )
+
+    def tearDown(self):
+        super().tearDown()
+        # restore the original metaclass' classes
+        MetaDatamodel._modules_datamodels = self._original_datamodels
+        self.datamodel_registry._datamodels = copy.deepcopy(
+            self._original_registry_datamodels
+        )
+
+    def _load_module_datamodels(self, module):
+        self.datamodel_registry.load_datamodels(module)
+
+    def _build_datamodels(self, *classes):
+        for cls in classes:
+            cls._build_datamodel(self.datamodel_registry)
+
+
+class TransactionDatamodelRegistryCase(common.TransactionCase, DatamodelRegistryCase):
+    """Adds Odoo Transaction in the base Datamodel TestCase"""
+
+    # pylint: disable=W8106
+    @classmethod
+    def setUpClass(cls):
+        # resolve an inheritance issue (common.TransactionCase does not use
+        # super)
+        common.TransactionCase.setUpClass(cls)
+        DatamodelRegistryCase.setUp(cls)
+        cls.collection = cls.env["collection.base"]
+
+    def teardown(self):
+        common.TransactionCase.tearDown(self)
+        DatamodelRegistryCase.tearDown(self)
+
+
+class SavepointDatamodelRegistryCase(common.TransactionCase, DatamodelRegistryCase):
+    """Adds Odoo Transaction with Savepoint in the base Datamodel TestCase"""
+
+    @classmethod
+    def setUpClass(cls):
+        # resolve an inheritance issue (common.SavepointCase does not use
+        # super)
+        super().setUpClass()
+        cls.collection = cls.env["collection.base"]
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        common.TransactionCase.tearDownClass(cls)
+        DatamodelRegistryCase.tearDown(cls)
