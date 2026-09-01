@@ -1,0 +1,118 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* fastapi_encrypted_errors
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-06-04 16:26+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.4\n"
+
+#. module: fastapi_encrypted_errors
+#: model_terms:ir.ui.view,arch_db:fastapi_encrypted_errors.wizard_fastapi_decrypt_errors_view_form
+msgid "Close"
+msgstr "Chiudi"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.actions.act_window,name:fastapi_encrypted_errors.wizard_fastapi_decrypt_errors_action_decrypt_error
+#: model:ir.ui.menu,name:fastapi_encrypted_errors.menu_fastapi_decrypt_errors
+#: model_terms:ir.ui.view,arch_db:fastapi_encrypted_errors.wizard_fastapi_decrypt_errors_view_form
+msgid "Decrypt Error"
+msgstr "Decifra errore"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__decrypted_error
+msgid "Decrypted Error"
+msgstr "Errore decifrato"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_fastapi_endpoint__encrypt_errors
+msgid "Encrypt Errors"
+msgstr "Errori cifrati"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,help:fastapi_encrypted_errors.field_fastapi_endpoint__encrypt_errors
+msgid "Encrypt errors before sending them to the client."
+msgstr "Cifra gli errori prima di inviarli al client."
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_fastapi_endpoint__encrypted_errors_secret_key
+msgid "Encrypted Errors Secret Key"
+msgstr "Chiave segreta errori cifrati"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__error
+msgid "Error"
+msgstr "Errore"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model,name:fastapi_encrypted_errors.model_fastapi_endpoint
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__fastapi_endpoint_id
+msgid "FastAPI Endpoint"
+msgstr "Endpoint FastAPI"
+
+#. module: fastapi_encrypted_errors
+#: model_terms:ir.ui.view,arch_db:fastapi_encrypted_errors.fastapi_endpoint_form_view
+msgid "Generate Secret Key"
+msgstr "Genera chiave segreta"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__id
+msgid "ID"
+msgstr "ID"
+
+#. module: fastapi_encrypted_errors
+#: model_terms:ir.ui.view,arch_db:fastapi_encrypted_errors.wizard_fastapi_decrypt_errors_view_form
+msgid "Label"
+msgstr "Etichetta"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,field_description:fastapi_encrypted_errors.field_wizard_fastapi_decrypt_errors__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model.fields,help:fastapi_encrypted_errors.field_fastapi_endpoint__encrypted_errors_secret_key
+msgid ""
+"The secret key used to encrypt errors before sending them to the client."
+msgstr ""
+"La chiave segreta utilizzata per cifrare gli errori prima di inviarli al "
+"client."
+
+#. module: fastapi_encrypted_errors
+#: model:ir.model,name:fastapi_encrypted_errors.model_wizard_fastapi_decrypt_errors
+msgid "Wizard to decrypt FastAPI errors"
+msgstr "Procedura guidata per decifrare gli errori FastAPI"
