@@ -1,2 +1,5 @@
 odoo_test_helper
 httpx2
+# starlette.testclient still uses the anyio.abc.BlockingPortal alias, which
+# anyio 4.15 deprecates: the resulting DeprecationWarning fails checklog-odoo.
+anyio<4.15
