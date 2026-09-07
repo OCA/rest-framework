@@ -2,6 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 # from urllib.parse import urlparse
 import json
+import time
 from unittest import mock
 
 from odoo import exceptions
@@ -87,6 +88,39 @@ class TestDBLogging(TransactionRestServiceRegistryCase, TestDBLoggingMixin):
             resp = self.service.dispatch("get", 100)
         self.assertIn("log_entry_url", resp)
         self.assertTrue(self.log_model.search_count([]) > log_entry_count)
+
+    def test_log_entry_exec_time_success(self):
+        delay = 0.2
+        original_get = self.service.get
+
+        def _delayed_get(*args, **kwargs):
+            time.sleep(delay)
+            return original_get(*args, **kwargs)
+
+        with (
+            self._get_mocked_request(),
+            mock.patch.object(self.service, "get", side_effect=_delayed_get),
+        ):
+            self.service.dispatch("get", 100)
+        entry = self.log_model.search([], order="id desc", limit=1)
+        self.assertGreaterEqual(entry.exec_time, delay)
+
+    def test_log_entry_exec_time_failed(self):
+        delay = 0.2
+        original_fail = self.service.fail
+
+        def _delayed_fail(*args, **kwargs):
+            time.sleep(delay)
+            return original_fail(*args, **kwargs)
+
+        with (
+            self._get_mocked_request(),
+            mock.patch.object(self.service, "fail", side_effect=_delayed_fail),
+            self.assertRaises(Exception),
+        ):
+            self.service.dispatch("fail", "value")
+        entry = self.log_model.search([], order="id desc", limit=1)
+        self.assertGreaterEqual(entry.exec_time, delay)
 
     def test_log_entry_values_success(self):
         params = {"some": "value"}

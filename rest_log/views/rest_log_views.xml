@@ -12,6 +12,7 @@
                 <field name="request_method" />
                 <field name="request_url" />
                 <field name="state" />
+                <field name="exec_time" />
                 <field name="exception_name" />
                 <field name="exception_message" />
                 <field name="severity" />
@@ -50,6 +51,7 @@
                         <group>
                             <field name="create_uid" />
                             <field name="create_date" />
+                            <field name="exec_time" />
                         </group>
                     </group>
                     <group string="Parameters" name="parameters">
