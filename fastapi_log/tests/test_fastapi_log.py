@@ -1,0 +1,140 @@
+# Copyright 2025 Akretion (http://www.akretion.com).
+# @author Florian Mounier <florian.mounier@akretion.com>
+# Copyright 2025 Simone Rubino - PyTech
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+import os
+import unittest
+
+from odoo.tools import mute_logger
+
+from odoo.addons.fastapi.schemas import DemoExceptionType
+from odoo.addons.fastapi_log.tests.common import Common
+
+from fastapi import status
+
+
+@unittest.skipIf(os.getenv("SKIP_HTTP_CASE"), "TestFastapiLog skipped")
+class TestFastapiLog(Common):
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
+    def test_no_log_if_disabled(self):
+        self.fastapi_demo_app.write({"log_requests": False})
+
+        with self.log_capturer() as capturer:
+            response = self.url_open("/fastapi_demo/test/demo", timeout=200)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertFalse(capturer.records)
+
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
+    def test_log_simple(self):
+        with self.log_capturer() as capturer:
+            response = self.url_open("/fastapi_demo/test/demo", timeout=200)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(len(capturer.records), 1)
+        log = capturer.records[0]
+        self.assertTrue(log.request_url.endswith("/fastapi_demo/test/demo"))
+        self.assertEqual(log.request_method, "GET")
+        self.assertEqual(log.response_status_code, 200)
+        self.assertTrue(log.time > 0)
+
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
+    def test_log_exception(self):
+        with self.log_capturer() as capturer:
+            route = (
+                "/fastapi_demo/test/demo/exception?"
+                f"exception_type={DemoExceptionType.user_error.value}"
+                "&error_message=User Error"
+            )
+            response = self.url_open(route, timeout=200)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertEqual(len(capturer.records), 1)
+        log = capturer.records[0]
+        self.assertEqual(response.headers["API-Log-Entry-ID"], str(log.id))
+
+        self.assertIn("/fastapi_demo/test/demo/exception", log.request_url)
+        self.assertEqual(log.request_method, "GET")
+        self.assertEqual(log.response_status_code, 400)
+        self.assertTrue(log.time > 0)
+        self.assertTrue(log.response_body)
+        self.assertIn(b"User Error", log.response_body)
+        self.assertIn("odoo.exceptions.UserError: User Error\n", log.stack_trace)
+
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
+    def test_log_bare_exception(self):
+        with self.log_capturer() as capturer:
+            route = (
+                "/fastapi_demo/test/demo/exception?"
+                f"exception_type={DemoExceptionType.bare_exception.value}"
+                "&error_message=Internal Server Error"
+            )
+            response = self.url_open(route, timeout=200)
+            self.assertEqual(
+                response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        self.assertEqual(len(capturer.records), 1)
+        log = capturer.records[0]
+        self.assertIn("/fastapi_demo/test/demo/exception", log.request_url)
+        self.assertEqual(log.request_method, "GET")
+        self.assertEqual(log.response_status_code, 500)
+        self.assertTrue(log.time > 0)
+        self.assertTrue(log.response_body)
+        self.assertIn(b"Internal Server Error", log.response_body)
+        self.assertIn("NotImplementedError: Internal Server Error\n", log.stack_trace)
+
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
+    def test_log_retrying_post(self):
+        with self.log_capturer() as capturer:
+            nbr_retries = 2
+            route = f"/fastapi_demo/test/demo/retrying?nbr_retries={nbr_retries}"
+            response = self.url_open(
+                route, timeout=20, files={"file": ("test.txt", b"test")}
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(
+                response.json(), {"retries": nbr_retries, "file": "test"}
+            )
+
+        self.assertEqual(len(capturer.records), 3)
+        for log in capturer.records[:-1]:
+            self.assertIn("/fastapi_demo/test/demo/retrying", log.request_url)
+            self.assertEqual(log.request_method, "POST")
+            self.assertEqual(log.response_status_code, 500)
+            self.assertTrue(log.time > 0)
+            self.assertTrue(log.response_body)
+            self.assertIn(b"fake error", log.response_body)
+            self.assertIn(
+                "odoo.addons.fastapi.routers.demo_router.FakeConcurrentUpdateError:"
+                " fake error",
+                log.stack_trace,
+            )
+
+        log = capturer.records[-1]
+        self.assertIn("/fastapi_demo/test/demo/retrying", log.request_url)
+        self.assertEqual(log.request_method, "POST")
+        self.assertEqual(log.response_status_code, 200)
+        self.assertTrue(log.time > 0)
+        self.assertTrue(log.response_body)
+        self.assertIn(b'"retries":2', log.response_body)
+        self.assertIn(b'"file":"test"', log.response_body)
+        self.assertFalse(log.stack_trace)
+
+    @mute_logger("odoo.http", "odoo.addons.base.models.assetsbundle")
+    def test_collection_ref(self):
+        """The created log holds a reference to its endpoint and viceversa."""
+        # Arrange
+        endpoint = self.fastapi_demo_app
+        # pre-condition
+        self.assertFalse(endpoint.log_ids)
+
+        # Act
+        with self.log_capturer() as capturer:
+            self.url_open("/fastapi_demo/test/demo", timeout=200)
+
+        # Assert
+        log = capturer.records[-1]
+        self.assertEqual(log.collection_ref, endpoint)
+        self.assertIn(log, log.collection_ref.log_ids)
