@@ -51,7 +51,10 @@ class FastApiDispatcher(_dispatchers.get("fastapi", BaseFastApiDispatcher)):
             .sudo()
             ._get_endpoint(environ["PATH_INFO"])
         )
-        if fastapi_endpoint.log_requests:
+        # This dispatcher is registered process-wide, so it is also used for
+        # databases where fastapi_log is not installed. In that case the
+        # `log_requests` field is not part of the registry, so skip logging.
+        if "log_requests" in fastapi_endpoint._fields and fastapi_endpoint.log_requests:
             with self._create_log_env(self.request.env) as log_env:
                 try:
                     log = log_env["api.log"].log_request(self.request)
