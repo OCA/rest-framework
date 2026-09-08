@@ -189,10 +189,10 @@ class RestServiceRegistration(models.AbstractModel):
         # dependencies to ensure that controllers defined in a more
         # specialized addon and overriding more generic one takes precedences
         # on the generic one into the registry
-        graph = odoo.modules.graph.Graph()
-        graph.add_module(self.env.cr, "base")
+        graph = odoo.modules.module_graph.ModuleGraph(self.env.cr)
+        graph.extend(["base"])
 
-        query = "SELECT name " "FROM ir_module_module " "WHERE state IN %s "
+        query = "SELECT name FROM ir_module_module WHERE state IN %s "
         params = [tuple(states)]
         if exclude_addons:
             query += " AND name NOT IN %s "
@@ -200,7 +200,7 @@ class RestServiceRegistration(models.AbstractModel):
         self.env.cr.execute(query, params)
 
         module_list = [name for (name,) in self.env.cr.fetchall() if name not in graph]
-        graph.add_modules(self.env.cr, module_list)
+        graph.extend(module_list)
 
         for module in graph:
             self.load_services(module.name, services_registry)
