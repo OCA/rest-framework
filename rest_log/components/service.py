@@ -14,6 +14,7 @@ from odoo import exceptions
 from odoo.http import Response, request
 from odoo.modules.registry import Registry
 from odoo.service.model import PG_CONCURRENCY_ERRORS_TO_RETRY
+from odoo.tools.profiler import Profiler
 
 from odoo.addons.base_rest.http import JSONEncoder
 from odoo.addons.component.core import AbstractComponent
@@ -41,6 +42,9 @@ class BaseRESTService(AbstractComponent):
     def dispatch(self, method_name, *args, params=None):
         if not self._db_logging_active(method_name):
             return super().dispatch(method_name, *args, params=params)
+        if self._start_profiling(method_name):
+            with self._profiling_get_profiler(method_name):
+                return self._dispatch_with_db_logging(method_name, *args, params=params)
         return self._dispatch_with_db_logging(method_name, *args, params=params)
 
     def _dispatch_with_db_logging(self, method_name, *args, params=None):
@@ -223,4 +227,47 @@ class BaseRESTService(AbstractComponent):
     def _get_matching_active_conf(self, method_name):
         return self.env["rest.log"]._get_matching_active_conf(
             self._collection, self._usage, method_name
+        )
+
+    def _start_profiling(self, method_name):
+        if request.session.profile_session and request.db:
+            return None
+        profiling_uids = self._profiling_get_uids()
+        profiling_conf_match = self._profiling_get_matching_conf(method_name)
+        res = profiling_conf_match and self.env.uid in profiling_uids
+        if res:
+            _logger.info(
+                "Profiling enabled for uids=%s %s",
+                str(profiling_uids),
+                f"{self._collection}.{self._usage}.{method_name}",
+            )
+        return res
+
+    def _profiling_get_uids(self):
+        try:
+            param = (
+                self.env["ir.config_parameter"]
+                .sudo()
+                .get_param("rest.log.profiling.uids", "")
+            )
+            if not param.strip():
+                return []
+            return [int(x.strip()) for x in param.strip().split(",") if x.strip()]
+        except ValueError as err:
+            _logger.warning(
+                "Cannot get uid from system parameter rest.log.profiling.uid: %s",
+                str(err),
+            )
+            return []
+
+    def _profiling_get_matching_conf(self, method_name):
+        return self.env["rest.log"]._get_matching_conf_from_param(
+            "rest.log.profiling.conf", self._collection, self._usage, method_name
+        )
+
+    def _profiling_get_profiler(self, method_name):
+        call_name = f"{self._collection}.{self._usage}.{method_name}"
+        return Profiler(
+            description=f"REST LOG {call_name}",
+            profile_session=f"{self.env.user.name} (uid={self.env.uid})",
         )

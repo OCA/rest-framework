@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ========
 REST Log
 ========
@@ -17,7 +13,7 @@ REST Log
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-LGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
@@ -37,6 +33,10 @@ especially in case of errors.
 
 This module add DB logging for REST requests. It also inject in the
 response the URL of the log entry created.
+
+It can also enable profiling for selected REST endpoints. When profiling
+is active, the request execution is wrapped by Odoo's profiler and
+results are stored in ``ir_profile``.
 
 NOTE: this feature was implemented initially inside shopfloor app. Up to
 version 13.0.1.2.1 of this module, if shopfloor is installed, log
@@ -87,6 +87,22 @@ In the 2nd case you can set ``rest.log.active`` param as:
    `collection_name.usage`  # enable for specific endpoints
    `collection_name.usage.endpoint`  # enable for specific endpoints
    `collection_name*:state`  # enable only for specific state (success, failed)
+
+Profiling
+---------
+
+Profiling is enabled per endpoint and per user via system parameters:
+
+- ``rest.log.profiling.conf``: same matching syntax as
+  ``rest.log.active``
+- ``rest.log.profiling.uid``: comma-separated list of user ids allowed
+  to profile
+
+When both parameters match, the request execution is wrapped in Odoo's
+profiler and the results are stored in ``ir_profile``.
+
+``base.profiling_enabled_until`` is only needed to view speedscope
+output in the UI. It is not required to record profiles.
 
 Changelog
 =========
