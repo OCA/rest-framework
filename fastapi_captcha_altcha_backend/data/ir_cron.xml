@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Copyright 2026 Akretion (http://www.akretion.com).
+    @author Florian Mounier <florian.mounier@akretion.com>
+    License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo noupdate="1">
+    <record forcecreate="True" id="ir_cron_presence_control" model="ir.cron">
+        <field name="name">Altcha token cleaning</field>
+        <field
+            name="model_id"
+            ref="fastapi_captcha_altcha_backend.model_altcha_token"
+        />
+        <field name="state">code</field>
+        <field name="code">model._clean()</field>
+        <field eval="True" name="active" />
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+    </record>
+</odoo>
