@@ -30,5 +30,5 @@
         ]
     },
     "development_status": "Beta",
-    "installable": True,
+    "installable": False,
 }

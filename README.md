@@ -1,13 +1,14 @@
 
-[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=19.0)
-[![Pre-commit Status](https://github.com/OCA/rest-framework/actions/workflows/pre-commit.yml/badge.svg?branch=19.0)](https://github.com/OCA/rest-framework/actions/workflows/pre-commit.yml?query=branch%3A19.0)
-[![Build Status](https://github.com/OCA/rest-framework/actions/workflows/test.yml/badge.svg?branch=19.0)](https://github.com/OCA/rest-framework/actions/workflows/test.yml?query=branch%3A19.0)
-[![codecov](https://codecov.io/gh/OCA/rest-framework/branch/19.0/graph/badge.svg)](https://codecov.io/gh/OCA/rest-framework)
-[![Translation Status](https://translation.odoo-community.org/widgets/rest-framework-19-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/rest-framework-19-0/?utm_source=widget)
-
-<!-- /!\ do not modify above this line -->
+[![Support the OCA](https://odoo-community.org/readme-banner-image)](https://odoo-community.org/get-involved?utm_source=repo-readme)
 
 # rest-framework
+[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=20.0)
+[![Pre-commit Status](https://github.com/OCA/rest-framework/actions/workflows/pre-commit.yml/badge.svg?branch=20.0)](https://github.com/OCA/rest-framework/actions/workflows/pre-commit.yml?query=branch%3A20.0)
+[![Build Status](https://github.com/OCA/rest-framework/actions/workflows/test.yml/badge.svg?branch=20.0)](https://github.com/OCA/rest-framework/actions/workflows/test.yml?query=branch%3A20.0)
+[![codecov](https://codecov.io/gh/OCA/rest-framework/branch/20.0/graph/badge.svg)](https://codecov.io/gh/OCA/rest-framework)
+[![Translation Status](https://translation.odoo-community.org/widgets/rest-framework-20-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/rest-framework-20-0/?utm_source=widget)
+
+<!-- /!\ do not modify above this line -->
 
 rest-framework
 
@@ -17,23 +18,7 @@ rest-framework
 
 [//]: # (addons)
 
-Available addons
-----------------
-addon | version | maintainers | summary
---- | --- | --- | ---
-[fastapi](fastapi/) | 19.0.1.1.0 | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Odoo FastAPI endpoint
-
-
-Unported addons
----------------
-addon | version | maintainers | summary
---- | --- | --- | ---
-[base_rest](base_rest/) | 18.0.1.1.1 (unported) |  | Develop your own high level REST APIs for Odoo thanks to this addon.
-[base_rest_auth_api_key](base_rest_auth_api_key/) | 18.0.1.1.0 (unported) | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Base Rest: Add support for the auth_api_key security policy into the openapi documentation
-[base_rest_pydantic](base_rest_pydantic/) | 18.0.1.0.2 (unported) |  | Pydantic binding for base_rest
-[extendable](extendable/) | 18.0.1.0.2 (unported) | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Extendable classes registry loader for Odoo
-[pydantic](pydantic/) | 18.0.1.0.1 (unported) | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Utility addon to ease mapping between Pydantic and Odoo models
-[rest_log](rest_log/) | 18.0.1.0.1 (unported) | <a href='https://github.com/simahawk'><img src='https://github.com/simahawk.png' width='32' height='32' style='border-radius:50%;' alt='simahawk'/></a> | Track REST API calls into DB
+This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
 
 [//]: # (end addons)
 

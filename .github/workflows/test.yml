@@ -3,11 +3,15 @@ name: tests
 on:
   pull_request:
     branches:
-      - "19.0*"
+      - "20.0*"
   push:
     branches:
-      - "19.0"
-      - "19.0-ocabot-*"
+      - "20.0"
+      - "20.0-ocabot-*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   unreleased-deps:
@@ -35,14 +39,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - container: ghcr.io/oca/oca-ci/py3.10-odoo19.0:latest
+          - container: ghcr.io/oca/oca-ci/py3.12-odoo20.0:latest
             name: test with Odoo
-          - container: ghcr.io/oca/oca-ci/py3.10-ocb19.0:latest
+          - container: ghcr.io/oca/oca-ci/py3.12-ocb20.0:latest
             name: test with OCB
             makepot: "true"
     services:
       postgres:
-        image: postgres:13
+        image: postgres:16
         env:
           POSTGRES_USER: odoo
           POSTGRES_PASSWORD: odoo
@@ -65,6 +69,13 @@ jobs:
         run: oca_init_test_database
       - name: Run tests
         run: oca_run_tests
+      - name: Upload screenshots from JS tests
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: Screenshots of failed JS tests - ${{ matrix.name }}${{ join(matrix.include) }}
+          path: /tmp/odoo_tests/${{ env.PGDATABASE }}
+          if-no-files-found: ignore
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
