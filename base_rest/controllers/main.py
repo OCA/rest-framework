@@ -1,4 +1,5 @@
 # Copyright 2018 ACSONE SA/NV
+# Copyright 2026 Michael Tietz (MT Software) <mtietz@mt-software.de>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
@@ -170,10 +171,22 @@ class RestController(Controller):
         collection.env = env(
             context=dict(
                 env.context,
-                authenticated_partner_id=component_ctx.get("authenticated_partner_id"),
+                **self._get_collection_env_context(collection, component_ctx),
             )
         )
         yield WorkContext(model_name="rest.service.registration", **component_ctx)
+
+    def _get_collection_env_context(self, collection, component_ctx):
+        """
+        This method can be inherited to add keys into the context of the env
+        used by the services for the whole request.
+        :param collection: the collection of the services
+        :param component_ctx: dict returned by `_get_component_context`
+        :return: dict of key value.
+        """
+        return {
+            "authenticated_partner_id": component_ctx.get("authenticated_partner_id"),
+        }
 
     @contextmanager
     def service_component(self, service_name, collection=None):
