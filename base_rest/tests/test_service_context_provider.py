@@ -1,5 +1,8 @@
 # Copyright 2021 ACSONE SA/NV
+# Copyright 2026 Michael Tietz (MT Software) <mtietz@mt-software.de>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
+from unittest import mock
+
 from odoo.addons.component.core import Component
 from odoo.addons.website.tools import MockRequest
 
@@ -141,6 +144,45 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             "partner"
         ) as service:
             self.assertEqual(service.work.authenticated_partner_id, 9999)
+
+    def test_collection_env_context(self):
+        """Test _get_collection_env_context
+
+        In this case we check that the context returned by the controller's
+        _get_collection_env_context is propagated to the env of the services
+        """
+
+        # pylint: disable=R7980
+        class TestServiceNewApi(Component):
+            _inherit = "base.rest.service"
+            _name = "test.partner.service"
+            _usage = "partner"
+            _collection = self._collection_name
+            _description = "test"
+
+            @restapi.method(
+                [(["/<int:id>/get", "/<int:id>"], "GET")],
+                output_param=restapi.CerberusValidator("_get_partner_schema"),
+                auth="public",
+            )
+            def get(self, _id):
+                return {"name": self.env["res.partner"].browse(_id).name}
+
+        self._build_services(self, TestServiceNewApi)
+        controller = self._get_controller_for(TestServiceNewApi)
+
+        orig_get_collection_env_context = controller._get_collection_env_context
+
+        def _get_collection_env_context(self, collection, component_ctx):
+            res = orig_get_collection_env_context(self, collection, component_ctx)
+            res["test_key"] = "test_value"
+            return res
+
+        with mock.patch.object(
+            controller, "_get_collection_env_context", _get_collection_env_context
+        ), MockRequest(self.env), controller().service_component("partner") as service:
+            self.assertEqual(service.env.context.get("test_key"), "test_value")
+            self.assertIn("authenticated_partner_id", service.env.context)
 
 
 class CommonCase(BaseRestCase):
