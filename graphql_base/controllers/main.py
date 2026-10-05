@@ -35,7 +35,7 @@ class GraphQLControllerMixin:
     def _process_request(self, schema, data):
         try:
             request = http.request.httprequest
-            execution_results, all_params = run_http_query(
+            execution_results, _all_params = run_http_query(
                 schema,
                 request.method.lower(),
                 data,
@@ -50,8 +50,7 @@ class GraphQLControllerMixin:
                 format_error=format_error_default,
                 encode=partial(json_encode, pretty=False),
             )
-            headers = dict()
-            headers["Content-Type"] = "application/json"
+            headers = {"Content-Type": "application/json"}
             response = http.request.make_response(result, headers=headers)
             response.status_code = status_code
             if any(er.errors for er in execution_results):
@@ -61,8 +60,7 @@ class GraphQLControllerMixin:
             return response
         except HttpQueryError as e:
             result = json_encode({"errors": [{"message": str(e)}]})
-            headers = dict()
-            headers["Content-Type"] = "application/json"
+            headers = {"Content-Type": "application/json"}
             response = http.request.make_response(result, headers=headers)
             response.status_code = e.status_code
             env = http.request.env
