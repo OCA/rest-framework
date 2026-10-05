@@ -4,7 +4,7 @@
 {
     "name": "Graphql Base",
     "summary": "Base GraphQL/GraphiQL controller",
-    "version": "17.0.1.1.0",
+    "version": "20.0.1.0.0",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/rest-framework",

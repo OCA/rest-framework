@@ -7,43 +7,40 @@
 -->
 <odoo>
     <template id="graphiql" name="GraphiQL">
-        <t t-call="web.layout">
-            <t t-set="head">
-                <style>
-                body {
-                    height: 100%;
-                    margin: 0;
-                    width: 100%;
-                    overflow: hidden;
-                }
-                #graphiql {
-                    height: 100vh;
-                }
-                </style>
+        <t t-set="head">
+            <style>
+            body {
+                height: 100%;
+                margin: 0;
+                width: 100%;
+                overflow: hidden;
+            }
+            #graphiql {
+                height: 100vh;
+            }
+            </style>
 
-                <!--
-                This GraphiQL example depends on Promise and fetch, which are available in
-                modern browsers, but can be "polyfilled" for older browsers.
-                GraphiQL itself depends on React DOM.
-                If you do not want to rely on a CDN, you can host these files locally or
-                include them directly in your favored resource bunder.
-                -->
-                <link
-                    href="//cdn.jsdelivr.net/npm/graphiql@0.12.0/graphiql.css"
-                    rel="stylesheet"
-                />
-                <script src="//cdn.jsdelivr.net/npm/whatwg-fetch@2.0.3/fetch.min.js" />
-                <script
-                    src="//cdn.jsdelivr.net/npm/react@16.2.0/umd/react.production.min.js"
-                />
-                <script
-                    src="//cdn.jsdelivr.net/npm/react-dom@16.2.0/umd/react-dom.production.min.js"
-                />
-                <script src="//cdn.jsdelivr.net/npm/graphiql@0.12.0/graphiql.min.js" />
-            </t>
-            <t t-set="head" t-value="head" />
+            <!--
+            This GraphiQL example depends on Promise and fetch, which are available in
+            modern browsers, but can be "polyfilled" for older browsers.
+            GraphiQL itself depends on React DOM.
+            If you do not want to rely on a CDN, you can host these files locally or
+            include them directly in your favored resource bunder.
+            -->
+            <link
+                href="//cdn.jsdelivr.net/npm/graphiql@0.12.0/graphiql.css"
+                rel="stylesheet"
+            />
+            <script src="//cdn.jsdelivr.net/npm/whatwg-fetch@2.0.3/fetch.min.js" />
+            <script
+                src="//cdn.jsdelivr.net/npm/react@16.2.0/umd/react.production.min.js"
+            />
+            <script
+                src="//cdn.jsdelivr.net/npm/react-dom@16.2.0/umd/react-dom.production.min.js"
+            />
+            <script src="//cdn.jsdelivr.net/npm/graphiql@0.12.0/graphiql.min.js" />
         </t>
-        <body>
+        <t t-call="web.layout" head="head">
             <div id="graphiql">Loading...</div>
             <script>
 
@@ -155,6 +152,6 @@
                 document.getElementById('graphiql')
             );
             </script>
-        </body>
+        </t>
     </template>
 </odoo>
