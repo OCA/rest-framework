@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="api_log_retention_days_param" model="ir.config_parameter">
+        <field name="key">api_log.retention_days</field>
+        <field name="value">180</field>
+    </record>
+</odoo>
