@@ -5,6 +5,7 @@
 
 import json
 import logging
+import time
 import traceback
 
 from psycopg2.errors import OperationalError
@@ -48,6 +49,7 @@ class BaseRESTService(AbstractComponent):
         return self._dispatch_with_db_logging(method_name, *args, params=params)
 
     def _dispatch_with_db_logging(self, method_name, *args, params=None):
+        start_time = time.time()
         try:
             with self.env.cr.savepoint():
                 result = super().dispatch(method_name, *args, params=params)
@@ -58,6 +60,7 @@ class BaseRESTService(AbstractComponent):
                 orig_exception,
                 *args,
                 params=params,
+                exec_time=time.time() - start_time,
             )
         except exceptions.ValidationError as orig_exception:
             self._dispatch_exception(
@@ -66,6 +69,7 @@ class BaseRESTService(AbstractComponent):
                 orig_exception,
                 *args,
                 params=params,
+                exec_time=time.time() - start_time,
             )
         except exceptions.UserError as orig_exception:
             self._dispatch_exception(
@@ -74,6 +78,7 @@ class BaseRESTService(AbstractComponent):
                 orig_exception,
                 *args,
                 params=params,
+                exec_time=time.time() - start_time,
             )
         except Exception as orig_exception:
             self._dispatch_exception(
@@ -82,15 +87,26 @@ class BaseRESTService(AbstractComponent):
                 orig_exception,
                 *args,
                 params=params,
+                exec_time=time.time() - start_time,
             )
-        self._log_dispatch_success(method_name, result, *args, params)
+        self._log_dispatch_success(
+            method_name, result, *args, params, exec_time=time.time() - start_time
+        )
         return result
 
-    def _log_dispatch_success(self, method_name, result, *args, params=None):
+    def _log_dispatch_success(
+        self, method_name, result, *args, params=None, exec_time=None
+    ):
         try:
             with self.env.cr.savepoint():
                 log_entry = self._log_call_in_db(
-                    self.env, request, method_name, *args, params, result=result
+                    self.env,
+                    request,
+                    method_name,
+                    *args,
+                    params,
+                    result=result,
+                    exec_time=exec_time,
                 )
                 if log_entry and not isinstance(result, Response):
                     log_entry_url = self._get_log_entry_url(log_entry)
@@ -99,7 +115,13 @@ class BaseRESTService(AbstractComponent):
             _logger.exception("Rest Log Error Creation: %s", e)
 
     def _dispatch_exception(
-        self, method_name, exception_klass, orig_exception, *args, params=None
+        self,
+        method_name,
+        exception_klass,
+        orig_exception,
+        *args,
+        params=None,
+        exec_time=None,
     ):
         exc_msg, log_entry_url = None, None  # in case it fails below
         try:
@@ -114,6 +136,7 @@ class BaseRESTService(AbstractComponent):
                     params=params,
                     traceback=tb,
                     orig_exception=orig_exception,
+                    exec_time=exec_time,
                 )
                 log_entry_url = self._get_log_entry_url(log_entry)
         except Exception as e:
@@ -169,6 +192,7 @@ class BaseRESTService(AbstractComponent):
             "exception_name": exception_name,
             "exception_message": exception_message,
             "state": state,
+            "exec_time": kw.get("exec_time"),
         }
 
     def _log_call_prepare_result(self, result):
