@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Copyright 2026 Akretion (http://www.akretion.com).
+    @author Florian Mounier <florian.mounier@akretion.com>
+    License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="fastapi_endpoint_form_view" model="ir.ui.view">
+        <field name="model">fastapi.endpoint</field>
+        <field name="inherit_id" ref="fastapi.fastapi_endpoint_form_view" />
+        <field name="arch" type="xml">
+            <group name="captcha" position="inside">
+                <field
+                    name="altcha_validity_period"
+                    invisible="captcha_type != 'altcha_local'"
+                />
+            </group>
+        </field>
+    </record>
+</odoo>
