@@ -93,8 +93,9 @@ class FastAPITransactionCase(TransactionCaseWithUserDemo):
         router: APIRouter | None = None,
         user: ResUsers | None = None,
         partner: ResPartner | None = None,
-        env: Environment = None,
-        dependency_overrides: dict[Callable[..., Any], Callable[..., Any]] = None,
+        env: Environment | None = None,
+        dependency_overrides: dict[Callable[..., Any], Callable[..., Any]]
+        | None = None,
         raise_server_exceptions: bool = True,
         testclient_kwargs=None,
     ):
