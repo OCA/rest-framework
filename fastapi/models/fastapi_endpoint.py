@@ -5,7 +5,7 @@ import logging
 from collections.abc import Callable
 from functools import partial
 from itertools import chain
-from typing import Any
+from typing import Any, ClassVar
 
 from fastapi_openapi_overrides import document_dependency_overrides
 from starlette.middleware import Middleware
@@ -42,7 +42,6 @@ class FastapiEndpoint(models.Model):
     app: str = fields.Selection(selection=[], required=True)
     user_id = fields.Many2one(
         comodel_name="res.users",
-        string="User",
         help="The user to use to execute the API calls.",
         default=lambda self: self.env.ref("base.public_user"),
     )
@@ -84,7 +83,7 @@ class FastapiEndpoint(models.Model):
             root_path = "/" + root_path
         return root_path
 
-    _blacklist_root_paths = {"/", "/web", "/website"}
+    _blacklist_root_paths: ClassVar[set[str]] = {"/", "/web", "/website"}
 
     @api.constrains("root_path")
     def _check_root_path(self):
@@ -143,7 +142,7 @@ class FastapiEndpoint(models.Model):
 
     def _handle_route_updates(self, vals):
         observed_fields = [self._routing_impacting_fields(), self._fastapi_app_fields()]
-        refresh_fastapi_app = any([x in vals for x in chain(*observed_fields)])
+        refresh_fastapi_app = any(x in vals for x in chain(*observed_fields))
         if refresh_fastapi_app:
             self._reset_app()
         if "user_id" in vals:
@@ -231,11 +230,7 @@ class FastapiEndpoint(models.Model):
         path = self._normalize_url_path(path)
         prefix = self._normalize_url_path(prefix)
 
-        if path == prefix:
-            return True
-        if path.startswith(prefix + "/"):
-            return True
-        return False
+        return path == prefix or bool(path.startswith(prefix + "/"))
 
     @api.model
     def _find_first_matching_url_path(self, paths, prefix) -> str | None:
@@ -256,12 +251,12 @@ class FastapiEndpoint(models.Model):
         return None
 
     @api.model
-    @tools.ormcache()
+    @api.ormcache()
     def _get_id_by_root_path_map(self):
         return {r.root_path: r.id for r in self.search([])}
 
     @api.model
-    @tools.ormcache("path")
+    @api.ormcache("path")
     def _get_id_for_path(self, path):
         id_by_path = self._get_id_by_root_path_map()
         root_path = self._find_first_matching_url_path(id_by_path.keys(), path)
@@ -298,7 +293,7 @@ class FastapiEndpoint(models.Model):
                 self._clear_fastapi_exception_handlers(route.app)
 
     @api.model
-    @tools.ormcache("path")
+    @api.ormcache("path")
     def get_uid(self, path):
         record = self._get_endpoint(path)
         if not record:

@@ -3,8 +3,13 @@
 
 from unittest.mock import MagicMock, patch
 
-from odoo.http import Request
 from odoo.tests.common import TransactionCase
+
+from ..patch import (
+    _original_set_session_and_dbname,
+    _patched_get_session_and_dbname,
+    _patched_set_session_and_dbname,
+)
 
 
 class TestPatchGetSessionAndDbname(TransactionCase):
@@ -22,17 +27,41 @@ class TestPatchGetSessionAndDbname(TransactionCase):
         return mock_request
 
     def _call_patched(self, mock_request, original_return, db_filter_return):
-        with (
-            patch(
-                "odoo.addons.fastapi.patch._original_get_session_and_dbname",
-                return_value=original_return,
-            ),
-            patch(
-                "odoo.addons.fastapi.patch.db_filter",
-                return_value=db_filter_return,
-            ),
-        ):
-            return Request._get_session_and_dbname(mock_request)
+        session, dbname = original_return
+        mock_request.session = session
+        mock_request.db = dbname
+        mock_request.httprequest.environ = {"HTTP_HOST": "localhost"}
+
+        if _original_set_session_and_dbname is not None:
+
+            def dummy_original(req):
+                req.session = session
+                req.db = dbname
+
+            with (
+                patch(
+                    "odoo.addons.fastapi.patch._original_set_session_and_dbname",
+                    side_effect=dummy_original,
+                ),
+                patch(
+                    "odoo.addons.fastapi.patch.db_filter",
+                    return_value=db_filter_return,
+                ),
+            ):
+                _patched_set_session_and_dbname(mock_request)
+                return mock_request.session, mock_request.db
+        else:
+            with (
+                patch(
+                    "odoo.addons.fastapi.patch._original_get_session_and_dbname",
+                    return_value=original_return,
+                ),
+                patch(
+                    "odoo.addons.fastapi.patch.db_filter",
+                    return_value=db_filter_return,
+                ),
+            ):
+                return _patched_get_session_and_dbname(mock_request)
 
     def test_db_already_resolved(self):
         """When the original method resolves a dbname, the patch must not interfere."""
@@ -48,7 +77,7 @@ class TestPatchGetSessionAndDbname(TransactionCase):
     def test_db_from_query_param(self):
         """When dbname is absent, resolve it from the ?db= query parameter."""
         session = MagicMock()
-        result_session, result_db = self._call_patched(
+        _result_session, result_db = self._call_patched(
             self._make_request(db_param="mydb"),
             original_return=(session, None),
             db_filter_return=["mydb"],
@@ -63,7 +92,7 @@ class TestPatchGetSessionAndDbname(TransactionCase):
         where the Referer points to the docs page carrying ?db=.
         """
         session = MagicMock()
-        result_session, result_db = self._call_patched(
+        _result_session, result_db = self._call_patched(
             self._make_request(referer="https://example.com/docs?db=mydb"),
             original_return=(session, None),
             db_filter_return=["mydb"],
@@ -74,7 +103,7 @@ class TestPatchGetSessionAndDbname(TransactionCase):
     def test_db_rejected_by_filter(self):
         """A db name that fails db_filter must not be used."""
         session = MagicMock()
-        result_session, result_db = self._call_patched(
+        _result_session, result_db = self._call_patched(
             self._make_request(db_param="forbidden_db"),
             original_return=(session, None),
             db_filter_return=[],
