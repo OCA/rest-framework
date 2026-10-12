@@ -3,18 +3,16 @@
 
 {
     "name": "Odoo FastAPI",
-    "summary": """
-        Odoo FastAPI endpoint""",
-    "version": "19.0.1.1.0",
+    "summary": "Odoo FastAPI endpoint",
+    "version": "20.0.1.1.0",
     "license": "LGPL-3",
-    "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
+    "author": "ACSONE SA/NV, Open2S, Odoo Community Association (OCA)",
     "maintainers": ["lmignon"],
     "website": "https://github.com/OCA/rest-framework",
     "depends": ["endpoint_route_handler"],
     "data": [
         "security/res_groups.xml",
-        "security/fastapi_endpoint.xml",
-        "security/ir_rule+acl.xml",
+        "security/ir.access.csv",
         "views/fastapi_menu.xml",
         "views/fastapi_endpoint.xml",
         "views/fastapi_endpoint_demo.xml",
@@ -30,5 +28,5 @@
         ]
     },
     "development_status": "Beta",
-    "installable": False,
+    "installable": True,
 }
