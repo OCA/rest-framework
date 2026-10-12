@@ -1,2 +1,4 @@
 - Laurent Mignon \<<laurent.mignon@acsone.eu>\>
 - Lois Rilo \<<lois.rilo@forgeflow.com>\>
+- Open2S (https://www.open2s.com.ec):
+  - Danilo Moya \<<danilo.moya@open2s.com.ec>\>

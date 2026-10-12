@@ -3,9 +3,18 @@
 
 from urllib.parse import parse_qs, urlparse
 
-from odoo.http import Request, db_filter
+try:
+    import odoo.http.router as http_router
+    from odoo.http.requestlib import Request
+    from odoo.http.router import db_filter
+except ImportError:
+    http_router = None
+    from odoo.http import Request, db_filter
 
-_original_get_session_and_dbname = Request._get_session_and_dbname
+_original_set_session_and_dbname = (
+    getattr(http_router, "_set_session_and_dbname", None) if http_router else None
+)
+_original_get_session_and_dbname = getattr(Request, "_get_session_and_dbname", None)
 
 
 def _patched_get_session_and_dbname(self):
@@ -28,4 +37,23 @@ def _patched_get_session_and_dbname(self):
     return session, dbname
 
 
-Request._get_session_and_dbname = _patched_get_session_and_dbname
+def _patched_set_session_and_dbname(request):
+    _original_set_session_and_dbname(request)
+    if not getattr(request, "db", None):
+        db = request.httprequest.args.get("db", "").strip()
+        if not db:
+            referer = request.httprequest.headers.get("Referer", "")
+            if referer:
+                parsed = urlparse(referer)
+                db = parse_qs(parsed.query).get("db", [""])[0].strip()
+        host = request.httprequest.environ.get("HTTP_HOST", "")
+        if db and db_filter([db], host=host):
+            request.db = db
+            if hasattr(request, "session") and request.session:
+                request.session.db = db
+
+
+if _original_set_session_and_dbname is not None:
+    http_router._set_session_and_dbname = _patched_set_session_and_dbname
+elif _original_get_session_and_dbname is not None:
+    Request._get_session_and_dbname = _patched_get_session_and_dbname
