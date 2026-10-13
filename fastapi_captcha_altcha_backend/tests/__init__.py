@@ -1,0 +1,1 @@
+from . import test_fastapi_captcha_altcha_backend
