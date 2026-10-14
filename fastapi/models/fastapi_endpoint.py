@@ -7,6 +7,7 @@ from functools import partial
 from itertools import chain
 from typing import Any
 
+from fastapi_openapi_overrides import document_dependency_overrides
 from starlette.middleware import Middleware
 from starlette.routing import Mount
 
@@ -308,6 +309,7 @@ class FastapiEndpoint(models.Model):
         for router in self._get_fastapi_routers():
             app.include_router(router=router)
         app.dependency_overrides.update(self._get_app_dependencies_overrides())
+        document_dependency_overrides(app)
         return app
 
     def _get_app_dependencies_overrides(self) -> dict[Callable, Callable]:
