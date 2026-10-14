@@ -1,1 +1,3 @@
 httpx
+extendable @ git+https://github.com/lmignon/extendable@master-keep-qualname
+extendable-pydantic @ git+https://github.com/lmignon/extendable-pydantic@master-schema-delegation
