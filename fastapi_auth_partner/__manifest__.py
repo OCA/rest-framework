@@ -16,7 +16,7 @@
     ],
     "data": [
         "security/res_group.xml",
-        "security/ir.model.access.csv",
+        "security/ir_model_access.xml",
         "views/auth_partner_view.xml",
         "views/auth_directory_view.xml",
         "views/fastapi_endpoint_view.xml",
