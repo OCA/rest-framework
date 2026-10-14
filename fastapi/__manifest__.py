@@ -22,11 +22,12 @@
     "demo": ["demo/fastapi_endpoint_demo.xml"],
     "external_dependencies": {
         "python": [
-            "fastapi>=0.110.0",
+            "fastapi",
             "python-multipart",
             "ujson",
             "a2wsgi>=1.10.6",
             "parse-accept-language",
+            "fastapi-openapi-overrides",
         ]
     },
     "development_status": "Beta",
