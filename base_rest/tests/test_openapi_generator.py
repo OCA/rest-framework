@@ -2,7 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 from odoo.addons.component.core import Component
-from odoo.addons.website.tools import MockRequest
+from odoo.addons.http_routing.tests.common import MockRequest
 
 from .. import restapi
 from .common import TransactionRestServiceRegistryCase
@@ -22,7 +22,6 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
     def test_01(self):
         """Simple test case"""
 
-        # pylint: disable=R7980
         class PartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -115,7 +114,6 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
         we check that these parameters are into the openapi specification
         """
 
-        # pylint: disable=R7980
         class PartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -185,7 +183,6 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
             }
         ]
 
-        # pylint: disable=R7980
         class PartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -225,7 +222,6 @@ class TestOpenAPIGenerator(TransactionRestServiceRegistryCase):
     def test_04(self):
         """Binary and Multipart form-data test case"""
 
-        # pylint: disable=R7980
         class AttachmentService(Component):
             _inherit = "base.rest.service"
             _name = "test.attachment.service"
