@@ -1,0 +1,6 @@
+id,name,model_id,group_id/id,operation,domain
+res_user_fastapi_running_user,Fastapi: Running user read users,res.users,fastapi.group_fastapi_endpoint_runner,r,"[('id', '=', user.id)]"
+res_partner_fastapi_running_user,Fastapi: Running user read partners,res.partner,fastapi.group_fastapi_endpoint_runner,r,"['|', ('user_ids', '=', user.id), ('id', '=', authenticated_partner_id)]"
+fastapi_endpoint_fastapi_running_user,Fastapi: Running user read endpoints,fastapi.endpoint,fastapi.group_fastapi_endpoint_runner,r,"[('user_id', '=', user.id)]"
+fastapi_endpoint_access_view,fastapi.endpoint view,fastapi.endpoint,fastapi.group_fastapi_user,r,
+fastapi_endpoint_access_manage,fastapi.endpoint manage,fastapi.endpoint,fastapi.group_fastapi_manager,crud,

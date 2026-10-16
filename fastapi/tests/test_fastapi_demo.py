@@ -90,25 +90,29 @@ class FastAPIDemoCase(FastAPITransactionCase):
         )
 
     def test_exception_raised(self) -> None:
-        with self.assertRaisesRegex(UserError, "User Error"):
-            with self._create_test_client() as test_client:
-                test_client.get(
-                    "/demo/exception",
-                    params={
-                        "exception_type": DemoExceptionType.user_error.value,
-                        "error_message": "User Error",
-                    },
-                )
+        with (
+            self.assertRaisesRegex(UserError, "User Error"),
+            self._create_test_client() as test_client,
+        ):
+            test_client.get(
+                "/demo/exception",
+                params={
+                    "exception_type": DemoExceptionType.user_error.value,
+                    "error_message": "User Error",
+                },
+            )
 
-        with self.assertRaisesRegex(NotImplementedError, "Bare Exception"):
-            with self._create_test_client() as test_client:
-                test_client.get(
-                    "/demo/exception",
-                    params={
-                        "exception_type": DemoExceptionType.bare_exception.value,
-                        "error_message": "Bare Exception",
-                    },
-                )
+        with (
+            self.assertRaisesRegex(NotImplementedError, "Bare Exception"),
+            self._create_test_client() as test_client,
+        ):
+            test_client.get(
+                "/demo/exception",
+                params={
+                    "exception_type": DemoExceptionType.bare_exception.value,
+                    "error_message": "Bare Exception",
+                },
+            )
 
     @mute_logger("odoo.addons.fastapi.tests.common")
     def test_exception_not_raised(self) -> None:
