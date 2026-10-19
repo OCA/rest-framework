@@ -11,6 +11,7 @@ import sys
 import traceback
 from collections import defaultdict
 
+from markupsafe import escape
 from werkzeug.exceptions import (
     BadRequest,
     Forbidden,
@@ -19,7 +20,6 @@ from werkzeug.exceptions import (
     NotFound,
     Unauthorized,
 )
-from werkzeug.utils import escape
 
 import odoo
 from odoo.exceptions import (
