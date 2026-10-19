@@ -12,6 +12,8 @@
     "depends": ["web"],
     "website": "https://github.com/OCA/rest-framework",
     "data": [
+        "data/ir_config_parameter.xml",
+        "data/ir_cron.xml",
         "security/res_groups.xml",
         "security/ir_model_access.xml",
         "views/api_log_views.xml",

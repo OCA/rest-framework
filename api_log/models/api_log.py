@@ -9,6 +9,7 @@ import time
 from datetime import date
 from traceback import format_exception
 
+from dateutil.relativedelta import relativedelta
 from werkzeug.exceptions import HTTPException as WerkzeugHTTPException
 
 from odoo import api, fields, models
@@ -152,6 +153,17 @@ class APILog(models.Model):
         log_request_values = self._prepare_log_request(request)
         log_request_values.update(override_log_values or {})
         return self.sudo().create(log_request_values)
+
+    @api.model
+    def cron_delete_logs(self):
+        retention_days = int(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("api_log.retention_days", default=180)
+        )
+        cutoff_date = fields.Datetime.now() - relativedelta(days=retention_days)
+        logs_to_delete = self.search([("request_date", "<", cutoff_date)])
+        logs_to_delete.unlink()
 
     def _inject_log_entry(self, values_dict):
         values_dict["API-Log-Entry-ID"] = str(self.id)

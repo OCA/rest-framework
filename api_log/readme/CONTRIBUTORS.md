@@ -3,3 +3,4 @@
 - Simone Orsi <simahawk@gmail.com>
 - [PyTech](https://www.pytech.it):
   - Simone Rubino \<<simone.rubino@pytech.it>\>
+  - Alessandro Pecchini \<<alessandro.pecchini@pytech.it>\>
