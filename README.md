@@ -22,7 +22,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[base_rest](base_rest/) | 15.0.1.2.2 | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Develop your own high level REST APIs for Odoo thanks to this addon.
+[base_rest](base_rest/) | 15.0.1.2.3 | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Develop your own high level REST APIs for Odoo thanks to this addon.
 [base_rest_auth_api_key](base_rest_auth_api_key/) | 15.0.1.0.0 | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Base Rest: Add support for the auth_api_key security policy into the openapi documentation
 [base_rest_auth_user_service](base_rest_auth_user_service/) | 15.0.1.0.1 |  | Login/logout from session using a REST call
 [base_rest_datamodel](base_rest_datamodel/) | 15.0.1.1.0 |  | Datamodel binding for base_rest
