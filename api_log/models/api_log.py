@@ -173,7 +173,7 @@ class APILog(models.Model):
         return self.sudo().write(log_response_values)
 
     def _prepare_log_exception(self, exception):
-        if not hasattr(exception, "headers"):
+        if getattr(exception, "headers", None) is None:
             exception.headers = dict()
         values = {
             "stack_trace": "".join(format_exception(exception)),
