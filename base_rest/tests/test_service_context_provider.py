@@ -1,7 +1,7 @@
 # Copyright 2021 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 from odoo.addons.component.core import Component
-from odoo.addons.website.tools import MockRequest
+from odoo.addons.http_routing.tests.common import MockRequest
 
 from .. import restapi
 from .common import BaseRestCase, TransactionRestServiceRegistryCase
@@ -28,7 +28,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         no authenticated_partner_id
         """
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -61,7 +60,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         authenticated_partner_id
         """
 
-        # pylint: disable=R7880
         class TestComponentContextprovider(Component):
             _name = "test.component.context.provider"
             _inherit = [
@@ -74,7 +72,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             "test_component_context_provider"
         )
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -82,24 +79,36 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             _collection = self._collection_name
             _description = "test"
 
+            def _get_partner_schema(self):
+                return {"name": {"type": "string", "required": True}}
+
             @restapi.method(
                 [(["/<int:id>/get", "/<int:id>"], "GET")],
                 output_param=restapi.CerberusValidator("_get_partner_schema"),
                 auth="public",
             )
             def get(self, _id):
-                return {"name": self.env["res.partner"].browse(_id).name}
+                return {"name": self.env["res.partner"].browse(_id).exists().name}
 
         self._build_components(TestComponentContextprovider)
         self._build_services(self, TestServiceNewApi)
         controller = self._get_controller_for(TestServiceNewApi)
-        service_component = controller().service_component
+        controller_instance = controller()
+        service_component = controller_instance.service_component
         with (
-            MockRequest(self.env),
+            self.with_user("admin"),
+            MockRequest(self.env) as request,
             service_component(service_name="partner") as service,
         ):
+            # Required for logging REST methods.
+            request.httprequest.headers = {}
             self.assertEqual(
                 service.work.authenticated_partner_id, self.env.user.partner_id.id
+            )
+            # Actually testing if the rules are computed correctly by calling
+            #  the controller method itself.
+            controller_instance._process_method(
+                "partner", "get", self.env.user.company_id.partner_id.id
             )
 
     def test_03(self):
@@ -109,7 +118,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         changes the authenticated_partner_id provided by the service context provider
         """
 
-        # pylint: disable=R7880
         class TestComponentContextprovider(Component):
             _name = "test.component.context.provider"
             _inherit = "base.rest.service.context.provider"
@@ -122,7 +130,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             "test_component_context_provider"
         )
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -152,4 +159,4 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
 class CommonCase(BaseRestCase):
     # dummy test method to pass codecov
     def test_04(self):
-        self.assertEqual(self.registry.test_cr, self.cr)
+        self.assertEqual(self.registry.db_name, self.cr.dbname)

@@ -21,13 +21,13 @@ Base Rest
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
-    :target: https://github.com/OCA/rest-framework/tree/18.0/base_rest
+    :target: https://github.com/OCA/rest-framework/tree/19.0/base_rest
     :alt: OCA/rest-framework
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/rest-framework-18-0/rest-framework-18-0-base_rest
+    :target: https://translation.odoo-community.org/projects/rest-framework-19-0/rest-framework-19-0-base_rest
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=18.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/rest-framework&target_branch=19.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
@@ -89,8 +89,8 @@ Usage
 
 To add your own REST service you must provides at least 2 classes.
 
-- A Component providing the business logic of your service,
-- A Controller to register your service.
+-  A Component providing the business logic of your service,
+-  A Controller to register your service.
 
 The business logic of your service must be implemented into a component
 (``odoo.addons.component.core.Component``) that inherit from
@@ -99,22 +99,22 @@ The business logic of your service must be implemented into a component
 Initially, base_rest expose by default all public methods defined in a
 service. The conventions for accessing methods via HTTP were as follows:
 
-- The method ``def get(self, _id)`` if defined, is accessible via HTTP
-  GET routes ``<string:_service_name>/<int:_id>`` and
-  ``<string:_service_name>/<int:_id>/get``.
-- The method ``def search(self, **params)`` if defined, is accessible
-  via the HTTP GET routes ``<string:_service_name>/`` and
-  ``<string:_service_name>/search``.
-- The method ``def delete(self, _id)`` if defined, is accessible via the
-  HTTP DELETE route ``<string:_service_name>/<int:_id>``.
-- The ``def update(self, _id, **params)`` method, if defined, is
-  accessible via the HTTP PUT route
-  ``<string:_service_name>/<int:_id>``.
-- Other methods are only accessible via HTTP POST routes
-  ``<string:_service_name>`` or
-  ``<string:_service_name>/<string:method_name>`` or
-  ``<string:_service_name>/<int:_id>`` or
-  ``<string:_service_name>/<int:_id>/<string:method_name>``
+-  The method ``def get(self, _id)`` if defined, is accessible via HTTP
+   GET routes ``<string:_service_name>/<int:_id>`` and
+   ``<string:_service_name>/<int:_id>/get``.
+-  The method ``def search(self, **params)`` if defined, is accessible
+   via the HTTP GET routes ``<string:_service_name>/`` and
+   ``<string:_service_name>/search``.
+-  The method ``def delete(self, _id)`` if defined, is accessible via
+   the HTTP DELETE route ``<string:_service_name>/<int:_id>``.
+-  The ``def update(self, _id, **params)`` method, if defined, is
+   accessible via the HTTP PUT route
+   ``<string:_service_name>/<int:_id>``.
+-  Other methods are only accessible via HTTP POST routes
+   ``<string:_service_name>`` or
+   ``<string:_service_name>/<string:method_name>`` or
+   ``<string:_service_name>/<int:_id>`` or
+   ``<string:_service_name>/<int:_id>/<string:method_name>``
 
 .. code:: python
 
@@ -231,10 +231,10 @@ schemas <https://docs.python-cerberus.org/en/stable/>`__ and associated
 to the methods using the following naming convention. For a method
 \`my_method\`:
 
-- ``def _validator_my_method(self):`` will be called to get the schema
-  required to validate the input parameters.
-- ``def _validator_return_my_method(self):`` if defined, will be called
-  to get the schema used to validate the response.
+-  ``def _validator_my_method(self):`` will be called to get the schema
+   required to validate the input parameters.
+-  ``def _validator_return_my_method(self):`` if defined, will be called
+   to get the schema used to validate the response.
 
 In order to offer even more flexibility, a new API has been developed.
 
@@ -363,32 +363,33 @@ Changelog
 
 **Features**
 
-- Add support for oauth2 security scheme in the Swagger UI. If your
-  openapi specification contains a security scheme of type oauth2, the
-  Swagger UI will display a login button in the top right corner. In
-  order to finalize the login process, a redirect URL must be provided
-  when initializing the Swagger UI. The Swagger UI is now initialized
-  with a oauth2RedirectUrl option that references a oauth2-redirect.html
-  file provided by the swagger-ui lib and served by the current addon.
-  (`#379 <https://github.com/OCA/rest-framework/issues/379>`__)
+-  Add support for oauth2 security scheme in the Swagger UI. If your
+   openapi specification contains a security scheme of type oauth2, the
+   Swagger UI will display a login button in the top right corner. In
+   order to finalize the login process, a redirect URL must be provided
+   when initializing the Swagger UI. The Swagger UI is now initialized
+   with a oauth2RedirectUrl option that references a
+   oauth2-redirect.html file provided by the swagger-ui lib and served
+   by the current addon.
+   (`#379 <https://github.com/OCA/rest-framework/issues/379>`__)
 
 12.0.2.0.1
 ----------
 
-- validator\_...() methods can now return a cerberus ``Validator``
-  object instead of a schema dictionnary, for additional flexibility
-  (e.g. allowing validator options such as ``allow_unknown``).
+-  validator\_...() methods can now return a cerberus ``Validator``
+   object instead of a schema dictionnary, for additional flexibility
+   (e.g. allowing validator options such as ``allow_unknown``).
 
 12.0.2.0.0
 ----------
 
-- Licence changed from AGPL-3 to LGPL-3
+-  Licence changed from AGPL-3 to LGPL-3
 
 12.0.1.0.1
 ----------
 
-- Fix issue when rendering the jsonapi documentation if no documentation
-  is provided on a method part of the REST api.
+-  Fix issue when rendering the jsonapi documentation if no
+   documentation is provided on a method part of the REST api.
 
 12.0.1.0.0
 ----------
@@ -404,7 +405,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/rest-framework/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20base_rest%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/rest-framework/issues/new?body=module:%20base_rest%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -419,8 +420,8 @@ Authors
 Contributors
 ------------
 
-- Laurent Mignon <laurent.mignon@acsone.eu>
-- Sébastien Beau <sebastien.beau@akretion.com>
+-  Laurent Mignon <laurent.mignon@acsone.eu>
+-  Sébastien Beau <sebastien.beau@akretion.com>
 
 Maintainers
 -----------
@@ -435,6 +436,6 @@ OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
 
-This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/18.0/base_rest>`_ project on GitHub.
+This module is part of the `OCA/rest-framework <https://github.com/OCA/rest-framework/tree/19.0/base_rest>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

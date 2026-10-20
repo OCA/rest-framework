@@ -33,7 +33,6 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
         implementation, these routes where hardcoded into the base controller.
         """
 
-        # pylint: disable=R7980
         class TestServiceOldApi(Component):
             _inherit = "base.rest.service"
             _name = "test.ping.service"
@@ -246,7 +245,6 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
         required method to route the requests to the methods
         """
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -340,7 +338,6 @@ class TestControllerBuilder(TransactionRestServiceRegistryCase):
     def test_03(self):
         """Check that the controller builder takes care of services inheritance"""
 
-        # pylint: disable=R7980
         class TestPartnerService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -467,7 +464,6 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
         self._BaseTestController._default_csrf = default_csrf
         self._BaseTestController._default_save_session = default_save_session
 
-        # pylint: disable=R7980
         class TestService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -584,7 +580,6 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
         default_auth = "my_default_auth"
         self._BaseTestController._default_auth = default_auth
 
-        # pylint: disable=R7980
         class TestService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -631,7 +626,6 @@ class TestControllerBuilder2(TransactionRestServiceRegistryCase):
         default_auth = "my_default_auth"
         self._BaseTestController._default_auth = default_auth
 
-        # pylint: disable=R7980
         class TestService(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"

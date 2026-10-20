@@ -218,13 +218,13 @@ class CerberusValidator(RestMethodParam):
         validator = self.get_cerberus_validator(service, "input")
         if validator.validate(params):
             return validator.document
-        raise UserError(service.env._("BadRequest %s") % validator.errors)
+        raise UserError(service.env._("BadRequest %s", validator.errors))
 
     def to_response(self, service, result):
         validator = self.get_cerberus_validator(service, "output")
         if validator.validate(result):
             return validator.document
-        raise SystemError(service.env._("Invalid Response %s") % validator.errors)
+        raise SystemError(service.env._("Invalid Response %s", validator.errors))
 
     def to_openapi_query_parameters(self, service, spec):
         json_schema = self.to_json_schema(service, spec, "input")
@@ -276,7 +276,7 @@ class CerberusValidator(RestMethodParam):
         if isinstance(schema, dict):
             return Validator(schema, purge_unknown=True)
         raise Exception(
-            service.env._("Unable to get cerberus schema from %s") % self._schema
+            service.env._("Unable to get cerberus schema from %s", self._schema)
         )
 
     def to_json_schema(self, service, spec, direction):
@@ -412,7 +412,11 @@ class MultipartFormData(RestMethodParam):
                     )  # multipart ony sends its parts as string
                 except json.JSONDecodeError as error:
                     raise ValidationError(
-                        service.env._(f"{key}'s JSON content is malformed: {error}")
+                        service.env._(
+                            "%(key)s's JSON content is malformed: %(error)s",
+                            key=key,
+                            error=error,
+                        )
                     ) from error
                 param = part.from_params(service, json_param)
             params[key] = param
