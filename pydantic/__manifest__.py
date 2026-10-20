@@ -11,7 +11,7 @@
     "maintainers": ["lmignon"],
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/rest-framework",
-    "depends": [],
+    "depends": ["base"],
     "data": [],
     "demo": [],
     "external_dependencies": {
