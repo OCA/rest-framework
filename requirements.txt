@@ -1,6 +1,3 @@
 # generated from manifests external_dependencies
-a2wsgi>=1.10.6
-fastapi>=0.110.0
-parse-accept-language
-python-multipart
-ujson
+graphene
+graphql_server==3.0.0b7
