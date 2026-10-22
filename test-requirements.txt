@@ -1,2 +1,5 @@
 odoo_test_helper
 httpx2
+# extendable-pydantic needs pydantic._internal._generate_schema.get_type_ref,
+# removed in pydantic 2.14
+pydantic<2.14
