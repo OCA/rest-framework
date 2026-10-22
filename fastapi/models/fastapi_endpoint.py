@@ -264,6 +264,17 @@ class FastapiEndpoint(models.Model):
         return id_by_path.get(root_path)
 
     @api.model
+    def _get_root_path(self, path):
+        """Return the root path of the endpoint that serves the given path.
+
+        Not cached on the path: a request path can contain anything, so caching
+        on it would keep one entry per distinct path.
+        """
+        return self._find_first_matching_url_path(
+            self._get_id_by_root_path_map().keys(), path
+        )
+
+    @api.model
     def _get_endpoint(self, path):
         id_ = self._get_id_for_path(path)
         return self.browse(id_) if id_ else None
