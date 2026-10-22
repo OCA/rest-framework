@@ -28,10 +28,13 @@ class FastApiDispatcher(Dispatcher):
         self.request.params = {}  # dict(self.request.get_http_params(), **args)
         environ = self._get_environ()
         path = environ["PATH_INFO"]
+        endpoint_model = request.env["fastapi.endpoint"].sudo()
+        # Ensure that only one app exists by endpoint's root path
+        root_path = endpoint_model._get_root_path(path) or path
         # TODO store the env into contextvar to be used by the odoo_env
         # depends method
-        with fastapi_app_pool.get_app(env=request.env, root_path=path) as app:
-            uid = request.env["fastapi.endpoint"].sudo().get_uid(path)
+        with fastapi_app_pool.get_app(env=request.env, root_path=root_path) as app:
+            uid = endpoint_model.get_uid(root_path)
             data = BytesIO()
             with self._manage_odoo_env(uid):
                 for r in app(environ, self._make_response):
