@@ -74,12 +74,10 @@ class FastapiEndpoint(models.Model):
                         raise ValidationError(
                             self.env._(
                                 "Invalid regex for captcha routes: %(regex)s "
-                                "(error: %(error)s)"
+                                "(error: %(error)s)",
+                                regex=rex,
+                                error=str(e),
                             )
-                            % {
-                                "regex": rex,
-                                "error": str(e),
-                            }
                         ) from e
 
     def _get_fastapi_app_middlewares(self):
@@ -137,18 +135,19 @@ class FastapiEndpoint(models.Model):
         if not success:
             error_codes = result.get("error-codes", ["?"])
             raise AccessError(
-                self.env._("Recaptcha validation failed: %s") % ", ".join(error_codes)
+                self.env._(
+                    "Recaptcha validation failed: %s",
+                    ", ".join(error_codes),
+                )
             )
         score = result.get("score", 1)
         if score < self.captcha_minimum_score:
             raise AccessError(
                 self.env._(
-                    "Recaptcha validation failed: score %(score)s < %(min_score)s"
+                    "Recaptcha validation failed: score %(score)s < %(min_score)s",
+                    score=score,
+                    min_score=self.captcha_minimum_score,
                 )
-                % {
-                    "score": score,
-                    "min_score": self.captcha_minimum_score,
-                }
             )
 
     def _validate_hcaptcha(self, captcha_response, secret_key):
@@ -166,20 +165,20 @@ class FastapiEndpoint(models.Model):
         if not success:
             error_codes = result.get("error-codes", ["?"])
             raise AccessError(
-                self.env._("Hcaptcha validation failed: %s") % ", ".join(error_codes)
+                self.env._(
+                    "Hcaptcha validation failed: %s",
+                    ", ".join(error_codes),
+                )
             )
         score = result.get("score", 1)
         if score < self.captcha_minimum_score:
             raise AccessError(
                 self.env._(
-                    "Hcaptcha validation failed: score %(score)s < %(min_score)s "
-                    "(%(reason)s)"
+                    "Hcaptcha validation failed: score %(score)s < %(min_score)s (%(reason)s)",
+                    score=score,
+                    min_score=self.captcha_minimum_score,
+                    reason=result.get("score_reason", ""),
                 )
-                % {
-                    "score": score,
-                    "min_score": self.captcha_minimum_score,
-                    "reason": result.get("score_reason", ""),
-                }
             )
 
     def _validate_altcha(self, captcha_response, secret_key):
@@ -198,8 +197,11 @@ class FastapiEndpoint(models.Model):
         if not success:
             error = result.get("error", "?")
             raise AccessError(
-                self.env._("Altcha (%(url)s) validation failed: %(error)s")
-                % {"url": url, "error": error}
+                self.env._(
+                    "Altcha (%(url)s) validation failed: %(error)s",
+                    url=url,
+                    error=error,
+                )
             )
 
     @api.model

@@ -16,6 +16,7 @@ class FastAPICaptcha(FastAPITransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.env["fastapi.endpoint"]._load_demo_data()
         cls.default_fastapi_running_user = cls.env.ref("fastapi.my_demo_app_user")
         cls.default_fastapi_authenticated_partner = cls.env["res.partner"].create(
             {"name": "FastAPI Demo"}

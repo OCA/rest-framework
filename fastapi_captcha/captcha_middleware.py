@@ -36,7 +36,7 @@ class CaptchaMiddleware(BaseHTTPMiddleware):
             raise e
         except OSError as e:
             raise AccessError(
-                env._("Captcha validation failed: %s") % str(e),
+                env._("Captcha validation failed: %s", str(e)),
             ) from e
         response = await call_next(request)
         return response
