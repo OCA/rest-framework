@@ -24,7 +24,7 @@ addon | version | maintainers | summary
 --- | --- | --- | ---
 [api_log](api_log/) | 17.0.1.0.2 | <a href='https://github.com/paradoxxxzero'><img src='https://github.com/paradoxxxzero.png' width='32' height='32' style='border-radius:50%;' alt='paradoxxxzero'/></a> | Log API requests in database
 [api_log_mail](api_log_mail/) | 17.0.1.0.0 | <a href='https://github.com/SirPyTech'><img src='https://github.com/SirPyTech.png' width='32' height='32' style='border-radius:50%;' alt='SirPyTech'/></a> | Notify logged exceptions.
-[fastapi](fastapi/) | 17.0.3.2.2 | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Odoo FastAPI endpoint
+[fastapi](fastapi/) | 17.0.3.3.0 | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Odoo FastAPI endpoint
 [fastapi_auth_api_key](fastapi_auth_api_key/) | 17.0.1.0.1 | <a href='https://github.com/mmequignon'><img src='https://github.com/mmequignon.png' width='32' height='32' style='border-radius:50%;' alt='mmequignon'/></a> | Fastapi Auth API Key
 [fastapi_log](fastapi_log/) | 17.0.1.0.0 | <a href='https://github.com/paradoxxxzero'><img src='https://github.com/paradoxxxzero.png' width='32' height='32' style='border-radius:50%;' alt='paradoxxxzero'/></a> | Log Fastapi requests in database
 [fastapi_log_mail](fastapi_log_mail/) | 17.0.1.0.0 | <a href='https://github.com/SirPyTech'><img src='https://github.com/SirPyTech.png' width='32' height='32' style='border-radius:50%;' alt='SirPyTech'/></a> | Notify logged exceptions.
