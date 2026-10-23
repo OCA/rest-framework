@@ -39,6 +39,12 @@ class RESTLog(models.Model):
     state = fields.Selection(
         selection=[("success", "Success"), ("failed", "Failed")], readonly=True
     )
+    exec_time = fields.Float(
+        readonly=True,
+        string="Exec time (s)",
+        help="Time spent (in seconds) to dispatch the request.",
+        aggregator="avg",
+    )
     severity = fields.Selection(
         selection=[
             ("functional", "Functional"),
