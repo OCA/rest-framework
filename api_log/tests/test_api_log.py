@@ -51,3 +51,17 @@ class TestAPILog(Common):
         log.log_exception(Exception())
 
         self.assertEqual(log.response_headers["API-Log-Entry-ID"], str(log.id))
+
+    def test_log_exception_none_headers(self):
+        """
+        If the exception's headers are None,
+        it can be logged.
+        """
+        log = self.log_model.create({})
+        exception = Exception()
+        exception.headers = None
+
+        values = log._prepare_log_exception(exception)
+
+        self.assertEqual(values["response_headers"]["API-Log-Entry-ID"], str(log.id))
+        self.assertTrue(values["stack_trace"])
