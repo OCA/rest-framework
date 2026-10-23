@@ -7,7 +7,8 @@ contextvars
 cryptography
 extendable-pydantic>=1.2.0
 extendable>=0.0.4
-fastapi>=0.110.0
+fastapi
+fastapi-openapi-overrides
 itsdangerous
 parse-accept-language
 pydantic>=2.0.0
