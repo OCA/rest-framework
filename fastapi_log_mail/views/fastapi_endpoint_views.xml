@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!--
+    ~ Copyright 2025 Simone Rubino - PyTech
+    ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="fastapi_endpoint_form_view" model="ir.ui.view">
+        <field name="name">Add log mail fields to endpoint form view</field>
+        <field name="model">fastapi.endpoint</field>
+        <field name="inherit_id" ref="fastapi_log.fastapi_endpoint_form_view" />
+        <field name="arch" type="xml">
+            <field name="log_requests" position="after">
+                <field
+                    name="api_log_mail_exception_activity_type_id"
+                    groups="api_log.group_api_log"
+                    invisible="not log_requests"
+                />
+                <field
+                    name="api_log_mail_exception_template_id"
+                    groups="api_log.group_api_log"
+                    invisible="not log_requests"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>

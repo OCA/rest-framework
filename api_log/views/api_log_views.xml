@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!--
+    Copyright 2025 Akretion (http://www.akretion.com).
+    @author Florian Mounier <florian.mounier@akretion.com>
+    License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="api_log_action" model="ir.actions.act_window">
+        <field name="name">API Log</field>
+        <field name="res_model">api.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="api_log_view_form" model="ir.ui.view">
+        <field name="name">api.log.form</field>
+        <field name="model">api.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title" invisible="not name">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group name="main">
+                        <group name="request">
+                            <field name="request_url" />
+                            <field name="request_method" />
+                            <field name="request_headers_preview" />
+                            <field name="request_b64" />
+                            <field
+                                name="request_preview"
+                                invisible="not request_preview"
+                            />
+                            <field name="request_date" />
+                        </group>
+                        <group name="response">
+                            <field name="response_status_code" />
+                            <field name="response_headers_preview" />
+                            <field name="response_b64" />
+                            <field
+                                name="response_preview"
+                                invisible="not response_preview"
+                            />
+                            <field name="response_date" />
+                        </group>
+                        <group name="misc">
+                            <field name="collection_ref" />
+                            <field name="stack_trace" invisible="not stack_trace" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_log_view_tree" model="ir.ui.view">
+        <field name="name">api.log.list</field>
+        <field name="model">api.log</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="collection_ref" optional="hide" />
+                <field name="request_date" />
+                <field name="request_method" />
+                <field name="request_url" />
+                <field name="response_status_code" />
+                <field name="request_content_type" optional="hide" />
+                <field name="response_content_type" optional="hide" />
+                <field name="time" />
+            </list>
+        </field>
+    </record>
+
+    <record id="api_log_view_search" model="ir.ui.view">
+        <field name="name">api.log.search</field>
+        <field name="model">api.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="collection_ref" />
+                <separator />
+                <filter
+                    string="Success"
+                    name="success"
+                    domain="[('response_status_code', '&gt;=', 200), ('response_status_code', '&lt;', 300)]"
+                />
+                <filter
+                    string="Error"
+                    name="error"
+                    domain="[('response_status_code', '&gt;=', 400)]"
+                />
+
+                <group name="groupby">
+                    <filter
+                        name="collection_groupby"
+                        string="Collection"
+                        context="{'group_by': 'collection_ref'}"
+                    />
+                    <filter
+                        name="method_groupby"
+                        string="Method"
+                        context="{'group_by': 'request_method'}"
+                    />
+                    <filter
+                        name="url_groupby"
+                        string="Url"
+                        context="{'group_by': 'request_url'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <menuitem id="menu_api_log" action="api_log_action" parent="base.next_id_9" />
+</odoo>

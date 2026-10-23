@@ -1,0 +1,3 @@
+- Florian Mounier <florian.mounier@akretion.com>
+- [PyTech](https://www.pytech.it):
+  - Simone Rubino \<<simone.rubino@pytech.it>\>
