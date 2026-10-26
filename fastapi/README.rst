@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ============
 Odoo FastAPI
 ============
@@ -17,7 +13,7 @@ Odoo FastAPI
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-LGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Frest--framework-lightgray.png?logo=github
@@ -262,6 +258,12 @@ a route that returns a list of partners.
 Now, you can start your Odoo server, install your addon and create a new
 endpoint instance for your app. Once it's done click on the docs url to
 access the interactive documentation of your app.
+
+**Note**: FastAPI automatically exposes three services to easily
+interact with the APIs and their structure (Swagger, Redoc, OpenAPI).
+When exposing your Odoo instance to the open internet you might want to
+disable these services. To do so toggle the "Expose FastAPI docs"
+checkbox in the FastAPI Endpoint form view.
 
 Before trying to test your app, you need to define on the endpoint
 instance the user that will be used to run the app. You can do it by

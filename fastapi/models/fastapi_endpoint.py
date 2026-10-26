@@ -65,6 +65,7 @@ class FastapiEndpoint(models.Model):
         "unexpecteed disk space consumption.",
         default=True,
     )
+    expose_doc_urls = fields.Boolean("Expose FastAPI docs", default=True)
 
     @api.depends("root_path")
     def _compute_root_path(self):
@@ -150,7 +151,7 @@ class FastapiEndpoint(models.Model):
     @api.model
     def _fastapi_app_fields(self) -> list[str]:
         """The list of fields requiring to refresh the fastapi app if modified"""
-        return []
+        return ["expose_doc_urls"]
 
     def _make_routing_rule(self, options=None):
         """Generator of rule"""
@@ -321,12 +322,15 @@ class FastapiEndpoint(models.Model):
 
     def _prepare_fastapi_app_params(self) -> dict[str, Any]:
         """Return the params to pass to the Fast API app constructor"""
-        return {
+        to_return = {
             "title": self.name,
             "description": self.description,
             "middleware": self._get_fastapi_app_middlewares(),
             "dependencies": self._get_fastapi_app_dependencies(),
         }
+        if not self.expose_doc_urls:
+            to_return |= {"docs_url": None, "redoc_url": None, "openapi_url": None}
+        return to_return
 
     def _get_fastapi_routers(self) -> list[APIRouter]:
         """Return the api routers to use for the instance.
