@@ -12,6 +12,9 @@ class APILogCollection(models.AbstractModel):
         domain=[("model_id.model", "=", "api.log")],
         string="Error E-mail Template",
         help="An email based on this template will be sent when an error is logged.",
+        default=lambda self: self.env.ref(
+            "api_log_mail.email_template_fastapi_error", False
+        ),
     )
     api_log_mail_exception_activity_type_id = fields.Many2one(
         comodel_name="mail.activity.type",

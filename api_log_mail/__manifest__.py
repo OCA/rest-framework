@@ -16,4 +16,5 @@
         "api_log",
         "mail",
     ],
+    "data": ["data/mail_template.xml"],
 }
