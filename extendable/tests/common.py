@@ -3,7 +3,6 @@
 
 from contextlib import contextmanager
 
-import odoo
 from odoo import SUPERUSER_ID, api
 from odoo.modules.registry import Registry
 from odoo.tests import common

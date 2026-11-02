@@ -49,11 +49,11 @@ except (OSError, ImportError) as err:
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, obj):  # pylint: disable=E0202,arguments-differ
-        if isinstance(obj, datetime.datetime):
-            return obj.isoformat()
-        elif isinstance(obj, datetime.date):
-            return obj.isoformat()
-        elif isinstance(obj, datetime.time):
+        if (
+            isinstance(obj, datetime.datetime)
+            or isinstance(obj, datetime.date)
+            or isinstance(obj, datetime.time)
+        ):
             return obj.isoformat()
         elif isinstance(obj, decimal.Decimal):
             return float(obj)
@@ -141,7 +141,7 @@ class RestApiDispatcher(Dispatcher):
                 try:
                     self.request.params.update(json.loads(data))
                 except (ValueError, json.decoder.JSONDecodeError) as e:
-                    msg = f"Invalid JSON data: {str(e)}"
+                    msg = f"Invalid JSON data: {e!s}"
                     _logger.info(f"{self.request.httprequest.path}: {msg}")
                     raise BadRequest(msg) from e
         elif httprequest.mimetype == "multipart/form-data":
