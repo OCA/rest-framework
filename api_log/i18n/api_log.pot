@@ -26,7 +26,6 @@ msgstr ""
 
 #. module: api_log
 #: model:ir.actions.server,name:api_log.cron_delete_api_log_ir_actions_server
-#: model:ir.cron,cron_name:api_log.cron_delete_api_log
 msgid "API Log: Delete old logs"
 msgstr ""
 
