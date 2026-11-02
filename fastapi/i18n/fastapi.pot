@@ -91,6 +91,11 @@ msgid "Docs Url"
 msgstr ""
 
 #. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__expose_doc_urls
+msgid "Expose FastAPI docs"
+msgstr ""
+
+#. module: fastapi
 #: model:ir.module.category,name:fastapi.module_category_fastapi
 #: model:ir.ui.menu,name:fastapi.menu_fastapi_root
 msgid "FastAPI"
