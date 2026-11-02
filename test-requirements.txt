@@ -1,2 +1,4 @@
 odoo_test_helper
 httpx2
+odoo-addon-auth_jwt @ git+https://github.com/OCA/server-auth.git@refs/pull/1035/head#subdirectory=auth_jwt
+odoo-addon-endpoint_route_handler @ git+https://github.com/OCA/web-api.git@refs/pull/177/head#subdirectory=endpoint_route_handler
