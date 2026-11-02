@@ -94,6 +94,11 @@ msgid "Docs Url"
 msgstr "URL de la documentation"
 
 #. module: fastapi
+#: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__expose_doc_urls
+msgid "Expose FastAPI docs"
+msgstr ""
+
+#. module: fastapi
 #: model:ir.module.category,name:fastapi.module_category_fastapi
 #: model:ir.ui.menu,name:fastapi.menu_fastapi_root
 msgid "FastAPI"
@@ -239,8 +244,8 @@ msgstr "Utilisateur"
 #: model:ir.model.fields,help:fastapi.field_fastapi_endpoint__save_http_session
 msgid ""
 "Whether session should be saved into the session store. This is required if "
-"for example you use the Odoo's authentication mechanism. Oherwise chance are"
-" high that you don't need it and could turn off this behaviour. Additionaly "
+"for example you use the Odoo's authentication mechanism. Oherwise chance are "
+"high that you don't need it and could turn off this behaviour. Additionaly "
 "turning off this option will prevent useless IO operation when storing and "
 "reading the session on the disk and prevent unexpecteed disk space "
 "consumption."
