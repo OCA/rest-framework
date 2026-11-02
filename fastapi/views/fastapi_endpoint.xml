@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!-- Copyright 2022 ACSONE SA/NV
      License LGPL-3.0 or later (http://www.gnu.org/licenses/LGPL). -->
 <odoo>
-    <record model="ir.ui.view" id="fastapi_endpoint_form_view">
+    <record id="fastapi_endpoint_form_view" model="ir.ui.view">
         <field name="name">fastapi.endpoint.form (in fastapi)</field>
         <field name="model">fastapi.endpoint</field>
         <field name="arch" type="xml">
@@ -61,7 +61,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="fastapi_endpoint_search_view">
+    <record id="fastapi_endpoint_search_view" model="ir.ui.view">
         <field name="name">fastapi.endpoint.search (in fastapi)</field>
         <field name="model">fastapi.endpoint</field>
         <field name="arch" type="xml">
@@ -84,7 +84,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="fastapi_endpoint_tree_view">
+    <record id="fastapi_endpoint_tree_view" model="ir.ui.view">
         <field name="name">fastapi.endpoint.tree (in fastapi)</field>
         <field name="model">fastapi.endpoint</field>
         <field name="arch" type="xml">
@@ -109,7 +109,7 @@
         </field>
     </record>
 
-    <record model="ir.actions.server" id="fastapi_endpoint_action_sync_registry">
+    <record id="fastapi_endpoint_action_sync_registry" model="ir.actions.server">
         <field name="name">Sync Registry</field>
         <field name="model_id" ref="model_fastapi_endpoint" />
         <field name="binding_model_id" ref="model_fastapi_endpoint" />
@@ -120,7 +120,7 @@
         </field>
     </record>
 
-    <record model="ir.actions.act_window" id="fastapi_endpoint_act_window">
+    <record id="fastapi_endpoint_act_window" model="ir.actions.act_window">
         <field name="name">FastAPI Endpoint</field>
         <field name="res_model">fastapi.endpoint</field>
         <field name="view_mode">list,form</field>
@@ -128,7 +128,7 @@
         <field name="context">{}</field>
     </record>
 
-    <record model="ir.ui.menu" id="fastapi_endpoint_menu">
+    <record id="fastapi_endpoint_menu" model="ir.ui.menu">
         <field name="name">FastAPI Endpoint</field>
         <field name="parent_id" ref="menu_fastapi_root" />
         <field name="action" ref="fastapi_endpoint_act_window" />

@@ -192,7 +192,7 @@ class RestServiceRegistration(models.AbstractModel):
         graph = odoo.modules.graph.Graph()
         graph.add_module(self.env.cr, "base")
 
-        query = "SELECT name " "FROM ir_module_module " "WHERE state IN %s "
+        query = "SELECT name FROM ir_module_module WHERE state IN %s "
         params = [tuple(states)]
         if exclude_addons:
             query += " AND name NOT IN %s "
@@ -423,7 +423,7 @@ class RestApiServiceControllerGenerator:
                     methods=[http_method],
                     type="restapi",
                 )
-                for attr in {"auth", "cors", "csrf", "save_session"}:
+                for attr in ("auth", "cors", "csrf", "save_session"):
                     if attr in routing:
                         route_params[attr] = routing[attr]
                 method_exec = http.route(**route_params)(method_exec)

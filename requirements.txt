@@ -1,6 +1,8 @@
 # generated from manifests external_dependencies
 a2wsgi>=1.10.6
+cryptography
 fastapi>=0.110.0
 parse-accept-language
+pyjwt
 python-multipart
 ujson

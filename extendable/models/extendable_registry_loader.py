@@ -52,7 +52,7 @@ class ExtendableRegistryLoader(models.AbstractModel):
         graph = odoo.modules.graph.Graph()
         graph.add_module(self.env.cr, "base")
 
-        query = "SELECT name " "FROM ir_module_module " "WHERE state IN %s "
+        query = "SELECT name FROM ir_module_module WHERE state IN %s "
         params = [tuple(states)]
         if exclude_addons:
             query += " AND name NOT IN %s "
