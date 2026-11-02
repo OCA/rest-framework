@@ -16,7 +16,7 @@ from odoo.addons.auth_jwt.exceptions import (
     UnauthorizedMissingCookie,
 )
 from odoo.addons.auth_jwt.models.auth_jwt_validator import AuthJwtValidator
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner
 from odoo.addons.fastapi.dependencies import odoo_env
 
 from fastapi import Depends, HTTPException, Request, Response
@@ -92,7 +92,7 @@ def _get_jwt_payload_and_validator(
 
         if not payload:
             if len(exceptions) == 1:
-                raise list(exceptions.values())[0]
+                raise next(iter(exceptions.values()))
             raise UnauthorizedCompositeJwtError(exceptions)
 
         if validator.cookie_enabled:
@@ -187,7 +187,7 @@ class AuthJwtPartner(BaseAuthJwt):
             Environment,
             Depends(odoo_env),
         ],
-    ) -> Partner:
+    ) -> ResPartner:
         validator = _get_auth_jwt_validator(
             self.validator_name or default_validator_name, env
         )
@@ -203,10 +203,11 @@ class AuthJwtPartner(BaseAuthJwt):
             partner_id = validator._get_and_check_partner_id(payload)
         except Unauthorized as e:
             raise HTTPException(status_code=HTTP_401_UNAUTHORIZED) from e
-        if not partner_id:
-            if not self.allow_unauthenticated or validator.partner_id_required:
-                _logger.info("Could not determine partner from JWT payload.")
-                raise HTTPException(status_code=HTTP_401_UNAUTHORIZED)
+        if not partner_id and (
+            not self.allow_unauthenticated or validator.partner_id_required
+        ):
+            _logger.info("Could not determine partner from JWT payload.")
+            raise HTTPException(status_code=HTTP_401_UNAUTHORIZED)
         return env["res.partner"].with_user(uid).browse(partner_id)
 
 
