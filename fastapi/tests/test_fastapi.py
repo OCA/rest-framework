@@ -4,6 +4,7 @@
 import os
 import unittest
 from contextlib import contextmanager
+from pathlib import Path
 
 from odoo import sql_db
 from odoo.tests.common import HttpCase
@@ -45,6 +46,17 @@ class FastAPIHttpCase(HttpCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, expected_lang)
 
+    def endpoint_path(self, endpoint, path):
+        """Properly contatenate and endpoint's root_path and another path"""
+        if path[0] == "/":
+            # concatenating two paths where the second one starts with a '/' makes the
+            # resulting path exactly the same as this second path
+            # eg. Path("/root") / Path("/endpoint") -> PosixPath("/endpoint")
+            # We want to avoid that, we should get a result like
+            # -> PosixPath("/root/endpoint")
+            path = path[1:]
+        return str(Path(endpoint.root_path) / path)
+
     def test_call(self):
         route = "/fastapi_demo/demo/"
         response = self.url_open(route)
@@ -78,6 +90,36 @@ class FastAPIHttpCase(HttpCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.json(), {"retries": nbr_retries, "file": "test"})
+
+    def test_expose_docs(self):
+        self.assertNotIn(
+            "docs_url", self.fastapi_demo_app._prepare_fastapi_app_params().keys()
+        )
+        response = self.url_open(
+            self.endpoint_path(self.fastapi_demo_app, "/docs"), timeout=20
+        )
+        self.assertEqual(response.status_code, 200)
+
+        unexposed_endpoint = self.env["fastapi.endpoint"].create(
+            {
+                "name": "Test Endpoint - non exposed",
+                "root_path": "/test-endpoint/",
+                "app": "demo",
+                "demo_auth_method": "api_key",
+                "expose_doc_urls": False,
+            }
+        )
+        self.assertIn(
+            "docs_url", unexposed_endpoint._prepare_fastapi_app_params().keys()
+        )
+        self.assertEqual(
+            unexposed_endpoint._prepare_fastapi_app_params().get("docs_url"), None
+        )
+        unexposed_endpoint._handle_registry_sync()
+        response = self.url_open(
+            self.endpoint_path(unexposed_endpoint, "/docs"), timeout=20
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     @mute_logger("odoo.http")
     def assert_exception_processed(

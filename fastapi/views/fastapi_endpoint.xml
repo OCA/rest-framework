@@ -49,6 +49,7 @@
                         <field name="save_http_session" />
                     </group>
                     <group name="resoures">
+                        <field name="expose_doc_urls" />
                         <field name="docs_url" widget="url" />
                         <field name="redoc_url" widget="url" />
                         <field name="openapi_url" widget="url" />
