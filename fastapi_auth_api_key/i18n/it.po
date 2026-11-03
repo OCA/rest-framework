@@ -1,0 +1,46 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* fastapi_auth_api_key
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-12-10 11:43+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.4\n"
+
+#. module: fastapi_auth_api_key
+#: model:ir.model.fields,field_description:fastapi_auth_api_key.field_fastapi_endpoint__auth_api_key_group_id
+msgid "Auth Api Key Group"
+msgstr "Gruppo chiave API autorizzazione"
+
+#. module: fastapi_auth_api_key
+#: model:ir.model,name:fastapi_auth_api_key.model_fastapi_endpoint
+msgid "FastAPI Endpoint"
+msgstr "Endpoint FastAPI"
+
+#. module: fastapi_auth_api_key
+#: model:ir.model.fields,help:fastapi_auth_api_key.field_fastapi_endpoint__auth_api_key_group_id
+msgid "If not set, all 'auth.api.key' are allowed to access to endpoints"
+msgstr ""
+"Se non impostata, tutte le 'auth.api.key' sono abilitate ad accedere agli "
+"endpoint"
+
+#. module: fastapi_auth_api_key
+#. odoo-python
+#: code:addons/fastapi_auth_api_key/dependencies.py:0
+msgid "Missing %(HTTP_API_KEY_HEADER)s header"
+msgstr "Header %(HTTP_API_KEY_HEADER)s mancante"
+
+#. module: fastapi_auth_api_key
+#. odoo-python
+#: code:addons/fastapi_auth_api_key/dependencies.py:0
+msgid "Unauthorized"
+msgstr "Non autorizzata"
