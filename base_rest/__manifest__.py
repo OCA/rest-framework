@@ -41,4 +41,5 @@
             "apispec",
         ]
     },
+    "installable": True,
 }
