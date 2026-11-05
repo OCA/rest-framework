@@ -3,6 +3,7 @@
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
+import configparser
 import datetime
 import decimal
 import json
@@ -63,6 +64,17 @@ class JSONEncoder(json.JSONEncoder):
 BLACKLISTED_LOG_PARAMS = ("password",)
 
 
+def _is_dev_mode():
+    """Read ``dev_mode`` in the ``[base_rest]`` section of the config file.
+
+    Since 19.0, Odoo only reads the ``[options]`` section of this file.
+    """
+    parser = configparser.RawConfigParser()
+    if config.get("config"):
+        parser.read(config["config"])
+    return parser.getboolean("base_rest", "dev_mode", fallback=False)
+
+
 def wrapJsonException(exception, include_description=False, extra_info=None):
     """Wrap exceptions to be rendered as JSON.
 
@@ -77,7 +89,7 @@ def wrapJsonException(exception, include_description=False, extra_info=None):
     def get_body(environ=None, scope=None):
         res = {"code": exception.code, "name": escape(exception.name)}
         description = exception.get_description(environ)
-        if config.get_misc("base_rest", "dev_mode"):
+        if _is_dev_mode():
             # return exception info only if base_rest is in dev_mode
             res.update({"traceback": exception.traceback, "description": description})
         elif include_description:
