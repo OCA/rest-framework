@@ -3,6 +3,8 @@
 
 from apispec import BasePlugin
 
+from odoo.addons.base_rest.tools import ROUTING_DECORATOR_ATTR
+
 
 class RestMethodSecurityPlugin(BasePlugin):
     def __init__(self, service):
@@ -18,7 +20,7 @@ class RestMethodSecurityPlugin(BasePlugin):
         spec.components.security_scheme("api_key", api_key_scheme)
 
     def operation_helper(self, path=None, operations=None, **kwargs):
-        routing = kwargs.get("routing")
+        routing = kwargs.get(ROUTING_DECORATOR_ATTR)
         if not routing:
             super().operation_helper(path, operations, **kwargs)
         if not operations:
