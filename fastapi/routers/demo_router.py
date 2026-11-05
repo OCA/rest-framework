@@ -12,7 +12,14 @@ from psycopg2.errors import SerializationFailure
 
 from odoo.api import Environment
 from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
-from odoo.service.model import MAX_TRIES_ON_CONCURRENCY_FAILURE
+
+try:
+    from odoo.http.retrying import MAX_TRIES_ON_CONCURRENCY_FAILURE
+except ImportError:
+    try:
+        from odoo.service.model import MAX_TRIES_ON_CONCURRENCY_FAILURE
+    except ImportError:
+        MAX_TRIES_ON_CONCURRENCY_FAILURE = 5
 
 from odoo.addons.base.models.res_partner import ResPartner
 
