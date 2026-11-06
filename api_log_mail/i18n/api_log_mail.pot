@@ -1,0 +1,192 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* api_log_mail
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log_collection_mixin__api_log_mail_exception_activity_type_id
+#: model:ir.model.fields,help:api_log_mail.field_fastapi_endpoint__api_log_mail_exception_activity_type_id
+msgid "An activity of this type will be created when an error is logged."
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log_collection_mixin__api_log_mail_exception_template_id
+#: model:ir.model.fields,help:api_log_mail.field_fastapi_endpoint__api_log_mail_exception_template_id
+msgid "An email based on this template will be sent when an error is logged."
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model,name:api_log_mail.model_api_log_collection_mixin
+msgid "Collection of API logs"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log_collection_mixin__api_log_mail_exception_activity_type_id
+#: model:ir.model.fields,field_description:api_log_mail.field_fastapi_endpoint__api_log_mail_exception_activity_type_id
+msgid "Error Activity type"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log_collection_mixin__api_log_mail_exception_template_id
+#: model:ir.model.fields,field_description:api_log_mail.field_fastapi_endpoint__api_log_mail_exception_template_id
+msgid "Error E-mail Template"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model,name:api_log_mail.model_api_log
+msgid "Log for API"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,field_description:api_log_mail.field_api_log__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: api_log_mail
+#: model:ir.model.fields,help:api_log_mail.field_api_log__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
