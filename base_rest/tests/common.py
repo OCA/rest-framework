@@ -244,4 +244,5 @@ class BaseRestCase(TransactionComponentCase, RegistryMixin):
         super().setUpClass()
         cls.setUpRegistry()
         cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
+        # leaves test mode in a class cleanup
         cls.registry_enter_test_mode_cls()
