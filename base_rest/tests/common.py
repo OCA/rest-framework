@@ -240,15 +240,10 @@ class TransactionRestServiceRegistryCase(RestServiceRegistryCase, TransactionCas
 
 
 class BaseRestCase(TransactionComponentCase, RegistryMixin):
-    # pylint: disable=W8106
-    def setUp(self):
-        super().setUp()
-        self.setUpRegistry()
-        self.base_url = self.env["ir.config_parameter"].get_param("web.base.url")
-        self.registry_enter_test_mode(register_cleanup=False)
-
-    # pylint: disable=W8110
     @classmethod
-    def tearDownClass(cls):
-        cls.registry_leave_test_mode()
-        super().tearDownClass()
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.setUpRegistry()
+        cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
+        # leaves test mode in a class cleanup
+        cls.registry_enter_test_mode_cls()

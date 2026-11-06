@@ -160,3 +160,7 @@ class CommonCase(BaseRestCase):
     # dummy test method to pass codecov
     def test_04(self):
         self.assertEqual(self.registry.db_name, self.cr.dbname)
+
+    def test_05(self):
+        # a second test: the registry stays in test mode for the whole class
+        self.assertTrue(type(self)._registry_patched)
