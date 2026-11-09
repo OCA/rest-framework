@@ -40,7 +40,7 @@ class PydanticModel(restapi.RestMethodParam):
         try:
             return self._model_cls(**params)
         except ValidationError as ve:
-            raise UserError(service.env._("BadRequest %s") % ve.json(indent=0)) from ve
+            raise UserError(service.env._("BadRequest %s", ve.json(indent=0))) from ve
 
     def to_response(self, service, result):
         # do we really need to validate the instance????

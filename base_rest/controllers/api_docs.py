@@ -30,7 +30,7 @@ class ApiDocsController(Controller):
         self._get_api_urls()
         primary_name = params.get("urls.primaryName")
         swagger_settings = {
-            "urls": self._get_api_urls(),
+            "urls": self._get_api_urls() or None,
             "urls.primaryName": primary_name,
         }
         values = {"swagger_settings": swagger_settings}
