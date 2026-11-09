@@ -12,6 +12,7 @@ from odoo.tools import mute_logger
 
 from fastapi import status
 
+from ..pools import fastapi_app_pool
 from ..schemas import DemoExceptionType
 
 
@@ -235,6 +236,17 @@ class FastAPIHttpCase(HttpCase):
             EndPoint._find_first_matching_url_path(paths, "/fastapi/v1/test"),
             "/fastapi/v1",
         )
+
+    def test_app_pool_keyed_on_root_path(self):
+        # Calls to endpoints under the same root path are processed by the same
+        # app: only one app is initialized by root path
+        for route in ("/fastapi_demo/demo", "/fastapi_demo/demo/lang"):
+            response = self.url_open(route, timeout=20)
+            self.assertEqual(response.status_code, 200)
+        pools = fastapi_app_pool._queue_by_db_by_root_path[self.env.cr.dbname]
+        self.assertIn(self.fastapi_demo_app.root_path, pools)
+        self.assertNotIn("/fastapi_demo/demo", pools)
+        self.assertNotIn("/fastapi_demo/demo/lang", pools)
 
     def test_multi_slash(self):
         route = "/fastapi/demo-multi/demo/"
