@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-05-27 15:41+0000\n"
+"PO-Revision-Date: 2026-11-09 13:46+0000\n"
 "Last-Translator: Thibault REY <rey.thibault@gmail.com>\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -96,7 +96,7 @@ msgstr "URL de la documentation"
 #. module: fastapi
 #: model:ir.model.fields,field_description:fastapi.field_fastapi_endpoint__expose_doc_urls
 msgid "Expose FastAPI docs"
-msgstr ""
+msgstr "Publier la documentation FastAPI"
 
 #. module: fastapi
 #: model:ir.module.category,name:fastapi.module_category_fastapi
