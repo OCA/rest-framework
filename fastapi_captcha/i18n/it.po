@@ -6,82 +6,84 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-11-10 12:46+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields.selection,name:fastapi_captcha.selection__fastapi_endpoint__captcha_type__altcha
 msgid "Altcha"
-msgstr ""
+msgstr "Altcha"
 
 #. module: fastapi_captcha
 #. odoo-python
 #: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
 msgid "Altcha (%(url)s) validation failed: %(error)s"
-msgstr ""
+msgstr "Validazione Altcha (%(url)s) fallita: %(error)s"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_custom_verify_url
 msgid "Captcha Custom Verify Url"
-msgstr ""
+msgstr "URL personalizzato verifica captcha"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_minimum_score
 msgid "Captcha Minimum Score"
-msgstr ""
+msgstr "Punteggio minimo captcha"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_routes_regex
 msgid "Captcha Routes Regex"
-msgstr ""
+msgstr "Espressione regolare instradamenti captcha"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_secret_key
 msgid "Captcha Secret Key"
-msgstr ""
+msgstr "Chiave segreta captcha"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_type
 msgid "Captcha Type"
-msgstr ""
+msgstr "Tipo captcha"
 
 #. module: fastapi_captcha
 #. odoo-python
 #: code:addons/fastapi_captcha/captcha_middleware.py:0
 msgid "Captcha token not found in headers"
-msgstr ""
+msgstr "Token captcha non trovato nelle intestazioni"
 
 #. module: fastapi_captcha
 #. odoo-python
 #: code:addons/fastapi_captcha/captcha_middleware.py:0
 msgid "Captcha validation failed: %s"
-msgstr ""
+msgstr "Validazione captcha fallita: %s"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_custom_verify_url
 msgid "Custom URL to use for the captcha verification"
-msgstr ""
+msgstr "URL personalizzato da utilizzare per la verifica del captcha"
 
 #. module: fastapi_captcha
 #: model:ir.model,name:fastapi_captcha.model_fastapi_endpoint
 msgid "FastAPI Endpoint"
-msgstr ""
+msgstr "Endpoint FastAPI"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields.selection,name:fastapi_captcha.selection__fastapi_endpoint__captcha_type__hcaptcha
 msgid "Hcaptcha"
-msgstr ""
+msgstr "Hcaptcha"
 
 #. module: fastapi_captcha
 #. odoo-python
 #: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
 msgid "Hcaptcha validation failed: %s"
-msgstr ""
+msgstr "Validazione Hcaptcha fallita: %s"
 
 #. module: fastapi_captcha
 #. odoo-python
@@ -89,17 +91,21 @@ msgstr ""
 msgid ""
 "Hcaptcha validation failed: score %(score)s < %(min_score)s (%(reason)s)"
 msgstr ""
+"Validazione Hcaptcha fallita: punteggio %(score)s < %(min_score)s (%(reason)"
+"s)"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__use_captcha
 msgid "If checked, this endpoint will be protected by a captcha"
-msgstr ""
+msgstr "Se selezionato, questo endpoint sarà protetto da un captcha"
 
 #. module: fastapi_captcha
 #. odoo-python
 #: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
 msgid "Invalid regex for captcha routes: %(regex)s (error: %(error)s)"
 msgstr ""
+"Espressione regolare non valida per instradamenti captcha: %(regex)s "
+"(errore: %(error)s)"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_minimum_score
@@ -107,29 +113,31 @@ msgid ""
 "Minimum score to accept the captcha if a score is provided by the captcha "
 "service."
 msgstr ""
+"Punteggio minimo per accettare il captcha se viene fornito un punteggio dal "
+"servizio captcha."
 
 #. module: fastapi_captcha
 #. odoo-python
 #: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
 msgid "No secret key found for this endpoint"
-msgstr ""
+msgstr "Nessuna chiave segreta trovata per questo endpoint"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields.selection,name:fastapi_captcha.selection__fastapi_endpoint__captcha_type__recaptcha
 msgid "Recaptcha"
-msgstr ""
+msgstr "Recaptcha"
 
 #. module: fastapi_captcha
 #. odoo-python
 #: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
 msgid "Recaptcha validation failed: %s"
-msgstr ""
+msgstr "Validazione Recaptcha fallita: %s"
 
 #. module: fastapi_captcha
 #. odoo-python
 #: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
 msgid "Recaptcha validation failed: score %(score)s < %(min_score)s"
-msgstr ""
+msgstr "Validazione Recaptcha fallita: punteggio %(score)s < %(min_score)s"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_routes_regex
@@ -137,18 +145,21 @@ msgid ""
 "Regexes to match against routes url that should be protected by this "
 "captcha, comma separated. If empty, all routes will be protected"
 msgstr ""
+"Espressioni regolari separate da virgola da confrontare con gli URL degli "
+"instradamenti che devono essere protetti da questo captcha. Se vuoto, tutti "
+"gli instradamenti saranno protetti"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_secret_key
 msgid "Secret key to use for the captcha validation"
-msgstr ""
+msgstr "Chiave segreta da utilizzare per la validazione del captcha"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_type
 msgid "Type of captcha to use for this endpoint"
-msgstr ""
+msgstr "Tipo di captcha da utilizzare per questo endpoint"
 
 #. module: fastapi_captcha
 #: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__use_captcha
 msgid "Use Captcha"
-msgstr ""
+msgstr "Usa captcha"
