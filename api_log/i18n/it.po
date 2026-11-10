@@ -6,242 +6,244 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2026-11-10 12:46+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.2\n"
 
 #. module: api_log
 #: model:ir.actions.act_window,name:api_log.api_log_action
 #: model:ir.ui.menu,name:api_log.menu_api_log
 msgid "API Log"
-msgstr ""
+msgstr "Registro API"
 
 #. module: api_log
 #: model:res.groups,name:api_log.group_api_log
 msgid "API Log Access"
-msgstr ""
+msgstr "Accesso registro API"
 
 #. module: api_log
 #: model:ir.actions.server,name:api_log.cron_delete_api_log_ir_actions_server
 msgid "API Log: Delete old logs"
-msgstr ""
+msgstr "Registro API: elimina vecchi registri"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__collection_id
 #: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
 msgid "Collection"
-msgstr ""
+msgstr "Raccolta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__collection_model
 msgid "Collection Model"
-msgstr ""
+msgstr "Modello raccolta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__collection_ref
 msgid "Collection Ref"
-msgstr ""
+msgstr "Rif. raccolta"
 
 #. module: api_log
 #: model:ir.model,name:api_log.model_api_log_collection_mixin
 msgid "Collection of API logs"
-msgstr ""
+msgstr "Raccolta di registri API"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Creato da"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Creato il"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nome visualizzato"
 
 #. module: api_log
 #: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
 msgid "Error"
-msgstr ""
+msgstr "Errore"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Ultimo aggiornamento di"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Ultimo aggiornamento il"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log_collection_mixin__log_requests
 msgid "Log Requests"
-msgstr ""
+msgstr "Registra richieste"
 
 #. module: api_log
 #: model:ir.model,name:api_log.model_api_log
 msgid "Log for API"
-msgstr ""
+msgstr "Registro per API"
 
 #. module: api_log
 #: model:ir.model.fields,help:api_log.field_api_log_collection_mixin__log_requests
 msgid "Log requests in database."
-msgstr ""
+msgstr "Registra le richieste nel database."
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log_collection_mixin__log_ids
 msgid "Logs"
-msgstr ""
+msgstr "Registri"
 
 #. module: api_log
 #: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
 msgid "Method"
-msgstr ""
+msgstr "Metodo"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__name
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__referrer
 msgid "Referrer"
-msgstr ""
+msgstr "Referrer"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_body
 msgid "Request Body"
-msgstr ""
+msgstr "Corpo richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_b64
 msgid "Request Content"
-msgstr ""
+msgstr "Contenuto richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_content_length
 msgid "Request Content Length"
-msgstr ""
+msgstr "Lunghezza contenuto richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_content_type
 msgid "Request Content Type"
-msgstr ""
+msgstr "Tipo contenuto richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_date
 msgid "Request Date"
-msgstr ""
+msgstr "Data richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_headers
 msgid "Request Headers"
-msgstr ""
+msgstr "Intestazioni richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_headers_preview
 msgid "Request Headers Preview"
-msgstr ""
+msgstr "Anteprima intestazioni richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_method
 msgid "Request Method"
-msgstr ""
+msgstr "Metodo richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_preview
 msgid "Request Preview"
-msgstr ""
+msgstr "Anteprima richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_time
 msgid "Request Time"
-msgstr ""
+msgstr "Tempo richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__request_url
 msgid "Request Url"
-msgstr ""
+msgstr "URL richiesta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_body
 msgid "Response Body"
-msgstr ""
+msgstr "Corpo risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_b64
 msgid "Response Content"
-msgstr ""
+msgstr "Contenuto risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_content_length
 msgid "Response Content Length"
-msgstr ""
+msgstr "Lunghezza contenuto risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_content_type
 msgid "Response Content Type"
-msgstr ""
+msgstr "Tipo contenuto risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_date
 msgid "Response Date"
-msgstr ""
+msgstr "Data risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_headers
 msgid "Response Headers"
-msgstr ""
+msgstr "Intestazioni risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_headers_preview
 msgid "Response Headers Preview"
-msgstr ""
+msgstr "Anteprima intestazioni risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_preview
 msgid "Response Preview"
-msgstr ""
+msgstr "Anteprima risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_status_code
 msgid "Response Status Code"
-msgstr ""
+msgstr "Codice stato risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__response_time
 msgid "Response Time"
-msgstr ""
+msgstr "Tempo risposta"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__stack_trace
 msgid "Stack Trace"
-msgstr ""
+msgstr "Stack trace"
 
 #. module: api_log
 #: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
 msgid "Success"
-msgstr ""
+msgstr "Successo"
 
 #. module: api_log
 #: model:ir.model.fields,field_description:api_log.field_api_log__time
 msgid "Time"
-msgstr ""
+msgstr "Tempo"
 
 #. module: api_log
 #: model_terms:ir.ui.view,arch_db:api_log.api_log_view_search
 msgid "Url"
-msgstr ""
+msgstr "URL"
