@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2024 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="fastapi_endpoint_form_view" model="ir.ui.view">
+        <field name="name">fastapi.endpoint.form.inherit</field>
+        <field name="model">fastapi.endpoint</field>
+        <field name="inherit_id" ref="fastapi.fastapi_endpoint_form_view" />
+        <field name="arch" type="xml">
+            <group name="resoures" position="inside">
+                <field name="auth_api_key_group_id" />
+            </group>
+        </field>
+    </record>
+</odoo>
