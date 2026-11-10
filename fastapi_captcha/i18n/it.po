@@ -1,0 +1,154 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* fastapi_captcha
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#. module: fastapi_captcha
+#: model:ir.model.fields.selection,name:fastapi_captcha.selection__fastapi_endpoint__captcha_type__altcha
+msgid "Altcha"
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
+msgid "Altcha (%(url)s) validation failed: %(error)s"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_custom_verify_url
+msgid "Captcha Custom Verify Url"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_minimum_score
+msgid "Captcha Minimum Score"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_routes_regex
+msgid "Captcha Routes Regex"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_secret_key
+msgid "Captcha Secret Key"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__captcha_type
+msgid "Captcha Type"
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/captcha_middleware.py:0
+msgid "Captcha token not found in headers"
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/captcha_middleware.py:0
+msgid "Captcha validation failed: %s"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_custom_verify_url
+msgid "Custom URL to use for the captcha verification"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model,name:fastapi_captcha.model_fastapi_endpoint
+msgid "FastAPI Endpoint"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields.selection,name:fastapi_captcha.selection__fastapi_endpoint__captcha_type__hcaptcha
+msgid "Hcaptcha"
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
+msgid "Hcaptcha validation failed: %s"
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
+msgid ""
+"Hcaptcha validation failed: score %(score)s < %(min_score)s (%(reason)s)"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__use_captcha
+msgid "If checked, this endpoint will be protected by a captcha"
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
+msgid "Invalid regex for captcha routes: %(regex)s (error: %(error)s)"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_minimum_score
+msgid ""
+"Minimum score to accept the captcha if a score is provided by the captcha "
+"service."
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
+msgid "No secret key found for this endpoint"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields.selection,name:fastapi_captcha.selection__fastapi_endpoint__captcha_type__recaptcha
+msgid "Recaptcha"
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
+msgid "Recaptcha validation failed: %s"
+msgstr ""
+
+#. module: fastapi_captcha
+#. odoo-python
+#: code:addons/fastapi_captcha/models/fastapi_endpoint.py:0
+msgid "Recaptcha validation failed: score %(score)s < %(min_score)s"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_routes_regex
+msgid ""
+"Regexes to match against routes url that should be protected by this "
+"captcha, comma separated. If empty, all routes will be protected"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_secret_key
+msgid "Secret key to use for the captcha validation"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,help:fastapi_captcha.field_fastapi_endpoint__captcha_type
+msgid "Type of captcha to use for this endpoint"
+msgstr ""
+
+#. module: fastapi_captcha
+#: model:ir.model.fields,field_description:fastapi_captcha.field_fastapi_endpoint__use_captcha
+msgid "Use Captcha"
+msgstr ""
