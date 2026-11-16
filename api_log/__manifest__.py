@@ -4,7 +4,7 @@
 
 {
     "name": "API Log",
-    "version": "17.0.1.0.0",
+    "version": "17.0.1.1.0",
     "author": "Akretion, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "summary": "Log API requests in database",
@@ -12,6 +12,8 @@
     "depends": ["web"],
     "website": "https://github.com/OCA/rest-framework",
     "data": [
+        "data/ir_config_parameter.xml",
+        "data/ir_cron.xml",
         "security/res_groups.xml",
         "security/ir_model_access.xml",
         "views/api_log_views.xml",

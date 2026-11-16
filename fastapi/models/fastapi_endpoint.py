@@ -7,6 +7,7 @@ from functools import partial
 from itertools import chain
 from typing import Any
 
+from fastapi_openapi_overrides import document_dependency_overrides
 from starlette.middleware import Middleware
 from starlette.routing import Mount
 
@@ -64,6 +65,7 @@ class FastapiEndpoint(models.Model):
         "unexpecteed disk space consumption.",
         default=True,
     )
+    expose_doc_urls = fields.Boolean("Expose FastAPI docs", default=True)
 
     @api.depends("root_path")
     def _compute_root_path(self):
@@ -149,7 +151,7 @@ class FastapiEndpoint(models.Model):
     @api.model
     def _fastapi_app_fields(self) -> list[str]:
         """The list of fields requiring to refresh the fastapi app if modified"""
-        return []
+        return ["expose_doc_urls"]
 
     def _make_routing_rule(self, options=None):
         """Generator of rule"""
@@ -263,6 +265,17 @@ class FastapiEndpoint(models.Model):
         return id_by_path.get(root_path)
 
     @api.model
+    def _get_root_path(self, path):
+        """Return the root path of the endpoint that serves the given path.
+
+        Not cached on the path: a request path can contain anything, so caching
+        on it would keep one entry per distinct path.
+        """
+        return self._find_first_matching_url_path(
+            self._get_id_by_root_path_map().keys(), path
+        )
+
+    @api.model
     def _get_endpoint(self, path):
         id_ = self._get_id_for_path(path)
         return self.browse(id_) if id_ else None
@@ -305,6 +318,7 @@ class FastapiEndpoint(models.Model):
         for router in self._get_fastapi_routers():
             app.include_router(router=router)
         app.dependency_overrides.update(self._get_app_dependencies_overrides())
+        document_dependency_overrides(app)
         return app
 
     def _get_app_dependencies_overrides(self) -> dict[Callable, Callable]:
@@ -318,12 +332,15 @@ class FastapiEndpoint(models.Model):
 
     def _prepare_fastapi_app_params(self) -> dict[str, Any]:
         """Return the params to pass to the Fast API app constructor"""
-        return {
+        to_return = {
             "title": self.name,
             "description": self.description,
             "middleware": self._get_fastapi_app_middlewares(),
             "dependencies": self._get_fastapi_app_dependencies(),
         }
+        if not self.expose_doc_urls:
+            to_return |= {"docs_url": None, "redoc_url": None, "openapi_url": None}
+        return to_return
 
     def _get_fastapi_routers(self) -> list[APIRouter]:
         """Return the api routers to use for the instance.

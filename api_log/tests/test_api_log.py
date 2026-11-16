@@ -58,6 +58,24 @@ class TestAPILog(Common):
 
         self.assertEqual(log.response_headers["API-Log-Entry-ID"], str(log.id))
 
+    def test_log_exception_none_headers(self):
+        """
+        If the exception's headers are None,
+        it can be logged.
+        """
+        # Arrange
+        log = self.log_model.create({})
+        exception = Exception()
+        exception.headers = None
+
+        # Act
+        with self._mock_request_exc_handling(self.env):
+            log.log_exception(exception)
+
+        # Assert
+        self.assertEqual(log.response_headers["API-Log-Entry-ID"], str(log.id))
+        self.assertTrue(log.stack_trace)
+
     def test_log_exception_readonly_headers(self):
         """
         If the exception's headers are readonly,

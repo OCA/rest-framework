@@ -2,7 +2,8 @@
 a2wsgi>=1.10.6
 contextvars
 cryptography
-fastapi>=0.110.0
+fastapi
+fastapi-openapi-overrides
 graphene
 graphql_server==3.0.0b7
 parse-accept-language

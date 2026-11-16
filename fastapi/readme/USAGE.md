@@ -178,6 +178,12 @@ Now, you can start your Odoo server, install your addon and create a new
 endpoint instance for your app. Once it's done click on the docs url to
 access the interactive documentation of your app.
 
+**Note**: FastAPI automatically exposes three services to easily
+interact with the APIs and their structure (Swagger, Redoc, OpenAPI).
+When exposing your Odoo instance to the open internet you might want to
+disable these services. To do so toggle the "Expose FastAPI docs"
+checkbox in the FastAPI Endpoint form view.
+
 Before trying to test your app, you need to define on the endpoint
 instance the user that will be used to run the app. You can do it by
 setting the **'user_id'** field. This information is the most important

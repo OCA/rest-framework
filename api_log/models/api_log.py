@@ -9,6 +9,7 @@ import time
 from datetime import date
 from traceback import format_exception
 
+from dateutil.relativedelta import relativedelta
 from werkzeug.exceptions import HTTPException as WerkzeugHTTPException
 
 from odoo import api, fields, models
@@ -38,11 +39,11 @@ class APILog(models.Model):
     request_method = fields.Char()
     request_headers = fields.Json()
     request_body = fields.Binary(attachment=False)
-    request_date = fields.Datetime()
+    request_date = fields.Datetime(index=True)
     request_time = fields.Float()
 
     # Response
-    response_status_code = fields.Integer()
+    response_status_code = fields.Integer(index=True)
     response_headers = fields.Json()
     response_body = fields.Binary(attachment=False)
     response_date = fields.Datetime()
@@ -153,6 +154,17 @@ class APILog(models.Model):
         log_request_values.update(override_log_values or {})
         return self.sudo().create(log_request_values)
 
+    @api.model
+    def cron_delete_logs(self):
+        retention_days = int(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("api_log.retention_days", default=180)
+        )
+        cutoff_date = fields.Datetime.now() - relativedelta(days=retention_days)
+        logs_to_delete = self.search([("request_date", "<", cutoff_date)])
+        logs_to_delete.unlink()
+
     def _inject_log_entry(self, values_dict):
         values_dict["API-Log-Entry-ID"] = str(self.id)
         return values_dict
@@ -173,7 +185,7 @@ class APILog(models.Model):
         return self.sudo().write(log_response_values)
 
     def _prepare_log_exception(self, exception):
-        if not hasattr(exception, "headers"):
+        if getattr(exception, "headers", None) is None:
             exception.headers = dict()
         values = {
             "stack_trace": "".join(format_exception(exception)),
