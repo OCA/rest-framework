@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-06-25 09:25+0000\n"
+"PO-Revision-Date: 2026-11-19 11:46+0000\n"
 "Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
 "Language-Team: none\n"
 "Language: it\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 2026.11.2\n"
 
 #. module: auth_partner
 #: model:ir.model.fields.selection,name:auth_partner.selection__wizard_auth_partner_reset_password__delay__14-days
@@ -116,7 +116,7 @@ msgstr "Responsabile autorizzazione API del partner"
 #. module: auth_partner
 #: model:res.groups,name:auth_partner.group_auth_partner_user
 msgid "API Partner Auth User"
-msgstr ""
+msgstr "Responsabile autorizzazione API del partner"
 
 #. module: auth_partner
 #: model_terms:ir.ui.view,arch_db:auth_partner.auth_directory_view_form
