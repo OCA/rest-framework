@@ -78,6 +78,11 @@ msgid "API Partner Auth Manager"
 msgstr ""
 
 #. module: auth_partner
+#: model:res.groups,name:auth_partner.group_auth_partner_user
+msgid "API Partner Auth User"
+msgstr ""
+
+#. module: auth_partner
 #: model_terms:ir.ui.view,arch_db:auth_partner.auth_directory_view_form
 #: model_terms:ir.ui.view,arch_db:auth_partner.view_partner_form
 msgid "Account"
