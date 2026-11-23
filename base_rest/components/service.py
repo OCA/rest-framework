@@ -3,6 +3,7 @@
 
 
 import logging
+import os
 
 from werkzeug.exceptions import NotFound
 
@@ -15,6 +16,23 @@ from ..apispec.base_rest_service_apispec import BaseRestServiceAPISpec
 from ..tools import ROUTING_DECORATOR_ATTR
 
 _logger = logging.getLogger(__name__)
+
+
+# Disable logging for deprecation.
+# You might have big projects, with tons of services with no specific decorator,
+# that are well tested and very stable and you don't want to touch them.
+# Especially if you plan already to move to v16.
+# Since this logging can bloat your CI and your log collecting tools,
+# here is a way to prevent that and get only a msg at boot.
+DISABLE_DEPRECATE_LOG_KEY = "REST_API_METHOD_FIX_DECORATOR_DEPRECATE_LOG_DISABLE"
+DISABLE_DEPRECATE_LOG = os.getenv(DISABLE_DEPRECATE_LOG_KEY)
+if DISABLE_DEPRECATE_LOG:
+    msg = (
+        "%s enabled: "
+        "implicit service methods are deprecated. "
+        "Disable this env key and enable debug level to have more details."
+    )
+    _logger.warning(msg, DISABLE_DEPRECATE_LOG_KEY)
 
 
 def to_int(val):
@@ -127,15 +145,16 @@ class BaseRestService(AbstractComponent):
             return result
         routing = getattr(method, ROUTING_DECORATOR_ATTR, None)
         output_param = routing["output_param"]
-        if not output_param:
+        if output_param:
+            return output_param.to_response(self, result)
+        elif not output_param and not DISABLE_DEPRECATE_LOG:
             _logger.warning(
                 "DEPRECATED: You must define an output schema for method %s "
                 "in service %s",
                 method_name,
                 self._name,
             )
-            return result
-        return output_param.to_response(self, result)
+        return result
 
     def dispatch(self, method_name, *args, params=None):
         """
@@ -197,8 +216,7 @@ class BaseRestService(AbstractComponent):
         return {
             "400": {"description": "One of the given parameter is not valid"},
             "401": {
-                "description": "The user is not authorized. Authentication "
-                "is required"
+                "description": "The user is not authorized. Authentication is required"
             },
             "404": {"description": "Requested resource not found"},
             "403": {

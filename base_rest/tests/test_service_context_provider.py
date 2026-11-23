@@ -4,7 +4,7 @@
 from unittest import mock
 
 from odoo.addons.component.core import Component
-from odoo.addons.website.tools import MockRequest
+from odoo.addons.http_routing.tests.common import MockRequest
 
 from .. import restapi
 from .common import BaseRestCase, TransactionRestServiceRegistryCase
@@ -31,7 +31,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         no authenticated_partner_id
         """
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -64,7 +63,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         authenticated_partner_id
         """
 
-        # pylint: disable=R7880
         class TestComponentContextprovider(Component):
             _name = "test.component.context.provider"
             _inherit = [
@@ -77,7 +75,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             "test_component_context_provider"
         )
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -112,7 +109,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         changes the authenticated_partner_id provided by the service context provider
         """
 
-        # pylint: disable=R7880
         class TestComponentContextprovider(Component):
             _name = "test.component.context.provider"
             _inherit = "base.rest.service.context.provider"
@@ -125,7 +121,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
             "test_component_context_provider"
         )
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -158,7 +153,6 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
         _get_collection_env_context is propagated to the env of the services
         """
 
-        # pylint: disable=R7980
         class TestServiceNewApi(Component):
             _inherit = "base.rest.service"
             _name = "test.partner.service"
@@ -198,4 +192,8 @@ class TestServiceContextProvider(TransactionRestServiceRegistryCase):
 class CommonCase(BaseRestCase):
     # dummy test method to pass codecov
     def test_04(self):
-        self.assertEqual(self.registry.test_cr, self.cr)
+        self.assertEqual(self.registry.db_name, self.cr.dbname)
+
+    def test_05(self):
+        # a second test: the registry stays in test mode for the whole class
+        self.assertTrue(type(self)._registry_patched)
