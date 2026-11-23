@@ -38,6 +38,7 @@ addon | version | maintainers | summary
 [fastapi_endpoint_context](fastapi_endpoint_context/) | 18.0.1.0.0 | <a href='https://github.com/paradoxxxzero'><img src='https://github.com/paradoxxxzero.png' width='32' height='32' style='border-radius:50%;' alt='paradoxxxzero'/></a> | Provides an overridable request context for FastAPI endpoints
 [fastapi_log](fastapi_log/) | 18.0.1.0.0 | <a href='https://github.com/paradoxxxzero'><img src='https://github.com/paradoxxxzero.png' width='32' height='32' style='border-radius:50%;' alt='paradoxxxzero'/></a> | Log Fastapi requests in database
 [fastapi_log_mail](fastapi_log_mail/) | 18.0.1.0.0 | <a href='https://github.com/SirPyTech'><img src='https://github.com/SirPyTech.png' width='32' height='32' style='border-radius:50%;' alt='SirPyTech'/></a> | Notify logged exceptions.
+[http_api_dispatcher](http_api_dispatcher/) | 18.0.1.0.0 | <a href='https://github.com/simahawk'><img src='https://github.com/simahawk.png' width='32' height='32' style='border-radius:50%;' alt='simahawk'/></a> | Generic dispatcher for JSON APIs: parsing, validation, errors.
 [pydantic](pydantic/) | 18.0.1.1.0 | <a href='https://github.com/lmignon'><img src='https://github.com/lmignon.png' width='32' height='32' style='border-radius:50%;' alt='lmignon'/></a> | Utility addon to ease mapping between Pydantic and Odoo models
 [rest_log](rest_log/) | 18.0.1.0.1 | <a href='https://github.com/simahawk'><img src='https://github.com/simahawk.png' width='32' height='32' style='border-radius:50%;' alt='simahawk'/></a> | Track REST API calls into DB
 

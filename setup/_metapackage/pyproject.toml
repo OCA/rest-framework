@@ -1,6 +1,6 @@
 [project]
 name = "odoo-addons-oca-rest-framework"
-version = "18.0.20260606.0"
+version = "18.0.20261123.0"
 dependencies = [
     "odoo-addon-api_log==18.0.*",
     "odoo-addon-api_log_mail==18.0.*",
@@ -19,6 +19,7 @@ dependencies = [
     "odoo-addon-fastapi_endpoint_context==18.0.*",
     "odoo-addon-fastapi_log==18.0.*",
     "odoo-addon-fastapi_log_mail==18.0.*",
+    "odoo-addon-http_api_dispatcher==18.0.*",
     "odoo-addon-pydantic==18.0.*",
     "odoo-addon-rest_log==18.0.*",
 ]
