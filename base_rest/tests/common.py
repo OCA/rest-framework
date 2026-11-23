@@ -244,10 +244,4 @@ class BaseRestCase(TransactionComponentCase, RegistryMixin):
         super().setUpClass()
         cls.setUpRegistry()
         cls.base_url = cls.env["ir.config_parameter"].get_param("web.base.url")
-        cls.registry.enter_test_mode(cls.env.cr)
-
-    # pylint: disable=W8110
-    @classmethod
-    def tearDownClass(cls):
-        cls.registry.leave_test_mode()
-        super().tearDownClass()
+        cls.registry_enter_test_mode_cls()
