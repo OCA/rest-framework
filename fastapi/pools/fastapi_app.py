@@ -114,7 +114,12 @@ class FastApiAppPool:
                 self.__cache_sequences[key] = value
 
     def _check_cache(self, env: Environment) -> None:
-        cache_sequences = env.registry.cache_sequences
+        cache_sequences = getattr(env.registry, "cache_sequences", None)
+        if cache_sequences is None:
+            cache_sequences = {
+                k: v[0]
+                for k, v in getattr(env.registry, "registry_caches__", {}).items()
+            }
         for key, value in cache_sequences.items():
             if (
                 value != self.get_cache_sequence(key)

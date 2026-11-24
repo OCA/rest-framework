@@ -5,14 +5,14 @@ from collections import defaultdict
 
 from accept_language import parse_accept_language
 
-from odoo import api, models, tools
+from odoo import api, models
 
 
 class ResLang(models.Model):
     _inherit = "res.lang"
 
     @api.model
-    @tools.ormcache("accept_language")
+    @api.ormcache("accept_language")
     def _get_lang_from_accept_language(self, accept_language):
         """Get the language from the Accept-Language header.
 
