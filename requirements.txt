@@ -11,7 +11,7 @@ extendable>=0.0.4
 fastapi
 fastapi-openapi-overrides
 graphene
-graphql-server<3.0.0b8
+graphql-server==3.0.0b7
 itsdangerous
 jsondiff
 marshmallow
