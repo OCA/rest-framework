@@ -29,7 +29,9 @@ def altcha_challenge_v2(
 ) -> dict:
     if not altcha:
         raise ValidationError(_("Altcha library is not installed."))
-    secret_key = endpoint.sudo().captcha_secret_key
+    endpoint = endpoint.sudo()
+    secret_key = endpoint.captcha_secret_key
+    altcha_validity_period = endpoint.altcha_validity_period
     if not secret_key:
         raise ValidationError(_("Captcha secret key is not set for this endpoint."))
 
@@ -39,7 +41,8 @@ def altcha_challenge_v2(
             cost=5000,
             counter=secrets.randbelow(5000) + 5000,
             hmac_secret=secret_key,
-            expires_at=datetime.datetime.now() + datetime.timedelta(minutes=5),
+            expires_at=datetime.datetime.now()
+            + datetime.timedelta(minutes=altcha_validity_period),
         )
 
         return challenge.to_dict()
@@ -54,13 +57,16 @@ def altcha_challenge_v1(
 ) -> dict:
     if not altcha:
         raise ValidationError(_("Altcha library is not installed."))
-    secret_key = endpoint.sudo().captcha_secret_key
+    endpoint = endpoint.sudo()
+    secret_key = endpoint.captcha_secret_key
+    altcha_validity_period = endpoint.altcha_validity_period
     if not secret_key:
         raise ValidationError(_("Captcha secret key is not set for this endpoint."))
 
     try:
         challenge = create_challenge_v1(
-            expires=datetime.datetime.now() + datetime.timedelta(minutes=5),
+            expires=datetime.datetime.now()
+            + datetime.timedelta(minutes=altcha_validity_period),
             hmac_key=secret_key,
             max_number=50000,
         )

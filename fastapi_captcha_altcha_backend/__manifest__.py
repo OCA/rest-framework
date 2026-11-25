@@ -10,7 +10,11 @@
     "category": "Tools",
     "depends": ["fastapi_captcha"],
     "website": "https://github.com/OCA/rest-framework",
-    "data": [],
+    "data": [
+        "data/ir_cron.xml",
+        "security/ir_model_access.xml",
+        "views/fastapi_endpoint_views.xml",
+    ],
     "maintainers": ["paradoxxxzero"],
     "installable": True,
     "license": "AGPL-3",

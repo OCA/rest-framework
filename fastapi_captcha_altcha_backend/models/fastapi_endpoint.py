@@ -21,6 +21,11 @@ class FastapiEndpoint(models.Model):
         ],
     )
 
+    altcha_validity_period = fields.Integer(
+        default=5,
+        help="Validity period for the altcha in minutes",
+    )
+
     def validate_captcha(self, captcha_response):
         """Validate the captcha response."""
         super().validate_captcha(captcha_response)
@@ -45,6 +50,10 @@ class FastapiEndpoint(models.Model):
                         self.env._("Altcha validation failed: %(error)s")
                         % {"error": "\n--\n".join(e for e in (err, result.error) if e)}
                     )
+            if not self.env["altcha.token"]._check_token(self, captcha_response):
+                raise AccessError(
+                    self.env._("Altcha validation failed: Token already used")
+                )
 
         except Exception as e:
             raise AccessError(

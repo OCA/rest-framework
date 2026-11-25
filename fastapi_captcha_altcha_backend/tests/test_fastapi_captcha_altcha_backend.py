@@ -141,3 +141,41 @@ class FastAPICaptchaAltchaBackend(FastAPITransactionCase):
                         )
                     },
                 )
+
+    def test_valid_header_no_replay(self):
+        with self._create_test_client() as test_client:
+            response = test_client.get("/altcha/v2/challenge")
+            self.assertEqual(response.status_code, status.HTTP_200_OK, response.text)
+            challenge = response.json()
+            # Solve the v2 challenge using the altcha library
+            challenge = Challenge.from_dict(challenge)
+            solution = solve_challenge(challenge)
+            token = Payload(challenge, solution).to_base64()
+
+            response = test_client.get("/demo/", headers={"X-Captcha-Token": token})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.json(), {"Hello": "World"})
+
+            # Replaying a valid token should fail
+            with self.assertRaisesRegex(
+                AccessError,
+                "Altcha validation failed: Token already used",
+            ):
+                test_client.get("/demo/", headers={"X-Captcha-Token": token})
+            with self.assertRaisesRegex(
+                AccessError,
+                "Altcha validation failed: Token already used",
+            ):
+                test_client.get("/demo/", headers={"X-Captcha-Token": token})
+
+            # A new token should still work
+            response = test_client.get("/altcha/v2/challenge")
+            self.assertEqual(response.status_code, status.HTTP_200_OK, response.text)
+            challenge = response.json()
+            challenge = Challenge.from_dict(challenge)
+            solution = solve_challenge(challenge)
+            token = Payload(challenge, solution).to_base64()
+
+            response = test_client.get("/demo/", headers={"X-Captcha-Token": token})
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.json(), {"Hello": "World"})
