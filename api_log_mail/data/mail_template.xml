@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    ~ Copyright 2025 Simone Rubino - PyTech
+    ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+-->
+<odoo noupdate="1">
+    <record id="email_template_fastapi_error" model="mail.template">
+        <field name="name">FastAPI: Error</field>
+        <field name="model_id" ref="api_log.model_api_log" />
+        <field
+            name="email_from"
+        >{{object.collection_ref.user_id.email or object.env.ref('base.partner_root').email}}</field>
+        <field
+            name="email_to"
+        >{{object.collection_ref.company_id.scheduler_error_email_address}}</field>
+        <field name="subject">Odoo FastAPI Error</field>
+        <field name="auto_delete" eval="False" />
+        <field name="body_html" type="html">
+            <div>
+                <t t-set="endpoint_name" t-value="object.collection_ref.name" />
+                <t t-set="request_url" t-value="object.request_url" />
+                <t t-set="request_method" t-value="object.request_method" />
+                <t t-set="headers" t-value="object.request_headers" />
+                <t t-set="exception" t-value="object.response_body" />
+                <t t-set="exception_stack" t-value="object.stack_trace" />
+
+                <p>Error in FastAPI call</p>
+                <p>FastAPI endpoint: <t t-out="endpoint_name" /></p>
+                <p>Request: [<t t-out="request_method" />] <t t-out="request_url" /></p>
+                <p>
+                    Headers:
+                    <ul>
+                        <li t-foreach="headers.items()" t-as="hd">
+                            <t t-out="hd[0]" />: <t t-out="hd[1]" />
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    Exception: <t t-out="exception" />
+                </p>
+                <p>
+                    Stack trace: <pre t-out="exception_stack" />
+                </p>
+            </div>
+        </field>
+   </record>
+</odoo>
