@@ -3,6 +3,7 @@
 # Copyright 2025 Simone Rubino - PyTech
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import json
 import os
 import unittest
 
@@ -11,7 +12,7 @@ from odoo.tools import mute_logger
 from odoo.addons.fastapi.schemas import DemoExceptionType
 from odoo.addons.fastapi_log.tests.common import Common
 
-from fastapi import status
+from fastapi import HTTPException, status
 
 
 @unittest.skipIf(os.getenv("SKIP_HTTP_CASE"), "TestFastapiLog skipped")
@@ -117,6 +118,37 @@ class TestFastapiLog(Common):
         self.assertIn(b'"retries":2', log.response_body)
         self.assertIn(b'"file":"test"', log.response_body)
         self.assertFalse(log.stack_trace)
+
+    def test_log_http_exception_dict_detail(self):
+        """
+        FastAPI allows any JSON-serializable detail,
+        it is stored as JSON.
+        """
+        log = self.log_model.create({})
+        detail = {"code": "not_found", "message": "Not found"}
+        exception = HTTPException(
+            status_code=404, detail=detail, headers={"X-Test": "1"}
+        )
+
+        log.write(log._prepare_log_exception(exception))
+        log.flush_recordset()
+        log.invalidate_recordset()
+
+        self.assertEqual(log.response_status_code, 404)
+        self.assertEqual(json.loads(log.response_body), detail)
+
+    def test_log_http_exception_str_detail(self):
+        log = self.log_model.create({})
+        exception = HTTPException(
+            status_code=401, detail="Not authenticated", headers={"X-Test": "1"}
+        )
+
+        log.write(log._prepare_log_exception(exception))
+        log.flush_recordset()
+        log.invalidate_recordset()
+
+        self.assertEqual(log.response_status_code, 401)
+        self.assertEqual(log.response_body, b"Not authenticated")
 
     def test_collection_ref(self):
         """The created log holds a reference to its endpoint and viceversa."""

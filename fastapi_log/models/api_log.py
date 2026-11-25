@@ -3,6 +3,8 @@
 # Copyright 2025 Simone Rubino - PyTech
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import json
+
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from odoo import api, models
@@ -52,11 +54,14 @@ class FastapiLog(models.Model):
     def _prepare_log_exception(self, exception):
         values = super()._prepare_log_exception(exception)
         if isinstance(exception, StarletteHTTPException):
+            detail = exception.detail
+            if not isinstance(detail, str | bytes):
+                detail = json.dumps(detail, default=str)
             values.update(
                 {
                     "response_status_code": exception.status_code,
                     "response_headers": self._headers_to_dict(exception.headers),
-                    "response_body": exception.detail,
+                    "response_body": detail,
                 }
             )
         return values
